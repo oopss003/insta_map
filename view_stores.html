@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>저장된 가게 보기</title>
+    <!-- 네이버 지도 JS SDK (JavaScript 키 사용) -->
+    <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+    <style>
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Arial, Helvetica, sans-serif; }
+      header {
+        padding: 12px 20px;
+        font-size: 1.3rem;
+        font-weight: 700;
+        background: #2d3748;
+        color: #fff;
+      }
+      main { display: flex; height: calc(100vh - 56px); }
+      #map { flex: 3; min-height: 100%; }
+      #sidebar {
+        flex: 1;
+        max-width: 340px;
+        border-left: 1px solid #e2e8f0;
+        overflow-y: auto;
+      }
+      #sidebar h2 { margin: 12px 0 8px; padding: 0 16px; font-size: 1.1rem; }
+      #storeList { list-style: none; margin: 0; padding: 0 8px 16px; }
+      #storeList li {
+        cursor: pointer;
+        border: 1px solid #e2e8f0;
+        border-radius: 6px;
+        margin: 6px;
+        padding: 10px;
+        transition: background 0.2s;
+      }
+      #storeList li:hover { background: #f1f5f9; }
+      #empty { padding: 16px; color: #718096; }
+    </style>
+  </head>
+  <body>
+    <header>📍 저장된 가게 목록</header>
+    <main>
+      <div id="map"></div>
+      <aside id="sidebar">
+        <h2>가게 리스트</h2>
+        <ul id="storeList"></ul>
+        <div id="empty" style="display:none">저장된 가게가 없습니다.</div>
+      </aside>
+    </main>
+
+    <script>
+      // 로컬스토리지 ➜ 배열로 변환
+      const stores = JSON.parse(localStorage.getItem('stores') || '[]');
+
+      // 지도 기본 세팅 (서울 시청 좌표)
+      const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 12,
+      });
+
+      const storeList = document.getElementById('storeList');
+      const emptyMsg   = document.getElementById('empty');
+
+      if (!stores.length) {
+        emptyMsg.style.display = 'block';
+      }
+
+      const bounds = new naver.maps.LatLngBounds();
+
+      stores.forEach((store, idx) => {
+        // 위·경도 숫자 변환
+        const lat = parseFloat(store.lat), lng = parseFloat(store.lng);
+        const position = new naver.maps.LatLng(lat, lng);
+        const marker = new naver.maps.Marker({
+          map,
+          position,
+          title: store.name,
+        });
+
+        bounds.extend(position);
+
+        const info = `
+          <div style="padding:6px 10px;">
+            <strong>${store.name}</strong><br/>
+            <a href="https://instagram.com/${store.insta}" target="_blank">@${store.insta}</a><br/>
+            <small>${store.desc || ''}</small>
+          </div>`;
+        const infowindow = new naver.maps.InfoWindow({ content: info });
+
+        naver.maps.Event.addListener(marker, 'click', () => {
+          if (infowindow.getMap()) {
+            infowindow.close();
+          } else {
+            infowindow.open(map, marker);
+          }
+        });
+
+        // 사이드바 항목 생성
+        const li = document.createElement('li');
+        li.innerHTML = `<strong>${store.name}</strong><br/><small>@${store.insta}</small>`;
+        li.addEventListener('click', () => {
+          map.setCenter(position);
+          map.setZoom(17);
+          infowindow.open(map, marker);
+        });
+        storeList.appendChild(li);
+      });
+
+      // 저장된 위치가 있으면 전체 영역 맞춤
+      if (stores.length > 1) {
+        map.fitBounds(bounds);
+      } else if (stores.length === 1) {
+        map.setCenter(new naver.maps.LatLng(parseFloat(stores[0].lat), parseFloat(stores[0].lng)));
+        map.setZoom(17);
+      }
+    </script>
+  </body>
+</html>
