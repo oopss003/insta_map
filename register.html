@@ -1,39 +1,99 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>가게 등록</title>
-  <style>#map { width: 100%; height: 400px; }</style>
-  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=여기에_카카오_API_키_입력&libraries=services"></script>
+
+  <!-- 네이버 지도 SDK -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrrmxiff4"></script>
+
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    #map {
+      width: 100%;
+      height: 400px;
+      margin-bottom: 20px;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      font-size: 1em;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
-  <h2>가게 등록</h2>
-  <form id="store-form">
-    <input type="text" id="store-name" placeholder="가게 이름" required><br>
-    <input type="text" id="insta-url" placeholder="인스타그램 링크" required><br>
-    <input type="text" id="lat" placeholder="위도" readonly>
-    <input type="text" id="lng" placeholder="경도" readonly><br>
-    <button type="submit">등록하기</button>
-  </form>
+
+  <h2>📍 가게 등록</h2>
+
+  <!-- 지도 표시 영역 -->
   <div id="map"></div>
+
+  <!-- 가게 등록 폼 -->
+  <form id="storeForm">
+    <input type="text" id="storeName" placeholder="가게 이름" required />
+    <input type="text" id="instaId" placeholder="인스타그램 ID (@ 제외)" required />
+    <textarea id="description" placeholder="가게 설명" rows="4"></textarea>
+    <input type="text" id="lat" placeholder="위도 (지도를 클릭하세요)" readonly />
+    <input type="text" id="lng" placeholder="경도 (지도를 클릭하세요)" readonly />
+    <button type="submit">저장</button>
+  </form>
+
   <script>
-    navigator.geolocation.getCurrentPosition(function(pos) {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      const map = new kakao.maps.Map(document.getElementById('map'), {
-        center: new kakao.maps.LatLng(lat, lng),
-        level: 3
-      });
-      kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
-        const clickedLatLng = mouseEvent.latLng;
-        document.getElementById("lat").value = clickedLatLng.getLat();
-        document.getElementById("lng").value = clickedLatLng.getLng();
+    // 지도 초기화
+    const map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(37.5665, 126.9780), // 기본 서울시청
+      zoom: 15
+    });
+
+    let marker = null;
+
+    // 지도 클릭 시 위도/경도 추출 및 마커 표시
+    naver.maps.Event.addListener(map, 'click', function(e) {
+      const lat = e.coord.lat();
+      const lng = e.coord.lng();
+
+      document.getElementById("lat").value = lat;
+      document.getElementById("lng").value = lng;
+
+      if (marker) marker.setMap(null);
+      marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(lat, lng),
+        map: map
       });
     });
-    document.getElementById('store-form').addEventListener('submit', function(e) {
+
+    // 폼 제출 시 데이터 확인 (저장은 이후 구현)
+    document.getElementById("storeForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      alert("가게가 등록되었다고 가정합니다. (DB 연동은 추후 구현)");
+
+      const storeData = {
+        name: document.getElementById("storeName").value,
+        instaId: document.getElementById("instaId").value,
+        description: document.getElementById("description").value,
+        lat: document.getElementById("lat").value,
+        lng: document.getElementById("lng").value
+      };
+
+      console.log("등록된 가게:", storeData);
+      alert("가게 정보가 등록되었습니다. (데이터 저장은 추후 구현)");
+
+      this.reset();
+      if (marker) marker.setMap(null);
     });
   </script>
+
 </body>
 </html>
