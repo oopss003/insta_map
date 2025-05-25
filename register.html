@@ -11,18 +11,9 @@
       height: 300px;
       background-color: #eee;
     }
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
-    input, textarea, button {
+    input, textarea {
       width: 100%;
-      margin-bottom: 15px;
-      padding: 8px;
-      font-size: 1rem;
-    }
-    label {
-      font-weight: bold;
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -30,10 +21,11 @@
   <h2>📍 가게 등록</h2>
   <div id="map"></div>
 
-  <form onsubmit="return false;">
-    <label for="addressInput">주소 검색</label>
-    <input type="text" id="addressInput" placeholder="주소를 입력하세요 (엔터)" />
+  <!-- 주소 검색 입력 -->
+  <label>주소 검색</label>
+  <input type="text" id="addressInput" placeholder="주소 입력 후 엔터" />
 
+  <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
     <input type="text" name="name" />
 
@@ -60,11 +52,10 @@
 
     let marker = null;
 
-    // 지도 클릭 시 위도/경도 입력
+    // 지도 클릭 시 위경도 표시
     naver.maps.Event.addListener(map, "click", function (e) {
       const lat = e.coord.lat();
       const lng = e.coord.lng();
-
       document.getElementById("lat").value = lat;
       document.getElementById("lng").value = lng;
 
@@ -75,35 +66,39 @@
       });
     });
 
-    // 주소 입력 후 엔터 시 위도/경도 조회
+    // 주소 입력 후 엔터 시 좌표 검색
     document.getElementById("addressInput").addEventListener("keydown", async function (e) {
       if (e.key === "Enter") {
         e.preventDefault();
 
         const address = e.target.value;
-        const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
-          headers: {
-            "X-NCP-APIGW-API-KEY-ID": "qpbrmxiff4",  // Client ID
-            "X-NCP-APIGW-API-KEY": "여기에_클라이언트_SECRET_입력"  // 🔐 Client Secret
-          }
-        });
-
-        const data = await res.json();
-        if (data.status === "OK" && data.addresses.length > 0) {
-          const { x, y } = data.addresses[0];
-          document.getElementById("lat").value = y;
-          document.getElementById("lng").value = x;
-
-          const latlng = new naver.maps.LatLng(y, x);
-          map.setCenter(latlng);
-
-          if (marker) marker.setMap(null);
-          marker = new naver.maps.Marker({
-            position: latlng,
-            map: map,
+        try {
+          const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
+            headers: {
+              "X-NCP-APIGW-API-KEY-ID": "qpbrmxiff4", // JavaScript용 Client ID
+              "X-NCP-APIGW-API-KEY": "my...Uw"         // Client Secret (생략해도 되는 경우 많음)
+            }
           });
-        } else {
-          alert("주소를 찾을 수 없습니다.");
+
+          const data = await res.json();
+          if (data.status === "OK" && data.addresses.length > 0) {
+            const { x, y } = data.addresses[0];
+            document.getElementById("lat").value = y;
+            document.getElementById("lng").value = x;
+
+            const latlng = new naver.maps.LatLng(y, x);
+            map.setCenter(latlng);
+
+            if (marker) marker.setMap(null);
+            marker = new naver.maps.Marker({
+              position: latlng,
+              map: map,
+            });
+          } else {
+            alert("주소를 찾을 수 없습니다.");
+          }
+        } catch (err) {
+          alert("주소 검색 중 오류가 발생했습니다.");
         }
       }
     });
