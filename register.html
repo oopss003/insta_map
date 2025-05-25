@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>가게 등록</title>
+  <style>#map { width: 100%; height: 400px; }</style>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=여기에_카카오_API_키_입력&libraries=services"></script>
+</head>
+<body>
+  <h2>가게 등록</h2>
+  <form id="store-form">
+    <input type="text" id="store-name" placeholder="가게 이름" required><br>
+    <input type="text" id="insta-url" placeholder="인스타그램 링크" required><br>
+    <input type="text" id="lat" placeholder="위도" readonly>
+    <input type="text" id="lng" placeholder="경도" readonly><br>
+    <button type="submit">등록하기</button>
+  </form>
+  <div id="map"></div>
+  <script>
+    navigator.geolocation.getCurrentPosition(function(pos) {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const map = new kakao.maps.Map(document.getElementById('map'), {
+        center: new kakao.maps.LatLng(lat, lng),
+        level: 3
+      });
+      kakao.maps.event.addListener(map, 'click', function(mouseEvent) {
+        const clickedLatLng = mouseEvent.latLng;
+        document.getElementById("lat").value = clickedLatLng.getLat();
+        document.getElementById("lng").value = clickedLatLng.getLng();
+      });
+    });
+    document.getElementById('store-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      alert("가게가 등록되었다고 가정합니다. (DB 연동은 추후 구현)");
+    });
+  </script>
+</body>
+</html>
