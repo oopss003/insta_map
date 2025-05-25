@@ -11,19 +11,18 @@
       height: 300px;
       background-color: #eee;
     }
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-bottom: 15px;
+      padding: 8px;
+      font-size: 1rem;
+    }
     label {
       font-weight: bold;
-      display: block;
-      margin-top: 10px;
-    }
-    input, textarea {
-      width: 100%;
-      padding: 6px;
-      margin-top: 2px;
-    }
-    button {
-      margin-top: 10px;
-      padding: 10px;
     }
   </style>
 </head>
@@ -31,18 +30,18 @@
   <h2>📍 가게 등록</h2>
   <div id="map"></div>
 
-  <form id="storeForm">
+  <form onsubmit="return false;">
+    <label for="addressInput">주소 검색</label>
+    <input type="text" id="addressInput" placeholder="주소를 입력하세요 (엔터)" />
+
     <label>가게 이름</label>
-    <input type="text" name="name" required />
+    <input type="text" name="name" />
 
     <label>인스타그램 ID (@ 제외)</label>
-    <input type="text" name="insta_id" required />
+    <input type="text" name="insta_id" />
 
     <label>가게 설명</label>
-    <textarea name="desc" rows="3" required></textarea>
-
-    <label>도로명 또는 지번 주소 입력</label>
-    <input type="text" id="addressInput" placeholder="예: 서울 중구 세종대로 110" />
+    <textarea name="desc" rows="4"></textarea>
 
     <label>위도</label>
     <input type="text" id="lat" name="lat" readonly />
@@ -56,43 +55,56 @@
   <script>
     const map = new naver.maps.Map("map", {
       center: new naver.maps.LatLng(37.5665, 126.9780),
-      zoom: 13,
+      zoom: 15,
     });
 
-    // 지도 클릭 시 좌표 갱신
+    let marker = null;
+
+    // 지도 클릭 시 위도/경도 입력
     naver.maps.Event.addListener(map, "click", function (e) {
       const lat = e.coord.lat();
       const lng = e.coord.lng();
+
       document.getElementById("lat").value = lat;
       document.getElementById("lng").value = lng;
-      new naver.maps.Marker({
+
+      if (marker) marker.setMap(null);
+      marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(lat, lng),
-        map: map
+        map: map,
       });
     });
 
-    // 주소 입력 → 위도/경도 자동 변환
-    document.getElementById("addressInput").addEventListener("change", async () => {
-      const address = document.getElementById("addressInput").value;
-      const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
-        headers: {
-          "X-NCP-APIGW-API-KEY-ID": "qpbrmxiff4",  // Client ID
-          "X-NCP-APIGW-API-KEY": "여기에 Client Secret 입력" // 보안상 실제 사용 시 서버에서 처리 권장
-        }
-      });
+    // 주소 입력 후 엔터 시 위도/경도 조회
+    document.getElementById("addressInput").addEventListener("keydown", async function (e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
 
-      const data = await res.json();
-      if (data.status === "OK" && data.addresses.length > 0) {
-        const { x, y } = data.addresses[0];
-        document.getElementById("lat").value = y;
-        document.getElementById("lng").value = x;
-        map.setCenter(new naver.maps.LatLng(y, x));
-        new naver.maps.Marker({
-          position: new naver.maps.LatLng(y, x),
-          map: map
+        const address = e.target.value;
+        const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
+          headers: {
+            "X-NCP-APIGW-API-KEY-ID": "qpbrmxiff4",  // Client ID
+            "X-NCP-APIGW-API-KEY": "여기에_클라이언트_SECRET_입력"  // 🔐 Client Secret
+          }
         });
-      } else {
-        alert("주소를 찾을 수 없습니다.");
+
+        const data = await res.json();
+        if (data.status === "OK" && data.addresses.length > 0) {
+          const { x, y } = data.addresses[0];
+          document.getElementById("lat").value = y;
+          document.getElementById("lng").value = x;
+
+          const latlng = new naver.maps.LatLng(y, x);
+          map.setCenter(latlng);
+
+          if (marker) marker.setMap(null);
+          marker = new naver.maps.Marker({
+            position: latlng,
+            map: map,
+          });
+        } else {
+          alert("주소를 찾을 수 없습니다.");
+        }
       }
     });
   </script>
