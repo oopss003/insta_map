@@ -3,133 +3,93 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>저장된 매장 목록</title>
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-  <style>
-    body{margin:0;display:flex;height:100vh;font-family:sans-serif}
-    #map{flex:3}
-    #list{flex:1;overflow:auto;padding:10px;border-left:1px solid #ccc}
-    .store{padding:6px;border-bottom:1px solid #ddd;cursor:pointer}
-    .store:hover{background:#f0f4ff}
+  <title>가게 등록</title>
 
-    /* ★ 색상 선택 UI 스타일 */
-    #pinControl {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      z-index: 1000;
-      background: rgba(255,255,255,0.9);
-      padding: 8px;
-      border-radius: 4px;
-      font-size:14px;
-    }
-    #pinControl select {
-      margin-left:6px;
-      padding:2px 4px;
-    }
+  <!-- 네이버 지도 -->
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px}
+    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px}
+    label{display:block;margin-top:12px;font-weight:700}
+    input,textarea{width:100%;padding:8px;margin-top:4px;border:1px solid #bbb;border-radius:4px;font-size:14px}
+    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
+    #getLocBtn{background:#28a745;color:#fff}
+    #saveBtn{background:#2d8cff;color:#fff}
   </style>
 </head>
 <body>
-
-  <!-- ★ 핀 색상 선택 드롭다운 -->
-  <div id="pinControl">
-    <label for="pinColor">핀 색상:</label>
-    <select id="pinColor">
-      <option value="red">빨강</option>
-      <option value="blue">파랑</option>
-      <option value="green">초록</option>
-      <option value="yellow">노랑</option>
-      <option value="purple">보라</option>
-    </select>
-  </div>
-
+  <h2>📍 가게 등록</h2>
   <div id="map"></div>
-  <div id="list"><h3>매장 리스트</h3></div>
 
-  <script>
-    const KEY = 'instaMapStores';
-    const data = JSON.parse(localStorage.getItem(KEY) || '[]');
-    const $list = document.getElementById('list');
-    if (!data.length) {
-      $list.innerHTML += '<p>저장된 가게가 없습니다.</p>';
-      console.warn('LocalStorage 비어 있음');
-    }
+  <button id="getLocBtn">현재 위치 가져오기</button>
 
-    // 1) 맵 초기화
-    const map = new naver.maps.Map('map',{
-      center: new naver.maps.LatLng(37.5665,126.9780),
-      zoom: 12
-    });
+  <form id="storeForm" onsubmit="return false;">
+    <label>가게 이름</label><input name="name" required />
+    <label>인스타그램 ID (@ 제외)</label><input name="insta_id" required />
+    <label>가게 설명</label><textarea name="desc" rows="4"></textarea>
+    <label>위도</label><input id="lat" readonly required />
+    <label>경도</label><input id="lng" readonly required />
+    <button id="saveBtn" type="submit">저장</button>
+  </form>
 
-    // 2) 핀 색상 선택 DOM
-    const pinSelect = document.getElementById('pinColor');
+<script>
+/* ---------- Firebase 초기화 ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+  authDomain: "instamap-9b595.firebaseapp.com",
+  projectId: "instamap-9b595",
+  storageBucket: "instamap-9b595.appspot.com",
+  messagingSenderId: "280950399933",
+  appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    // 배열에 넣어두면 색상 변경 시 아이콘도 바꿀 수 있음
-    const markers = [];
+/* ---------- 네이버 지도 ---------- */
+const map=new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15});
+let marker=null;
+function setLatLng(lat,lng){
+  document.getElementById('lat').value=lat;
+  document.getElementById('lng').value=lng;
+  if(marker) marker.setMap(null);
+  marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map});
+}
+naver.maps.Event.addListener(map,'click',e=>setLatLng(e.coord.lat(),e.coord.lng()));
+document.getElementById('getLocBtn').onclick=()=>{
+  navigator.geolocation?.getCurrentPosition(p=>{
+    const {latitude,longitude}=p.coords;
+    setLatLng(latitude,longitude);
+    map.setCenter(new naver.maps.LatLng(latitude,longitude));
+  },()=>alert('위치 권한이 필요합니다.'));
+};
 
-    // 3) 마커 생성 함수
-    function addMarkers() {
-      // 기존 마커 지우기
-      markers.forEach(m => m.setMap(null));
-      markers.length = 0;
-
-      // 현재 선택된 색상
-      const color = pinSelect.value;
-      // 구글 맵 기본 마커 아이콘으로 예시 (naver SDK 도 custom URL 가능)
-      const iconUrlBase = 'https://maps.google.com/mapfiles/ms/icons/';
-
-      data.forEach(s => {
-        const lat = parseFloat(s.lat), lng = parseFloat(s.lng);
-        if (isNaN(lat) || isNaN(lng)) return;
-
-        // 3-1) 마커 옵션에 icon 설정
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(lat, lng),
-          map: map,
-          icon: {
-            url: `${iconUrlBase}${color}-dot.png`,
-            size: new naver.maps.Size(32, 32),
-            anchor: new naver.maps.Point(16, 32)
-          }
-        });
-        markers.push(marker);
-
-        // 3-2) InfoWindow
-        const info = new naver.maps.InfoWindow({
-          content: `
-            <div style="min-width:160px;padding:6px">
-              <strong>${s.name}</strong><br>
-              <a href="https://instagram.com/${s.insta}" target="_blank">
-                @${s.insta}
-              </a><br>
-              ${s.desc||''}
-            </div>`
-        });
-        naver.maps.Event.addListener(marker, 'click', ()=> {
-          info.open(map, marker);
-        });
-
-        // 3-3) 사이드 바 리스트
-        const div = document.createElement('div');
-        div.className = 'store';
-        div.innerHTML = `<strong>${s.name}</strong><br>@${s.insta}`;
-        div.onclick = () => {
-          map.setCenter(marker.getPosition());
-          map.setZoom(15);
-          info.open(map, marker);
-        };
-        $list.appendChild(div);
-      });
-    }
-
-    // 4) 최초 렌더링
-    addMarkers();
-
-    // 5) 사용자가 드롭다운을 바꾸면 마커 색상 리프레시
-    pinSelect.addEventListener('change', ()=> {
-      // 사이드 바는 지우지 않고, 마커만 다시 찍음
-      addMarkers();
-    });
-  </script>
+/* ---------- Firestore 저장 ---------- */
+document.getElementById('storeForm').addEventListener('submit',async ()=>{
+  const store={
+    name :document.querySelector('[name=name]').value.trim(),
+    insta:document.querySelector('[name=insta_id]').value.trim(),
+    desc :document.querySelector('[name=desc]').value.trim(),
+    lat  :parseFloat(document.getElementById('lat').value),
+    lng  :parseFloat(document.getElementById('lng').value),
+    created: firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if(!store.name||!store.insta||isNaN(store.lat)||isNaN(store.lng)){
+    alert('필수 항목을 채워주세요.'); return;
+  }
+  try{
+    await db.collection('stores').add(store);
+    alert('Firestore에 저장되었습니다!');
+    document.getElementById('storeForm').reset();
+    if(marker) marker.setMap(null);
+  }catch(err){
+    console.error(err); alert('저장 실패');
+  }
+});
+</script>
 </body>
 </html>
