@@ -4,27 +4,30 @@
   <meta charset="UTF-8">
   <title>내 주변 가게 보기 - 네이버 지도</title>
   <style>
-    #map {
-      width: 100%;
-      height: 500px;
-    }
     body {
-      font-family: sans-serif;
+      font-family: Arial, sans-serif;
+      margin: 0;
       padding: 20px;
     }
     h2 {
-      margin-bottom: 20px;
+      color: #222;
+    }
+    #map {
+      width: 100%;
+      height: 500px;
+      margin-top: 10px;
+      border-radius: 8px;
     }
   </style>
-  <!-- ✅ 올바른 Client ID 적용됨 -->
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=cyilmI08o5"></script>
+  <!-- ✅ 여기에 새 Client ID 적용 -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=I71dmdqhil"></script>
 </head>
 <body>
   <h2>내 주변 가게 인스타 보기</h2>
   <div id="map"></div>
 
   <script>
-    navigator.geolocation.getCurrentPosition(function (pos) {
+    navigator.geolocation.getCurrentPosition(function(pos) {
       const lat = pos.coords.latitude;
       const lng = pos.coords.longitude;
 
@@ -38,10 +41,11 @@
         map: map,
         title: "내 위치"
       });
-    }, function (err) {
+    }, function(error) {
       alert("위치 정보를 가져올 수 없습니다.");
     });
   </script>
 </body>
 </html>
+
 
