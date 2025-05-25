@@ -4,96 +4,45 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>가게 등록</title>
-
-  <!-- 네이버 지도 SDK -->
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrrmxiff4"></script>
-
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=qpbrrmxlff4"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-    }
     #map {
       width: 100%;
-      height: 400px;
-      margin-bottom: 20px;
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      font-size: 1em;
-    }
-    button {
-      padding: 10px 20px;
-      font-size: 1em;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      cursor: pointer;
+      height: 300px;
+      background-color: #eee;
     }
   </style>
 </head>
 <body>
-
   <h2>📍 가게 등록</h2>
-
-  <!-- 지도 표시 영역 -->
   <div id="map"></div>
 
-  <!-- 가게 등록 폼 -->
-  <form id="storeForm">
-    <input type="text" id="storeName" placeholder="가게 이름" required />
-    <input type="text" id="instaId" placeholder="인스타그램 ID (@ 제외)" required />
-    <textarea id="description" placeholder="가게 설명" rows="4"></textarea>
-    <input type="text" id="lat" placeholder="위도 (지도를 클릭하세요)" readonly />
-    <input type="text" id="lng" placeholder="경도 (지도를 클릭하세요)" readonly />
+  <form>
+    <label>가게 이름</label><br />
+    <input type="text" name="name" /><br /><br />
+    <label>인스타그램 ID (@ 제외)</label><br />
+    <input type="text" name="insta_id" /><br /><br />
+    <label>가게 설명</label><br />
+    <textarea name="desc" rows="4" cols="50"></textarea><br /><br />
+    <label>위도</label><br />
+    <input type="text" id="lat" name="lat" readonly /><br /><br />
+    <label>경도</label><br />
+    <input type="text" id="lng" name="lng" readonly /><br /><br />
     <button type="submit">저장</button>
   </form>
 
   <script>
-    // 지도 초기화
-    const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.9780), // 기본 서울시청
-      zoom: 15
+    var map = new naver.maps.Map("map", {
+      center: new naver.maps.LatLng(37.5665, 126.9780),
+      zoom: 15,
     });
 
-    let marker = null;
-
-    // 지도 클릭 시 위도/경도 추출 및 마커 표시
-    naver.maps.Event.addListener(map, 'click', function(e) {
-      const lat = e.coord.lat();
-      const lng = e.coord.lng();
-
+    naver.maps.Event.addListener(map, "click", function (e) {
+      var lat = e.coord.lat();
+      var lng = e.coord.lng();
       document.getElementById("lat").value = lat;
       document.getElementById("lng").value = lng;
-
-      if (marker) marker.setMap(null);
-      marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map
-      });
-    });
-
-    // 폼 제출 시 데이터 확인 (저장은 이후 구현)
-    document.getElementById("storeForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      const storeData = {
-        name: document.getElementById("storeName").value,
-        instaId: document.getElementById("instaId").value,
-        description: document.getElementById("description").value,
-        lat: document.getElementById("lat").value,
-        lng: document.getElementById("lng").value
-      };
-
-      console.log("등록된 가게:", storeData);
-      alert("가게 정보가 등록되었습니다. (데이터 저장은 추후 구현)");
-
-      this.reset();
-      if (marker) marker.setMap(null);
     });
   </script>
-
 </body>
 </html>
