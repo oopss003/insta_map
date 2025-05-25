@@ -5,10 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>인스타 맵</title>
 
-  <!-- ✅ 올바른 네이버 지도 SDK 스크립트 삽입 -->
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=17dmdhqq1e2vXzKwAc99Wz4PvQLRU9cBgXFx8sU7"></script>
-"></script>
-
+  <!-- ✅ 네이버 지도 API SDK (ncpKeyId 사용) -->
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
 
   <style>
     html, body {
@@ -24,24 +22,27 @@
 </head>
 <body>
 
-  <!-- 지도 표시 영역 -->
+  <!-- 🗺️ 지도 표시 영역 -->
   <div id="map"></div>
 
   <script>
-    // 초기 지도 객체 선언
-    var map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.9780), // 서울시청 기본 위치
+    // 🧭 기본 지도 설정
+    var mapOptions = {
+      center: new naver.maps.LatLng(37.5665, 126.9780), // 서울시청 기본 좌표
       zoom: 15
-    });
+    };
 
-    // 현재 위치로 이동
+    var map = new naver.maps.Map('map', mapOptions);
+
+    // 📍 현재 위치로 이동
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
         var lat = position.coords.latitude;
         var lng = position.coords.longitude;
         var userLocation = new naver.maps.LatLng(lat, lng);
 
-        map.setCenter(userLocation); // 지도를 현재 위치로 이동
+        map.setCenter(userLocation);
+
         new naver.maps.Marker({
           position: userLocation,
           map: map,
@@ -53,7 +54,12 @@
     } else {
       alert("이 브라우저는 위치 정보를 지원하지 않습니다.");
     }
+
+    // ❌ 인증 실패 시 디버깅용 함수
+    window.naverMap_authFailure = function () {
+      alert("네이버 지도 인증에 실패했습니다. ncpKeyId를 다시 확인해주세요.");
+    };
   </script>
+
 </body>
 </html>
-
