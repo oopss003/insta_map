@@ -2,96 +2,73 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>저장된 매장 목록</title>
 
-  <!-- 네이버 지도 SDK -->
+  <!-- 네이버 지도 -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; display: flex; height: 100vh;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-    }
-    #map  { flex: 3; }
-    #list {
-      flex: 1; max-width: 320px; min-width: 200px;
-      overflow-y: auto; border-left: 1px solid #ccc; padding: 12px;
-      background: #fafbff;
-    }
-    #list h3 { margin-top: 0; }
-    .store {
-      padding: 8px 6px;
-      border-bottom: 1px solid #e0e0e0;
-      cursor: pointer;
-      transition: background .2s;
-    }
-    .store:hover { background: #eef3ff; }
-    .empty { color: #777; padding: 6px; }
+    *{box-sizing:border-box}
+    body{margin:0;display:flex;height:100vh;font-family:sans-serif}
+    #map{flex:3}
+    #list{flex:1;max-width:320px;overflow-y:auto;border-left:1px solid #ccc;padding:12px;background:#fafbff}
+    #list h3{margin-top:0}
+    .store{padding:8px 6px;border-bottom:1px solid #e0e0e0;cursor:pointer;transition:background .2s}
+    .store:hover{background:#eef3ff}
+    .empty{color:#777;padding:6px}
   </style>
 </head>
 <body>
-
   <div id="map"></div>
-  <div id="list">
-    <h3>매장 리스트</h3>
-  </div>
+  <div id="list"><h3>매장 리스트</h3></div>
 
-  <script>
-    /* ---------- 데이터 로드 ---------- */
-    const KEY = 'instaMapStores';
-    const stores = JSON.parse(localStorage.getItem(KEY) || '[]');
+<script>
+/* ---------- Firebase 초기화 ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+  authDomain: "instamap-9b595.firebaseapp.com",
+  projectId: "instamap-9b595",
+  storageBucket: "instamap-9b595.appspot.com",
+  messagingSenderId: "280950399933",
+  appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-    /* ---------- 지도 초기화 ---------- */
-    const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.9780),
-      zoom: 12
+/* ---------- 지도 ---------- */
+const map=new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:12});
+const $list=document.getElementById('list');
+
+/* ---------- Firestore 실시간 구독 ---------- */
+db.collection('stores').orderBy('created','desc').onSnapshot(snapshot=>{
+  $list.innerHTML='<h3>매장 리스트</h3>'; // 초기화
+  if(snapshot.empty){
+    $list.insertAdjacentHTML('beforeend','<p class=\"empty\">저장된 가게가 없습니다.</p>');
+  }
+  snapshot.forEach(doc=>{
+    const s=doc.data();
+    const pos=new naver.maps.LatLng(s.lat,s.lng);
+    const marker=new naver.maps.Marker({position:pos,map});
+    const info=new naver.maps.InfoWindow({
+      content:`<div style=\"min-width:160px;padding:6px;font-size:13px\">
+                <strong>${s.name}</strong><br>
+                <a href=\"https://instagram.com/${s.insta}\" target=\"_blank\">@${s.insta}</a><br>
+                <span>${s.desc||''}</span>
+               </div>`
     });
+    naver.maps.Event.addListener(marker,'click',()=>info.open(map,marker));
 
-    /* ---------- 리스트 / 마커 렌더링 ---------- */
-    const $list = document.getElementById('list');
-    if (!stores.length) {
-      $list.insertAdjacentHTML('beforeend', '<p class="empty">저장된 가게가 없습니다.</p>');
-      console.warn('LocalStorage 비어있음');
-    }
-
-    stores.forEach(store => {
-      const lat = parseFloat(store.lat);
-      const lng = parseFloat(store.lng);
-      if (Number.isNaN(lat) || Number.isNaN(lng)) {
-        console.error('잘못된 좌표', store);
-        return;
-      }
-
-      /* 마커 & InfoWindow */
-      const position = new naver.maps.LatLng(lat, lng);
-      const marker = new naver.maps.Marker({ position, map });
-
-      const info = new naver.maps.InfoWindow({
-        content: `
-          <div style="min-width:160px;padding:6px;font-size:13px">
-            <strong>${store.name}</strong><br>
-            <a href="https://instagram.com/${store.insta}" target="_blank">@${store.insta}</a><br>
-            <span>${store.desc || ''}</span>
-          </div>`
-      });
-
-      naver.maps.Event.addListener(marker, 'click', () => {
-        info.open(map, marker);
-      });
-
-      /* 사이드바 항목 */
-      const div = document.createElement('div');
-      div.className = 'store';
-      div.innerHTML = `<strong>${store.name}</strong><br><small>@${store.insta}</small>`;
-      div.onclick = () => {
-        map.setCenter(position);
-        map.setZoom(15);
-        info.open(map, marker);
-      };
-      $list.appendChild(div);
-    });
-  </script>
+    const div=document.createElement('div');
+    div.className='store';
+    div.innerHTML=`<strong>${s.name}</strong><br><small>@${s.insta}</small>`;
+    div.onclick=()=>{map.setCenter(pos);map.setZoom(15);info.open(map,marker);}
+    $list.appendChild(div);
+  });
+});
+</script>
 </body>
 </html>
