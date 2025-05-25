@@ -4,27 +4,27 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>가게 등록</title>
+
+  <!-- 지도 SDK -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+
   <style>
-    #map {
-      width: 100%;
-      height: 300px;
-      background-color: #eee;
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-    }
+    body{font-family:sans-serif;max-width:600px;margin:30px auto;padding:10px}
+    #map{width:100%;height:300px;background:#eee;margin-bottom:15px}
+    label{font-weight:700;margin-top:10px;display:block}
+    input,textarea{width:100%;margin-top:4px;margin-bottom:12px;padding:8px;font-size:14px}
+    button{padding:10px 20px;font-size:16px;background:#2d8cff;color:#fff;border:none;cursor:pointer}
   </style>
 </head>
 <body>
   <h2>📍 가게 등록</h2>
   <div id="map"></div>
 
-  <!-- 주소 검색 입력 -->
+  <!-- 주소 입력 -->
   <label>주소 검색</label>
-  <input type="text" id="addressInput" placeholder="주소 입력 후 엔터" />
+  <input type="text" id="addressInput" placeholder="주소 입력 후 Enter" />
 
+  <!-- 가게 정보 -->
   <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
     <input type="text" name="name" />
@@ -45,63 +45,43 @@
   </form>
 
   <script>
-    const map = new naver.maps.Map("map", {
-      center: new naver.maps.LatLng(37.5665, 126.9780),
-      zoom: 15,
+    // 1. 지도 표시
+    const map = new naver.maps.Map('map',{
+      center:new naver.maps.LatLng(37.5665,126.9780),
+      zoom:15
+    });
+    let marker=null;
+
+    // 2. 지도 클릭 → 위경도 표시
+    naver.maps.Event.addListener(map,'click',e=>{
+      const lat=e.coord.lat(),lng=e.coord.lng();
+      document.getElementById('lat').value=lat;
+      document.getElementById('lng').value=lng;
+      if(marker) marker.setMap(null);
+      marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map});
     });
 
-    let marker = null;
-
-    // 지도 클릭 시 위경도 표시
-    naver.maps.Event.addListener(map, "click", function (e) {
-      const lat = e.coord.lat();
-      const lng = e.coord.lng();
-      document.getElementById("lat").value = lat;
-      document.getElementById("lng").value = lng;
-
-      if (marker) marker.setMap(null);
-      marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map,
-      });
-    });
-
-    // 주소 입력 후 엔터 시 좌표 검색
-    document.getElementById("addressInput").addEventListener("keydown", async function (e) {
-      if (e.key === "Enter") {
-        e.preventDefault();
-
-        const address = e.target.value;
-        try {
-          const res = await fetch(`https://naveropenapi.apigw.ntruss.com/map-geocode/v2/geocode?query=${encodeURIComponent(address)}`, {
-            headers: {
-              "X-NCP-APIGW-API-KEY-ID": "qpbrmxiff4", // JavaScript용 Client ID
-              "X-NCP-APIGW-API-KEY": "my...Uw"         // Client Secret (생략해도 되는 경우 많음)
-            }
-          });
-
-          const data = await res.json();
-          if (data.status === "OK" && data.addresses.length > 0) {
-            const { x, y } = data.addresses[0];
-            document.getElementById("lat").value = y;
-            document.getElementById("lng").value = x;
-
-            const latlng = new naver.maps.LatLng(y, x);
-            map.setCenter(latlng);
-
-            if (marker) marker.setMap(null);
-            marker = new naver.maps.Marker({
-              position: latlng,
-              map: map,
-            });
-          } else {
-            alert("주소를 찾을 수 없습니다.");
-          }
-        } catch (err) {
-          alert("주소 검색 중 오류가 발생했습니다.");
+    // 3. 주소 입력 후 Enter → 프록시로 Geocode 요청
+    document.getElementById('addressInput')
+      .addEventListener('keydown',async e=>{
+        if(e.key==='Enter'){
+          e.preventDefault();
+          const query=e.target.value;
+          try{
+            const res=await fetch(`http://localhost:3001/geocode?query=${encodeURIComponent(query)}`);
+            const data=await res.json();
+            if(data.status==='OK'&&data.addresses.length){
+              const {x,y}=data.addresses[0];      // x=경도, y=위도
+              document.getElementById('lat').value=y;
+              document.getElementById('lng').value=x;
+              const latlng=new naver.maps.LatLng(y,x);
+              map.setCenter(latlng);
+              if(marker) marker.setMap(null);
+              marker=new naver.maps.Marker({position:latlng,map});
+            }else{alert('주소를 찾지 못했습니다.');}
+          }catch(err){alert('주소 검색 중 오류가 발생했습니다.');}
         }
-      }
-    });
+      });
   </script>
 </body>
 </html>
