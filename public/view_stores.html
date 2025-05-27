@@ -28,9 +28,27 @@
     .store{padding:6px;border-bottom:1px solid #ddd;cursor:pointer}
     .store:hover{background:#f0f4ff}
 
-    /* 말풍선 스타일 */
-    .bubble{position:relative;padding:10px 12px;background:#fff;border:2px solid #39a34b;border-radius:12px;min-width:180px}
-    .bubble:after{content:"";position:absolute;left:50%;bottom:-10px;margin-left:-10px;width:0;height:0;border-top:10px solid #39a34b;border-left:10px solid transparent;border-right:10px solid transparent}
+  /* 말풍선 스타일 – 검은색 1px 테두리 + 꼬리 */
+  .bubble{
+    position:relative;
+    padding:10px 12px;
+    background:#fff;
+    border:1px solid #000;     /* 테두리: 검은색 얇은 선 */
+    border-radius:12px;        /* 둥근 모서리 유지 */
+    min-width:180px;
+  }
+
+  .bubble::after{
+    content:"";
+    position:absolute;
+    left:50%;
+    bottom:-10px;
+    margin-left:-10px;
+    width:0;height:0;
+    border-top:10px solid #000;          /* 꼬리도 검은색 */
+    border-left:10px solid transparent;
+    border-right:10px solid transparent;
+  }
   </style>
 </head>
 <body>
