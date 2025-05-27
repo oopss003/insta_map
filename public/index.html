@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>INWAVE – 메인</title>
+    <!-- Google Font -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --primary: #0056ff;
+        --gray-100: #f4f6fa;
+        --gray-500: #777;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Noto Sans KR", sans-serif;
+      }
+      body {
+        background: #ffffff;
+        color: #000;
+        line-height: 1.65;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      /* ─── 헤더 ─────────────────────────────────────────────── */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 32px;
+        background: #fff;
+        border-bottom: 1px solid #e5e7eb;
+      }
+      .logo {
+        font-size: 24px;
+        font-weight: 700;
+      }
+      nav ul {
+        list-style: none;
+        display: flex;
+        gap: 32px;
+      }
+      nav a {
+        font-weight: 500;
+        padding: 4px 0;
+      }
+      nav a.active {
+        color: var(--primary);
+      }
+
+      /* ─── 히어로 섹션 ──────────────────────────────────────── */
+      .hero {
+        position: relative;
+        max-width: 1200px;
+        margin: 40px auto;
+        overflow: hidden;
+        border-radius: 24px;
+      }
+      .hero img {
+        width: 100%;
+        display: block;
+      }
+      .dot-nav {
+        position: absolute;
+        bottom: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 8px;
+      }
+      .dot-nav span {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #ccc;
+      }
+      .dot-nav span.active {
+        background: #fff;
+      }
+
+      /* ─── 메인 컨텐츠 ─────────────────────────────────────── */
+      section.container {
+        max-width: 1200px;
+        margin: 60px auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 40px;
+        align-items: start;
+      }
+      .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 12px;
+      }
+      .section-desc {
+        font-size: 16px;
+        font-weight: 500;
+        color: var(--gray-500);
+        margin-bottom: 24px;
+      }
+      .illustration {
+        width: 100%;
+        max-width: 240px;
+        margin-bottom: 24px;
+      }
+
+      /* ─── 카드 ─────────────────────────────────────────────── */
+      .card {
+        background: var(--gray-100);
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .card h3 {
+        font-size: 20px;
+        font-weight: 700;
+      }
+      .card p {
+        font-size: 14px;
+        color: var(--gray-500);
+      }
+      .card ul {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        font-size: 14px;
+      }
+      .card ul li {
+        position: relative;
+        padding-left: 16px;
+      }
+      .card ul li::before {
+        content: "•";
+        position: absolute;
+        left: 0;
+        color: var(--primary);
+      }
+      .btn {
+        margin-top: auto;
+        padding: 10px 24px;
+        border: none;
+        border-radius: 999em;
+        background: var(--primary);
+        color: #fff;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .btn:hover {
+        opacity: 0.9;
+      }
+
+      /* ─── 푸터 ─────────────────────────────────────────────── */
+      footer {
+        padding: 40px 0;
+        background: #f8f8f8;
+        text-align: center;
+        font-size: 14px;
+        color: #656565;
+      }
+
+      /* ─── 반응형 ───────────────────────────────────────────── */
+      @media (max-width: 640px) {
+        header {
+          padding: 12px 16px;
+        }
+        nav ul {
+          gap: 16px;
+          font-size: 14px;
+        }
+        .section-title {
+          font-size: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ─── 헤더 영역 ─────────────────────────────────────── -->
+    <header>
+      <div class="logo">INWAVE</div>
+      <nav>
+        <ul>
+          <li><a href="#" class="active">Home</a></li>
+          <li><a href="#adwave">애드웨이브 1.0</a></li>
+          <li><a href="#wshare">웨이브쉐어</a></li>
+          <li><a href="#invest">투자라운지</a></li>
+          <li><a href="#about">회사소개</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <!-- ─── 히어로 배너 ──────────────────────────────────── -->
+    <section class="hero">
+      <!-- 임시 이미지, 실제 서비스용으로 교체하세요 -->
+      <img
+        src="https://images.unsplash.com/photo-1505230681976-2c48194bd76b?auto=format&fit=crop&w=1600&q=80"
+        alt="Hero banner"
+      />
+      <div class="dot-nav"><span class="active"></span><span></span></div>
+    </section>
+
+    <!-- ─── 메인 컨텐츠 섹션 ─────────────────────────────── -->
+    <section class="container" id="adwave">
+      <!-- 왼쪽: 애드웨이브 1.0 -->
+      <div>
+        <h2 class="section-title">애드웨이브 1.0</h2>
+        <p class="section-desc">
+          오프라인 디지털광고에도 AI기반 데이터 분석을 통해 광고의 효율을
+          높여요.
+        </p>
+        <img
+          class="illustration"
+          src="https://source.unsplash.com/400x300?display,monitor"
+          alt="Adwave illustration"
+        />
+        <div class="card">
+          <h3>유효광고에 과금되는 시스템</h3>
+          <ul>
+            <li>아무도 보지 않는 광고에 쓰는 시간에도 광고비용이 수익이 됩니다.</li>
+            <li>1년 최대 500만원 이상의 수익을 받을 수 있어요.</li>
+          </ul>
+
+          <h3>애드웨이브1.0 데이터 공유</h3>
+          <p>
+            직접 개발한 시스템으로 우리 광고가 누구에게 보여지고 있는지
+            고객반응 데이터를 분석하여 전달드리고 효율이 높은 장소와 시간에
+            송출되게 해요.
+          </p>
+
+          <h3>지역기반 광고 플랫폼</h3>
+          <p>
+            지역기반의 소상공인과 상생하여 지역의 특성을 고려한 광고
+            플랫폼이에요.
+          </p>
+
+          <button class="btn">더 알아보기</button>
+        </div>
+      </div>
+
+      <!-- 오른쪽: 웨이브쉐어 -->
+      <div id="wshare">
+        <h2 class="section-title">웨이브쉐어</h2>
+        <p class="section-desc">
+          사용하지 않는 장소를 빌려주고 추가 광고수익을 낼 수 있어요.
+        </p>
+        <img
+          class="illustration"
+          src="https://source.unsplash.com/400x300?startup,money"
+          alt="WaveShare illustration"
+        />
+        <div class="card">
+          <h3>업계 최고 수익 보장</h3>
+          <ul>
+            <li>매장운영을 안하는 시간에도 광고비용이 수익이 됩니다.</li>
+            <li>1년 최대 500만원 이상의 수익을 받을 수 있어요.</li>
+          </ul>
+
+          <h3>광고료 선지급 옵션</h3>
+          <p>
+            매달 꾸준히 받는 것보다 목돈으로 받고 싶으시다면 1년치 광고료를
+            선지급 받을 수 있는 옵션이 있습니다.
+          </p>
+
+          <h3>자연없는 광고료 수익 지급</h3>
+          <p>
+            이미 지불된 광고비용을 통해 광고료는 자연없이 지급돼요. 걱정하지
+            않으셔도 됩니다.
+          </p>
+
+          <button class="btn">더 알아보기&nbsp;😊</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─── 푸터 ─────────────────────────────────────────── -->
+    <footer>© 2025 INWAVE. All rights reserved.</footer>
+  </body>
+</html>
