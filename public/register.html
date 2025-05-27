@@ -7,6 +7,7 @@
 
   <!-- 네이버 지도 -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -19,13 +20,12 @@
     button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
     #getLocBtn{background:#28a745;color:#fff}
     #saveBtn{background:#2d8cff;color:#fff}
-    /* 디버그용 이미지 숨기려면 아래 주석 해제 */
-    /* #avatarDebug { display: none; } */
   </style>
 </head>
 <body>
   <h2>📍 가게 등록</h2>
   <div id="map"></div>
+
   <button id="getLocBtn">현재 위치 가져오기</button>
 
   <form id="storeForm" onsubmit="return false;">
@@ -47,153 +47,155 @@
     <button id="saveBtn" type="submit">저장</button>
   </form>
 
-  <!-- ▼ 디버그용 프로필 미리보기 (필요 없으면 CSS 주석 처리) -->
-  <img id="avatarDebug"
-       style="display:block;width:60px;height:60px;border:1px solid #ccc;border-radius:50%;margin:12px auto;"
-       alt="아바타 디버그">
+    <!-- ▼ 디버그용 프로필 미리보기 (개발 중에만 사용) -->
+    <img id="avatarDebug" 
+         style="display:block;width:60px;height:60px;border:1px solid #ccc;border-radius:50%;margin:12px auto;" 
+         alt="아바타 디버그">
+
+  <script>
+    /* … 기존 스크립트 … */
+
+    async function refreshInfo(){
+      /* … 기존 로직 … */
+      const avatar = await fetchAvatar(insta);
+
+      // —— 디버그 이미지에 URL 넣기 ——
+      const dbg = document.getElementById('avatarDebug');
+      dbg.src = avatar || '';
+      dbg.alt = avatar ? 'Avatar loaded' : 'No avatar';
+
+      /* … 기존 InfoWindow 열기 … */
+    }
+
+</script>
 
 <script>
-  ////////////////////////
-  // 1) Firebase 초기화 //
-  ////////////////////////
-  const firebaseConfig = {
-    apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-    authDomain: "instamap-9b595.firebaseapp.com",
-    projectId: "instamap-9b595",
-    storageBucket: "instamap-9b595.appspot.com",
-    messagingSenderId: "280950399933",
-    appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+/* ---------- Firebase 초기화 ---------- */
+const firebaseConfig = {
+  apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+  authDomain: "instamap-9b595.firebaseapp.com",
+  projectId: "instamap-9b595",
+  storageBucket: "instamap-9b595.appspot.com",
+  messagingSenderId: "280950399933",
+  appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
 
-  ////////////////////////////////
-  // 2) 네이버 지도 & 마커 로직 //
-  ////////////////////////////////
-  const map = new naver.maps.Map('map',{
-    center: new naver.maps.LatLng(37.5665,126.9780),
-    zoom: 15
+/* ---------- 네이버 지도 & 마커 미리보기 ---------- */
+const map = new naver.maps.Map('map',{
+  center: new naver.maps.LatLng(37.5665,126.9780),
+  zoom: 15
+});
+let marker = null;
+
+function setLatLng(lat, lng){
+  document.getElementById('lat').value = lat;
+  document.getElementById('lng').value = lng;
+
+  if(marker) marker.setMap(null);
+
+  marker = new naver.maps.Marker({
+    position: new naver.maps.LatLng(lat, lng),
+    map: map,
+    icon: {
+      url: 'https://insta-map-three.vercel.app/image/beer-marker.png',
+      size: new naver.maps.Size(32, 32),
+      anchor: new naver.maps.Point(16, 32)
+    }
   });
-  let marker = null;
+}
 
-  function setLatLng(lat, lng){
-    document.getElementById('lat').value = lat;
-    document.getElementById('lng').value = lng;
+naver.maps.Event.addListener(map, 'click', e => {
+  setLatLng(e.coord.lat(), e.coord.lng());
+});
+
+document.getElementById('getLocBtn').onclick = () => {
+  navigator.geolocation?.getCurrentPosition(pos => {
+    const {latitude, longitude} = pos.coords;
+    setLatLng(latitude, longitude);
+    map.setCenter(new naver.maps.LatLng(latitude, longitude));
+  }, ()=>alert('위치 권한을 허용해주세요.'));
+};
+
+/* ---------- Firestore 저장 ---------- */
+document.getElementById('storeForm').addEventListener('submit', async () => {
+  const store = {
+    name    : document.querySelector('[name=name]').value.trim(),
+    insta   : document.querySelector('[name=insta_id]').value.trim(),
+    desc    : document.querySelector('[name=desc]').value.trim(),
+    lat     : parseFloat(document.getElementById('lat').value),
+    lng     : parseFloat(document.getElementById('lng').value),
+    created : firebase.firestore.FieldValue.serverTimestamp()
+  };
+  if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)) {
+    alert('필수 항목을 모두 입력해주세요.');
+    return;
+  }
+  try {
+    await db.collection('stores').add(store);
+    alert('Firebase에 저장되었습니다!');
+    document.getElementById('storeForm').reset();
     if(marker) marker.setMap(null);
-
-    marker = new naver.maps.Marker({
-      position: new naver.maps.LatLng(lat, lng),
-      map: map,
-      icon: {
-        url: 'https://insta-map-three.vercel.app/image/beer-marker.png',
-        size: new naver.maps.Size(32, 32),
-        anchor: new naver.maps.Point(16, 32)
-      }
-    });
+  } catch(err) {
+    console.error(err);
+    alert('저장 중 오류가 발생했습니다.');
   }
+});
 
-  naver.maps.Event.addListener(map, 'click', e => {
-    setLatLng(e.coord.lat(), e.coord.lng());
-  });
-  document.getElementById('getLocBtn').onclick = () => {
-    navigator.geolocation?.getCurrentPosition(pos => {
-      setLatLng(pos.coords.latitude, pos.coords.longitude);
-      map.setCenter(new naver.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-    }, ()=>alert('위치 권한을 허용해주세요.'));
-  };
+/* ← 여기에 붙여 넣기 시작 */
+/* ---------- 🔴 인스타 프로필 원형 이미지 미리보기 추가 ---------- */
+/* 1) 인스타 ID로 아바타 URL 가져오기 */
+async function fetchAvatar(id){
+  if(!id) return '';
+  try{
+    const r = await fetch(`https://unavatar.io/instagram/${id}?json`);
+    if(!r.ok) return '';
+    const {url} = await r.json();
+    return url || '';
+  }catch(e){ return ''; }
+}
 
-  //////////////////////////////////////////
-  // 3) 인스타 프로필 원형 이미지 함수들 //
-  //////////////////////////////////////////
-  // 3-1) 아바타 URL 가져오기
-  async function fetchAvatar(id){
-    if(!id) return '';
-    try {
-      const r = await fetch(`https://unavatar.io/instagram/${id}?json`);
-      if(!r.ok) return '';
-      const {url} = await r.json();
-      return url || '';
-    } catch {
-      return '';
-    }
+let infoWindow = null;   // InfoWindow 객체
+
+/* 2) 풍선 내용을 갱신해 주는 함수 */
+async function refreshInfo(){
+  if(!marker) return;
+  const name  = document.querySelector('[name=name]').value.trim();
+  const insta = document.querySelector('[name=insta_id]').value.trim();
+  const desc  = document.querySelector('[name=desc]').value.trim();
+  const avatar= await fetchAvatar(insta);
+
+  const html = `
+    <div style="display:flex;align-items:flex-start;gap:8px;min-width:180px;">
+      <div style="flex:1;max-width:120px;">
+        <strong>${name || ''}</strong><br>
+        ${insta ? `<a href="https://instagram.com/${insta}" target="_blank">@${insta}</a><br>` : ''}
+        ${desc || ''}
+      </div>
+      <img src="${avatar}" style="width:60px;height:60px;border-radius:50%;object-fit:cover">
+    </div>`;
+
+  if(!infoWindow){
+    infoWindow = new naver.maps.InfoWindow({pixelOffset:new naver.maps.Point(0,-40)});
   }
+  infoWindow.setContent(html);
+  infoWindow.open(map, marker);
+}
 
-  let infoWindow = null;
+/* 3) 입력값이 바뀔 때마다 풍선 업데이트 */
+['name','insta_id','desc'].forEach(n=>{
+  document.querySelector(`[name=${n}]`).addEventListener('input', refreshInfo);
+});
 
-  // 3-2) 말풍선 내용 갱신 (이미지 포함)
-  async function refreshInfo(){
-    if(!marker) return;
+/* ---------- (기존) setLatLng 함수에 미리보기 호출만 추가 ---------- */
+const _oldSetLatLng = setLatLng;
+setLatLng = function(lat, lng){
+  _oldSetLatLng(lat, lng);
+  refreshInfo();
+};
+/* ← 붙여 넣기 끝 */
 
-    const name  = document.querySelector('[name=name]').value.trim();
-    const insta = document.querySelector('[name=insta_id]').value.trim();
-    const desc  = document.querySelector('[name=desc]').value.trim();
-    const avatarUrl = await fetchAvatar(insta);
-
-    // → 디버그용 이미지에 URL 세팅
-    const dbg = document.getElementById('avatarDebug');
-    dbg.src = avatarUrl;
-    dbg.alt = avatarUrl ? 'Avatar loaded' : 'No avatar';
-
-    // → InfoWindow HTML
-    const html = `
-      <div style="display:flex;align-items:flex-start;gap:8px;min-width:180px">
-        <div style="flex:1;max-width:120px">
-          <strong>${name}</strong><br>
-          ${insta ? `<a href="https://instagram.com/${insta}" target="_blank">@${insta}</a><br>` : ''}
-          ${desc}
-        </div>
-        <img src="${avatarUrl}" 
-             style="width:60px;height:60px;border-radius:50%;object-fit:cover"
-             onerror="this.style.display='none'">
-      </div>`;
-
-    if(!infoWindow){
-      infoWindow = new naver.maps.InfoWindow({
-        pixelOffset: new naver.maps.Point(0, -40)
-      });
-    }
-    infoWindow.setContent(html);
-    infoWindow.open(map, marker);
-  }
-
-  // 3-3) 입력값 바뀔 때마다 말풍선 갱신
-  ['name','insta_id','desc'].forEach(field=>{
-    document.querySelector(`[name=${field}]`)
-            .addEventListener('input', refreshInfo);
-  });
-
-  // 3-4) 마커 찍을 때도 말풍선 갱신
-  const _oldSetLatLng = setLatLng;
-  setLatLng = function(lat, lng){
-    _oldSetLatLng(lat, lng);
-    refreshInfo();
-  };
-
-  ///////////////////////////
-  // 4) Firestore 저장 로직 //
-  ///////////////////////////
-  document.getElementById('storeForm').addEventListener('submit', async () => {
-    const store = {
-      name  : document.querySelector('[name=name]').value.trim(),
-      insta : document.querySelector('[name=insta_id]').value.trim(),
-      desc  : document.querySelector('[name=desc]').value.trim(),
-      lat   : parseFloat(document.getElementById('lat').value),
-      lng   : parseFloat(document.getElementById('lng').value),
-      created: firebase.firestore.FieldValue.serverTimestamp()
-    };
-    if(!store.name||!store.insta||isNaN(store.lat)||isNaN(store.lng)){
-      return alert('필수 항목을 모두 입력해주세요.');
-    }
-    try {
-      await db.collection('stores').add(store);
-      alert('Firebase에 저장되었습니다!');
-      document.getElementById('storeForm').reset();
-      if(marker) marker.setMap(null);
-    } catch(err){
-      console.error(err);
-      alert('저장 중 오류가 발생했습니다.');
-    }
-  });
 </script>
 </body>
 </html>
