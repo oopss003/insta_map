@@ -100,26 +100,23 @@
                              .orderBy('created','desc')
                              .get();
 
-    // 아이콘 URL 베이스
-    const iconBase = 'https://maps.google.com/mapfiles/ms/icons/';
-    const color    = 'red';  // 고정
+  snapshot.forEach(doc => {
+    const s = doc.data();
+    const lat = parseFloat(s.lat), lng = parseFloat(s.lng);
+    if (isNaN(lat)||isNaN(lng)) return;
 
-    snapshot.forEach(doc => {
-      const s = doc.data();
-      const lat = parseFloat(s.lat), lng = parseFloat(s.lng);
-      if (isNaN(lat)||isNaN(lng)) return;
+    // 1) 마커 찍기 - 맥주병 이미지 사용
+    const marker = new naver.maps.Marker({
+      position: new naver.maps.LatLng(lat, lng),
+      map: map,
+      icon: {
+        url: 'https://map.inwave.ai.kr/image/beer-marker.png', // ← beer 이미지 적용
+        size: new naver.maps.Size(32, 32),
+        anchor: new naver.maps.Point(16, 32)
+      }
+    });
+    markers.push(marker);
 
-      // 1) 마커 찍기
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map,
-        icon: {
-          url: `${iconBase}${color}-dot.png`,
-          size: new naver.maps.Size(32,32),
-          anchor: new naver.maps.Point(16,32)
-        }
-      });
-      markers.push(marker);
 
       // 2) InfoWindow
       const info = new naver.maps.InfoWindow({

@@ -38,16 +38,6 @@
     <label>가게 설명</label>
     <textarea name="desc" rows="4"></textarea>
 
-    <!-- ★ 핀 색상 선택 UI -->
-    <label>핀 색상</label>
-    <select name="color" id="pinColorSel">
-      <option value="red">빨강</option>
-      <option value="blue">파랑</option>
-      <option value="green">초록</option>
-      <option value="yellow">노랑</option>
-      <option value="purple">보라</option>
-    </select>
-
     <label>위도</label>
     <input id="lat" readonly required />
 
@@ -77,9 +67,6 @@ const map = new naver.maps.Map('map',{
 });
 let marker = null;
 
-// 구글 맵스 아이콘 URL 베이스 (Naver 지도에서도 custom URL 가능)
-const iconBase = 'https://maps.google.com/mapfiles/ms/icons/';
-
 function setLatLng(lat, lng){
   document.getElementById('lat').value = lat;
   document.getElementById('lng').value = lng;
@@ -87,15 +74,12 @@ function setLatLng(lat, lng){
   // 기존 마커 지우기
   if(marker) marker.setMap(null);
 
-  // 선택된 핀 색상
-  const color = document.getElementById('pinColorSel').value;
-
-  // 새 마커 찍기 (color-dot.png 사용)
+  // 마커 찍기 (맥주병 이미지 사용)
   marker = new naver.maps.Marker({
     position: new naver.maps.LatLng(lat, lng),
     map: map,
     icon: {
-      url: `${iconBase}${color}-dot.png`,
+      url: 'https://map.inwave.ai.kr/image/beer-marker.png',
       size: new naver.maps.Size(32, 32),
       anchor: new naver.maps.Point(16, 32)
     }
@@ -122,7 +106,6 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
     name    : document.querySelector('[name=name]').value.trim(),
     insta   : document.querySelector('[name=insta_id]').value.trim(),
     desc    : document.querySelector('[name=desc]').value.trim(),
-    color   : document.querySelector('[name=color]').value,
     lat     : parseFloat(document.getElementById('lat').value),
     lng     : parseFloat(document.getElementById('lng').value),
     created : firebase.firestore.FieldValue.serverTimestamp()
@@ -135,7 +118,6 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
   try {
     await db.collection('stores').add(store);
     alert('Firebase에 저장되었습니다!');
-    // 초기화
     document.getElementById('storeForm').reset();
     if(marker) marker.setMap(null);
   } catch(err) {
