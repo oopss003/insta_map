@@ -28,34 +28,48 @@
     .store{padding:6px;border-bottom:1px solid #ddd;cursor:pointer}
     .store:hover{background:#f0f4ff}
 
-  /* 말풍선 스타일 – 검은색 1px 테두리 + 꼬리 */
-  .bubble{
-    position:relative;
-    padding:10px 12px;
-    background:#fff;
-    border:1px solid #000;     /* 테두리: 검은색 얇은 선 */
-    border-radius:12px;        /* 둥근 모서리 유지 */
-    min-width:180px;
-  }
+    /* 말풍선 스타일 – 검은색 1px 테두리 + 꼬리 */
+    .bubble{
+      position:relative;
+      padding:10px 12px;
+      background:#fff;
+      border:1px solid #000;
+      border-radius:12px;
+      min-width:180px;
+    }
+    .bubble::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      bottom:-10px;
+      margin-left:-10px;
+      width:0;height:0;
+      border-top:10px solid #000;
+      border-left:10px solid transparent;
+      border-right:10px solid transparent;
+    }
 
-  .bubble::after{
-    content:"";
-    position:absolute;
-    left:50%;
-    bottom:-10px;
-    margin-left:-10px;
-    width:0;height:0;
-    border-top:10px solid #000;          /* 꼬리도 검은색 */
-    border-left:10px solid transparent;
-    border-right:10px solid transparent;
-  }
-  </style>
-    2차 어디가?!
+    /* ───── 중앙 상단 배너 ───── */
+    #banner{
+      position:fixed;
+      top:10px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#ffffff;       /* 완전 흰색 */
+      color:#000;
+      border:1px solid #000;
+      border-radius:6px;
+      padding:6px 12px;
+      font-size:14px;
+      font-weight:bold;
+      z-index:1002;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
-  <div id="banner">2차 어디가?</div>
+  <!-- 배너 텍스트 수정: 물음표 제거 -->
+  <div id="banner">2차 어디가</div>
   <button id="locBtn">내 위치로 이동</button>
   <button id="toggleBtn">매장 리스트 보기</button>
 
@@ -65,7 +79,6 @@
   </div>
 
 <script>
-
 /* ───────── Firebase 초기화 ───────── */
 firebase.initializeApp({
   apiKey:"AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
@@ -106,7 +119,7 @@ async function renderStores(){
     const div=document.createElement('div');
     div.className='store';
     div.innerHTML=`<strong>${d.name}</strong><br>@${d.insta}`;
-    div.onclick=()=>{map.setCenter(marker.getPosition());map.setZoom(15);info.open(map,marker);}  ;
+    div.onclick=()=>{map.setCenter(marker.getPosition());map.setZoom(15);info.open(map,marker);};
     listDiv.appendChild(div);
   });
 }
@@ -126,7 +139,6 @@ const panel=document.getElementById('panel');
 const toggleBtn=document.getElementById('toggleBtn');
 let open=false;
 function togglePanel(){open=!open;panel.classList.toggle('open',open);toggleBtn.textContent=open?'리스트 숨기기':'매장 리스트 보기';}
-
 toggleBtn.addEventListener('click',togglePanel);
 </script>
 </body>
