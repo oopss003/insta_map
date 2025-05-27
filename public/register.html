@@ -47,6 +47,28 @@
     <button id="saveBtn" type="submit">저장</button>
   </form>
 
+    <!-- ▼ 디버그용 프로필 미리보기 (개발 중에만 사용) -->
+    <img id="avatarDebug" 
+         style="display:block;width:60px;height:60px;border:1px solid #ccc;border-radius:50%;margin:12px auto;" 
+         alt="아바타 디버그">
+
+  <script>
+    /* … 기존 스크립트 … */
+
+    async function refreshInfo(){
+      /* … 기존 로직 … */
+      const avatar = await fetchAvatar(insta);
+
+      // —— 디버그 이미지에 URL 넣기 ——
+      const dbg = document.getElementById('avatarDebug');
+      dbg.src = avatar || '';
+      dbg.alt = avatar ? 'Avatar loaded' : 'No avatar';
+
+      /* … 기존 InfoWindow 열기 … */
+    }
+
+</script>
+
 <script>
 /* ---------- Firebase 초기화 ---------- */
 const firebaseConfig = {
