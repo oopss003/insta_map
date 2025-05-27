@@ -1,193 +1,102 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>저장된 매장 목록</title>
-
-  <!-- Naver Maps SDK -->
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-
-  <!-- Firebase SDK (compat 모드) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
+  <meta charset="UTF-8" />
+  <title>매장 지도</title>
   <style>
-    body{margin:0;display:flex;height:100vh;font-family:sans-serif}
-    #map{flex:3;position:relative;}
-    #list{flex:1;overflow:auto;padding:10px;border-left:1px solid #ccc}
-
-    /* 매장 리스트 스타일 */
-    .store{padding:6px;border-bottom:1px solid #ddd;cursor:pointer}
-    .store:hover{background:#f0f4ff}
-
-    /* ▼ 핀 색상/내위치 버튼 영역 */
-    #controlPanel {
+    #map {
+      width: 100%;
+      height: 100vh;
+    }
+    #store-list {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      overflow-y: auto;
+      background: white;
+      border-left: 1px solid #ccc;
+      padding: 10px;
+    }
+    #control {
       position: absolute;
       top: 10px;
       left: 10px;
-      z-index: 1000;
-      background: rgba(255,255,255,0.9);
-      padding: 8px;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    #controlPanel select,
-    #controlPanel button {
-      margin-left: 6px;
-      padding: 4px 8px;
-      font-size: 13px;
-    }
-    #locBtn {
-      margin-left: 10px;
-      background: #28a745;
-      color: white;
-      border: none;
-      border-radius: 4px;
+      z-index: 10;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.3);
     }
   </style>
+  <script type="text/javascript" src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=YOUR_NAVER_CLIENT_ID"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-
-  <div id="map">
-    <div id="controlPanel">
-      핀 색상:
-      <select id="pinColor">
-        <option value="red">빨강</option>
-        <option value="blue">파랑</option>
-        <option value="green">초록</option>
-        <option value="yellow">노랑</option>
-        <option value="purple">보라</option>
-      </select>
-      <button id="locBtn">내 위치로 이동</button>
-    </div>
+  <div id="control">
+    <button onclick="moveToMyLocation()">내 위치로 이동</button>
   </div>
 
-  <div id="list">
-    <h3>매장 리스트</h3>
-  </div>
+  <div id="map"></div>
+  <div id="store-list"><strong>매장 리스트</strong><br /></div>
 
   <script>
-  // ─────────────────────────────────────────
-  // 1) Firebase 초기화
-  // ─────────────────────────────────────────
-  const firebaseConfig = {
-    apiKey:    "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-    authDomain:"instamap-9b595.firebaseapp.com",
-    projectId: "instamap-9b595",
-    storageBucket:"instamap-9b595.appspot.com",
-    messagingSenderId:"280950399933",
-    appId:     "1:280950399933:web:8282e0d352e50c8bcd2be0"
-  };
-  firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    const firebaseConfig = {
+      // 본인의 Firebase 설정 값으로 교체
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
 
-  // ─────────────────────────────────────────
-  // 2) 맵 초기화
-  // ─────────────────────────────────────────
-  const map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.5665, 126.9780),
-    zoom: 12
-  });
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-  // 마커/리스트 저장용
-  let markers = [];
-  const listDiv   = document.getElementById('list');
-  const pinSelect = document.getElementById('pinColor');
-
-  // ─────────────────────────────────────────
-  // 3) 매장 불러와서 화면에 찍기
-  // ─────────────────────────────────────────
-  async function renderStores() {
-    // 이전 마커/리스트 클리어
-    markers.forEach(m=>m.setMap(null));
-    markers = [];
-    // 리스트도 비워두고 제목만 남기기
-    listDiv.innerHTML = '<h3>매장 리스트</h3>';
-
-    // Firestore에서 가져오기
-    const snapshot = await db.collection('stores')
-                             .orderBy('created','desc')
-                             .get();
-
-    // 아이콘 URL 베이스 (Google Maps 아이콘 사용)
-    const iconBase = 'https://maps.google.com/mapfiles/ms/icons/';
-    const color    = pinSelect.value;
-
-    snapshot.forEach(doc => {
-      const s = doc.data();
-      const lat = parseFloat(s.lat), lng = parseFloat(s.lng);
-      if (isNaN(lat)||isNaN(lng)) return;
-
-      // 1) 마커 찍기
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map,
-        icon: {
-          url: `${iconBase}${color}-dot.png`,
-          size: new naver.maps.Size(32,32),
-          anchor: new naver.maps.Point(16,32)
-        }
-      });
-      markers.push(marker);
-
-      // 2) InfoWindow
-      const info = new naver.maps.InfoWindow({
-        content: `
-          <div style="min-width:180px;padding:6px">
-            <strong>${s.name}</strong><br>
-            <a href="https://instagram.com/${s.insta}" target="_blank">
-              @${s.insta}
-            </a><br>
-            ${s.desc||''}
-          </div>`
-      });
-      naver.maps.Event.addListener(marker,'click',()=>{
-        info.open(map, marker);
-      });
-
-      // 3) 사이드 리스트
-      const div = document.createElement('div');
-      div.className = 'store';
-      div.innerHTML = `<strong>${s.name}</strong><br>@${s.insta}`;
-      div.onclick = ()=>{
-        map.setCenter(marker.getPosition());
-        map.setZoom(15);
-        info.open(map, marker);
-      };
-      listDiv.appendChild(div);
+    const map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(37.5665, 126.9780),
+      zoom: 13
     });
-  }
 
-  // 첫 렌더링
-  renderStores();
-
-  // 핀 색상 변경 시 재렌더
-  pinSelect.addEventListener('change', renderStores);
-
-  // ─────────────────────────────────────────
-  // 4) "내 위치로 이동" 버튼
-  // ─────────────────────────────────────────
-  document.getElementById('locBtn').addEventListener('click', ()=>{
-    if (!navigator.geolocation) {
-      return alert('GeoLocation을 지원하지 않는 브라우저입니다.');
+    function moveToMyLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition((pos) => {
+          const lat = pos.coords.latitude;
+          const lng = pos.coords.longitude;
+          const location = new naver.maps.LatLng(lat, lng);
+          map.setCenter(location);
+        });
+      } else {
+        alert("GPS를 지원하지 않는 브라우저입니다.");
+      }
     }
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
-      // 중심 이동
-      map.setCenter(new naver.maps.LatLng(lat, lng));
-      map.setZoom(15);
-      // 현재위치 마커
-      new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map
+
+    db.collection("stores").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        const position = new naver.maps.LatLng(data.lat, data.lng);
+        const marker = new naver.maps.Marker({
+          map: map,
+          position: position
+        });
+
+        const infoWindow = new naver.maps.InfoWindow({
+          content: `<div style="padding:10px;"><strong>${data.name}</strong><br/>@${data.insta}<br/>${data.desc}</div>`
+        });
+
+        naver.maps.Event.addListener(marker, "click", function () {
+          infoWindow.open(map, marker);
+        });
+
+        const list = document.getElementById("store-list");
+        const item = document.createElement("div");
+        item.innerHTML = `<strong>${data.name}</strong><br/>@${data.insta}<br/><br/>`;
+        list.appendChild(item);
       });
-    }, err=>{
-      alert('위치 권한이 필요합니다.');
-      console.error(err);
     });
-  });
   </script>
 </body>
 </html>
