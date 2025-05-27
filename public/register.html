@@ -47,28 +47,6 @@
     <button id="saveBtn" type="submit">저장</button>
   </form>
 
-    <!-- ▼ 디버그용 프로필 미리보기 (개발 중에만 사용) -->
-    <img id="avatarDebug" 
-         style="display:block;width:60px;height:60px;border:1px solid #ccc;border-radius:50%;margin:12px auto;" 
-         alt="아바타 디버그">
-
-  <script>
-    /* … 기존 스크립트 … */
-
-    async function refreshInfo(){
-      /* … 기존 로직 … */
-      const avatar = await fetchAvatar(insta);
-
-      // —— 디버그 이미지에 URL 넣기 ——
-      const dbg = document.getElementById('avatarDebug');
-      dbg.src = avatar || '';
-      dbg.alt = avatar ? 'Avatar loaded' : 'No avatar';
-
-      /* … 기존 InfoWindow 열기 … */
-    }
-
-</script>
-
 <script>
 /* ---------- Firebase 초기화 ---------- */
 const firebaseConfig = {
@@ -93,8 +71,10 @@ function setLatLng(lat, lng){
   document.getElementById('lat').value = lat;
   document.getElementById('lng').value = lng;
 
+  // 기존 마커 지우기
   if(marker) marker.setMap(null);
 
+  // 마커 찍기 (맥주병 이미지 사용)
   marker = new naver.maps.Marker({
     position: new naver.maps.LatLng(lat, lng),
     map: map,
@@ -106,10 +86,12 @@ function setLatLng(lat, lng){
   });
 }
 
+// 지도 클릭 시 위치 설정
 naver.maps.Event.addListener(map, 'click', e => {
   setLatLng(e.coord.lat(), e.coord.lng());
 });
 
+// 현재 위치 버튼
 document.getElementById('getLocBtn').onclick = () => {
   navigator.geolocation?.getCurrentPosition(pos => {
     const {latitude, longitude} = pos.coords;
@@ -128,6 +110,7 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
     lng     : parseFloat(document.getElementById('lng').value),
     created : firebase.firestore.FieldValue.serverTimestamp()
   };
+  // 검증
   if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)) {
     alert('필수 항목을 모두 입력해주세요.');
     return;
@@ -142,60 +125,6 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
     alert('저장 중 오류가 발생했습니다.');
   }
 });
-
-/* ← 여기에 붙여 넣기 시작 */
-/* ---------- 🔴 인스타 프로필 원형 이미지 미리보기 추가 ---------- */
-/* 1) 인스타 ID로 아바타 URL 가져오기 */
-async function fetchAvatar(id){
-  if(!id) return '';
-  try{
-    const r = await fetch(`https://unavatar.io/instagram/${id}?json`);
-    if(!r.ok) return '';
-    const {url} = await r.json();
-    return url || '';
-  }catch(e){ return ''; }
-}
-
-let infoWindow = null;   // InfoWindow 객체
-
-/* 2) 풍선 내용을 갱신해 주는 함수 */
-async function refreshInfo(){
-  if(!marker) return;
-  const name  = document.querySelector('[name=name]').value.trim();
-  const insta = document.querySelector('[name=insta_id]').value.trim();
-  const desc  = document.querySelector('[name=desc]').value.trim();
-  const avatar= await fetchAvatar(insta);
-
-  const html = `
-    <div style="display:flex;align-items:flex-start;gap:8px;min-width:180px;">
-      <div style="flex:1;max-width:120px;">
-        <strong>${name || ''}</strong><br>
-        ${insta ? `<a href="https://instagram.com/${insta}" target="_blank">@${insta}</a><br>` : ''}
-        ${desc || ''}
-      </div>
-      <img src="${avatar}" style="width:60px;height:60px;border-radius:50%;object-fit:cover">
-    </div>`;
-
-  if(!infoWindow){
-    infoWindow = new naver.maps.InfoWindow({pixelOffset:new naver.maps.Point(0,-40)});
-  }
-  infoWindow.setContent(html);
-  infoWindow.open(map, marker);
-}
-
-/* 3) 입력값이 바뀔 때마다 풍선 업데이트 */
-['name','insta_id','desc'].forEach(n=>{
-  document.querySelector(`[name=${n}]`).addEventListener('input', refreshInfo);
-});
-
-/* ---------- (기존) setLatLng 함수에 미리보기 호출만 추가 ---------- */
-const _oldSetLatLng = setLatLng;
-setLatLng = function(lat, lng){
-  _oldSetLatLng(lat, lng);
-  refreshInfo();
-};
-/* ← 붙여 넣기 끝 */
-
 </script>
 </body>
 </html>
