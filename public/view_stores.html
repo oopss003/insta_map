@@ -50,9 +50,24 @@
     border-right:10px solid transparent;
   }
   </style>
+    /* 중앙 상단 배너 */
+    #banner{
+      position:fixed;
+      top:10px;                   /* 버튼과 같은 높이 */
+      left:50%;
+      transform:translateX(-50%); /* 가로 중앙 정렬 */
+      background:rgba(255,255,255,.9);
+      border:1px solid #000;
+      border-radius:6px;
+      padding:6px 12px;
+      font-size:14px;             /* 버튼 글꼴 크기와 유사 */
+      z-index:1002;               /* 버튼들보다 위 */
+    }
+  </style>
 </head>
 <body>
   <div id="map"></div>
+  <div id="banner">2차 어디가?</div>
   <button id="locBtn">내 위치로 이동</button>
   <button id="toggleBtn">매장 리스트 보기</button>
 
@@ -62,6 +77,7 @@
   </div>
 
 <script>
+
 /* ───────── Firebase 초기화 ───────── */
 firebase.initializeApp({
   apiKey:"AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
@@ -90,7 +106,7 @@ async function renderStores(){
     const marker=new naver.maps.Marker({
       position:new naver.maps.LatLng(lat,lng),
       map,
-      icon:{url:'/image/beer-marker.png',size:new naver.maps.Size(48,48),anchor:new naver.maps.Point(24,48)}
+      icon:{url:'/image/beer-marker.png',size:new naver.maps.Size(66,66),anchor:new naver.maps.Point(33,66)}
     });
     markers.push(marker);
 
