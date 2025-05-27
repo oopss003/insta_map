@@ -1,0 +1,7 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/geocode", "destination": "/api/geocode.js" }
+  ],
+  "public": "public"
+}
