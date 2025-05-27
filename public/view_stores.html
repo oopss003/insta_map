@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>저장된 매장 목록</title>
 
-  <!-- Naver Maps SDK -->
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+  <!-- Naver Maps SDK: Updated ClientId parameter -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=qpbrmxiff4"></script>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
@@ -75,7 +75,8 @@
 
     // 지도 초기화
     const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.9780), zoom: 12
+      center: new naver.maps.LatLng(37.5665, 126.9780),
+      zoom: 12
     });
 
     let markers = [];
@@ -87,7 +88,9 @@
       markers.forEach(m => m.setMap(null)); markers = [];
       listDiv.innerHTML = '';
 
-      const snapshot = await db.collection('stores').orderBy('created','desc').get();
+      const snapshot = await db.collection('stores')
+                                .orderBy('created','desc')
+                                .get();
       snapshot.forEach(doc => {
         const s = doc.data();
         const lat = parseFloat(s.lat), lng = parseFloat(s.lng);
@@ -111,7 +114,8 @@
         naver.maps.Event.addListener(marker,'click',()=>info.open(map, marker));
 
         // 사이드 리스트 항목
-        const div = document.createElement('div'); div.className='store';
+        const div = document.createElement('div');
+        div.className='store';
         div.innerHTML=`<strong>${s.name}</strong><br>@${s.insta}`;
         div.onclick = ()=>{ map.setCenter(marker.getPosition()); map.setZoom(15); info.open(map, marker); };
         listDiv.appendChild(div);
@@ -128,12 +132,10 @@
         const {latitude:lat,longitude:lng}=pos.coords;
         map.setCenter(new naver.maps.LatLng(lat,lng));
         map.setZoom(15);
-        new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng), map:map,
-          icon:{
-            url:'/image/beer-marker.png',
-            size:new naver.maps.Size(32,32),
-            anchor:new naver.maps.Point(16,32)
-          }
+        new naver.maps.Marker({
+          position:new naver.maps.LatLng(lat,lng), map:map,
+          icon:{ url:'/image/beer-marker.png', size:new naver.maps.Size(32,32),
+                 anchor:new naver.maps.Point(16,32) }
         });
       },()=>alert('위치 권한 필요'));
     });
