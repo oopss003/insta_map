@@ -128,3 +128,19 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
 </script>
 </body>
 </html>
+이 코드에 
+  <!-- 기존 Firestore 저장 로직 끝 -->
+  document.getElementById('storeForm').addEventListener('submit', async () => {
+    // … 기존 코드 …
+  });
+
+  /* ← 여기에 붙여 넣기 시작 */
+  /* ---------- 🔴 인스타 프로필 원형 이미지 미리보기 추가 ---------- */
+  async function fetchAvatar(id){ /* … */ }
+  // …중략…
+  setLatLng = function(lat, lng){ /* … */ };
+  /* ← 여기에 붙여 넣기 끝 */
+
+  </script>  <!-- ← 이 태그 직전! -->
+</body>
+</html>  
