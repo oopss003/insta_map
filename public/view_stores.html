@@ -2,38 +2,141 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>저장된 매장 목록</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2차 어디가?</title>
 
-  <!-- Naver Maps SDK (defer) -->
+  <!-- Naver Maps SDK -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-
-
 
   <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js" defer></script>
 
   <style>
-    /* === 기존 CSS 그대로 === */
-    html,body{width:100%;height:100%;margin:0;font-family:sans-serif;overflow:hidden}
-    #map{position:absolute;top:0;left:0;width:100%;height:100%;z-index:1}
-    #locBtn,#toggleBtn{position:fixed;z-index:1002;padding:8px 12px;border:none;border-radius:4px;color:#fff;font-size:13px;cursor:pointer}
-    #locBtn{top:10px;left:10px;background:#007bff}
-    #toggleBtn{top:10px;right:10px;background:#28a745}
-    #panel{position:fixed;left:0;right:0;bottom:-65%;height:65%;background:#fff;border-top-left-radius:16px;border-top-right-radius:16px;box-shadow:0 -2px 8px rgba(0,0,0,.15);z-index:1000;padding:14px 12px 8px;overflow-y:auto;transition:bottom .3s ease}
-    #panel.open{bottom:0}
-    .store{padding:6px;border-bottom:1px solid #ddd;cursor:pointer}
-    .store:hover{background:#f0f4ff}
-    .bubble{position:relative;padding:10px 12px;background:#fff;border:1px solid #000;border-radius:12px;min-width:180px}
-    .bubble::after{content:\"\";position:absolute;left:50%;bottom:-10px;margin-left:-10px;width:0;height:0;border-top:10px solid #000;border-left:10px solid transparent;border-right:10px solid transparent}
-    #banner{box-sizing:border-box;position:fixed;top:0;left:0;width:100%;text-align:center;background:#fff;color:#000;border:1px solid #fff;padding:15px 12px;font-size:20px;font-weight:bold;z-index:1002}
+    html, body {
+      width: 100%; height: 100%;
+      margin: 0;
+      font-family: 'Noto Sans KR', sans-serif;
+      background: #f5f5f5;
+      overflow: hidden;
+    }
+
+    #map {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+    }
+
+    #banner {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: #ffffff;
+      color: #000000;
+      font-size: 20px;
+      font-weight: bold;
+      padding: 14px 16px;
+      text-align: center;
+      z-index: 1002;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    #locBtn {
+      position: fixed;
+      bottom: 80px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #000000;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      z-index: 1002;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+      cursor: pointer;
+    }
+
+    #toggleBtn {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #FF9C00;
+      color: white;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 30px;
+      font-size: 16px;
+      font-weight: bold;
+      z-index: 1002;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      cursor: pointer;
+    }
+
+    #panel {
+      position: fixed;
+      left: 0; right: 0;
+      bottom: -65%;
+      height: 65%;
+      background: #ffffff;
+      border-top-left-radius: 24px;
+      border-top-right-radius: 24px;
+      box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+      z-index: 1000;
+      padding: 16px 14px 10px;
+      overflow-y: auto;
+      transition: bottom 0.3s ease;
+    }
+
+    #panel.open {
+      bottom: 0;
+    }
+
+    .store {
+      display: flex;
+      gap: 12px;
+      background: #fff;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 16px;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+      cursor: pointer;
+    }
+
+    .store img {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+    }
+
+    .store-info {
+      flex-grow: 1;
+    }
+
+    .store-info strong {
+      display: block;
+      font-size: 15px;
+      margin-bottom: 4px;
+      color: #333;
+    }
+
+    .store-info .insta {
+      font-size: 13px;
+      color: #888;
+    }
   </style>
 </head>
 <body>
   <div id="map"></div>
   <div id="banner">2차 어디가?</div>
-  <button id="locBtn">내 위치로 이동</button>
+  <button id="locBtn">📍</button>
   <button id="toggleBtn">매장 리스트 보기</button>
 
   <div id="panel">
@@ -41,118 +144,119 @@
     <div id="list"></div>
   </div>
 
-<!-- ★ 모든 JS 는 DOMContentLoaded 안에 -->
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-
-  /* ───────── Firebase 초기화 ───────── */
-  firebase.initializeApp({
-    apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-    authDomain: "instamap-9b595.firebaseapp.com",
-    projectId: "instamap-9b595",
-    storageBucket: "instamap-9b595.appspot.com",
-    messagingSenderId: "280950399933",
-    appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
-  });
-  const db = firebase.firestore();
-
-  /* ───────── 지도 ───────── */
-  const map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.5665, 126.9780),
-    zoom: 12
-  });
-
-  /* ───────── 매장 렌더링 ───────── */
-  let markers = [];
-  const listDiv = document.getElementById('list');
-
-  async function renderStores() {
-    // 기존 마커·리스트 제거
-    markers.forEach(m => m.setMap(null));
-    markers = [];
-    listDiv.innerHTML = '';
-
-    let activeInfo = null; // 현재 열린 말풍선
-
-    const snap = await db.collection('stores').orderBy('created', 'desc').get();
-    snap.forEach(doc => {
-      const d = doc.data();
-      const lat = d.lat, lng = d.lng;
-      if (typeof lat !== 'number' || typeof lng !== 'number') return;
-
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Firebase 초기화
+      firebase.initializeApp({
+        apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+        authDomain: "instamap-9b595.firebaseapp.com",
+        projectId: "instamap-9b595"
       });
-      markers.push(marker);
+      const db = firebase.firestore();
 
-      const info = new naver.maps.InfoWindow({
-        content: `
-          <div style="background:white; padding:10px 12px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
-            <strong>${d.name}</strong><br>
-            <a href='https://instagram.com/${d.insta}' target='_blank'>@${d.insta}</a><br>
-            ${d.desc || ''}
-          </div>
-        `
+      // 지도 초기화
+      const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.5665, 126.9780),
+        zoom: 12
       });
 
-      // 마커 클릭 → 기존 말풍선 닫고 새로 열기
-      naver.maps.Event.addListener(marker, 'click', () => {
-        if (activeInfo) activeInfo.close();
-        info.open(map, marker);
-        activeInfo = info;
-      });
+      const listDiv = document.getElementById('list');
+      let markers = [];
+      let activeInfo = null;
 
-      // 리스트 클릭 → 동일 처리
-      const div = document.createElement('div');
-      div.className = 'store';
-      div.innerHTML = `<strong>${d.name}</strong><br>@${d.insta}`;
-      div.onclick = () => {
-        map.setCenter(marker.getPosition());
-        map.setZoom(19);
-        if (activeInfo) activeInfo.close();
-        info.open(map, marker);
-        activeInfo = info;
-      };
-      listDiv.appendChild(div);
-    });
+      async function renderStores() {
+        // 기존 초기화
+        markers.forEach(m => m.setMap(null));
+        markers = [];
+        listDiv.innerHTML = '';
 
-    // 지도 클릭 → 말풍선 닫기
-    naver.maps.Event.addListener(map, 'click', () => {
-      if (activeInfo) {
-        activeInfo.close();
-        activeInfo = null;
+        const snap = await db.collection('stores').orderBy('created', 'desc').get();
+        snap.forEach(doc => {
+          const d = doc.data();
+          const lat = d.lat, lng = d.lng;
+          if (typeof lat !== 'number' || typeof lng !== 'number') return;
+
+          const marker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(lat, lng),
+            map,
+            icon: {
+              content: '<div style="background:#ff4757;border-radius:50%;width:16px;height:16px;border:2px solid white;"></div>',
+              size: new naver.maps.Size(24, 24),
+              anchor: new naver.maps.Point(12, 12)
+            }
+          });
+          markers.push(marker);
+
+          const info = new naver.maps.InfoWindow({
+            content: `
+              <div style="background:white;padding:10px 12px;border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,0.2);font-size:14px;">
+                <strong>${d.name}</strong><br>
+                <a href='https://instagram.com/${d.insta}' target='_blank'>@${d.insta}</a><br>
+                ${d.desc || ''}
+              </div>
+            `
+          });
+
+          marker.addListener('click', () => {
+            if (activeInfo) activeInfo.close();
+            info.open(map, marker);
+            activeInfo = info;
+          });
+
+          const div = document.createElement('div');
+          div.className = 'store';
+          div.innerHTML = `
+            <img src="${d.img || 'https://via.placeholder.com/60'}" alt="${d.name}">
+            <div class="store-info">
+              <strong>${d.name}</strong>
+              <span class="insta">@${d.insta}</span><br>
+              ${d.desc || ''}
+            </div>
+          `;
+          div.onclick = () => {
+            map.setCenter(marker.getPosition());
+            map.setZoom(18);
+            if (activeInfo) activeInfo.close();
+            info.open(map, marker);
+            activeInfo = info;
+          };
+          listDiv.appendChild(div);
+        });
+
+        map.addListener('click', () => {
+          if (activeInfo) {
+            activeInfo.close();
+            activeInfo = null;
+          }
+        });
       }
-    });
-  }
 
-  renderStores();
+      renderStores();
 
-  /* ───────── 버튼 기능 ───────── */
-  const locBtn = document.getElementById('locBtn');
-  locBtn.addEventListener('click', () => {
-    if (!navigator.geolocation) return alert('GeoLocation 미지원 브라우저');
-    navigator.geolocation.getCurrentPosition(p => {
-      const { latitude, longitude } = p.coords;
-      map.setCenter(new naver.maps.LatLng(latitude, longitude));
-      map.setZoom(18);
-      new naver.maps.Marker({
-        position: new naver.maps.LatLng(latitude, longitude),
-        map
+      // 내 위치 버튼
+      document.getElementById('locBtn').addEventListener('click', () => {
+        if (!navigator.geolocation) return alert('GeoLocation 미지원 브라우저');
+        navigator.geolocation.getCurrentPosition(p => {
+          const { latitude, longitude } = p.coords;
+          map.setCenter(new naver.maps.LatLng(latitude, longitude));
+          map.setZoom(18);
+          new naver.maps.Marker({
+            position: new naver.maps.LatLng(latitude, longitude),
+            map
+          });
+        }, () => alert('위치 권한 필요'));
       });
-    }, () => alert('위치 권한 필요'));
-  });
 
-  const panel = document.getElementById('panel');
-  const toggleBtn = document.getElementById('toggleBtn');
-  let open = false;
-  toggleBtn.addEventListener('click', () => {
-    open = !open;
-    panel.classList.toggle('open', open);
-    toggleBtn.textContent = open ? '리스트 숨기기' : '매장 리스트 보기';
-  });
-
-}); // DOMContentLoaded 끝
-</script>
+      // 패널 토글
+      const panel = document.getElementById('panel');
+      const toggleBtn = document.getElementById('toggleBtn');
+      let open = false;
+      toggleBtn.addEventListener('click', () => {
+        open = !open;
+        panel.classList.toggle('open', open);
+        toggleBtn.textContent = open ? '리스트 숨기기' : '매장 리스트 보기';
+      });
+    });
+  </script>
 </body>
 </html>
