@@ -55,15 +55,9 @@
     box-shadow:0 -4px 8px rgba(0,0,0,.15);transition:bottom .25s;
     display:flex;flex-direction:column;padding-top:8px;
   }
-  #panel.open{bottom:0}
-  #panel .handle{width:38px;height:4px;border-radius:3px;background:#ccc;margin:0 auto 12px}
+
   /* 매장 리스트 패널 (기존) */
-  #panel{
-    position:fixed;left:0;right:0;bottom:-80%;height:80vh;z-index:1001;
-    background:var(--bg);border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);
-    box-shadow:0 -4px 8px rgba(0,0,0,.15);transition:bottom .25s;
-    display:flex;flex-direction:column;padding-top:8px;
-  }
+
   #panel.open{bottom:0}
   #panel .handle{width:38px;height:4px;border-radius:3px;background:#ccc;margin:0 auto 12px}
   #list{flex:1;overflow-y:auto;padding:0 12px 20px;display:flex;flex-direction:column;gap:12px}
@@ -171,6 +165,7 @@
     const infoName = document.getElementById('infoName');
     const infoInsta= document.getElementById('infoInsta');
     const infoDesc = document.getElementById('infoDesc');
+    const storeCnt = document.getElementById('storeCnt');   // 매장 수 텍스트
 
     let markers=[]; let selectedMarker=null;
 
@@ -206,6 +201,7 @@
         naver.maps.Event.addListener(marker,'click',openStore);
         li.addEventListener('click',openStore);
       });
+      storeCnt.textContent = `매장 ${snap.size}개`;      
     }
     renderStores();
 
@@ -234,17 +230,24 @@
       },()=>alert('위치 권한 필요'));
     });
 
-    /* FAB ↔ 리스트 패널 */
-    const panel=document.getElementById('panel');
-    const fab  =document.getElementById('fab');
-    let open=false;
-    fab.addEventListener('click',()=>{
-      open=!open;
-      panel.classList.toggle('open',open);
-      fab.classList.toggle('open',open);
-    });
+    /* drawer ↔ 패널 토글 --------------------- */
+    const panel    = document.getElementById('panel');
+    const drawer   = document.getElementById('drawer');
+    
+    let panelOpen  = false;
 
-  });
+    function togglePanel(){
+    panelOpen = !panelOpen;
+    panel.classList.toggle('open',  panelOpen);  // 패널 슬라이드
+    drawer.classList.toggle('hide', panelOpen);  // drawer 숨김/표시
+    }
+
+    /* drawer 바 자체를 탭하면 열고 닫기 */
+    drawer.addEventListener('click', togglePanel);
+    /* 패널 상단 handle(첫 번째 div.handle) 탭해서도 닫기 */
+    panel.querySelector('.handle').addEventListener('click', togglePanel);
+
+    });
   </script>
 </body>
 </html>
