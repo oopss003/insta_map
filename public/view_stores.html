@@ -170,21 +170,46 @@
     let markers=[]; let selectedMarker=null;
 
     /* 매장 렌더링 */
+    // ─── 매장 렌더링 함수 전체 교체 ───
     async function renderStores(){
-      markers.forEach(m=>m.setMap(null)); markers.length=0; listEl.innerHTML='';
-      const snap=await db.collection('stores').orderBy('created','desc').get();
-      snap.forEach(doc=>{
-        const d=doc.data(); const {lat,lng,name,insta,desc,thumbnail}=d;
-        if(typeof lat!=='number'||typeof lng!=='number') return;
+      // 1) 기존 마커·리스트 초기화
+      markers.forEach(m => m.setMap(null));
+      markers.length = 0;
+      listEl.innerHTML = '';
 
-        /* 마커 */
-        const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map,icon:markerIcon});
+      // 2) 화면에 보이는 영역(bounds) 가져오기
+      const bounds = map.getBounds();
+
+      // 3) Firestore에서 전체 매장 데이터 조회
+      const snap = await db.collection('stores')
+                           .orderBy('created','desc')
+                           .get();
+
+      let visibleCount = 0;
+
+      // 4) 각 매장마다 화면 내 여부 검사 후 렌더링
+      snap.forEach(doc => {
+        const d = doc.data();
+        const { lat, lng, name, insta, desc, thumbnail } = d;
+        if (typeof lat !== 'number' || typeof lng !== 'number') return;
+
+        const position = new naver.maps.LatLng(lat, lng);
+        if (!bounds.hasLatLng(position)) return;  // 화면 밖이면 건너뜀
+
+        visibleCount++;
+
+        // 마커 생성
+        const marker = new naver.maps.Marker({
+          position,
+          map,
+          icon: markerIcon
+        });
         markers.push(marker);
 
-        /* 리스트 카드 */
-        const li=document.createElement('li');
-        li.className='card';
-        li.innerHTML=`
+        // 리스트 카드 생성
+        const li = document.createElement('li');
+        li.className = 'card';
+        li.innerHTML = `
           <img src="${thumbnail||''}" alt="">
           <div class="meta">
             <b>${name}</b>
@@ -193,16 +218,22 @@
           </div>`;
         listEl.appendChild(li);
 
-        /* 카드 & 마커 공통 함수 */
+        // 클릭 시 동작
         function openStore(){
-          map.setCenter(marker.getPosition()); map.setZoom(18);
-          showInfoCard({name,insta,desc,thumbnail});
+          map.setCenter(position);
+          map.setZoom(18);
+          showInfoCard({ name, insta, desc, thumbnail });
         }
-        naver.maps.Event.addListener(marker,'click',openStore);
-        li.addEventListener('click',openStore);
+        naver.maps.Event.addListener(marker, 'click', openStore);
+        li.addEventListener('click', openStore);
       });
-      storeCnt.textContent = `매장 ${snap.size}개`;      
+
+      // 5) 화면 내 매장 수 반영
+      storeCnt.textContent = `매장 ${visibleCount}개`;
     }
+
+    // 맵이 움직일 때마다 리스트 갱신
+    naver.maps.Event.addListener(map, 'idle', renderStores);
     renderStores();
 
     /* ② 하단 카드 표시/숨김 */
