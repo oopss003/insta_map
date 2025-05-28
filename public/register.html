@@ -37,6 +37,9 @@
     <img src="https://developers.kakao.com/assets/img/about/logos/kakaologin/logo_kakaoLogin_small.png" alt="카카오 로그인" style="height:20px; vertical-align:middle;">
     <span style="margin-left: 8px; font-weight: bold;">카카오로 로그인</span>
   </button>
+  <button id="kakaoLogoutBtn" style="display:none; padding:10px 20px; background:#ccc; border:none; border-radius:8px; cursor:pointer;">
+  로그아웃
+  </button>
   <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
     <input name="name" required />
@@ -108,12 +111,12 @@ document.getElementById('getLocBtn').onclick = () => {
     map.setCenter(new naver.maps.LatLng(latitude, longitude));
   }, ()=>alert('위치 권한을 허용해주세요.'));
 };
+// ✅ [추가할 부분 시작] 로그인/로그아웃 버튼 동작
 document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
   Kakao.Auth.login({
     scope: 'profile_nickname, account_email',
     success: function(authObj) {
       console.log('✅ 로그인 성공', authObj);
-
       Kakao.API.request({
         url: '/v2/user/me',
         success: function(res) {
@@ -123,6 +126,10 @@ document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
 
           alert(`안녕하세요, ${nickname}님!`);
           console.log('🙋 사용자 정보:', nickname, email);
+
+          // 버튼 상태 전환
+          document.getElementById('kakaoLoginBtn').style.display = 'none';
+          document.getElementById('kakaoLogoutBtn').style.display = 'inline-block';
         },
         fail: function(error) {
           console.error('❌ 사용자 정보 요청 실패:', error);
@@ -134,6 +141,16 @@ document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
     }
   });
 });
+
+document.getElementById('kakaoLogoutBtn').addEventListener('click', () => {
+  Kakao.Auth.logout(() => {
+    alert('로그아웃 되었습니다.');
+    document.getElementById('kakaoLoginBtn').style.display = 'inline-block';
+    document.getElementById('kakaoLogoutBtn').style.display = 'none';
+  });
+});
+// ✅ [추가할 부분 끝]
+
 /* ---------- Firestore 저장 ---------- */
 document.getElementById('storeForm').addEventListener('submit', async () => {
   const store = {
