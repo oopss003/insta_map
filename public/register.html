@@ -62,8 +62,9 @@
   <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label>
   <input type="file" id="photo" accept="image/*" />
 
-  <label>Vimeo 동영상 링크 (선택)</label>
-  <input name="vimeo" type="url" placeholder="https://player.vimeo.com/video/12345678?h=abcdef" />
+  <label>Vimeo 동영상 링크 (선택, iframe 코드 가능)</label>
+   <input name="vimeo" type="text"
+     placeholder="예) https://player.vimeo.com/video/ID?h=HASH 또는 전체 <iframe>…</iframe> 코드" />
 
   <label>위도</label>
   <input id="lat" readonly required />
@@ -176,13 +177,21 @@ document.getElementById('storeForm').addEventListener('submit', async ()=>{
   if(!isLoggedIn){alert('로그인 후 등록이 가능합니다.');return;}
 
   /* 필드 수집 */
-    // ★ Vimeo Embed URL만 직접 받기
-  const vimeoUrl = document.querySelector('[name=vimeo]').value.trim();
-  const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?h=[A-Za-z0-9]+)?/i;
+  // ▶ Vimeo 입력값 처리: iframe 코드라면 src 속성만 뽑아내고
+  let raw = document.querySelector('[name=vimeo]').value.trim();
+  let vimeoUrl = raw;
+  if (/^<iframe/i.test(raw)) {
+    const m = raw.match(/src=["']([^"']+)["']/i);
+    if (m) vimeoUrl = m[1];
+  }
+
+  // ▶ player URL 형식 검증
+  const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?h=[A-Za-z0-9]+)?/;
   if (vimeoUrl && !embedPattern.test(vimeoUrl)) {
-    alert('embed URL 형식이 올바르지 않습니다.');
+    alert('유효한 Vimeo embed URL 또는 iframe 코드를 넣어주세요.');
     return;
   }
+
   const store = {
     name   : document.querySelector('[name=name]').value.trim(),
     insta  : document.querySelector('[name=insta_id]').value.trim(),
