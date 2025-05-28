@@ -146,7 +146,7 @@
       const snap=await db.collection('stores').orderBy('created','desc').get();
       snap.forEach(doc=>{
         const d=doc.data(); const {lat,lng,name,insta,desc,thumbnail}=d;
-        if(typeof lat!=='number'||typeof lng!!=='number') return;
+        if(typeof lat!=='number'||typeof lng!=='number') return;
 
         /* 마커 */
         const marker=new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map,icon:markerIcon});
