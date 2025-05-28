@@ -65,14 +65,31 @@
   .meta span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 
   /* ② 마커 클릭 시 표시되는 하단 카드 */
+/* 카드 전체 (하단 오버레이)  ───────── */
   #infoCard{
-    position:fixed;left:12px;right:12px;bottom:-300px;z-index:1002;
-    background:var(--bg);border-radius:var(--radius);box-shadow:0 -2px 8px rgba(0,0,0,.18);
-    display:flex;gap:12px;padding:12px;align-items:center;transition:bottom .25s ease;
+    position:fixed;left:12px;right:12px;bottom:-320px;z-index:1002;
+    display:flex;align-items:flex-start;gap:14px;
+    padding:14px 16px;background:var(--bg);
+    border-radius:18px;                /* ⬆︎ 시안과 같은 큰 라운드 */
+    box-shadow:0 8px 16px rgba(0,0,0,.25);  /* ↘︎ 방향의 두터운 그림자 */
+    transition:bottom .25s ease;
   }
-  #infoCard.show{bottom:90px}             /* FAB 위에 살짝 뜨도록 */
-  #infoCard img{width:72px;height:72px;border-radius:10px;object-fit:cover;background:#DDD}
-  #infoCard .meta b{margin-bottom:2px}
+
+  /* 카드가 열렸을 때 위치 (FAB 위 간격) */
+  #infoCard.show{bottom:96px}
+
+  /* 이미지 영역 ─── */
+  #infoCard img{
+    width:96px;height:96px;            /* 시안 비율 */
+    border-radius:14px;                /* 모서리 동일 */
+    object-fit:cover;                  /* “꽉 차게” */
+    flex-shrink:0;
+  }
+
+  /* 텍스트 메타 */
+  #infoCard .meta{flex:1;min-width:0;font-size:14px;line-height:1.35}
+  #infoCard .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #infoCard .meta span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   </style>
 </head>
 <body>
