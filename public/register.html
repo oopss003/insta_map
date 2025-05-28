@@ -4,6 +4,11 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>가게 등록</title>
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>
+    Kakao.init('1f3c8e1f7b2a3f5e6d4a8b9c1d2e3f4g'); // ← 본인의 JavaScript 키로 교체 완료
+    console.log('Kakao SDK Initialized:', Kakao.isInitialized());
+  </script>
 
   <!-- 네이버 지도 -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
@@ -23,16 +28,15 @@
   </style>
 </head>
 <body>
+  <h2>📍 가게 등록</h2>
+  <div id="map"></div>
+
+  <button id="getLocBtn">현재 위치 가져오기</button>
   <!-- 카카오 로그인 버튼 -->
   <button id="kakaoLoginBtn" style="padding: 10px 20px; background: #FEE500; border: none; border-radius: 8px; cursor: pointer;">
     <img src="https://developers.kakao.com/assets/img/about/logos/kakaologin/logo_kakaoLogin_small.png" alt="카카오 로그인" style="height:20px; vertical-align:middle;">
     <span style="margin-left: 8px; font-weight: bold;">카카오로 로그인</span>
   </button>
-  <h2>📍 가게 등록</h2>
-  <div id="map"></div>
-
-  <button id="getLocBtn">현재 위치 가져오기</button>
-
   <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
     <input name="name" required />
@@ -104,7 +108,32 @@ document.getElementById('getLocBtn').onclick = () => {
     map.setCenter(new naver.maps.LatLng(latitude, longitude));
   }, ()=>alert('위치 권한을 허용해주세요.'));
 };
+document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
+  Kakao.Auth.login({
+    scope: 'profile_nickname, account_email',
+    success: function(authObj) {
+      console.log('✅ 로그인 성공', authObj);
 
+      Kakao.API.request({
+        url: '/v2/user/me',
+        success: function(res) {
+          const kakaoAccount = res.kakao_account;
+          const nickname = kakaoAccount.profile.nickname;
+          const email = kakaoAccount.email;
+
+          alert(`안녕하세요, ${nickname}님!`);
+          console.log('🙋 사용자 정보:', nickname, email);
+        },
+        fail: function(error) {
+          console.error('❌ 사용자 정보 요청 실패:', error);
+        }
+      });
+    },
+    fail: function(err) {
+      console.error('❌ 로그인 실패:', err);
+    }
+  });
+});
 /* ---------- Firestore 저장 ---------- */
 document.getElementById('storeForm').addEventListener('submit', async () => {
   const store = {
