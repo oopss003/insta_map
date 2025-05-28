@@ -20,17 +20,49 @@
     button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
     #getLocBtn{background:#28a745;color:#fff}
     #saveBtn{background:#2d8cff;color:#fff}
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    #authButtons button {
+      background: #FEE500;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-left: 6px;
+      cursor: pointer;
+      font-weight: bold;
+     display: flex;
+    align-items: center;
+  }
+
+  #authButtons button img {
+    height: 20px;
+    margin-right: 6px;
+  }
+
+  #kakaoLogoutBtn {
+    background: #ddd;
+  }
   </style>
 </head>
 <body>
+<div id="header">
   <h2>📍 가게 등록</h2>
-  <div id="map"></div>
-  <button id="getLocBtn">현재 위치 가져오기</button>
-  <button id="kakaoLoginBtn" style="padding: 10px 20px; background: #FEE500; border: none; border-radius: 8px; cursor: pointer;">
-    <img src="https://developers.kakao.com/assets/img/about/logos/kakaologin/logo_kakaoLogin_small.png" alt="카카오 로그인" style="height:20px; vertical-align:middle;">
-    <span style="margin-left: 8px; font-weight: bold;">카카오로 로그인</span>
-  </button>
-  <button id="kakaoLogoutBtn" style="display:none; padding:10px 20px; background:#ccc; border:none; border-radius:8px; cursor:pointer;">로그아웃</button>
+  <div id="authButtons">
+    <button id="kakaoLoginBtn">
+      <img src="https://developers.kakao.com/assets/img/about/logos/kakaologin/logo_kakaoLogin_small.png" alt="카카오 로그인">
+      <span>카카오로 로그인</span>
+    </button>
+    <button id="kakaoLogoutBtn" style="display:none;">로그아웃</button>
+  </div>
+</div>
+
+<div id="map"></div>
+<button id="getLocBtn">현재 위치 가져오기</button>
 
   <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
