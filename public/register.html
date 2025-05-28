@@ -6,17 +6,12 @@
   <title>가게 등록</title>
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
-    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491'); // ← 본인의 JavaScript 키로 교체 완료
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
     console.log('Kakao SDK Initialized:', Kakao.isInitialized());
   </script>
-
-  <!-- 네이버 지도 -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-
   <style>
     body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px}
     #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px}
@@ -30,37 +25,28 @@
 <body>
   <h2>📍 가게 등록</h2>
   <div id="map"></div>
-
   <button id="getLocBtn">현재 위치 가져오기</button>
-  <!-- 카카오 로그인 버튼 -->
   <button id="kakaoLoginBtn" style="padding: 10px 20px; background: #FEE500; border: none; border-radius: 8px; cursor: pointer;">
     <img src="https://developers.kakao.com/assets/img/about/logos/kakaologin/logo_kakaoLogin_small.png" alt="카카오 로그인" style="height:20px; vertical-align:middle;">
     <span style="margin-left: 8px; font-weight: bold;">카카오로 로그인</span>
   </button>
-  <button id="kakaoLogoutBtn" style="display:none; padding:10px 20px; background:#ccc; border:none; border-radius:8px; cursor:pointer;">
-  로그아웃
-  </button>
+  <button id="kakaoLogoutBtn" style="display:none; padding:10px 20px; background:#ccc; border:none; border-radius:8px; cursor:pointer;">로그아웃</button>
+
   <form id="storeForm" onsubmit="return false;">
     <label>가게 이름</label>
     <input name="name" required />
-
     <label>인스타그램 ID (@ 제외)</label>
     <input name="insta_id" required />
-
     <label>가게 설명</label>
     <textarea name="desc" rows="4"></textarea>
-
     <label>위도</label>
     <input id="lat" readonly required />
-
     <label>경도</label>
     <input id="lng" readonly required />
-
     <button id="saveBtn" type="submit">저장</button>
   </form>
 
 <script>
-/* ---------- Firebase 초기화 ---------- */
 const firebaseConfig = {
   apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
   authDomain: "instamap-9b595.firebaseapp.com",
@@ -72,7 +58,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 
-/* ---------- 네이버 지도 & 마커 미리보기 ---------- */
+let isLoggedIn = false;
+
 const map = new naver.maps.Map('map',{
   center: new naver.maps.LatLng(37.5665,126.9780),
   zoom: 15
@@ -82,11 +69,7 @@ let marker = null;
 function setLatLng(lat, lng){
   document.getElementById('lat').value = lat;
   document.getElementById('lng').value = lng;
-
-  // 기존 마커 지우기
   if(marker) marker.setMap(null);
-
-  // 마커 찍기 (맥주병 이미지 사용)
   marker = new naver.maps.Marker({
     position: new naver.maps.LatLng(lat, lng),
     map: map,
@@ -98,12 +81,10 @@ function setLatLng(lat, lng){
   });
 }
 
-// 지도 클릭 시 위치 설정
 naver.maps.Event.addListener(map, 'click', e => {
   setLatLng(e.coord.lat(), e.coord.lng());
 });
 
-// 현재 위치 버튼
 document.getElementById('getLocBtn').onclick = () => {
   navigator.geolocation?.getCurrentPosition(pos => {
     const {latitude, longitude} = pos.coords;
@@ -111,7 +92,7 @@ document.getElementById('getLocBtn').onclick = () => {
     map.setCenter(new naver.maps.LatLng(latitude, longitude));
   }, ()=>alert('위치 권한을 허용해주세요.'));
 };
-// ✅ [추가할 부분 시작] 로그인/로그아웃 버튼 동작
+
 document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
   Kakao.Auth.login({
     scope: 'profile_nickname, account_email',
@@ -122,12 +103,8 @@ document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
         success: function(res) {
           const kakaoAccount = res.kakao_account;
           const nickname = kakaoAccount.profile.nickname;
-          const email = kakaoAccount.email;
-
           alert(`안녕하세요, ${nickname}님!`);
-          console.log('🙋 사용자 정보:', nickname, email);
-
-          // 버튼 상태 전환
+          isLoggedIn = true;
           document.getElementById('kakaoLoginBtn').style.display = 'none';
           document.getElementById('kakaoLogoutBtn').style.display = 'inline-block';
         },
@@ -145,14 +122,17 @@ document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
 document.getElementById('kakaoLogoutBtn').addEventListener('click', () => {
   Kakao.Auth.logout(() => {
     alert('로그아웃 되었습니다.');
+    isLoggedIn = false;
     document.getElementById('kakaoLoginBtn').style.display = 'inline-block';
     document.getElementById('kakaoLogoutBtn').style.display = 'none';
   });
 });
-// ✅ [추가할 부분 끝]
 
-/* ---------- Firestore 저장 ---------- */
 document.getElementById('storeForm').addEventListener('submit', async () => {
+  if (!isLoggedIn) {
+    alert('로그인 후 등록이 가능합니다.');
+    return;
+  }
   const store = {
     name    : document.querySelector('[name=name]').value.trim(),
     insta   : document.querySelector('[name=insta_id]').value.trim(),
@@ -161,7 +141,6 @@ document.getElementById('storeForm').addEventListener('submit', async () => {
     lng     : parseFloat(document.getElementById('lng').value),
     created : firebase.firestore.FieldValue.serverTimestamp()
   };
-  // 검증
   if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)) {
     alert('필수 항목을 모두 입력해주세요.');
     return;
