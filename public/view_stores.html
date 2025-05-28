@@ -35,15 +35,28 @@
   #titleBtn b{display:block;font-size:15px;letter-spacing:-.3px}
   #titleBtn span{font-size:12px;color:var(--muted)}
 
-  /* FAB : 매장 리스트 열기 */
-  #fab{
-    position:fixed;left:50%;bottom:16px;transform:translateX(-50%);
-    width:56px;height:56px;border:none;border-radius:50%;z-index:1002;
-    background:var(--primary);color:#fff;font-size:32px;line-height:0;cursor:pointer;
-    box-shadow:0 4px 12px rgba(0,0,0,.25);transition:transform .25s;
+  /* ─── drawer (닫힌 상태에서만 보이는 손잡이 바) ─── */
+  #drawer{
+    position:fixed;left:0;right:0;bottom:0;z-index:1001;
+    height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--bg);box-shadow:0 -1px 6px rgba(0,0,0,.12);
+    cursor:pointer;user-select:none;transition:transform .25s;
   }
-  #fab.open{transform:translateX(-50%) rotate(45deg)}
+  #drawer .handle{
+    width:38px;height:4px;border-radius:3px;background:#ccc;margin-bottom:6px;
+  }
+  #drawer span{font-size:13px;color:var(--muted)}
+  #drawer.hide{transform:translateY(100%);}  /* 패널 열릴 때 drawer 숨김 */
 
+  /* ─── 패널 위치·애니메이션 변경 ─── */
+  #panel{
+    position:fixed;left:0;right:0;bottom:-80%;height:80vh;z-index:1002;
+    background:var(--bg);border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);
+    box-shadow:0 -4px 8px rgba(0,0,0,.15);transition:bottom .25s;
+    display:flex;flex-direction:column;padding-top:8px;
+  }
+  #panel.open{bottom:0}
+  #panel .handle{width:38px;height:4px;border-radius:3px;background:#ccc;margin:0 auto 12px}
   /* 매장 리스트 패널 (기존) */
   #panel{
     position:fixed;left:0;right:0;bottom:-80%;height:80vh;z-index:1001;
@@ -101,14 +114,18 @@
     <b>2차 어디가?</b>
     <span>탭하면 내 주변으로 이동</span>
   </div>
-
-  <!-- FAB -->
-  <button id="fab" aria-label="매장 리스트 열기">＋</button>
+  <!-- ① FAB 버튼 블록 삭제  (기존 <button id="fab">…</button>) -->
 
   <!-- 매장 리스트 패널 -->
   <div id="panel" aria-label="매장 리스트">
     <div class="handle"></div>
     <ul id="list"></ul>
+  </div>
+
+  <!-- ② drawer(손잡이 바) 추가 – #panel 바로 아래 넣어주세요 -->
+  <div id="drawer">
+    <div class="handle"></div>
+    <span id="storeCnt">매장 0개</span>
   </div>
 
   <!-- ② 마커 클릭 시 하단 카드 -->
