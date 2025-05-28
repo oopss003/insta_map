@@ -81,12 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(lat, lng),
-        map,
-        icon: {
-          url: '/image/beer-marker.png',
-          size: new naver.maps.Size(66, 66),
-          anchor: new naver.maps.Point(33, 66)
-        }
+        map
       });
       markers.push(marker);
 
