@@ -63,7 +63,7 @@
   <input type="file" id="photo" accept="image/*" />
 
   <label>Vimeo 동영상 링크 (선택)</label>
-  <input name="vimeo" type="url" placeholder="https://vimeo.com/123456789" />
+  <input name="vimeo" type="url" placeholder="https://player.vimeo.com/video/12345678?h=abcdef" />
 
   <label>위도</label>
   <input id="lat" readonly required />
@@ -176,16 +176,13 @@ document.getElementById('storeForm').addEventListener('submit', async ()=>{
   if(!isLoggedIn){alert('로그인 후 등록이 가능합니다.');return;}
 
   /* 필드 수집 */
-  // ★ Vimeo URL 검증 ----------------------------
-  const vimeoUrl     = document.querySelector('[name=vimeo]').value.trim();
-  const vimeoPattern = /^https?:\/\/(www\.)?vimeo\.com\/\d+/i;
-
-  if (vimeoUrl && !vimeoPattern.test(vimeoUrl)) {
-    alert('Vimeo 링크 형식이 올바르지 않습니다.');
-    return;          // 잘못된 형식이면 저장 중단
+    // ★ Vimeo Embed URL만 직접 받기
+  const vimeoUrl = document.querySelector('[name=vimeo]').value.trim();
+  const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?h=[A-Za-z0-9]+)?/i;
+  if (vimeoUrl && !embedPattern.test(vimeoUrl)) {
+    alert('embed URL 형식이 올바르지 않습니다.');
+    return;
   }
-  // ---------------------------------------------
-
   const store = {
     name   : document.querySelector('[name=name]').value.trim(),
     insta  : document.querySelector('[name=insta_id]').value.trim(),
