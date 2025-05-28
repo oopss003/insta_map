@@ -88,6 +88,7 @@ firebase.initializeApp(firebaseConfig);
 const db       = firebase.firestore();
 const storage  = firebase.storage();   // ★ 추가
 
+
 /* ─────────── 2. 지도 & 위치 선택 ─────────── */
 let isLoggedIn = false;
 const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15});
@@ -186,13 +187,12 @@ document.getElementById('storeForm').addEventListener('submit', async ()=>{
     if (m) vimeoUrl = m[1];
   }
 
-  // ▶ player URL 형식 검증 (추가 쿼리 파라미터 허용)
   const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?$/i;
-  if (vimeoUrl && !embedPattern.test(vimeoUrl)) {
+  // ── 영상 링크가 비어 있지 않을 때만 검증 ──
+  if (vimeoUrl !== '' && !embedPattern.test(vimeoUrl)) {
     alert('유효한 Vimeo embed URL 또는 iframe 코드를 넣어주세요.');
     return;
   }
-
   const store = {
     name   : document.querySelector('[name=name]').value.trim(),
     insta  : document.querySelector('[name=insta_id]').value.trim(),
