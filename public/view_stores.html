@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
       div.innerHTML = `<strong>${d.name}</strong><br>@${d.insta}`;
       div.onclick = () => {
         map.setCenter(marker.getPosition());
-        map.setZoom(18);
+        map.setZoom(19);
         if (activeInfo) activeInfo.close();
         info.open(map, marker);
         activeInfo = info;
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navigator.geolocation.getCurrentPosition(p => {
       const { latitude, longitude } = p.coords;
       map.setCenter(new naver.maps.LatLng(latitude, longitude));
-      map.setZoom(15);
+      map.setZoom(18);
       new naver.maps.Marker({
         position: new naver.maps.LatLng(latitude, longitude),
         map
