@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
       div.innerHTML = `<strong>${d.name}</strong><br>@${d.insta}`;
       div.onclick = () => {
         map.setCenter(marker.getPosition());
-        map.setZoom(15);
+        map.setZoom(18);
         if (activeInfo) activeInfo.close();
         info.open(map, marker);
         activeInfo = info;

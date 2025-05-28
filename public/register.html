@@ -117,6 +117,7 @@ document.getElementById('getLocBtn').onclick = () => {
     const {latitude, longitude} = pos.coords;
     setLatLng(latitude, longitude);
     map.setCenter(new naver.maps.LatLng(latitude, longitude));
+    map.setZoom(18);
   }, ()=>alert('위치 권한을 허용해주세요.'));
 };
 
