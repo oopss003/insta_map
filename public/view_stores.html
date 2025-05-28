@@ -97,7 +97,50 @@
   #infoCard .meta{flex:1;min-width:0;font-size:14px;line-height:1.35}
   #infoCard .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   #infoCard .meta span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  </style>
+  /* 모달 백그라운드 (Flex 중앙 정렬) */
+  #videoModal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+
+  /* 모달 콘텐츠: 세로 영상(9:16), 높이 90vh */
+  #videoModal .modal-content {
+    position: relative;
+    height: 90vh;              /* 뷰포트 높이의 90% */
+    aspect-ratio: 9 / 16;      /* 세로 비율 */
+    max-width: 90vw;           /* 뷰포트 너비의 90% */
+  }
+
+  /* iframe (풀사이즈) */
+  #videoModal iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    border-radius: 8px;
+  }
+
+  /* 닫기 버튼 (우측 상단) */
+  #closeVideo {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 1;
+  }
+</style>
 </head>
 <body>
   <!-- 지도 -->
@@ -166,6 +209,31 @@
     const infoInsta= document.getElementById('infoInsta');
     const infoDesc = document.getElementById('infoDesc');
     const storeCnt = document.getElementById('storeCnt');   // 매장 수 텍스트
+    // 모달 요소 캐시
+    const videoModal = document.getElementById('videoModal');
+    const videoFrame = document.getElementById('videoFrame');
+    const closeVideo = document.getElementById('closeVideo');
+
+    // 이미지 클릭 시 모달 열기
+    infoImg.style.cursor = 'pointer';
+    infoImg.addEventListener('click', () => {
+      const url = infoImg.dataset.videoUrl;
+      if (!url) return alert('등록된 영상이 없습니다');
+      videoFrame.src = url + '?autoplay=1';
+      videoModal.style.display = 'flex';
+      videoModal.setAttribute('aria-hidden', 'false');
+    });
+
+    // 모달 닫기
+    function hideVideoModal(){
+      videoFrame.src = '';
+      videoModal.style.display = 'none';
+      videoModal.setAttribute('aria-hidden', 'true');
+    }
+    closeVideo.addEventListener('click', hideVideoModal);
+    videoModal.addEventListener('click', e => {
+      if (e.target === videoModal) hideVideoModal();
+    });
 
     let markers=[]; let selectedMarker=null;
 
@@ -239,6 +307,7 @@
     /* ② 하단 카드 표시/숨김 */
     function showInfoCard(d){
       infoImg.src=d.thumbnail||'';
+      infoImg.dataset.videoUrl = d.videoUrl || '';
       infoName.textContent=d.name;
       infoInsta.textContent='@'+d.insta;
       infoDesc.textContent=d.desc||'';
@@ -280,5 +349,12 @@
 
     });
   </script>
+  <div id="videoModal" aria-hidden="true">
+  <div class="modal-content">
+    <button id="closeVideo" aria-label="닫기">✕</button>
+    <iframe id="videoFrame" src="" frameborder="0"
+            allow="autoplay; fullscreen" allowfullscreen></iframe>
+  </div>
+</div>
 </body>
 </html>
