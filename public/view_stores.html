@@ -75,10 +75,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const snap = await db.collection('stores').orderBy('created', 'desc').get();
     snap.forEach(doc => {
       const d = doc.data();
-      const lat = parseFloat(d.lat), lng = parseFloat(d.lng);
-      if (isNaN(lat) || isNaN(lng)) return;
+      // 좌표값은 parseFloat 없이 그대로 사용 (정확도 유지)
+      const lat = d.lat, lng = d.lng;
+      if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
-      // 마커 생성
       const marker = new naver.maps.Marker({
         position: new naver.maps.LatLng(lat, lng),
         map,
@@ -88,6 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
           anchor: new naver.maps.Point(33, 66)
         }
       });
+      ...
+    });
+
       markers.push(marker);
 
       // 말풍선
