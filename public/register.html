@@ -179,14 +179,15 @@ document.getElementById('storeForm').addEventListener('submit', async ()=>{
   /* 필드 수집 */
   // ▶ Vimeo 입력값 처리: iframe 코드라면 src 속성만 뽑아내고
   let raw = document.querySelector('[name=vimeo]').value.trim();
+  raw = raw.replace(/&amp;/g, '&');
   let vimeoUrl = raw;
   if (/^<iframe/i.test(raw)) {
     const m = raw.match(/src=["']([^"']+)["']/i);
     if (m) vimeoUrl = m[1];
   }
 
-  // ▶ player URL 형식 검증
-  const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?h=[A-Za-z0-9]+)?/;
+  // ▶ player URL 형식 검증 (추가 쿼리 파라미터 허용)
+  const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?$/i;
   if (vimeoUrl && !embedPattern.test(vimeoUrl)) {
     alert('유효한 Vimeo embed URL 또는 iframe 코드를 넣어주세요.');
     return;
