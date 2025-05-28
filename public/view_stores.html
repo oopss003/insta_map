@@ -87,7 +87,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // 말풍선
       const info = new naver.maps.InfoWindow({
-        content: `<div class="bubble"><strong>${d.name}</strong><br><a href='https://instagram.com/${d.insta}' target='_blank'>@${d.insta}</a><br>${d.desc || ''}</div>`
+        content: `
+          <div style="background:white; padding:10px 12px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+            <strong>${d.name}</strong><br>
+            <a href='https://instagram.com/${d.insta}' target='_blank'>@${d.insta}</a><br>
+            ${d.desc || ''}
+          </div>
+        `
       });
       naver.maps.Event.addListener(marker, 'click', () => info.open(map, marker));
 
