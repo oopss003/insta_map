@@ -258,7 +258,10 @@
       // 4) 각 매장마다 화면 내 여부 검사 후 렌더링
       snap.forEach(doc => {
         const d = doc.data();
-        const { lat, lng, name, insta, desc, thumbnail } = d;
+        const { lat, lng, name, insta, desc, photo, vimeo } = d;
+          const thumbnail = photo;      // photo 필드를 thumbnail 변수로 재명명
+          const videoUrl  = vimeo;      // vimeo 필드를 videoUrl 변수로 재명명
+
         if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
         const position = new naver.maps.LatLng(lat, lng);
@@ -290,7 +293,7 @@
         function openStore(){
           map.setCenter(position);
           map.setZoom(18);
-          showInfoCard({ name, insta, desc, thumbnail });
+          showInfoCard({ name, insta, desc, thumbnail, videoUrl });
         }
         naver.maps.Event.addListener(marker, 'click', openStore);
         li.addEventListener('click', openStore);
