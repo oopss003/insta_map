@@ -72,10 +72,11 @@ document.addEventListener('DOMContentLoaded', () => {
     markers = [];
     listDiv.innerHTML = '';
 
+    let activeInfo = null; // 현재 열린 말풍선
+
     const snap = await db.collection('stores').orderBy('created', 'desc').get();
     snap.forEach(doc => {
       const d = doc.data();
-      // 좌표값은 parseFloat 없이 그대로 사용 (정확도 유지)
       const lat = d.lat, lng = d.lng;
       if (typeof lat !== 'number' || typeof lng !== 'number') return;
 
@@ -85,30 +86,46 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       markers.push(marker);
 
-      // 말풍선
       const info = new naver.maps.InfoWindow({
         content: `
-          <div style="background:white; padding:10px 12px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
+          <div style="background:white; padding:10px 12px; border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.2); font-size:14px;">
             <strong>${d.name}</strong><br>
             <a href='https://instagram.com/${d.insta}' target='_blank'>@${d.insta}</a><br>
             ${d.desc || ''}
           </div>
         `
       });
-      naver.maps.Event.addListener(marker, 'click', () => info.open(map, marker));
 
-      // 리스트 패널
+      // 마커 클릭 → 기존 말풍선 닫고 새로 열기
+      naver.maps.Event.addListener(marker, 'click', () => {
+        if (activeInfo) activeInfo.close();
+        info.open(map, marker);
+        activeInfo = info;
+      });
+
+      // 리스트 클릭 → 동일 처리
       const div = document.createElement('div');
       div.className = 'store';
       div.innerHTML = `<strong>${d.name}</strong><br>@${d.insta}`;
       div.onclick = () => {
         map.setCenter(marker.getPosition());
         map.setZoom(15);
+        if (activeInfo) activeInfo.close();
         info.open(map, marker);
+        activeInfo = info;
       };
       listDiv.appendChild(div);
     });
+
+    // 지도 클릭 → 말풍선 닫기
+    naver.maps.Event.addListener(map, 'click', () => {
+      if (activeInfo) {
+        activeInfo.close();
+        activeInfo = null;
+      }
+    });
   }
+
   renderStores();
 
   /* ───────── 버튼 기능 ───────── */
