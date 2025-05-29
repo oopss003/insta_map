@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>저장된 매장 목록</title>
 
   <!-- Pretendard 폰트 -->
@@ -37,7 +37,7 @@
 
   /* ─── drawer (닫힌 상태에서만 보이는 손잡이 바) ─── */
   #drawer{
-    position:fixed;left:0;right:0;bottom:0;z-index:1001;
+    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom, 0);z-index:1001;
     height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;
     background:var(--bg);box-shadow:0 -1px 6px rgba(0,0,0,.12);
     cursor:pointer;user-select:none;transition:transform .25s;
@@ -124,6 +124,14 @@
     box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     z-index: 1;
   }
+  @supports not (aspect-ratio: 1 / 1) {
+    #videoModal .modal-content {
+      /* '세로 9:16' 비율을 width 로 계산 */
+      width: calc(90vh * (9 / 16));
+      height: 90vh;
+      max-width: 90vw;
+    }
+  }
   #videoModal .modal-content {
     position: relative;
     height: 90vh;
@@ -142,6 +150,17 @@
     /* 옵션: iframe 자체에 라운드도 주려면 아래 추가 */
     border-radius: 16px;
   }
+  /* 모바일 화면(너비 600px 이하)에서 높이·여백 조금 조정 */
+  @media (max-width: 600px) {
+  #videoModal .modal-content {
+    height: 85vh;
+  }
+  #titleBtn {
+    padding: 8px 24px;
+    font-size: 14px;
+  }
+}
+
 </style>
 </head>
 <body>
