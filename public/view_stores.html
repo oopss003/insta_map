@@ -1,5 +1,4 @@
-나의 말:
-<!DOCTYPE html>
+<!DOCTYPE html>More actions
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -260,28 +259,6 @@
     transform: rotate(90deg);
   }
 /* ──────────────────────────────────────────────────────────────────── */
-  /* …(기존 스타일)… */
-
-  /* ----------------- Custom Overlay Label 스타일 ----------------- */
-  .oval-label {
-    display: inline-block;
-    padding: 4px 12px;               /* 좌우 여백을 넉넉히 줘서 타원 형태로 보이게 함 */
-    background: #ffffff;             /* 배경색 (흰색) */
-    border-radius: 999px;            /* 둥근 모서리 (완전한 타원) */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
-    font-size: 12px;                 /* 텍스트 크기 */
-    color: #333333;                  /* 텍스트 색 */
-    white-space: nowrap;             /* 줄 바꿈 없이 한 줄로 */
-    pointer-events: none;            /* 레이블이 클릭을 차단하지 않도록 */
-    user-select: none;
-
-    transform: translate(-50%, -100%);
-    /* ↳ CustomOverlay 위치 기준의 translate:
-         - X축으로는 레이블 너비의 50%만큼 왼쪽으로 이동(중앙 정렬),
-         - Y축으로는 레이블 높이의 100%만큼 위로 올려서
-           LatLng 좌표가 레이블 바로 아래(꼬리 핀 없는 형태)로 가도록 함. */
-  }
-  /* ---------------------------------------------------------------- */
 
 </style>
 </head>
@@ -413,7 +390,7 @@
       // 4) 각 매장마다 화면 내 여부 검사 후 렌더링
       snap.forEach(doc => {
         const d = doc.data();
-        const { lat, lng, name, insta, desc, photo, vimeo, mainMenu } = d;
+        const { lat, lng, name, insta, desc, photo, vimeo } = d;
           const thumbnail = photo;      // photo 필드를 thumbnail 변수로 재명명
           const videoUrl  = vimeo;      // vimeo 필드를 videoUrl 변수로 재명명
 
@@ -424,29 +401,24 @@
 
         visibleCount++;
 
-         // ─── CustomOverlay(타원 레이블) 생성 ───
-        const labelText = mainMenu || '메뉴 정보 없음';
-        const labelDiv  = document.createElement('div');
-          labelDiv.className = 'oval-label';
-          labelDiv.innerText   = labelText;
-  
-        const overlay = new naver.maps.CustomOverlay({
-          position: position,
-          content:  labelDiv,
-          map:      map
+        // 마커 생성
+        const marker = new naver.maps.Marker({
+          position,
+          map,
+          icon: markerIcon
         });
-        markers.push(overlay);
+        markers.push(marker);
 
         // 리스트 카드 생성
         const li = document.createElement('li');
         li.className = 'card';
-        li.innerHTML = 
+        li.innerHTML = `
           <img src="${thumbnail||''}" alt="">
           <div class="meta">
             <b>${name}</b>
             <span>@${insta}</span><br>
             <span>${desc||''}</span>
-          </div>;
+          </div>`;
         listEl.appendChild(li);
 
         // 클릭 시 동작
@@ -460,7 +432,7 @@
       });
 
       // 5) 화면 내 매장 수 반영
-      storeCnt.textContent = 매장 ${visibleCount}개;
+      storeCnt.textContent = `매장 ${visibleCount}개`;
     }
 
     // 맵이 움직일 때마다 리스트 갱신
@@ -511,7 +483,7 @@
     /* drawer ↔ 패널 토글 --------------------- */
     const panel    = document.getElementById('panel');
     const drawer   = document.getElementById('drawer');
-    
+
     let panelOpen  = false;
 
     function togglePanel(){
@@ -571,7 +543,8 @@
   <nav id="sideMenu" aria-hidden="true">
     <ul>
       <li><a href="/login">로그인</a></li>
-      <li><a href="https://inwave.ai.kr/" target="_self">인웨이브</a></li>
+      <li><a href="https://inwave.ai.kr/">인웨이브</a></li>
+      <a href="https://inwave.ai.kr/" target="_self">인웨이브</a>
       <li><a href="/addwave">애드웨이브 1.0</a></li>
       <li><a href="/waveshare">웨이브쉐어</a></li>
       <li><a href="/invest">투자라운지</a></li>
@@ -579,4 +552,3 @@
   </nav>
 
 </body>
-</html>
