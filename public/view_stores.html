@@ -184,6 +184,81 @@
     border: 1px solid var(--muted);
     color: var(--muted);
   }
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* ③: 사이드 메뉴 스타일 ------------------------------------------------ */
+  /* 사이드 메뉴 패널 초기 상태: 화면 왼쪽 밖으로 숨김 */
+  #sideMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;               /* 메뉴 너비 */
+    height: 100%;
+    background: var(--bg);      /* 기존 변수 사용 */
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 3000;              /* 다른 요소보다 위에 보이도록 충분히 높게 */
+    padding-top: 60px;          /* 메뉴 항목 위 여유 공간 (버튼 아래 간격) */
+    overflow-y: auto;
+  }
+
+  /* 메뉴가 열린 상태일 때 translateX(0) */
+  #sideMenu.open {
+    transform: translateX(0);
+  }
+
+  /* 메뉴 내부 ul·li 기본 스타일 제거 */
+  #sideMenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  #sideMenu li + li {
+    margin-top: 16px;
+  }
+
+  /* 메뉴 링크 스타일 */
+  #sideMenu a {
+    display: block;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  #sideMenu a:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  /* ④: 메뉴 열기/닫기 버튼 (×) */
+  #menuBtn {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 3100;            /* sideMenu보다 더 위에 띄우기 */
+    width: 32px;
+    height: 32px;
+    background: var(--bg);
+    border: 1px solid var(--muted);
+    border-radius: 4px;
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background 0.15s, transform 0.15s;
+  }
+  #menuBtn:hover {
+    background: #f5f5f5;
+  }
+  #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
+    transform: rotate(90deg);
+  }
+/* ──────────────────────────────────────────────────────────────────── */
 
 </style>
 </head>
@@ -414,6 +489,33 @@
 
     });
   </script>
+  <!-- ↓ 여기가 사이드 메뉴 토글 로직을 넣을 위치입니다. ↓ -->
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=> {
+    /* ─── 사이드 메뉴 열기/닫기 토글 ─── */
+    const menuBtn  = document.getElementById('menuBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    let menuOpen = false;
+
+    function toggleSideMenu(){
+      menuOpen = !menuOpen;
+      sideMenu.classList.toggle('open', menuOpen);
+      menuBtn.classList.toggle('open', menuOpen);
+      sideMenu.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
+    }
+
+    menuBtn.addEventListener('click', toggleSideMenu);
+
+    /*  (선택) 메뉴 외부 클릭 시 닫기 */
+    document.addEventListener('click', e => {
+      if (menuOpen && !sideMenu.contains(e.target) && e.target !== menuBtn) {
+        toggleSideMenu();
+      }
+    });
+  });
+  </script>
+  <!-- ↑ 사이드 메뉴 토글 로직 끝 ↑ -->
+     
   <div id="videoModal" aria-hidden="true">
   <div class="modal-content">
     <button id="closeVideo" aria-label="닫기">✕</button>
@@ -421,5 +523,22 @@
             allow="autoplay; fullscreen" allowfullscreen></iframe>
   </div>
 </div>
+
+  <!-- ───────── 여기부터 사이드 메뉴 요소 시작 ───────── -->
+
+  <!-- ① 메뉴 열기/닫기 버튼 (×) -->
+  <button id="menuBtn" aria-label="메뉴 열기/닫기">✕</button>
+
+  <!-- ② 사이드 메뉴 내용 -->
+  <nav id="sideMenu" aria-hidden="true">
+    <ul>
+      <li><a href="/login">로그인</a></li>
+      <li><a href="/inwave">인웨이브</a></li>
+      <li><a href="/addwave">애드웨이브 1.0</a></li>
+      <li><a href="/waveshare">웨이브쉐어</a></li>
+      <li><a href="/invest">투자라운지</a></li>
+    </ul>
+  </nav>
+
 </body>
 </html>
