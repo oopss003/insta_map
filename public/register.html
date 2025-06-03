@@ -5,324 +5,324 @@
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>가게 등록</title>
 
-  <!-- Kakao SDK -->
-  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <!-- 1. Kakao SDK 불러오기 및 초기화 -->
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script> <!-- 1-1) 카카오 JavaScript SDK 로드 -->
   <script>
-    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
-    console.log('Kakao SDK Initialized:', Kakao.isInitialized());
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491'); /* 1-2) 카카오 앱 키로 SDK 초기화 */
+    console.log('Kakao SDK Initialized:', Kakao.isInitialized()); /* 1-3) 초기화 여부 콘솔 출력 */
   </script>
 
-  <!-- Naver Maps SDK -->
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+  <!-- 2. Naver Maps SDK 로드 -->
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script> <!-- 2-1) 네이버 지도 API 사용을 위한 스크립트 포함 -->
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script> <!-- ★ 추가 -->
+  <!-- 3. Firebase SDK 로드 (Firestore, Storage) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>         <!-- 3-1) Firebase 앱 초기화용 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>   <!-- 3-2) Firestore 데이터베이스 사용용 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>     <!-- 3-3) Storage(이미지 저장) 사용용 SDK -->
 
   <style>
-    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px}
-    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px}
-    label{display:block;margin-top:12px;font-weight:700}
-    input,textarea,select{width:100%;padding:8px;margin-top:4px;border:1px solid #bbb;border-radius:4px;font-size:14px}
-    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
-    #getLocBtn{background:#28a745;color:#fff}
-    #saveBtn{background:#2d8cff;color:#fff}
-    #header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-    #authButtons button{background:#FEE500;border:none;border-radius:8px;padding:8px 10px;margin-left:6px;cursor:pointer;font-weight:bold;display:flex;align-items:center}
-    #authButtons button img{height:20px;margin-right:6px}
-    #kakaoLogoutBtn{background:#ddd}
+    /* 4. 공통 스타일 정의
+       4-1) body: 기본 폰트, 최대 너비, 중앙 정렬, 패딩
+       4-2) #map: 지도 영역 크기, 테두리, 둥근 모서리, 마진
+       4-3) label, input, textarea, select: 폼 요소 스타일
+       4-4) button: 버튼 기본 스타일
+       4-5) #getLocBtn, #saveBtn: 버튼별 배경색 지정
+       4-6) #header, #authButtons: 헤더 영역 정렬 및 버튼 스타일
+    */
+    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px} /* 4-1 */
+    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px} /* 4-2 */
+    label{display:block;margin-top:12px;font-weight:700} /* 4-3 */
+    input,textarea,select{width:100%;padding:8px;margin-top:4px;border:1px solid #bbb;border-radius:4px;font-size:14px} /* 4-3 */
+    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer} /* 4-4 */
+    #getLocBtn{background:#28a745;color:#fff} /* 4-5 */
+    #saveBtn{background:#2d8cff;color:#fff}  /* 4-5 */
+    #header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px} /* 4-6 */
+    #authButtons button{background:#FEE500;border:none;border-radius:8px;padding:8px 10px;margin-left:6px;cursor:pointer;font-weight:bold;display:flex;align-items:center} /* 4-6 */
+    #authButtons button img{height:20px;margin-right:6px} /* 4-6 */
+    #kakaoLogoutBtn{background:#ddd} /* 4-6 */
   </style>
 </head>
 <body>
-<div id="header">
-  <h2>📍 가게 등록</h2>
-  <div id="authButtons">
-    <button id="kakaoLoginBtn">
-      <img src="https://raw.githubusercontent.com/oopss003/insta_map/main/public/image/kakao_login.png" alt="카카오 로그인">
-      <span>카카오로 로그인</span>
-    </button>
-    <button id="kakaoLogoutBtn" style="display:none;">로그아웃</button>
-  </div>
-</div>
-
-<div id="map"></div>
-<button id="getLocBtn">현재 위치 가져오기</button>
-
-<form id="storeForm" onsubmit="return false;">
-  <label>업체 검색</label>
-  <input id="searchInput" placeholder="가게 이름으로 검색…" />
-  <div id="searchResults"
-       style="max-height:200px; overflow:auto; border:1px solid #ccc; padding:8px; margin-bottom:16px">
+  <!-- 5. 헤더 영역 (제목 + 카카오 로그인/로그아웃 버튼) -->
+  <div id="header">
+    <h2>📍 가게 등록</h2> <!-- 5-1) 페이지 제목 -->
+    <div id="authButtons">
+      <button id="kakaoLoginBtn"> <!-- 5-2-1) 카카오 로그인 버튼 -->
+        <img src="https://raw.githubusercontent.com/oopss003/insta_map/main/public/image/kakao_login.png" alt="카카오 로그인">
+        <span>카카오로 로그인</span>
+      </button>
+      <button id="kakaoLogoutBtn" style="display:none;">로그아웃</button> <!-- 5-2-2) 카카오 로그아웃 버튼 (초기엔 숨김) -->
+    </div>
   </div>
 
-  <!-- 2. 등록/수정 폼 (한 번만 쓰기) -->
-  <form id="storeForm" onsubmit="return false;">
-  <label>가게 이름</label>
-  <input name="name" required />
+  <!-- 6. 지도 영역 및 현재 위치 가져오기 버튼 -->
+  <div id="map"></div> <!-- 6-1) 네이버 지도가 렌더링될 영역 -->
+  <button id="getLocBtn">현재 위치 가져오기</button> <!-- 6-2) 클릭 시 Geolocation API로 현재 위치 가져오기 -->
 
-  <label>인스타그램 ID (@ 제외)</label>
-  <input name="insta_id" required />
+  <!-- 7. 가게 검색 및 등록/수정 폼 -->
+  <form id="storeForm" onsubmit="return false;"> <!-- 7-1) 최상위 form: 검색 + 등록/수정 기능 포함 -->
+    <label>업체 검색</label> <!-- 7-2) 검색 라벨 -->
+    <input id="searchInput" placeholder="가게 이름으로 검색…" /> <!-- 7-3) 검색 입력 필드 -->
+    <div id="searchResults"
+         style="max-height:200px; overflow:auto; border:1px solid #ccc; padding:8px; margin-bottom:16px">
+      <!-- 7-4) 검색 결과가 표시될 영역 -->
+    </div>
 
-  <label>가게 설명</label>
-  <textarea name="desc" rows="4"></textarea>
+    <!-- 8. 등록/수정 폼 (한 번만 쓰기) -->
+    <label>가게 이름</label> <!-- 8-1) 가게 이름 라벨 -->
+    <input name="name" required /> <!-- 8-2) 가게 이름 입력 필드 -->
 
-  <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label>
-  <input type="file" id="photo" accept="image/*" />
+    <label>인스타그램 ID (@ 제외)</label> <!-- 8-3) 인스타그램 ID 라벨 -->
+    <input name="insta_id" required /> <!-- 8-4) 인스타그램 ID 입력 필드 -->
 
-  <label>Vimeo 동영상 링크 (선택, iframe 코드 가능)</label>
-   <input name="vimeo" type="text"
-     placeholder="예) https://player.vimeo.com/video/ID?h=HASH 또는 전체 <iframe>…</iframe> 코드" />
+    <label>가게 설명</label> <!-- 8-5) 가게 설명 라벨 -->
+    <textarea name="desc" rows="4"></textarea> <!-- 8-6) 가게 설명 입력 필드 -->
 
-  <label>위도</label>
-  <input id="lat" readonly required />
-  <label>경도</label>
-  <input id="lng" readonly required />
+    <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label> <!-- 8-7) 사진 업로드 라벨 -->
+    <input type="file" id="photo" accept="image/*" /> <!-- 8-8) 사진 선택 필드 -->
 
-  <button id="saveBtn" type="submit">저장</button>
-</form>
+    <label>Vimeo 동영상 링크 (선택, iframe 코드 가능)</label> <!-- 8-9) Vimeo 링크 라벨 -->
+    <input name="vimeo" type="text"
+           placeholder="예) https://player.vimeo.com/video/ID?h=HASH 또는 전체 <iframe>…</iframe> 코드" /> <!-- 8-10) Vimeo 입력 필드 -->
 
-<script>
-/* ─────────── 1. Firebase 초기화 ─────────── */
-const firebaseConfig = {
-  apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-  authDomain: "instamap-9b595.firebaseapp.com",
-  projectId: "instamap-9b595",
-  storageBucket: "instamap-9b595.firebasestorage.app",
-  messagingSenderId: "280950399933",
-  appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
-};
-firebase.initializeApp(firebaseConfig);
-const db       = firebase.firestore();
-const storage  = firebase.storage();   // ★ 추가
+    <label>위도</label> <!-- 8-11) 위도 라벨 -->
+    <input id="lat" readonly required /> <!-- 8-12) 위도 값 표시 필드 (읽기 전용) -->
+    <label>경도</label> <!-- 8-13) 경도 라벨 -->
+    <input id="lng" readonly required /> <!-- 8-14) 경도 값 표시 필드 (읽기 전용) -->
 
+    <button id="saveBtn" type="submit">저장</button> <!-- 8-15) 저장 버튼 -->
+  </form> <!-- 7-5) 최상위 form 닫기 -->
 
-/* ─────────── 2. 지도 & 위치 선택 ─────────── */
-let isLoggedIn = false;
-const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15});
-let marker = null;
-
-function setLatLng(lat,lng){
-  document.getElementById('lat').value = lat;
-  document.getElementById('lng').value = lng;
-  if(marker) marker.setMap(null);
-  marker = new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:map});
-}
-naver.maps.Event.addListener(map,'click',e=>setLatLng(e.coord.lat(),e.coord.lng()));
-document.getElementById('getLocBtn').onclick = () =>{
-  navigator.geolocation?.getCurrentPosition(pos=>{
-    const {latitude,longitude}=pos.coords;
-    setLatLng(latitude,longitude);
-    map.setCenter(new naver.maps.LatLng(latitude,longitude));
-    map.setZoom(18);
-  },()=>alert('위치 권한을 허용해주세요.'));
-};
-
-/* ─────────── 3. Kakao 로그인 ─────────── */
-document.getElementById('kakaoLoginBtn').addEventListener('click',()=>{
-  Kakao.Auth.login({
-    scope:'profile_nickname,account_email',
-    success:authObj=>{
-      Kakao.API.request({
-        url:'/v2/user/me',
-        success:res=>{
-          alert(`안녕하세요, ${res.kakao_account.profile.nickname}님!`);
-          isLoggedIn=true;
-          document.getElementById('kakaoLoginBtn').style.display='none';
-          document.getElementById('kakaoLogoutBtn').style.display='inline-block';
-        },
-        fail:e=>console.error('사용자 정보 실패',e)
-      });
-    },
-    fail:e=>console.error('로그인 실패',e)
-  });
-});
-document.getElementById('kakaoLogoutBtn').addEventListener('click',()=>{
-  Kakao.Auth.logout(()=>{
-    alert('로그아웃 되었습니다.');
-    isLoggedIn=false;
-    document.getElementById('kakaoLoginBtn').style.display='inline-block';
-    document.getElementById('kakaoLogoutBtn').style.display='none';
-  });
-});
-
-/* ─────────── 4. 이미지 압축 함수 (<=1 MB) ─────────── */
-function compressImage(file,maxBytes=1_000_000){
-  return new Promise(resolve=>{
-    const img = new Image();
-    const reader = new FileReader();
-    reader.onload = e => {
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        /* 가로 최대 1024px 로 축소 */
-        const maxW = 1024;
-        const scale = Math.min(1, maxW / img.width);
-        canvas.width  = img.width  * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img,0,0,canvas.width,canvas.height);
-
-        let quality = 0.8;
-        function exportBlob(){
-          canvas.toBlob(blob=>{
-            if(blob.size <= maxBytes || quality < 0.4){
-              resolve(blob);
-            }else{
-              quality -= 0.1;
-              exportBlob();
-            }
-          },'image/jpeg',quality);
-        }
-        exportBlob();
-      };
-      img.src = e.target.result;
+  <script>
+    /* ─────────── 9. Firebase 초기화 ─────────── */
+    const firebaseConfig = { /* 9-1) Firebase 프로젝트 설정 정보 */
+      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399933",
+      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
     };
-    reader.readAsDataURL(file);
-  });
-}
+    firebase.initializeApp(firebaseConfig); /* 9-2) Firebase 앱 초기화 */
+    const db       = firebase.firestore(); /* 9-3) Firestore 인스턴스 생성 */
+    const storage  = firebase.storage();   /* 9-4) Storage 인스턴스 생성 */
 
-  /**
-   * 사용자가 입력한 Vimeo 값(iframe 전체 코드, embed URL, share URL)에서
-   * 실제 플레이어 src URL만 뽑아 돌려줍니다.
-   */
-  function parseVimeoInput(input) {
-    // 1) <script> 태그 삭제
-    input = input.replace(/<script[\s\S]*?<\/script>/gi, "");
+    /* ─────────── 10. 지도 & 위치 선택 기능 ─────────── */
+    let isLoggedIn = false; /* 10-1) 로그인 상태 변수 */
+    const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15}); /* 10-2) 네이버 지도 생성 (기본 중심: 서울 시청) */
+    let marker = null; /* 10-3) 마커 변수 초기값 null */
 
-    // 2) iframe src 속성 뽑기
-    const iframeMatch = input.match(/<iframe[^>]+src=["']([^"']+)["']/i);
-    if (iframeMatch) {
-      return iframeMatch[1];
+    function setLatLng(lat,lng){ /* 10-4) 위도/경도 받아서 input에 설정 및 마커 표시 */
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+      if(marker) marker.setMap(null); /* 기존 마커 제거 */
+      marker = new naver.maps.Marker({position:new naver.maps.LatLng(lat,lng),map:map}); /* 새로운 마커 생성 */
     }
-    // 3) 플레이어용 embed URL (https://player.vimeo.com/video/ID?... )
-    const embedMatch = input.match(/^(https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?)/i);
-    if (embedMatch) {
-      return embedMatch[1];
+    naver.maps.Event.addListener(map,'click',e=>setLatLng(e.coord.lat(),e.coord.lng())); /* 10-5) 지도 클릭 시 좌표 가져와 setLatLng 호출 */
+    document.getElementById('getLocBtn').onclick = () =>{ /* 10-6) 현재 위치 버튼 클릭 이벤트 */
+      navigator.geolocation?.getCurrentPosition(pos=>{ /* 위치 권한 요청 */
+        const {latitude,longitude}=pos.coords;
+        setLatLng(latitude,longitude); /* 마커 이동 및 input 값 설정 */
+        map.setCenter(new naver.maps.LatLng(latitude,longitude)); /* 지도 중심 이동 */
+        map.setZoom(18); /* 확대 레벨 18로 설정 */
+      },()=>alert('위치 권한을 허용해주세요.')); /* 권한 거부 시 알림 */
+    };
+
+    /* ─────────── 11. Kakao 로그인/로그아웃 기능 ─────────── */
+    document.getElementById('kakaoLoginBtn').addEventListener('click',()=>{ /* 11-1) 로그인 버튼 클릭 이벤트 */
+      Kakao.Auth.login({
+        scope:'profile_nickname,account_email', /* 11-1-1) 요청할 동의 범위 */
+        success:authObj=>{ /* 11-1-2) 로그인 성공 시 */
+          Kakao.API.request({
+            url:'/v2/user/me', /* 사용자 프로필 정보 요청 */
+            success:res=>{ /* 11-1-3) 프로필 정보 가져오기 성공 */
+              alert(`안녕하세요, ${res.kakao_account.profile.nickname}님!`); /* 닉네임 표시 */
+              isLoggedIn=true; /* 11-1-4) 로그인 상태 true */
+              document.getElementById('kakaoLoginBtn').style.display='none'; /* 로그인 버튼 숨김 */
+              document.getElementById('kakaoLogoutBtn').style.display='inline-block'; /* 로그아웃 버튼 표시 */
+            },
+            fail:e=>console.error('사용자 정보 실패',e) /* 프로필 정보 요청 실패 시 에러 로그 */
+          });
+        },
+        fail:e=>console.error('로그인 실패',e) /* 로그인 실패 시 에러 로그 */
+      });
+    });
+    document.getElementById('kakaoLogoutBtn').addEventListener('click',()=>{ /* 11-2) 로그아웃 버튼 클릭 이벤트 */
+      Kakao.Auth.logout(()=>{ /* 카카오 로그아웃 API 호출 */
+        alert('로그아웃 되었습니다.');
+        isLoggedIn=false; /* 로그인 상태 false */
+        document.getElementById('kakaoLoginBtn').style.display='inline-block'; /* 로그인 버튼 다시 표시 */
+        document.getElementById('kakaoLogoutBtn').style.display='none'; /* 로그아웃 버튼 숨김 */
+      });
+    });
+
+    /* ─────────── 12. 이미지 압축 함수 (<=1MB) ─────────── */
+    function compressImage(file,maxBytes=1_000_000){ /* 12-1) compressImage 함수 정의 */
+      return new Promise(resolve=>{
+        const img = new Image();
+        const reader = new FileReader();
+        reader.onload = e => {
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            /* 12-2) 가로 최대 1024px 비율 계산 */
+            const maxW = 1024;
+            const scale = Math.min(1, maxW / img.width);
+            canvas.width  = img.width  * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+            let quality = 0.8;
+            function exportBlob(){
+              canvas.toBlob(blob=>{
+                /* 12-3) blob 크기가 maxBytes 이하 또는 품질이 0.4 미만이면 resolve */
+                if(blob.size <= maxBytes || quality < 0.4){
+                  resolve(blob);
+                }else{
+                  quality -= 0.1; /* 12-4) 품질 0.1씩 낮추기 */
+                  exportBlob();
+                }
+              },'image/jpeg',quality);
+            }
+            exportBlob();
+          };
+          img.src = e.target.result; /* 12-5) FileReader 결과를 img.src에 설정 */
+        };
+        reader.readAsDataURL(file); /* 12-6) 파일을 DataURL로 변환 */
+      });
     }
 
-    // 4) 공유용 Vimeo URL (https://vimeo.com/ID/…)
-    const shareMatch = input.match(/^https?:\/\/vimeo\.com\/(\d+)/i);
-    if (shareMatch) {
-      return `https://player.vimeo.com/video/${shareMatch[1]}`;
-    }
+    /**
+     * 13. parseVimeoInput 함수: 사용자가 입력한 Vimeo 값(iframe 코드, embed URL, 공유 URL)에서
+     *    실제 재생용 player src URL만 추출하여 반환
+     */
+    function parseVimeoInput(input) {
+      // 13-1) <script> 태그 제거
+      input = input.replace(/<script[\s\S]*?<\/script>/gi, "");
 
-    // 모두 아니면 빈 문자열 반환
-    return "";
-  }  // ← parseVimeoInput 함수 종료
-    // ─────────── 검색·수정 모드 변수/함수 ───────────
-  let editingId = "";  // 수정 중인 문서 ID
+      // 13-2) iframe src 속성 추출 (iframe 코드인 경우)
+      const iframeMatch = input.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+      if (iframeMatch) {
+        return iframeMatch[1];
+      }
+      // 13-3) player.vimeo.com Embed URL 형식 검증
+      const embedMatch = input.match(/^(https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?)/i);
+      if (embedMatch) {
+        return embedMatch[1];
+      }
 
-    // 1) 검색 실행: input#searchInput 에서 값이 바뀔 때마다 Firestore 조회
+      // 13-4) 공유용 Vimeo URL(vimeo.com/ID) 형식 검증
+      const shareMatch = input.match(/^https?:\/\/vimeo\.com\/(\d+)/i);
+      if (shareMatch) {
+        return `https://player.vimeo.com/video/${shareMatch[1]}`;
+      }
+
+      // 13-5) 위 조건 모두 해당하지 않으면 빈 문자열 반환
+      return "";
+    }  /* 13 종료 */
+
+    // ─────────── 14. 검색·수정 모드 변수 및 함수 ───────────
+    let editingId = "";  /* 14-1) 현재 수정 중인 문서 ID 저장 (빈 문자열이면 신규 등록 모드) */
+
+    // 14-2) 검색 실행: input#searchInput 값이 바뀔 때마다 Firestore에서 조회
     document.getElementById('searchInput').addEventListener('input', async e => {
-      const q = e.target.value.trim();
+      const q = e.target.value.trim(); /* 14-2-1) 검색어 가져오기 */
       const resultsEl = document.getElementById('searchResults');
-      resultsEl.innerHTML = "";
-      if (!q) return;
+      resultsEl.innerHTML = "";         /* 14-2-2) 이전 검색 결과 초기화 */
+      if (!q) return;                   /* 14-2-3) 검색어가 없으면 종료 */
 
+      // 14-2-4) Firestore 쿼리: name 필드가 q 이상, q+'\uf8ff' 이하인 문서 조회
       const snapshot = await db.collection('stores')
         .where('name', '>=', q)
         .where('name', '<=', q + '\uf8ff')
         .get();
 
+      // 14-2-5) 조회된 결과를 화면에 표시
       snapshot.forEach(doc => {
         const data = doc.data();
         const item = document.createElement('div');
-        item.textContent = data.name + " (" + data.insta + ")";
+        item.textContent = data.name + " (" + data.insta + ")"; /* "가게이름 (인스타ID)" 형태로 표시 */
         item.style.cursor = "pointer";
         item.style.padding = "4px 0";
-        item.addEventListener('click', () => loadStoreToForm(doc));
+        item.addEventListener('click', () => loadStoreToForm(doc)); /* 클릭 시 loadStoreToForm 호출 */
         resultsEl.appendChild(item);
       });
     });
 
-    // 2) 선택한 업체를 폼에 로드
+    // 14-3) 선택한 업체를 폼에 로드: Firestore 문서 데이터를 각각의 입력 필드에 채우고 마커 이동
     function loadStoreToForm(doc) {
       const data = doc.data();
-      editingId = doc.id;
-      document.querySelector('[name=name]').value     = data.name;
-      document.querySelector('[name=insta_id]').value = data.insta;
-      document.querySelector('[name=desc]').value     = data.desc;
-      document.getElementById('lat').value           = data.lat;
-      document.getElementById('lng').value           = data.lng;
-      document.querySelector('[name=vimeo]').value    = data.vimeo || "";
-      // 마커 위치 재설정
-      setLatLng(data.lat, data.lng);
-      // 저장 버튼 텍스트 변경
-      document.getElementById('saveBtn').textContent = "수정 저장";
-  }
-
-/* ─────────── 5. 폼 제출: Firestore + Storage 저장 ─────────── */
-document.getElementById('storeForm').addEventListener('submit', async ()=>{
-  if(!isLoggedIn){alert('로그인 후 등록이 가능합니다.');return;}
-
-  /* 필드 수집 */
-  // ▶ Vimeo 입력값 처리: iframe 코드라면 src 속성만 뽑아내고
-  //let raw = document.querySelector('[name=vimeo]').value.trim();
-  //raw = raw.replace(/&amp;/g, '&');
-  //let vimeoUrl = raw;
-  //if (/^<iframe/i.test(raw)) {
-  //  const m = raw.match(/src=["']([^"']+)["']/i);
-  //  if (m) vimeoUrl = m[1];
-  //}
-
-  //const embedPattern = /^https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?$/i;
-  // ── 영상 링크가 비어 있지 않을 때만 검증 ──
-  //if (vimeoUrl !== '' && !embedPattern.test(vimeoUrl)) {
-  //  alert('유효한 Vimeo embed URL 또는 iframe 코드를 넣어주세요.');
-  //  return;
-  //}
-
-  // ▶ 새 Vimeo 파싱/검증
-  const rawInput = document.querySelector('[name=vimeo]').value;
-  const vimeoUrl = parseVimeoInput(rawInput.trim());
-  if (rawInput.trim() !== '' && !vimeoUrl) {
-    alert('유효한 Vimeo 링크나 <iframe> 코드를 넣어주세요.');
-    return;
-  }
-
-  const store = {
-    name   : document.querySelector('[name=name]').value.trim(),
-    insta  : document.querySelector('[name=insta_id]').value.trim(),
-    desc   : document.querySelector('[name=desc]').value.trim(),
-    lat    : parseFloat(document.getElementById('lat').value),
-    lng    : parseFloat(document.getElementById('lng').value),
-    photo  : '',   // ★ 사진 URL 자리
-    vimeo  : vimeoUrl,   // ★ Vimeo 링크
-    created: firebase.firestore.FieldValue.serverTimestamp()
-  };
-  if(!store.name || !store.insta || isNaN(store.lat)||isNaN(store.lng)){
-    alert('필수 항목을 모두 입력해주세요.');return;
-  }
-
-  /* (선택) 사진 처리 */
-  const fileInput = document.getElementById('photo');
-  const file = fileInput.files[0];
-  try{
-    if(file){
-      /* 1) 이미지 압축 */
-      const compressedBlob = await compressImage(file);
-      /* 2) Storage 업로드 */
-      const filename = `store_photos/${Date.now()}_${file.name.replace(/\s+/g,'')}`;
-      const ref = storage.ref().child(filename);
-      await ref.put(compressedBlob);
-      store.photo = await ref.getDownloadURL();
+      editingId = doc.id; /* 14-3-1) 수정 모드로 전환: 선택한 문서 ID 저장 */
+      document.querySelector('[name=name]').value     = data.name;  /* 14-3-2) 가게 이름 설정 */
+      document.querySelector('[name=insta_id]').value = data.insta; /* 14-3-3) 인스타 ID 설정 */
+      document.querySelector('[name=desc]').value     = data.desc;  /* 14-3-4) 설명 설정 */
+      document.getElementById('lat').value           = data.lat;   /* 14-3-5) 위도 설정 */
+      document.getElementById('lng').value           = data.lng;   /* 14-3-6) 경도 설정 */
+      document.querySelector('[name=vimeo]').value    = data.vimeo || ""; /* 14-3-7) Vimeo 필드 설정 */
+      setLatLng(data.lat, data.lng); /* 14-3-8) 마커 위치 재설정 */
+      document.getElementById('saveBtn').textContent = "수정 저장"; /* 14-3-9) 저장 버튼 텍스트 변경 */
     }
 
-    // 3) Firestore 저장: 새등록 vs 수정 분기
-    if (editingId) {
-      await db.collection('stores').doc(editingId).update(store);
-      alert('수정되었습니다!');
-    } else {
-      await db.collection('stores').add(store);
-      alert('등록되었습니다!');
-    }
-    document.getElementById('storeForm').reset();
-    if(marker) marker.setMap(null);
-  }catch(err){
-    console.error(err);
-    alert('저장 중 오류가 발생했습니다.');
-  }
-});
-</script>
+    /* ─────────── 15. 폼 제출: Firestore + Storage 저장 ─────────── */
+    document.getElementById('storeForm').addEventListener('submit', async ()=>{ /* 15-1) 폼 submit 이벤트 리스너 바인딩 */
+      if(!isLoggedIn){ /* 15-2) 로그인 상태 확인 */
+        alert('로그인 후 등록이 가능합니다.');
+        return;
+      }
+
+      /* 15-3. Vimeo 입력값 파싱 및 검증 */
+      const rawInput = document.querySelector('[name=vimeo]').value; /* 15-3-1) 사용자가 입력한 Vimeo 문자열 */
+      const vimeoUrl = parseVimeoInput(rawInput.trim()); /* 15-3-2) parseVimeoInput 함수 호출 */
+      if (rawInput.trim() !== '' && !vimeoUrl) { /* 15-3-3) 입력값이 비어 있지 않으나 파싱 결과가 없으면 */
+        alert('유효한 Vimeo 링크나 <iframe> 코드를 넣어주세요.');
+        return;
+      }
+
+      /* 15-4. Firestore에 저장할 객체 생성 */
+      const store = {
+        name   : document.querySelector('[name=name]').value.trim(),       /* 15-4-1) 가게 이름 */
+        insta  : document.querySelector('[name=insta_id]').value.trim(),   /* 15-4-2) 인스타그램 ID */
+        desc   : document.querySelector('[name=desc]').value.trim(),       /* 15-4-3) 가게 설명 */
+        lat    : parseFloat(document.getElementById('lat').value),         /* 15-4-4) 위도 (숫자) */
+        lng    : parseFloat(document.getElementById('lng').value),         /* 15-4-5) 경도 (숫자) */
+        photo  : '',   /* 15-4-6) 이미지 URL (나중에 설정) */
+        vimeo  : vimeoUrl,   /* 15-4-7) 파싱된 Vimeo URL */
+        created: firebase.firestore.FieldValue.serverTimestamp() /* 15-4-8) 서버 타임스탬프 */
+      };
+      if(!store.name || !store.insta || isNaN(store.lat)||isNaN(store.lng)){ /* 15-4-9) 필수 항목 유효성 검사 */
+        alert('필수 항목을 모두 입력해주세요.');
+        return;
+      }
+
+      /* 15-5. (선택) 사진 처리 */
+      const fileInput = document.getElementById('photo');
+      const file = fileInput.files[0]; /* 15-5-1) 파일 선택 여부 확인 */
+      try{
+        if(file){
+          /* 15-5-2) 이미지 압축 */
+          const compressedBlob = await compressImage(file);
+          /* 15-5-3) Storage 업로드용 파일명 생성 */
+          const filename = `store_photos/${Date.now()}_${file.name.replace(/\s+/g,'')}`;
+          const ref = storage.ref().child(filename);
+          await ref.put(compressedBlob); /* 15-5-4) Firebase Storage에 Blob 업로드 */
+          store.photo = await ref.getDownloadURL(); /* 15-5-5) 업로드 후 다운로드 URL 저장 */
+        }
+
+        /* 15-6. Firestore 저장: 신규 등록 vs 수정 분기 */
+        if (editingId) { /* 15-6-1) 수정 모드 */
+          await db.collection('stores').doc(editingId).update(store); /* 문서 업데이트 */
+          alert('수정되었습니다!');
+        } else { /* 15-6-2) 신규 등록 모드 */
+          await db.collection('stores').add(store); /* 새 문서 추가 */
+          alert('등록되었습니다!');
+        }
+        document.getElementById('storeForm').reset(); /* 15-6-3) 폼 리셋 */
+        if(marker) marker.setMap(null); /* 마커 제거 */
+      }catch(err){
+        console.error(err); /* 15-6-4) 오류 발생 시 콘솔 로그 출력 */
+        alert('저장 중 오류가 발생했습니다.');
+      }
+    });
+  </script>
 </body>
 </html>
