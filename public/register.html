@@ -395,7 +395,8 @@
       const openTime = document.querySelector('[name=openTime]').value;    // 15-3-2) 오픈 시간 (문자열, ex: "09:30")
       const closeTime = document.querySelector('[name=closeTime]').value;  // 15-3-3) 마감 시간 (문자열, ex: "21:00")
       // ▼ 여기까지 해시태그 및 시간 수집 ▼
-
+      console.log('openTime →', openTime);
+      console.log('closeTime →', closeTime);
       /* 15-4. Firestore에 저장할 객체 생성 */
       const store = {
         name   : document.querySelector('[name=name]').value.trim(),       /* 15-4-1) 가게 이름 */
