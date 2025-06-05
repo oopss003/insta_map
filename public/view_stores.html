@@ -538,7 +538,8 @@
      // 2) 패널이 열려 있으면 togglePanel() 호출
     if (panelOpen) {
       togglePanel();
-
+    }
+  });
     /* 타이틀兼내위치 버튼 */
     document.getElementById('titleBtn').addEventListener('click',()=>{
       if(!navigator.geolocation) return alert('GeoLocation 미지원 브라우저');
