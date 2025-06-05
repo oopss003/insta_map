@@ -408,58 +408,91 @@
       const snap = await db.collection('stores')
                            .orderBy('created','desc')
                            .get();
-
-      let visibleCount = 0;
-
-      // 4) 각 매장마다 화면 내 여부 검사 후 렌더링
+      // ────────────────────────────────────────────────────
+      // 1번: **그룹핑 코드** 시작
+      const bucket = new Map();
       snap.forEach(doc => {
         const d = doc.data();
-        const { lat, lng, name, insta, desc, photo, vimeo, hashtags } = d;
-          const thumbnail = photo;      // photo 필드를 thumbnail 변수로 재명명
-          const videoUrl  = vimeo;      // vimeo 필드를 videoUrl 변수로 재명명
-
-        if (typeof lat !== 'number' || typeof lng !== 'number') return;
-
-        const position = new naver.maps.LatLng(lat, lng);
-        if (!bounds.hasLatLng(position)) return;  // 화면 밖이면 건너뜀
-
-        visibleCount++;
-        // ── 2번: 마커 생성 바로 이전에 추가 코드 ──
-        let tagText = "";
-        if (Array.isArray(hashtags) && hashtags.length > 0) {
-          tagText = hashtags[0];
-        }
-        const customIcon = createMarkerIconWithText(tagText);
-        // ──────────────────────────────────────
-        const marker = new naver.maps.Marker({
-          position,
-          map,
-          icon: customIcon
-        });
-        markers.push(marker);
-
-        // 리스트 카드 생성
-        const li = document.createElement('li');
-        li.className = 'card';
-        li.innerHTML = `
-          <img src="${thumbnail||''}" alt="">
-          <div class="meta">
-            <b>${name}</b>
-            <span>@${insta}</span><br>
-            <span>${desc||''}</span>
-          </div>`;
-        listEl.appendChild(li);
-
-        // 클릭 시 동작
-        function openStore(){
-          map.setCenter(position);
-          map.setZoom(18);
-          showInfoCard({ name, insta, desc, thumbnail, videoUrl });
-        }
-        naver.maps.Event.addListener(marker, 'click', openStore);
-        li.addEventListener('click', openStore);
+        const { lat, lng } = d;
+      if (typeof lat !== 'number' || typeof lng !== 'number') return;
+      // 소수점 6자리까지 동일한 lat/lng만 같은 그룹으로 묶음
+      const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
+      if (!bucket.has(key)) bucket.set(key, []);
+      bucket.get(key).push(d);
       });
+      // 1번: **그룹핑 코드** 끝
+      // ────────────────────────────────────────────────────
+      let visibleCount = 0;
 
+      // ────────────────────────────────────────────────────
+      // 4번: 그룹(bucket)마다 원형 분산(off­set) 계산 → 마커 생성
+      bucket.forEach((items, key) => {
+        // key: "lat_lng", items: 같은 그룹(배열) 안에 있는 매장 데이터들
+        const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
+        const centerPos = new naver.maps.LatLng(someLat, someLng);
+        if (!bounds.hasLatLng(centerPos)) return; // 화면 밖이면 건너뜀
+
+        // 그룹 크기, 분산 반지름 설정
+        const groupSize = items.length;
+        const baseRadius = 0.00003; // 약 3미터 내외 분산 (필요에 따라 조정)
+
+        items.forEach((data, idx) => {
+          const { lat, lng, name, insta, desc, photo, vimeo, hashtags } = data;
+          // ① 원래 lat/lng를 기반으로 offset 계산
+          let newLat = lat;
+          let newLng = lng;
+          if (groupSize > 1) {
+            const angleDeg = (360 / groupSize) * idx;
+            const angleRad = angleDeg * Math.PI / 180;
+            const offsetLat = baseRadius * Math.cos(angleRad);
+            const offsetLng = baseRadius * Math.sin(angleRad);
+            newLat = lat + offsetLat;
+            newLng = lng + offsetLng;
+          }
+
+          // ② 화면 내 여부 확인 후, 마커 생성
+          const position = new naver.maps.LatLng(newLat, newLng);
+          if (!bounds.hasLatLng(position)) return;
+          visibleCount++;
+
+          // ③ 해시태그에서 첫 번째 텍스트 꺼내오기
+          let tagText = "";
+          if (Array.isArray(hashtags) && hashtags.length > 0) {
+            tagText = hashtags[0];
+          }
+          const customIcon = createMarkerIconWithText(tagText);
+
+          // ④ 마커 생성 (offset 위치 + customIcon)
+          const marker = new naver.maps.Marker({
+           position,
+            map,
+            icon: customIcon
+          });
+          markers.push(marker);
+
+          // ⑤ 클릭 시 원래 lat/lng(중앙 좌표)로 이동 + InfoCard 표시
+          function openStore() {
+            map.setCenter(new naver.maps.LatLng(lat, lng));
+            map.setZoom(18);
+            showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo });
+          }
+          naver.maps.Event.addListener(marker, 'click', openStore);
+
+          // ⑥ 리스트 카드(기존대로)
+          const li = document.createElement('li');
+          li.className = 'card';
+          li.innerHTML = `
+            <img src="${photo||''}" alt="">
+            <div class="meta">
+              <b>${name}</b>
+              <span>@${insta}</span><br>
+              <span>${desc||''}</span>
+            </div>`;
+          li.addEventListener('click', openStore);
+          listEl.appendChild(li);
+        });
+      });
+      // ────────────────────────────────────────────────────
       // 5) 화면 내 매장 수 반영
       storeCnt.textContent = `매장 ${visibleCount}개`;
     }
