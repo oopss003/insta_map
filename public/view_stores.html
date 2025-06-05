@@ -531,8 +531,13 @@
 
     function hideInfoCard(){ infoCard.classList.remove('show'); }
 
-    /* 지도 아무 곳 클릭하면 카드 닫기 */
-    naver.maps.Event.addListener(map,'click',hideInfoCard);
+    /* 지도 아무 곳 클릭하면 카드 닫기(InfoCard) + 패널이 열려 있으면 닫기 */
+    naver.maps.Event.addListener(map, 'click', () => {
+    // 1) InfoCard 닫기
+    hideInfoCard();
+     // 2) 패널이 열려 있으면 togglePanel() 호출
+    if (panelOpen) {
+      togglePanel();
 
     /* 타이틀兼내위치 버튼 */
     document.getElementById('titleBtn').addEventListener('click',()=>{
