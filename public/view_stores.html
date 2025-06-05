@@ -50,7 +50,7 @@
 
   /* ─── 패널 위치·애니메이션 변경 ─── */
   #panel{
-    position:fixed;left:0;right:0;bottom:-80%;height:80vh;z-index:1002;
+    position:fixed;left:0;right:0;bottom:-50%;height:50vh;z-index:1002;
     background:var(--bg);border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);
     box-shadow:0 -4px 8px rgba(0,0,0,.15);transition:bottom .25s;
     display:flex;flex-direction:column;padding-top:8px;
@@ -68,8 +68,9 @@
   .card:hover{background:#EEF8FF}
   .card img{width:64px;height:64px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#DDD}
   .meta{flex:1;font-size:14px;min-width:0}
-  .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .meta span{color:var(--muted);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:normal;overflow:visible;text-overflow:clip}
+  .meta span{color:var(--muted);font-size:13px;white-space:normal;overflow:visible;text-overflow:clip}
+
 
   /* ② 마커 클릭 시 표시되는 하단 카드 */
 /* 카드 전체 (하단 오버레이)  ───────── */
@@ -258,6 +259,7 @@
   #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
     transform: rotate(90deg);
   }
+
 /* ──────────────────────────────────────────────────────────────────── */
 
 </style>
