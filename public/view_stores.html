@@ -520,7 +520,11 @@
 
   // 3) 나머지 메타
   infoName.textContent    = d.name;
-  infoInsta.textContent   = '@' + d.insta;
+  infoInsta.innerHTML     = `<a href="https://instagram.com/${d.insta}"
+                              target="_blank"
+                              style="color: var(--primary); text-decoration: none;">
+                              @${d.insta}
+                            </a>`;
   infoDesc.textContent    = d.desc  || '';
   infoCard.classList.add('show');
 }
