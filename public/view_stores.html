@@ -532,8 +532,11 @@
   updateInfoCardPosition();
 }
 
-    function hideInfoCard(){ infoCard.classList.remove('show'); }
-
+    function hideInfoCard(){
+      infoCard.classList.remove('show');
+      // ── 팝업카드를 화면 아래(숨김) 위치로 되돌립니다 ──
+      infoCard.style.bottom = '-320px';
+    }
     /* 지도 아무 곳 클릭하면 카드 닫기(InfoCard) + 패널이 열려 있으면 닫기 */
     naver.maps.Event.addListener(map, 'click', () => {
     // 1) InfoCard 닫기
