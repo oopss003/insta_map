@@ -1,4 +1,4 @@
-<!DOCTYPE html>More actions
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -322,7 +322,30 @@
       content:'<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
       size:new naver.maps.Size(24,24),anchor:new naver.maps.Point(12,12)
     };
-
+    // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
+    function createMarkerIconWithText(text) {
+      return {
+        content: `
+          <div style="
+            position: relative;
+            transform: translate(-50%, -100%);
+            background: var(--primary);
+            color: #fff;
+            padding: 4px 10px;
+            border: 2px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 0 0 2px rgba(0,0,0,.15);
+            font-size: 12px;
+            white-space: nowrap;
+          ">
+            ${text}
+          </div>
+        `,
+        size: new naver.maps.Size(0, 0),
+        anchor: new naver.maps.Point(0, 0)
+      };
+    }
+  // ────────────────────────────────────────────────
     /* DOM 캐시 */
     const listEl   = document.getElementById('list');
     const infoCard = document.getElementById('infoCard');
@@ -400,15 +423,20 @@
         if (!bounds.hasLatLng(position)) return;  // 화면 밖이면 건너뜀
 
         visibleCount++;
-
-        // 마커 생성
+        // ── 2번: 마커 생성 바로 이전에 추가 코드 ──
+        let tagText = "";
+        if (Array.isArray(hashtags) && hashtags.length > 0) {
+          tagText = hashtags[0];
+        }
+        const customIcon = createMarkerIconWithText(tagText);
+        // ──────────────────────────────────────
         const marker = new naver.maps.Marker({
           position,
           map,
-          icon: markerIcon
+          icon: customIcon
         });
         markers.push(marker);
-
+        
         // 리스트 카드 생성
         const li = document.createElement('li');
         li.className = 'card';
