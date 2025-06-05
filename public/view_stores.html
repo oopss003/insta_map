@@ -529,6 +529,7 @@
                             </a>`;
   infoDesc.textContent    = d.desc  || '';
   infoCard.classList.add('show');
+  updateInfoCardPosition();
 }
 
     function hideInfoCard(){ infoCard.classList.remove('show'); }
@@ -564,12 +565,40 @@
     panelOpen = !panelOpen;
     panel.classList.toggle('open',  panelOpen);  // 패널 슬라이드
     drawer.classList.toggle('hide', panelOpen);  // drawer 숨김/표시
+    updateInfoCardPosition();
     }
 
     /* drawer 바 자체를 탭하면 열고 닫기 */
     drawer.addEventListener('click', togglePanel);
     /* 패널 상단 handle(첫 번째 div.handle) 탭해서도 닫기 */
     panel.querySelector('.handle').addEventListener('click', togglePanel);
+    /**
+     * 슬라이드패널(open/close) 상태에 따라
+     * 팝업카드(#infoCard)의 bottom 값을 동적으로 계산하여 적용한다.
+     */
+    function updateInfoCardPosition() {
+      // (1) 팝업카드가 실제로 보이는 상태인지 확인
+      if (!infoCard.classList.contains('show')) {
+        return;  // 보이지 않는 상태라면 위치 계산 안 함
+      }
+        
+  if (panelOpen) {
+    // ── ① 패널이 열린 상태 ──
+    // 패널의 실제 높이(px)를 가져온다
+    const panelHeight = panel.offsetHeight;
+
+    // 카드와 패널 사이에 붙일 여백(px)
+    const gapBetween = 8;
+
+    // 팝업카드를 패널 위로 띄우기
+    infoCard.style.bottom = (panelHeight + gapBetween) + 'px';
+  } else {
+    // ── ② 패널이 닫힌 상태 ──
+    // 화면 바닥에서 고정으로 띄우고 싶던 기존 값 (예: 96px)
+    const defaultBottom = 96;
+    infoCard.style.bottom = defaultBottom + 'px';
+  }
+}
 
     });
   </script>
