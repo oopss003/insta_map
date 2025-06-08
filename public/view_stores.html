@@ -213,9 +213,9 @@
     list-style: none;
     padding: 0;
     margin: 0;
-  }
-  #sideMenu li + li {
-    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; 
   }
 
   /* 메뉴 링크 스타일 */
@@ -650,7 +650,7 @@
     <ul>
       <li><a href="/login">로그인</a></li>
       <li><a href="https://inwave.ai.kr/">인웨이브</a></li>
-      <a href="https://inwave.ai.kr/" target="_self">인웨이브</a>
+      <li><a href="https://inwave.ai.kr/" target="_self">인웨이브</a></li>
       <li><a href="/addwave">애드웨이브 1.0</a></li>
       <li><a href="/waveshare">웨이브쉐어</a></li>
       <li><a href="/invest">투자라운지</a></li>
