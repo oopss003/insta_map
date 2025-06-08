@@ -325,6 +325,15 @@
       size:new naver.maps.Size(24,24),anchor:new naver.maps.Point(12,12)
     };
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
+
+    // "HH:mm" 문자열 → 총 분(0~1439) 반환
+    function toMinutes(hhmm) {
+      if (!hhmm) return null;
+      const [h, m] = hhmm.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
     function createMarkerIconWithText(text) {
       return {
         content: `
@@ -403,6 +412,10 @@
       markers.length = 0;
       listEl.innerHTML = '';
 
+      const now = new Date();
+      const dayMap = ['일','월','화','수','목','금','토'];
+      const todayStr   = dayMap[now.getDay()];          // ex. "월"
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
       // 2) 화면에 보이는 영역(bounds) 가져오기
       const bounds = map.getBounds();
 
@@ -439,7 +452,27 @@
         const baseRadius = 0.001; // 약 3미터 내외 분산 (필요에 따라 조정)
 
         items.forEach((data, idx) => {
-          const { lat, lng, name, insta, desc, photo, vimeo, hashtags } = data;
+          const {
+            lat, lng, name, insta, desc, photo, vimeo, hashtags,
+            offDays,    // 오늘 쉬는 날 체크용
+            openTime,   // 영업 시작 시각 문자열
+            closeTime,  // 영업 종료 시각 문자열
+            breakStart, // 브레이크 시작 문자열
+            breakEnd    // 브레이크 종료 문자열
+          } = data;
+          // 1) 오늘 쉬는 날이면 스킵
+          if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
+          // 2) 영업시간 체크
+          const openMin  = toMinutes(openTime);
+          const closeMin = toMinutes(closeTime);
+          if (nowMinutes < openMin || nowMinutes >= closeMin) return;
+          // 3) 브레이크타임 체크 (값이 있으면)
+          if (breakStart && breakEnd) {
+            const bs = toMinutes(breakStart);
+            const be = toMinutes(breakEnd);
+            if (nowMinutes >= bs && nowMinutes < be) return;
+          }
+
           // ① 원래 lat/lng를 기반으로 offset 계산
           let newLat = lat;
           let newLng = lng;
