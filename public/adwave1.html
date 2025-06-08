@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<!-- Common template for AdWave 1.0, WaveShare, 투자라운지 pages -->
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><!-- PAGE_TITLE --></title>
+  <style>
+    /* 공통 스타일 */
+    body {
+      font-family: 'Pretendard', sans-serif;
+      max-width: 800px;
+      margin: 40px auto;
+      padding: 0 16px;
+      color: #222;
+      line-height: 1.6;
+    }
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    header h1 {
+      font-size: 24px;
+      margin: 0;
+      color: #0F9ED5;
+    }
+    nav a {
+      margin: 0 8px;
+      text-decoration: none;
+      color: #0F9ED5;
+      font-weight: 500;
+    }
+    nav a.active {
+      border-bottom: 2px solid #0F9ED5;
+    }
+    section {
+      margin-bottom: 32px;
+    }
+    h2 {
+      font-size: 20px;
+      color: #0E2841;
+      margin-bottom: 12px;
+    }
+    p {
+      margin: 8px 0;
+    }
+    .pricing-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+    }
+    .pricing-table th,
+    .pricing-table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1><!-- PAGE_NAME --></h1>
+    <nav>
+      <a href="adwave1.html" class="<!-- ACTIVE_ADWAVE -->">애드웨이브 1.0</a>
+      <a href="waveshare.html" class="<!-- ACTIVE_WAVESHARE -->">웨이브쉐어</a>
+      <a href="invest.html" class="<!-- ACTIVE_INVEST -->">투자라운지</a>
+    </nav>
+  </header>
+  <!-- CONTENT_START -->
+</body>
+</html>
+
+<!-- adwave1.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- include head from template, replace placeholders -->
+</head>
+<body>
+  <!-- include header, set PAGE_NAME="애드웨이브 1.0" and ACTIVE_ADWAVE="active" -->
+  <section>
+    <h2>광고 상품 소개서</h2>
+    <p>애드웨이브 1.0 플랫폼을 통해 다양한 광고 옵션을 만나보세요.</p>
+    <table class="pricing-table">
+      <tr><th>요금제</th><th>횟수</th><th>비고</th></tr>
+      <tr><td>300,000원</td><td>6,500회</td><td rowspan="4">가격 협의 가능</td></tr>
+      <tr><td>600,000원</td><td>13,000회</td></tr>
+      <tr><td>900,000원</td><td>20,000회</td></tr>
+      <tr><td>1,200,000원</td><td>28,000회</td></tr>
+    </table>
+  </section>
+</body>
+</html>
+
+<!-- waveshare.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- include head from template, set placeholders -->
+</head>
+<body>
+  <!-- header with PAGE_NAME="웨이브쉐어" ACTIVE_WAVESHARE="active" -->
+  <section>
+    <h2>웨이브쉐어 프로그램</h2>
+    <p>고정 요금제로 안정적인 광고 집행이 가능합니다.</p>
+    <table class="pricing-table">
+      <tr><th>요금제</th><th>금액</th><th>비고</th></tr>
+      <tr><td>정액제</td><td>월 30,000원</td><td>6개월 단위 지급</td></tr>
+      <tr><td>과금제</td><td>유효광고당 5원</td><td>즉시 과금</td></tr>
+    </table>
+  </section>
+</body>
+</html>
+
+<!-- invest.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- include head from template, set placeholders -->
+</head>
+<body>
+  <!-- header with PAGE_NAME="투자라운지" ACTIVE_INVEST="active" -->
+  <section>
+    <h2>투자라운지 소개</h2>
+    <p>최신 투자 정보를 공유하고 소통하는 공간입니다.</p>
+    <p>더 자세한 투자 옵션은 개별 상담을 통해 안내드립니다.</p>
+  </section>
+</body>
+</html>
