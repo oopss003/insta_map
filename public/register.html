@@ -190,6 +190,36 @@
       <option value="23:00">23:00</option>
       <option value="23:30">23:30</option>
     </select>
+
+      <!-- 1) 쉬는 날 체크박스 -->
+    <label>쉬는 날</label>
+    <div class="off-days">
+      <label><input type="checkbox" name="offDays[]" value="월"> 월요일</label>
+      <label><input type="checkbox" name="offDays[]" value="화"> 화요일</label>
+      <label><input type="checkbox" name="offDays[]" value="수"> 수요일</label>
+      <label><input type="checkbox" name="offDays[]" value="목"> 목요일</label>
+      <label><input type="checkbox" name="offDays[]" value="금"> 금요일</label>
+      <label><input type="checkbox" name="offDays[]" value="토"> 토요일</label>
+      <label><input type="checkbox" name="offDays[]" value="일"> 일요일</label>
+    </div>
+
+    <!-- 2) 브레이크 타임 -->
+    <label>브레이크 타임 시작 (24시간 기준, 30분 단위)</label>
+    <select name="breakStart">
+      <option value="">선택 안함</option>
+      <option value="00:00">00:00</option>
+      <!-- ... 30분 간격 옵션 반복 ... -->
+      <option value="23:30">23:30</option>
+    </select>
+
+    <label>브레이크 타임 종료 (24시간 기준, 30분 단위)</label>
+    <select name="breakEnd">
+      <option value="">선택 안함</option>
+      <option value="00:00">00:00</option>
+      <!-- ... 30분 간격 옵션 반복 ... -->
+      <option value="23:30">23:30</option>
+    </select>
+    
     <!-- 오픈/마감 시간 입력 필드 끝 -->
     <label>위도</label> <!-- 8-16) 위도 라벨 -->
     <input id="lat" readonly required /> <!-- 8-17) 위도 값 표시 필드 (읽기 전용) -->
