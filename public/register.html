@@ -531,6 +531,19 @@
 
       const openTime = document.querySelector('[name=openTime]').value;    // 15-3-2) 오픈 시간 (문자열, ex: "09:30")
       const closeTime = document.querySelector('[name=closeTime]').value;  // 15-3-3) 마감 시간 (문자열, ex: "21:00")
+      // 1) 브레이크 타임
+      const breakStart = document.querySelector('[name=breakStart]').value;
+      const breakEnd   = document.querySelector('[name=breakEnd]').value;
+      // 2) 쉬는 날(체크된 것만 배열로)
+      const offDays = Array.from(
+        document.querySelectorAll('[name="offDays[]"]:checked')
+      ).map(cb => cb.value);
+
+      // (디버깅용 로그)
+      console.log('breakStart →', breakStart);
+      console.log('breakEnd   →', breakEnd);
+      console.log('offDays    →', offDays);
+
       // ▼ 여기까지 해시태그 및 시간 수집 ▼
       console.log('openTime →', openTime);
       console.log('closeTime →', closeTime);
@@ -548,6 +561,9 @@
         hashtags : hashtagsArray,  // 15-4-1) 해시태그 배열
         openTime : openTime,       // 15-4-2) 오픈 시간 문자열
         closeTime: closeTime,       // 15-4-3) 마감 시간 문자열
+        breakStart: breakStart,   // 추가된 브레이크 시작 시간
+        breakEnd:   breakEnd,     // 추가된 브레이크 종료 시간
+        offDays:    offDays,      // 추가된 쉬는 날 배열
         // ▼ 추가 끝 ▼
         /* 15-4-9) 기존 유효성 검사 다음 등 로직 계속… */
       };
