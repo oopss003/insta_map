@@ -54,6 +54,14 @@
     #getLocBtn{background:#28a745;color:#fff} /* 4-5 */
     #saveBtn{background:#2d8cff;color:#fff}  /* 4-5 */
     #header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px} /* 4-6 */
+      .back-button {
+        font-size: 24px;
+        margin-right: 8px;
+        text-decoration: none;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+      }
     #authButtons button{background:#FEE500;border:none;border-radius:8px;padding:8px 10px;margin-left:6px;cursor:pointer;font-weight:bold;display:flex;align-items:center} /* 4-6 */
     #authButtons button img{height:20px;margin-right:6px} /* 4-6 */
     #kakaoLogoutBtn{background:#ddd} /* 4-6 */
@@ -62,6 +70,8 @@
 <body>
   <!-- 5. 헤더 영역 (제목 + 카카오 로그인/로그아웃 버튼) -->
   <div id="header">
+    <!-- 뒤로가기 화살표 -->
+    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">←</a>
     <h2>📍 가게 등록</h2> <!-- 5-1) 페이지 제목 -->
     <div id="authButtons">
       <button id="kakaoLoginBtn"> <!-- 5-2-1) 카카오 로그인 버튼 -->
