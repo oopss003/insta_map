@@ -9,6 +9,10 @@
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
+    />
     <style>
       :root {
         --primary: #0056ff;
@@ -31,30 +35,90 @@
         text-decoration: none;
       }
       /* ─── 헤더 ─────────────────────────────────────────────── */
+      /* ─── 헤더 & 네비게이션 ─── */
       header {
-        position: sticky;
-        top: 0;
-        z-index: 1000;
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        padding: 16px 32px;
-        background: #fff;
-        border-bottom: 1px solid #e5e7eb;
+        height: 72px;
+        padding: 0 16px;
       }
       .logo {
         font-size: 24px;
-        font-weight: 700;
+        font-weight: bold;
+        color: #0F9ED5;
+        line-height: 74px;
+        font-family: 'Pretendard', sans-serif;
       }
-      nav ul {
-        list-style: none;
+      /* 햄버거 */
+      .menu-toggle {
+        display: none;
+        position: relative;
+        top: 16px;
+        width: 40px; height: 40px;
+        background: none; border: none;
+        cursor: pointer;
+        align-self: center;
+      }
+      .menu-toggle span {
+        position: absolute;
+        left: 50%;
+        width: 24px; height: 2px;
+        background: #222;
+        transform-origin: center center;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      .menu-toggle span:nth-child(1) { transform: translate(-50%,-8px); }
+      .menu-toggle span:nth-child(2) { transform: translate(-50%, 0); }
+      .menu-toggle span:nth-child(3) { transform: translate(-50%, 8px); }
+      .menu-toggle.open span:nth-child(1) { transform: translate(-50%,0) rotate(45deg); }
+      .menu-toggle.open span:nth-child(2) { opacity: 0; }
+      .menu-toggle.open span:nth-child(3) { transform: translate(-50%,0) rotate(-45deg); }
+
+      /* 기본 네비 */
+      nav {
         display: flex;
-        gap: 32px;
       }
       nav a {
+        margin-left: 16px;
+        text-decoration: none;
+        color: #0F9ED5;
         font-weight: 500;
-        padding: 4px 0;
+        padding-bottom: 4px;
+        font-family: 'Pretendard', sans-serif;
       }
+      nav a.active {
+        border-bottom: 2px solid #0F9ED5;
+      }
+
+      /* 드롭다운 네비 (모바일) */
+      nav.dropdown {
+        display: flex;
+        position: absolute;
+        top: 64px; right: 16px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        flex-direction: column;
+        overflow: hidden;
+        z-index: 1000;
+      }
+      nav.dropdown a {
+        margin: 0; padding: 12px 16px;
+        border-bottom: 1px solid #eee;
+      }
+      nav.dropdown a:last-child {
+        border-bottom: none;
+      }
+
+      /* 반응형 */
+      @media (max-width: 768px) {
+        .menu-toggle { display: flex; }
+        nav { display: none; }
+        nav.dropdown { display: flex; }
+      }
+
       nav a.active {
         color: var(--primary);
       }
@@ -196,15 +260,19 @@
     <!-- ─── 헤더 영역 ─────────────────────────────────────── -->
     <header>
       <div class="logo">INWAVE</div>
+
+      <button class="menu-toggle" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
+
       <nav>
-        <ul>
-          <li><a href="#" class="active">Home</a></li>
-          <li><a href="#adwave">애드웨이브 1.0</a></li>
-          <li><a href="#wshare">웨이브쉐어</a></li>
-          <li><a href="#invest">투자라운지</a></li>
-          <li><a href="#about">회사소개</a></li>
-        </ul>
+        <a href="#" class="active">Home</a>
+        <a href="#adwave">애드웨이브 1.0</a>
+        <a href="#wshare">웨이브쉐어</a>
+        <a href="#invest">투자라운지</a>
+        <a href="#about">회사소개</a>
       </nav>
+    
     </header>
 
     <!-- ─── 히어로 배너 ──────────────────────────────────── -->
@@ -292,5 +360,13 @@
 
     <!-- ─── 푸터 ─────────────────────────────────────────── -->
     <footer>© 2025 INWAVE. All rights reserved.</footer>
+    <script>
+      const btnOpen = document.querySelector('.menu-toggle');
+      const nav     = document.querySelector('nav');
+      btnOpen.addEventListener('click', () => {
+        btnOpen.classList.toggle('open');
+        nav.classList.toggle('dropdown');
+      });
+    </script>
   </body>
 </html>
