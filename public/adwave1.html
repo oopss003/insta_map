@@ -27,12 +27,14 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 24px 0;
+      height: 72px;             /* ← 고정 높이 지정 (24px top+bottom = 48px, plus nav text line-height → 대략 72px) */
+      padding: 0 16px;          /* ← 좌우 패딩만 남기고 위아래 패딩은 제거 */
     }
     .logo {
       font-size: 24px;
       font-weight: bold;
       color: #0F9ED5;
+      line-height: 72px; 
     }
     nav {
         display: flex;
@@ -237,12 +239,14 @@
     /* 햄버거 버튼 기본 */
     .menu-toggle {
       display: none;          /* 모바일에서만 보이도록 */
-      position: relative;     /* 스팬 절대위치 기준 */
+      position: relative;  /* 스팬 절대위치 기준 */
+      top: 16px;    
       width: 40px;
       height: 40px;
       background: none;
       border: none;
       cursor: pointer;
+      align-self: center;  
     }
     .menu-toggle span {
       position: absolute;     /* ← 변경 */
