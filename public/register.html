@@ -84,13 +84,17 @@
 
     /* 뒤로가기 버튼도 헤더 높이에 맞춰서 */
     .back-button {
-      font-size: 24px;
-      margin-right: 8px;
-      text-decoration: none;
-      color: var(--text);
       display: inline-flex;
       align-items: center;
-      height: 100%;            /* #header 높이 따라감 */
+      justify-content: center;
+      height: 100%;          /* 헤더 높이(60px)를 그대로 따름 */
+      padding: 0 8px;        /* 클릭 영역 확보 */
+  
+      font-size: 32px;       /* 화살표 크기 */
+      line-height: 1;        /* 텍스트가 넘치지 않도록 */
+      color: var(--text);
+      text-decoration: none;
+      margin-right: 8px;
     }
 
     /* 카카오 로그인 버튼 높이 고정 */
@@ -125,7 +129,7 @@
   <!-- 5. 헤더 영역 (제목 + 카카오 로그인/로그아웃 버튼) -->
   <div id="header">
     <!-- 뒤로가기 화살표 -->
-    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">←</a>
+    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">&lt;</a>
     <h2>📍 가게 등록</h2> <!-- 5-1) 페이지 제목 -->
     <div id="authButtons">
       <button id="kakaoLoginBtn"> <!-- 5-2-1) 카카오 로그인 버튼 -->
