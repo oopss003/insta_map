@@ -222,6 +222,48 @@
       height: auto;
       border-radius: 8px;
     }
+    /* 햄버거 버튼 기본 */
+    .menu-toggle {
+      display: none;          /* 모바일에서만 보이도록 */
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+    .menu-toggle span {
+      display: block;
+      width: 24px;
+      height: 2px;
+      background-color: #222;
+      margin: 4px 0;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    /* 열림 상태(X 모양으로) */
+    .menu-toggle.open span:nth-child(1) {
+      transform: translateY(6px) rotate(45deg);
+    }
+    .menu-toggle.open span:nth-child(2) {
+      opacity: 0;
+    }
+    .menu-toggle.open span:nth-child(3) {
+      transform: translateY(-6px) rotate(-45deg);
+    }
+
+    /* 반응형: 화면 768px 이하일 때 버튼 표시, nav 숨김 */
+    @media (max-width: 768px) {
+      .menu-toggle {
+        display: flex;
+      }
+      nav {
+        display: none !important;
+      }
+    }
+
   </style>
 </head>
 <body>
@@ -229,6 +271,14 @@
     <!-- 헤더 -->
     <header>
       <div class="logo">INWAVE</div>
+
+      <!-- CSS 햄버거 버튼 -->
+      <button class="menu-toggle" aria-label="메뉴 열기">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
       <nav>
         <a href="adwave1.html" class="active">애드웨이브 1.0</a>
         <a href="waveshare.html">웨이브쉐어</a>
@@ -351,5 +401,15 @@
       </div>
     </section>
   </div>
+    <!-- 3번: 메뉴 토글 스크립트 -->
+    <script>
+        const btn = document.querySelector('.menu-toggle');
+        const nav = document.querySelector('nav');
+
+        btn.addEventListener('click', () => {
+          nav.classList.toggle('dropdown');
+          btn.classList.toggle('open');
+        });
+  </script>  
 </body>
 </html>
