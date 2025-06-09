@@ -175,15 +175,23 @@
     }
     /* 테이블 스타일 */
     .pricing-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 24px 0;
+        width: 100%;
+        table-layout: fixed;          /* 셀을 균등 분할 */
+        border-collapse: separate;    /* radius 적용을 위해 collapse → separate */
+        border-spacing: 0;            /* 셀 간격 제거 */
+        margin: 24px 0;
+        border: 2px solid #1565C0;    /* 외곽선 */
+        border-radius: 8px;           /* 외곽 둥글게 */
+        overflow: hidden;             /* radius 밖 셀 잘림 방지 */
     }
     .pricing-table th,
     .pricing-table td {
-      border: 2px solid #1565C0;
-      padding: 12px;
-      text-align: center;
+        border: none;
+        border-right: 1px solid #1565C0;  /* 내부 세로선 */
+        border-bottom: 1px solid #1565C0; /* 내부 가로선 */
+        padding: 12px;
+        text-align: center;
+        width: calc(100% / 3);           /* 3등분 균등 폭 */
     }
     .pricing-table th {
       background: #1565C0;
@@ -344,7 +352,7 @@
       <div class="tech-point">
         <span class="label">기술력 포인트 1</span>
         <h3>자체 AI 개발로 광고 테스팅데이터 수집</h3>
-        <p>AI 기반 데이터수집을 통해 옥외 디지털 광고의 효율 데이터를 수집하여<br>광고에 대한 타겟층과 효율을 분석합니다.</p>
+        <p>AI 기반 데이터수집을 통해 옥외 디지털 광고의 효율 데이터를 수집하여 광고에 대한 타겟층과 효율을 분석합니다.</p>
         <img class="diagram" src="images/tech-point1.gif" alt="기술력 포인트1 애니메이션">
         <div class="caption">수집된 데이터는 개인식별이 불가능하며, 이미지 저장을 하지 않습니다.</div>
       </div>
@@ -352,7 +360,7 @@
       <div class="tech-point">
         <span class="label">기술력 포인트 2</span>
         <h3>수집된 데이터를 애드웨이브 1.0으로 분석 후 최적 광고 송출</h3>
-        <p>수집된 데이터에서 광고와의 타겟, 시간, 날씨 등<br>다양한 변수를 학습·분석하여 최적의 효율을 내는 광고를 송출합니다.</p>
+        <p>수집된 데이터에서 광고와의 타겟, 시간, 날씨 등 다양한 변수를 학습·분석하여 최적의 효율을 내는 광고를 송출합니다.</p>
         <img class="diagram" src="images/tech-point2.gif" alt="기술력 포인트2 애니메이션">
       </div>
 
