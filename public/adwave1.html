@@ -75,6 +75,15 @@
       max-width: 40%;
       display: block;
     }
+    /* 상단 히어로 이미지를 라운딩 & 중앙 배치 */
+    .top-hero {
+      display: block;           /* 블록 레벨로 중앙 정렬 */
+      margin: 32px auto;        /* 위아래 여백 32px, 좌우 자동 중앙 */
+      max-width: 100%;          /* 화면 너비에 맞춰 줄어듦 */
+      width: 800px;             /* 최대 800px 고정폭 (container 와 동일) */
+      border-radius: 16px;      /* 모서리 라운딩 */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);  /* 살짝 그림자 (선택) */
+    }  
     /* 질문 버블 섹션 */
     .speech-section {
       text-align: center;
@@ -227,15 +236,10 @@
       </nav>
     </header>
 
-    <!-- 히어로 섹션 -->
-    <section class="hero">
-      <div class="hero-text">
-        <h1>애드웨이브 1.0</h1>
-        <h2>옥외 디지털광고, 다 똑같은 광고가 아니야!</h2>
-        <p>내돈 어디에 쓴지 모르는 광고하지 마세요.</p>
-      </div>
-      <img src="images/hero-illustration.jpg" alt="애드웨이브 1.0 Illustration">
-    </section>
+    <img class="top-hero" 
+         src="images/hero-illustration.jpg" 
+         alt="애드웨이브 히어로 일러스트">
+
 
     <!-- 질문 버블 -->
     <section class="speech-section">
