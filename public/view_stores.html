@@ -381,7 +381,7 @@
       // 이미 ? 뒤에 다른 파라미터가 있으면
         autoplayUrl = url + '&autoplay=1';
       } else {
-        autoplayUrl = url + '?autoplay=1';
+        autoplayUrl = url + '?autoplay=1&muted=1&playsinline=1';
       }
       // 2) iframe src에 autoplay 파라미터까지 포함
        videoFrame.src = autoplayUrl;
@@ -668,8 +668,15 @@
   <div id="videoModal" aria-hidden="true">
   <div class="modal-content">
     <button id="closeVideo" aria-label="닫기">✚</button>
-    <iframe id="videoFrame" src="" frameborder="0"
-            allow="autoplay; fullscreen" allowfullscreen></iframe>
+    <iframe
+      id="videoFrame"
+      src=""
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+      playsinline
+      webkit-playsinline
+    ></iframe>
   </div>
 </div>
 
