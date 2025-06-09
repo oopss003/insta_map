@@ -1,55 +1,247 @@
-<section>
-  <h2>웨이브쉐어란?</h2>
-  <p>매장 전면부(90×60cm)를 디지털 사이니지 설치 공간으로 제공하고,
-     매월 발생하는 광고 수익을 매장주님과 인웨이브가 공유하는 플랫폼입니다.</p>
-</section>
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>웨이브쉐어</title>
+  <!-- Pretendard 폰트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
 
-<section>
-  <h2>주요 서비스</h2>
-  <ul>
-    <li><strong>무관리·무운영</strong>  
-      설치 → 콘텐츠 송출 → 유지보수까지 전 과정을 인웨이브가 전담</li>
-    <li><strong>디지털 사이니지 설치</strong>  
-      매장 유리창 안쪽에 43″ Full HD 사이니지 설치<br>
-      유동 인구가 가장 많은 1층 점포에만 엄선</li>
-    <li><strong>수익 공유 모델</strong>  
-      매월 최소 <strong>30,000원</strong> 보장,  
-      최대 <strong>180,000원</strong> 기대 (일 5시간·1,200회 송출 기준)</li>
-  </ul>
-</section>
+  <style>
+    /* ─── 기본 레이아웃 ─── */
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      color: #222; line-height: 1.6;
+      background: #fff;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
 
-<section>
-  <h2>데이터 기반 부가가치</h2>
-  <ul>
-    <li>실시간 유동인구 분석: 일간·주간 방문 인원, 성별·연령대 비율, 시간대 집중도</li>
-    <li>영업 최적화: 성별·연령대 데이터를 활용한 프로모션 타깃 조정</li>
-    <li>입지 분석 자료: 프랜차이즈 확장·신규 사업 검토 시 필수 데이터 제공</li>
-    <li>SNS 마케팅 전략: 타깃층 맞춤 콘텐츠 기획 지원</li>
-    <li>광고주 대상 추가 수익 모델: 구체적 데이터 제시로 별도 광고 유치 가능</li>
-  </ul>
-</section>
+    /* ─── 헤더 & 네비게이션 ─── */
+    header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px 0;
+    }
+    .logo {
+      font-size: 24px; font-weight: bold;
+      color: #0F9ED5;
+    }
+    nav {
+      display: flex;
+    }
+    nav a {
+      margin-left: 16px;
+      text-decoration: none;
+      color: #0F9ED5;
+      font-weight: 500;
+      padding-bottom: 4px;
+    }
+    nav a.active {
+      border-bottom: 2px solid #0F9ED5;
+    }
 
-<section>
-  <h2>기대 효과</h2>
-  <table class="pricing-table">
-    <tr>
-      <th>구분</th><th>내용</th>
-    </tr>
-    <tr>
-      <td>관리·운영 부담</td>
-      <td>전 과정 인웨이브 전담 → 매장주 부담 0</td>
-    </tr>
-    <tr>
-      <td>수익 보장</td>
-      <td>월 최소 30,000원 → 리스크 최소화</td>
-    </tr>
-    <tr>
-      <td>데이터 활용</td>
-      <td>실시간 유동인구·타깃 분석 → 마케팅 효율 극대화</td>
-    </tr>
-    <tr>
-      <td>추가 수익 기회</td>
-      <td>입지·타깃 데이터 → 자체 광고 유치 가능</td>
-    </tr>
-  </table>
-</section>
+    /* ─── 햄버거 & 드롭다운 ─── */
+    .menu-toggle {
+      display: none;
+      position: relative;
+      width: 40px; height: 40px;
+      background: none; border: none;
+      cursor: pointer;
+    }
+    .menu-toggle span {
+      position: absolute;
+      left: 50%;
+      width: 24px; height: 2px;
+      background: #222;
+      transform-origin: center center;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+    }
+    .menu-toggle span:nth-child(1) { transform: translate(-50%,-8px); }
+    .menu-toggle span:nth-child(2) { transform: translate(-50%,0); }
+    .menu-toggle span:nth-child(3) { transform: translate(-50%,8px); }
+    .menu-toggle.open span:nth-child(1) {
+      transform: translate(-50%,0) rotate(45deg);
+    }
+    .menu-toggle.open span:nth-child(2) { opacity: 0; }
+    .menu-toggle.open span:nth-child(3) {
+      transform: translate(-50%,0) rotate(-45deg);
+    }
+    nav.dropdown {
+      display: flex;
+      position: absolute;
+      top: 64px; right: 16px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 1000;
+    }
+    nav.dropdown a {
+      margin: 0; padding: 12px 16px;
+      border-bottom: 1px solid #eee;
+    }
+    nav.dropdown a:last-child {
+      border-bottom: none;
+    }
+    @media (max-width: 768px) {
+      .menu-toggle { display: flex; }
+      nav { display: none; }
+      nav.dropdown { display: flex; }
+    }
+
+    /* ─── 히어로 섹션 ─── */
+    /* ─── 상단 히어로 이미지를 라운딩 & 중앙 배치 ─── */
+    .top-hero {
+      display: block;           /* 블록 레벨로 중앙 정렬 */
+      margin: 32px auto;        /* 위아래 32px, 좌우 자동 중앙 */
+      max-width: 100%;          /* 화면 너비에 맞춰 */
+      width: 800px;             /* 최대 800px 고정폭 */
+      border-radius: 16px;      /* 모서리 라운딩 */
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 32px;      /* 기존 .hero 간격 유지 */
+    }
+
+    /* ─── 리즌 카드 ─── */
+    .reason {
+      background: #f9fafb;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .reason h2 {
+      margin-bottom: 16px;
+      font-size: 20px;
+      color: #0E2841;
+      line-height: 1.4;
+    }
+    .reason p {
+      margin: 0;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    /* ─── 지급방식 테이블 ─── */
+    .pricing-table {
+      width: 100%;
+      table-layout: fixed;
+      border-collapse: separate;
+      border-spacing: 0;
+      margin: 24px 0;
+      border: 2px solid #1565C0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .pricing-table th,
+    .pricing-table td {
+      border-bottom: 1px solid #1565C0;
+      border-right: 1px solid #1565C0;
+      padding: 12px;
+      text-align: center;
+      width: calc(100%/3);
+      font-size: 16px;
+      font-weight: 600;
+    }
+    .pricing-table th {
+      background: #1565C0;
+      color: #fff;
+    }
+    .pricing-table th:last-child,
+    .pricing-table td:last-child {
+      border-right: none;
+    }
+
+    /* ─── 하단 노트 ─── */
+    .note {
+      font-size: 14px;
+      color: #333;
+      line-height: 1.6;
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+
+    <!-- 헤더 -->
+    <header>
+      <div class="logo">INWAVE</div>
+
+      <button class="menu-toggle" aria-label="메뉴 열기">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav>
+        <a href="index.html">Home</a>
+        <a href="adwave1.html">애드웨이브 1.0</a>
+        <a href="waveshare.html" class="active">웨이브쉐어</a>
+        <a href="invest.html">투자라운지</a>
+        <a href="company.html">회사소개</a>
+      </nav>
+    </header>
+
+
+    <!-- 상단 히어로 이미지만 -->
+    <img
+       class="top-hero"
+       src="images/waveshare-illustration.png"
+       alt="웨이브쉐어 히어로 일러스트"
+    />
+
+    <!-- 리즌 카드 -->
+    <section class="reason">
+      <h2>웨이브쉐어는 비어 있는 장소 빌려주고<br>매월 임대 수익을 받는 서비스</h2>
+      <p>비어있는 장소를 빌려주고 매월 임대수익을 받는 서비스입니다.<br>매장주님은 아무것도 안하셔도 됩니다.<br>관리부터 광고영업까지 인웨이브가 담당합니다.</p>
+    </section>
+
+    <!-- 지급방식 테이블 -->
+    <h2 style="font-size:20px; color:#0E2841; margin-top:0;">웨이브쉐어 지급방식</h2>
+    <table class="pricing-table">
+      <thead>
+        <tr>
+          <th>요금제</th>
+          <th>금액</th>
+          <th>비고</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>과금제</td>
+          <td>광고 1회 송출 시 10원</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>정액제</td>
+          <td>월 20,000원 지급</td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="note">
+      1일 예상 광고 노출수가 514회(2시간)일 경우 30일 기준 15만원가량 임대수익이 발생됩니다.
+    </p>
+
+  </div> <!-- /.container -->
+
+  <script>
+    const btnOpen = document.querySelector('.menu-toggle');
+    const nav     = document.querySelector('nav');
+    btnOpen.addEventListener('click', () => {
+      btnOpen.classList.toggle('open');
+      nav.classList.toggle('dropdown');
+    });
+  </script>
+</body>
+</html>
