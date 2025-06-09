@@ -87,7 +87,7 @@
   <button id="getLocBtn">현재 위치 가져오기</button> <!-- 6-2) 클릭 시 Geolocation API로 현재 위치 가져오기 -->
 
   <!-- 7. 가게 검색 및 등록/수정 폼 -->
-  <form id="storeForm"> <!-- 7-1) 최상위 form: 검색 + 등록/수정 기능 포함 -->
+  <form id="storeForm" onsubmit="return false;"> <!-- 7-1) 최상위 form: 검색 + 등록/수정 기능 포함 -->
     <label>업체 검색</label> <!-- 7-2) 검색 라벨 -->
     <input id="searchInput" placeholder="가게 이름으로 검색…" /> <!-- 7-3) 검색 입력 필드 -->
     <div id="searchResults"
@@ -518,8 +518,6 @@
 
     /* ─────────── 15. 폼 제출: Firestore + Storage 저장 ─────────── */
     document.getElementById('storeForm').addEventListener('submit', async ()=>{ /* 15-1) 폼 submit 이벤트 리스너 바인딩 */
-    document.getElementById('storeForm').addEventListener('submit', async (e) => {
-      e.preventDefault();            // ★ 기본 제출 동작(페이지 리로드) 막기
       if(!isLoggedIn){ /* 15-2) 로그인 상태 확인 */
         alert('로그인 후 등록이 가능합니다.');
         return;
