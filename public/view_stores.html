@@ -518,7 +518,7 @@
           // ⑤ 클릭 시 원래 lat/lng(중앙 좌표)로 이동 + InfoCard 표시
           function openStore() {
             map.setCenter(new naver.maps.LatLng(lat, lng));
-            map.setZoom(18);
+            map.setZoom(20);
             showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo });
           }
           naver.maps.Event.addListener(marker, 'click', openStore);
