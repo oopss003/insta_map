@@ -142,7 +142,8 @@
   <!-- 6. 지도 영역 및 현재 위치 가져오기 버튼 -->
   <div id="map"></div> <!-- 6-1) 네이버 지도가 렌더링될 영역 -->
   <button id="getLocBtn">현재 위치 가져오기</button> <!-- 6-2) 클릭 시 Geolocation API로 현재 위치 가져오기 -->
-
+  <!-- 폼 시작: 이 줄을 꼭 추가 -->
+  <form id="storeForm">
     <!-- 8. 등록/수정 폼 (한 번만 쓰기) -->
     <label>가게 이름</label> <!-- 8-1) 가게 이름 라벨 -->
     <input name="name" required /> <!-- 8-2) 가게 이름 입력 필드 -->
@@ -392,6 +393,7 @@
     <input id="lng" readonly required /> <!-- 8-19) 경도 값 표시 필드 (읽기 전용) -->
 
     <button id="saveBtn" type="button">저장</button> <!-- 8-20) 저장 버튼 -->
+    <!-- (기존) 폼 닫기 -->  
   </form> <!-- 7-5) 최상위 form 닫기 -->
 
   <script>
