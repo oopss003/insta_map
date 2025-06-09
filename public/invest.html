@@ -190,6 +190,66 @@
       color: #555;
       line-height: 1.6;
     }
+    /* ─── 이유 카드 (수익포인트 카드) ─── */
+    .reason {
+      background: #f9fafb;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .reason h2 {
+      margin-bottom: 16px;
+      font-size: 20px;
+      color: #0E2841;
+      line-height: 1.4;
+    }
+    .reason p {
+      margin-bottom: 24px;
+      color: #555;
+      font-size: 14px;
+    }
+    .reason ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      color: #222;
+    }
+    .reason ul li {
+      margin: 8px 0;
+    }
+
+    /* ─── 기술력 포인트 (설명 카드) ─── */
+    .tech-points {
+      margin-bottom: 32px;
+    }
+    .tech-point {
+      margin-bottom: 32px;
+      text-align: left;  /* 필요에 따라 center 로 조정 */
+    }
+    .tech-point .label {
+      display: inline-block;
+      background: #f0f4f8;
+      color: #1565C0;
+      border-radius: 16px;
+      padding: 4px 12px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .tech-point h3 {
+      margin: 8px 0;
+      font-size: 20px;
+      color: #0E2841;
+      line-height: 1.3;
+    }
+    .tech-point p {
+      margin: 0;
+      color: #555;
+      font-size: 14px;
+      line-height: 1.6;
+    }
 
   </style>
 </head>
@@ -229,10 +289,30 @@
       </div>
     </section>
 
-    <!-- 수익포인트 & 제목 -->
-    <div class="section-label">수익포인트</div>
-    <h2 class="section-title">투자 포트폴리오 인웨이브와 함께 하는 재테크</h2>
+    <!-- 변경된: 이유 카드 -->
+    <section class="reason">
+        <h2>투자 포트폴리오 인웨이브와 함께 하는 재테크</h2>
+        <p>투자금 130만원은 옥외 디지털 사이니지 구매에 사용되며, 장비 설치 후
+        발생하는 수익금을 인웨이브와 쉐어합니다.</p>
+        <ul>
+            <li>1일 100~1200건 노출</li>
+            <li>5원/건 과금</li>
+            <li>세전 연 180,000원 ~ 2,160,000원</li>
+        </ul>
+    </section>
 
+
+    <!-- 이유 카드 끝 -->
+
+    <!-- 변경된: 기술력 포인트 스타일 -->
+    <div class="tech-points">
+        <div class="tech-point">
+            <span class="label">수익 포인트 1</span>
+            <h3>최소/최대 수익 보장</h3>
+            <p>투자계약서에 따라 최소 수익금을 특정 금액으로 보장하고, 
+            최대 수익은 광고 노출량에 따라 차등 지급합니다.</p>
+    </div>
+  </div>
     <!-- Q&A 섹션 -->
     <div class="faq-section">
       <div class="faq-item">
