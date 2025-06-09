@@ -10,7 +10,7 @@
 
   <!-- Naver Maps SDK -->
   <script defer src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-
+  <script src="https://openapi.map.naver.com/openapi/v3/markerclusterer.js"></script>
   <!-- Firebase SDK (compat) -->
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -318,6 +318,17 @@
     const map = new naver.maps.Map('map',{
       center:new naver.maps.LatLng(37.5665,126.9780),zoom:12
     });
+    // ─── 현재 줌 저장 & 변경 감지 ───
+    let currentZoom = map.getZoom();
+    naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      const newZoom = map.getZoom();
+      // 12↔13 구간에서만 다시 렌더
+      if ((currentZoom < 13 && newZoom >= 13) ||
+          (currentZoom >= 13 && newZoom < 13)) {
+        renderStores();
+      }
+      currentZoom = newZoom;
+  });
 
     /* 커스텀 마커 */
     const markerIcon={
@@ -403,6 +414,9 @@
     // ─── 매장 렌더링 함수 전체 교체 ───
     async function renderStores(){
       console.log('▶︎ renderStores 호출됨');
+      // ─── 줌 레벨에 따라 offset 사용 여부 결정 ───
+      const zoom = map.getZoom();
+      const useOffset = zoom < 13;   // 13 미만일 때만 뭉쳐서 보여줌
       // 1) 기존 마커·리스트 초기화
       markers.forEach(m => m.setMap(null));
       markers.length = 0;
@@ -472,7 +486,7 @@
           // ① 원래 lat/lng를 기반으로 offset 계산
           let newLat = lat;
           let newLng = lng;
-          if (groupSize > 1) {
+          if (useOffset && groupSize > 1) {
             const angleDeg = (360 / groupSize) * idx;
             const angleRad = angleDeg * Math.PI / 180;
             const offsetLat = baseRadius * Math.cos(angleRad);
@@ -663,7 +677,7 @@
 
   <div id="videoModal" aria-hidden="true">
   <div class="modal-content">
-    <button id="closeVideo" aria-label="닫기">✚</button>
+    <button id="closeVideo" aria-label="닫기">&times;</button>
     <iframe
       id="videoFrame"
       src=""
