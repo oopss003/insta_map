@@ -375,16 +375,12 @@
     infoImg.addEventListener('click', () => {
       const url = infoImg.dataset.videoUrl;
       if (!url) return alert('등록된 영상이 없습니다');
-      // 1) ? 혹은 & 파라미터 결정
-      let autoplayUrl;
-      if (url.includes('?')) {
-      // 이미 ? 뒤에 다른 파라미터가 있으면
-        autoplayUrl = url + '&autoplay=1';
-      } else {
-        autoplayUrl = url + '?autoplay=1&muted=1&playsinline=1';
-      }
-      // 2) iframe src에 autoplay 파라미터까지 포함
-       videoFrame.src = autoplayUrl;
+      // 공통 파라미터
+      const params = 'autoplay=1&muted=1&playsinline=1';
+      // 기존 URL에 붙일 구분자 결정
+      const sep = url.includes('?') ? '&' : '?';
+      // 최종 재생 URL
+      videoFrame.src = url + sep + params;
 
       videoModal.style.display = 'flex';
       videoModal.setAttribute('aria-hidden', 'false');
