@@ -64,18 +64,61 @@
     button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer} /* 4-4 */
     #getLocBtn{background:#28a745;color:#fff} /* 4-5 */
     #saveBtn{background:#2d8cff;color:#fff}  /* 4-5 */
-    #header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px} /* 4-6 */
-      .back-button {
-        font-size: 24px;
-        margin-right: 8px;
-        text-decoration: none;
-        color: var(--text);
-        display: inline-flex;
-        align-items: center;
-      }
-    #authButtons button{background:#FEE500;border:none;border-radius:8px;padding:8px 10px;margin-left:6px;cursor:pointer;font-weight:bold;display:flex;align-items:center} /* 4-6 */
-    #authButtons button img{height:20px;margin-right:6px} /* 4-6 */
-    #kakaoLogoutBtn{background:#ddd} /* 4-6 */
+    /* ─────────── 4-6) 헤더 영역 & 버튼 스타일 ─────────── */
+    #header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      /* margin-bottom:12px;  ← 필요 없으면 지워도 됩니다 */
+      height: 60px;            /* 헤더 높이 고정 */
+      padding: 0 12px;         /* 좌우 여백 */
+      box-sizing: border-box;  /* padding 포함하여 계산 */
+    }
+
+    /* 제목 가운데 정렬 */
+    #header h2 {
+      margin: 0;
+      line-height: 60px;       /* #header 높이와 일치 */
+      font-size: 1.25rem;
+    }
+
+    /* 뒤로가기 버튼도 헤더 높이에 맞춰서 */
+    .back-button {
+      font-size: 24px;
+      margin-right: 8px;
+      text-decoration: none;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      height: 100%;            /* #header 높이 따라감 */
+    }
+
+    /* 카카오 로그인 버튼 높이 고정 */
+    #authButtons button {
+      background: #FEE500;
+      border: none;
+      border-radius: 8px;
+      height: 36px;            /* 버튼 높이 고정 */
+      line-height: 36px;       /* 텍스트 수직 중앙 */
+      padding: 0 12px;         /* 좌우 패딩 */
+      margin-left: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+    }
+
+    /* 버튼 아이콘 수직 중앙 */
+    #authButtons button img {
+      height: 20px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    #kakaoLogoutBtn {
+      background: #ddd;
+    }
+
   </style>
 </head>
 <body>
