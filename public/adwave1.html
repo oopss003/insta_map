@@ -252,18 +252,19 @@
       height: 2px;
       background-color: #222;
       margin: 4px 0;
+      transform-origin: center center; 
       transition: transform 0.3s, opacity 0.3s;
     }
 
     /* 열림 상태(X 모양으로) */
     .menu-toggle.open span:nth-child(1) {
-      transform: translateY(6px) rotate(45deg);
+      transform: translateY(5px) rotate(45deg);
     }
     .menu-toggle.open span:nth-child(2) {
       opacity: 0;
     }
     .menu-toggle.open span:nth-child(3) {
-      transform: translateY(-6px) rotate(-45deg);
+      transform: translateY(-5px) rotate(-45deg);
     }
     /* ─── 드롭다운 메뉴 스타일 ─── */
     nav.dropdown {
