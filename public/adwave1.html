@@ -1,131 +1,351 @@
 <!DOCTYPE html>
-<!-- Common template for AdWave 1.0, WaveShare, 투자라운지 pages -->
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><!-- PAGE_TITLE --></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>애드웨이브 1.0</title>
+  <!-- Pretendard 폰트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"/>
   <style>
-    /* 공통 스타일 */
+    /* 전체 레이아웃 */
     body {
+      margin: 0;
+      padding: 0;
       font-family: 'Pretendard', sans-serif;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 0 16px;
       color: #222;
       line-height: 1.6;
+      background: #fff;
     }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+    /* 헤더 */
     header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 24px;
+      padding: 24px 0;
     }
-    header h1 {
+    .logo {
       font-size: 24px;
-      margin: 0;
+      font-weight: bold;
       color: #0F9ED5;
     }
     nav a {
-      margin: 0 8px;
+      margin-left: 16px;
       text-decoration: none;
       color: #0F9ED5;
       font-weight: 500;
+      padding-bottom: 4px;
     }
     nav a.active {
       border-bottom: 2px solid #0F9ED5;
     }
-    section {
+    /* 히어로 섹션 */
+    .hero {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #1565C0;
+      color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
       margin-bottom: 32px;
     }
-    h2 {
+    .hero-text {
+      padding: 40px;
+      max-width: 60%;
+    }
+    .hero-text h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .hero-text h2 {
+      margin: 0 0 16px;
+      font-size: 32px;
+      line-height: 1.2;
+    }
+    .hero-text p {
+      margin: 0;
+      font-size: 16px;
+    }
+    .hero img {
+      max-width: 40%;
+      display: block;
+    }
+    /* 질문 버블 섹션 */
+    .speech-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .bubbles {
+      display: inline-block;
+      text-align: left;
+    }
+    .bubble {
+      background: #f0f4f8;
+      border-radius: 20px;
+      padding: 8px 16px;
+      margin: 8px 0;
+      font-size: 14px;
+    }
+    .emoji {
+      font-size: 32px;
+      margin-top: 16px;
+    }
+    /* 이유 카드 */
+    .reason {
+      background: #f9fafb;
+      border: 1px solid #e0e0e0;
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+    .reason h2 {
+      margin-bottom: 16px;
       font-size: 20px;
       color: #0E2841;
-      margin-bottom: 12px;
     }
-    p {
+    .reason p {
+      margin-bottom: 24px;
+      color: #555;
+      font-size: 14px;
+    }
+    .reason ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 16px;
+      color: #222;
+    }
+    .reason ul li {
       margin: 8px 0;
     }
+    /* 기술력 포인트 */
+    .tech-points {
+      margin-bottom: 32px;
+    }
+    .tech-point {
+      margin-bottom: 32px;
+    }
+    .tech-point .label {
+      display: inline-block;
+      background: #f0f4f8;
+      color: #1565C0;
+      border-radius: 16px;
+      padding: 4px 12px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .tech-point h3 {
+      margin: 8px 0;
+      font-size: 20px;
+      color: #0E2841;
+    }
+    .tech-point p {
+      color: #555;
+      font-size: 14px;
+    }
+    .tech-point img.diagram {
+      width: 100%;
+      border-radius: 8px;
+      margin-top: 16px;
+    }
+    .tech-point .caption {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      margin-top: 8px;
+    }
+    /* 테이블 스타일 */
     .pricing-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 16px;
+      margin: 24px 0;
     }
     .pricing-table th,
     .pricing-table td {
-      border: 1px solid #ccc;
-      padding: 8px;
+      border: 2px solid #1565C0;
+      padding: 12px;
       text-align: center;
+    }
+    .pricing-table th {
+      background: #1565C0;
+      color: #fff;
+    }
+    .pricing-table td {
+      font-size: 16px;
+      font-weight: 600;
+    }
+    /* 갤러리 */
+    .gallery {
+      margin-bottom: 32px;
+    }
+    .gallery .label {
+      display: inline-block;
+      background: #f0f4f8;
+      color: #1565C0;
+      border-radius: 16px;
+      padding: 4px 12px;
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+    .gallery h3 {
+      font-size: 20px;
+      margin: 8px 0;
+      color: #0E2841;
+    }
+    .gallery p {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 16px;
+    }
+    .gallery-images {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 16px;
+    }
+    .gallery-images img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1><!-- PAGE_NAME --></h1>
-    <nav>
-      <a href="adwave1.html" class="<!-- ACTIVE_ADWAVE -->">애드웨이브 1.0</a>
-      <a href="waveshare.html" class="<!-- ACTIVE_WAVESHARE -->">웨이브쉐어</a>
-      <a href="invest.html" class="<!-- ACTIVE_INVEST -->">투자라운지</a>
-    </nav>
-  </header>
-  <!-- CONTENT_START -->
-</body>
-</html>
+  <div class="container">
+    <!-- 헤더 -->
+    <header>
+      <div class="logo">INWAVE</div>
+      <nav>
+        <a href="adwave1.html" class="active">애드웨이브 1.0</a>
+        <a href="waveshare.html">웨이브쉐어</a>
+        <a href="invest.html">투자라운지</a>
+      </nav>
+    </header>
 
-<!-- adwave1.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <!-- include head from template, replace placeholders -->
-</head>
-<body>
-  <!-- include header, set PAGE_NAME="애드웨이브 1.0" and ACTIVE_ADWAVE="active" -->
-  <section>
-    <h2>광고 상품 소개서</h2>
-    <p>애드웨이브 1.0 플랫폼을 통해 다양한 광고 옵션을 만나보세요.</p>
-    <table class="pricing-table">
-      <tr><th>요금제</th><th>횟수</th><th>비고</th></tr>
-      <tr><td>300,000원</td><td>6,500회</td><td rowspan="4">가격 협의 가능</td></tr>
-      <tr><td>600,000원</td><td>13,000회</td></tr>
-      <tr><td>900,000원</td><td>20,000회</td></tr>
-      <tr><td>1,200,000원</td><td>28,000회</td></tr>
-    </table>
-  </section>
-</body>
-</html>
+    <!-- 히어로 섹션 -->
+    <section class="hero">
+      <div class="hero-text">
+        <h1>애드웨이브 1.0</h1>
+        <h2>옥외 디지털광고, 다 똑같은 광고가 아니야!</h2>
+        <p>내돈 어디에 쓴지 모르는 광고하지 마세요.</p>
+      </div>
+      <img src="images/hero-illustration.png" alt="애드웨이브 1.0 Illustration">
+    </section>
 
-<!-- waveshare.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <!-- include head from template, set placeholders -->
-</head>
-<body>
-  <!-- header with PAGE_NAME="웨이브쉐어" ACTIVE_WAVESHARE="active" -->
-  <section>
-    <h2>웨이브쉐어 프로그램</h2>
-    <p>고정 요금제로 안정적인 광고 집행이 가능합니다.</p>
-    <table class="pricing-table">
-      <tr><th>요금제</th><th>금액</th><th>비고</th></tr>
-      <tr><td>정액제</td><td>월 30,000원</td><td>6개월 단위 지급</td></tr>
-      <tr><td>과금제</td><td>유효광고당 5원</td><td>즉시 과금</td></tr>
-    </table>
-  </section>
-</body>
-</html>
+    <!-- 질문 버블 -->
+    <section class="speech-section">
+      <div class="bubbles">
+        <div class="bubble">“광고를 하면 진짜 손님이 늘어날까?”</div>
+        <div class="bubble">“광고비만 나가고 뭐가 문제지?”</div>
+        <div class="bubble">“우리 가게에 맞는 광고 방법이 따로 있을까?”</div>
+      </div>
+      <div class="emoji">🤔</div>
+    </section>
 
-<!-- invest.html -->
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-  <!-- include head from template, set placeholders -->
-</head>
-<body>
-  <!-- header with PAGE_NAME="투자라운지" ACTIVE_INVEST="active" -->
-  <section>
-    <h2>투자라운지 소개</h2>
-    <p>최신 투자 정보를 공유하고 소통하는 공간입니다.</p>
-    <p>더 자세한 투자 옵션은 개별 상담을 통해 안내드립니다.</p>
-  </section>
+    <!-- 이유 카드 -->
+    <section class="reason">
+      <h2>옥외 디지털 광고를 생각하신다면<br>애드웨이브 1.0을 주목하셔야 하는 이유</h2>
+      <p>국내 최고 수준의 AI 분석 기술을 이용해서, 광고 효율을 개선하고 유효한 광고에만 광고비를 책정하여<br>불필요한 지출을 절감할 수 있는 솔루션입니다.</p>
+      <ul>
+        <li>광고를 본 사람이 있어야 지급</li>
+        <li>국내 최고 수준의 AI 기술력</li>
+        <li>분석 데이터를 고객과 공유</li>
+      </ul>
+    </section>
+
+    <!-- 기술력 포인트 -->
+    <div class="tech-points">
+      <div class="tech-point">
+        <span class="label">기술력 포인트 1</span>
+        <h3>자체 AI 개발로 광고 테스팅데이터 수집</h3>
+        <p>AI 기반 데이터수집을 통해 옥외 디지털 광고의 효율 데이터를 수집하여<br>광고에 대한 타겟층과 효율을 분석합니다.</p>
+        <img class="diagram" src="images/tech1.jpg" alt="기술력 포인트1 이미지">
+        <div class="caption">수집된 데이터는 개인식별이 불가능하며, 이미지 저장을 하지 않습니다.</div>
+      </div>
+
+      <div class="tech-point">
+        <span class="label">기술력 포인트 2</span>
+        <h3>수집된 데이터를 애드웨이브 1.0으로 분석 후 최적 광고 송출</h3>
+        <p>수집된 데이터에서 광고와의 타겟, 시간, 날씨 등<br>다양한 변수를 학습·분석하여 최적의 효율을 내는 광고를 송출합니다.</p>
+        <img class="diagram" src="images/tech2.png" alt="기술력 포인트2 이미지">
+      </div>
+
+      <div class="tech-point">
+        <span class="label">기술력 포인트 3</span>
+        <h3>웨이브리포트는 고객과 함께</h3>
+        <p>광고 집행 후 광고별 다양한 데이터를 클라이언트에게 전달하여<br>광고의 효율을 함께 확인합니다.</p>
+        <img class="diagram" src="images/tech3.jpg" alt="기술력 포인트3 이미지">
+      </div>
+    </div>
+
+    <!-- 절감 포인트 & 표 -->
+    <section>
+      <h2>아무도 안 본 광고에는 비용 집행 안 합니다.</h2>
+      <p>아무도 없는 곳에서 혼자 송출된 광고에는 광고비용을 집행하지 않습니다.<br>집행된 광고는 정보전달과 데이터 수집을 진행합니다.</p>
+
+      <!-- 비교표 1 -->
+      <table class="pricing-table">
+        <thead>
+          <tr>
+            <th>인웨이브</th>
+            <th>서비스</th>
+            <th>타사</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>유효광고만 50원</td>
+            <td>광고 과금 방식</td>
+            <td>무조건 50원</td>
+          </tr>
+          <tr>
+            <td>최적 타임 송출</td>
+            <td>광고 송출 방식</td>
+            <td>무한반복</td>
+          </tr>
+          <tr>
+            <td>리포트 전달</td>
+            <td>광고 효과 분석</td>
+            <td>없음</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 비교표 2 -->
+      <table class="pricing-table">
+        <thead>
+          <tr>
+            <th>광고 집행비</th>
+            <th>송출 횟수</th>
+            <th>비고</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>300,000원</td><td>6,500회</td><td>60일</td></tr>
+          <tr><td>600,000원</td><td>13,000회</td><td>130일</td></tr>
+          <tr><td>900,000원</td><td>20,000회</td><td>200일</td></tr>
+          <tr><td>1,200,000원</td><td>28,000회</td><td>270일</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 설치 갤러리 -->
+    <section class="gallery">
+      <span class="label">발전 포인트</span>
+      <h3>인웨이브 광고 모니터는 설치 중.</h3>
+      <p>인웨이브의 모니터는 매일매일 늘어나고 있습니다.</p>
+      <div class="gallery-images">
+        <img src="images/install1.jpg" alt="설치 사례 1">
+        <img src="images/install2.jpg" alt="설치 사례 2">
+        <img src="images/install3.jpg" alt="설치 사례 3">
+        <img src="images/install-placeholder.png" alt="추가 준비 중">
+      </div>
+    </section>
+  </div>
 </body>
 </html>
