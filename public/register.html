@@ -164,29 +164,24 @@
       background:rgba(0,0,0,.8);z-index:2000;
     }
 
-    /* ─── 모달 안 흰 박스 ─── */
     .modal-content{
       position:relative;
-      width:90vw;               /* 가로 90 % */
-      max-height:90vh;          /* 세로 90 % 넘지 않게 */
-      border-radius:16px;
-      overflow:hidden;
-      padding:0;                /* 안쪽 여백 제거 (패딩-트릭용) */
-  }
-
-    /* ─── 9 : 16 비율 유지용 래퍼 ─── */
-    .frame-wrap{position:relative;width:100%;height:0;padding-top:177.78%;}
-    .frame-wrap iframe{
-      position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+      width :min(90vw,calc(90vh*9/16));   /* 가로,세로 중 작은 값 선택 */
+      height:min(90vh,calc(90vw*16/9));   /* → 항상 9:16 유지       */
+      border-radius:16px; overflow:hidden;
     }
 
-    /* 닫기 버튼 */
+    /* ─── iframe 가득 채우기 ─── */
+    #videoFrame{width:100%;height:100%;border:0;}
+
+    /* ─── 닫기(X) 버튼 ─── */
     #closeVideo{
-      position:absolute;top:8px;right:8px;width:32px;height:32px;
-      border:none;border-radius:50%;background:#fff;
-      font-size:20px;line-height:1;cursor:pointer;z-index:1;
+      position:absolute; top:8px; right:8px;
+      width:32px; height:32px; border:none;
+      border-radius:50%; background:#fff;
+      font-size:20px; line-height:1; cursor:pointer;
+      box-shadow:0 2px 6px rgba(0,0,0,.3);
     }
-
   </style>
 </head>
 <body>
