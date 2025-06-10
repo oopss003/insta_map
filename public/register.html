@@ -211,20 +211,6 @@
   <button type="button" id="helpVideoBtn" class="main-btn">참고 영상</button>
 </div>
 
-<!-- 모달 창 -->
-<div id="videoModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <!-- 유튜브 IFrame 예시, src에 본인 영상 URL로 바꿔주세요 -->
-    <iframe
-      src="https://player.vimeo.com/video/1091824548?h=bfd071815a&badge=0&autopause=0&app_id=58479"
-      frameborder="0"
-      allow="autoplay; fullscreen; picture-in-picture"
-      allowfullscreen></iframe>
-    </iframe>
-  </div>
-</div>
-
   <!-- 폼 시작: 이 줄을 꼭 추가 -->
   <form id="storeForm">
     <!-- 8. 등록/수정 폼 (한 번만 쓰기) -->
@@ -725,41 +711,39 @@
   </script>   
 <!-- 참고 영상 모달 -->
 <div id="videoModal" class="modal">
-  <div class="modal-content">       <!-- (.box 말고 .modal-content 그대로 둡니다) -->
-    <button id="closeVideo">&times;</button>     <!-- class="close" → id="closeVideo" 로 바꿈 -->
-    <div class="frame-wrap">
-      <iframe
-        id="videoFrame"             <!-- ← id 추가 -->
-        src=""
-        allow="autoplay; fullscreen"
-        frameborder="0"
-        allowfullscreen></iframe>   <!-- ★ 뒤쪽 </iframe> 하나만 남기고, 두 번째 </iframe> 삭제 -->
-    </div>
+  <div class="modal-content">
+    <button id="closeVideo">&times;</button>   <!-- 닫기 버튼 -->
+    <iframe
+      id="videoFrame"
+      src=""
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen></iframe>
   </div>
-</div>     <!-- ★★★ 놓치신 부분 ★★★ -->
+</div>
 <script>
-  // 참고 영상 모달 작동
-  const videoModal = document.getElementById('videoModal');
-  const videoFrame = document.getElementById('videoFrame');
-  const helpBtn    = document.getElementById('helpVideoBtn');
-  const closeBtn   = document.getElementById('closeVideo');
+/* === 참고 영상 모달 === */
+const videoModal = document.getElementById('videoModal');
+const videoFrame = document.getElementById('videoFrame');
+const helpBtn    = document.getElementById('helpVideoBtn');
+const closeBtn   = document.getElementById('closeVideo');
 
-  helpBtn.addEventListener('click', () => {
-    // ▶ 원하는 비메오 URL
-    const url = 'https://player.vimeo.com/video/1091824548?h=bfd071815a&autoplay=1&muted=1';
-    videoFrame.src = url;
-    videoModal.style.display = 'flex';
-  });
+helpBtn.addEventListener('click', () => {
+  const url = 'https://player.vimeo.com/video/1091824548?h=bfd071815a&autoplay=1&muted=1';
+  videoFrame.src = url;              // 재생 시작
+  videoModal.style.display = 'flex'; // 모달 열기
+});
 
-  function hideModal() {
-    videoFrame.src = '';                 // 재생 정지
-    videoModal.style.display = 'none';
-  }
-  closeBtn.addEventListener('click', hideModal);
-  videoModal.addEventListener('click', e => {
-    if (e.target === videoModal) hideModal();   // 검은 배경 클릭 시 닫기
-  });
+function hideModal() {
+  videoFrame.src = '';               // 정지 & 메모리 해제
+  videoModal.style.display = 'none';
+}
+closeBtn.addEventListener('click', hideModal);
+videoModal.addEventListener('click', e => {
+  if (e.target === videoModal) hideModal();  // 검은 배경 터치 → 닫기
+});
 </script>
+
 
 </body>
 </html>
