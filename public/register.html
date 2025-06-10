@@ -177,9 +177,13 @@
     /* ─── 닫기(X) 버튼 ─── */
     #closeVideo{
       position:absolute; top:8px; right:8px;
-      width:32px; height:32px; border:none;
+      width:40px; height:40px; border:none;
       border-radius:50%; background:#fff;
-      font-size:20px; line-height:1; cursor:pointer;
+      font-size:24px; line-height:1; 
+      display:flex;                    /* ① */
+      align-items:center;              /* ② 수직 중앙 */
+      justify-content:center;          /* ③ 수평 중앙 */
+      cursor:pointer;
       box-shadow:0 2px 6px rgba(0,0,0,.3);
     }
   </style>
