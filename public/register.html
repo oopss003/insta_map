@@ -146,7 +146,6 @@
     .btn-group {
       display: flex;
       gap: 8px;
-      margin-left: auto;
       margin-bottom: 16px;
     }
     .main-btn {
@@ -157,9 +156,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    #helpVideoBtn {
-      margin-left: auto;
-    }
+
     /* 모달 기본 */
     .modal {
       display: none;
@@ -171,24 +168,20 @@
       align-items: center;
       z-index:2000;
     }
-    .modal-content {
-      position: relative;
-      background: #fff;
-      padding: 16px;
-      border-radius:8px;
-      max-width:90%;
-      max-height:80%;
-      overflow:auto;
+      /* 실제 흰색 콘텐츠(9:16) --------------- */
+    .modal-content{                   /* ← 이름 한 가지만 사용 */
+      position:relative;
+      width:90vw;max-width:450px;
+      aspect-ratio:9/16;              /* 9 : 16 비율 고정 */
+      border-radius:16px;
+      overflow:hidden;
     }
-    .modal-content .close {
-      position: absolute;
-      top: 8px; right: 12px;
-      font-size: 24px;
-      cursor: pointer;
-    }
-    .modal-content iframe {
-      width:100%;
-      height:100%;
+    /* iframe / 닫기버튼 -------------------- */
+    #videoFrame{width:100%;height:100%;border:0;}
+    #closeVideo{
+      position:absolute;top:8px;right:8px;width:32px;height:32px;
+      border:none;border-radius:50%;background:#fff;
+      font-size:20px;line-height:1;cursor:pointer;
     }
 
   </style>
@@ -213,10 +206,10 @@
   </div>
 
   <!-- 6. 지도 영역 및 현재 위치 가져오기 버튼 -->
-  <div id="map"></div> <!-- 6-1) 네이버 지도가 렌더링될 영역 -->
-    <button type="button" id="getLocBtn" class="main-btn">현재 위치 가져오기</button>
-  <!-- 버튼들 감싸는 컨테이너 -->
+  <div id="map"></div> <!-- 6-1) 네이버 지도가 렌더링될 영역 -->  
+ 
 <div class="btn-group">
+  <button type="button" id="getLocBtn" class="main-btn">현재 위치 가져오기</button>
   <button type="button" id="helpVideoBtn" class="main-btn">참고 영상</button>
 </div>
 
@@ -489,14 +482,6 @@
   </form> <!-- 7-5) 최상위 form 닫기 -->
 
   <script>
-  /* ---------- 참고 영상 모달 ---------- */
-  const modal    = document.getElementById('videoModal');
-  const showBtn  = document.getElementById('helpVideoBtn');
-  const closeBtn = modal.querySelector('.close');
-
-  showBtn.addEventListener('click', () => { modal.style.display = 'flex'; });
-  closeBtn.addEventListener('click', () => { modal.style.display = 'none'; });
-  modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
 
   /* … 이어서 Firebase / 지도 / saveBtn 클릭 핸들러 등 기존 코드 … */
 
@@ -739,6 +724,44 @@
             saveBtn.disabled      = false;
           }
         });
-  </script>            <!-- ★★★ 놓치신 부분 ★★★ -->
+  </script>   
+<!-- 참고 영상 모달 -->
+<div id="videoModal" class="modal">
+  <div class="modal-content">       <!-- (.box 말고 .modal-content 그대로 둡니다) -->
+    <button id="closeVideo">&times;</button>     <!-- class="close" → id="closeVideo" 로 바꿈 -->
+    <div class="frame-wrap">
+      <iframe
+        id="videoFrame"             <!-- ← id 추가 -->
+        src=""
+        allow="autoplay; fullscreen"
+        frameborder="0"
+        allowfullscreen></iframe>   <!-- ★ 뒤쪽 </iframe> 하나만 남기고, 두 번째 </iframe> 삭제 -->
+    </div>
+  </div>
+</div>     <!-- ★★★ 놓치신 부분 ★★★ -->
+<script>
+  // 참고 영상 모달 작동
+  const videoModal = document.getElementById('videoModal');
+  const videoFrame = document.getElementById('videoFrame');
+  const helpBtn    = document.getElementById('helpVideoBtn');
+  const closeBtn   = document.getElementById('closeVideo');
+
+  helpBtn.addEventListener('click', () => {
+    // ▶ 원하는 비메오 URL
+    const url = 'https://player.vimeo.com/video/1091824548?h=bfd071815a&autoplay=1&muted=1';
+    videoFrame.src = url;
+    videoModal.style.display = 'flex';
+  });
+
+  function hideModal() {
+    videoFrame.src = '';                 // 재생 정지
+    videoModal.style.display = 'none';
+  }
+  closeBtn.addEventListener('click', hideModal);
+  videoModal.addEventListener('click', e => {
+    if (e.target === videoModal) hideModal();   // 검은 배경 클릭 시 닫기
+  });
+</script>
+
 </body>
 </html>
