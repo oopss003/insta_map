@@ -580,7 +580,13 @@
   infoCard.classList.add('show');
   updateInfoCardPosition();
 }
-
+    window.moveToLocation = function(lat, lng) {
+    const latlng = new naver.maps.LatLng(lat, lng);
+    map.setCenter(latlng);
+    map.setZoom(18);
+    new naver.maps.Marker({ position: latlng, map, icon: markerIcon });
+    hideInfoCard();
+  };
     function hideInfoCard(){
       infoCard.classList.remove('show');
       // ── 팝업카드를 화면 아래(숨김) 위치로 되돌립니다 ──
@@ -655,6 +661,7 @@
     });
   </script>
   <!-- ↓ 여기가 사이드 메뉴 토글 로직을 넣을 위치입니다. ↓ -->
+   
   <script>
   document.addEventListener('DOMContentLoaded', ()=> {
     /* ─── 사이드 메뉴 열기/닫기 토글 ─── */
