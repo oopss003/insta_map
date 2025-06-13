@@ -297,10 +297,11 @@
   <div id="infoCard">
     <img id="infoImg" src="" alt="">
     <div class="meta">
-      <!-- 비디오 유무 표시 태그 -->
-      <span id="infoTag" class="tag"></span>
       <b id="infoName"></b>
-      <span id="infoInsta"></span><br>
+      <div id="infoMetaRow" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span id="infoTag" class="tag"></span>
+        <a id="infoInsta" href="#" target="_blank" style="color: var(--primary); text-decoration: none;"></a>
+      </div>
       <span id="infoDesc"></span>
     </div>
   </div>
@@ -552,34 +553,32 @@
     naver.maps.Event.addListener(map, 'idle', renderStores);
     renderStores();
 
-    function showInfoCard(d){
-      // 1) 이미지·데이터 세팅
-      infoImg.src               = d.thumbnail || '';
-      infoImg.dataset.videoUrl  = d.videoUrl   || '';
+  function showInfoCard(d) {
+    // 1) 이미지·데이터 세팅
+    infoImg.src = d.thumbnail || '';
+    infoImg.dataset.videoUrl = d.videoUrl || '';
 
-      // 2) 비디오 태그 토글
-      const tag = document.getElementById('infoTag');
-      if (d.videoUrl) {
-        tag.textContent = 'VIDEO';
-        tag.classList.add('video');
-        tag.classList.remove('no-video');
-      } else {
-        tag.textContent = 'VIDEO';
-        tag.classList.add('no-video');
-        tag.classList.remove('video');
-      }   
+    // 2) 이름 텍스트
+    infoName.textContent = d.name;
 
-  // 3) 나머지 메타
-  infoName.textContent    = d.name;
-  infoInsta.innerHTML     = `<a href="https://instagram.com/${d.insta}"
-                              target="_blank"
-                              style="color: var(--primary); text-decoration: none;">
-                              @${d.insta}
-                            </a>`;
-  infoDesc.textContent    = d.desc  || '';
-  infoCard.classList.add('show');
-  updateInfoCardPosition();
-}
+    // 3) 비디오 마크 + 인스타 ID 같이 렌더링
+    const infoMetaRow = document.getElementById('infoMetaRow');
+    infoMetaRow.innerHTML = `
+      <span class="tag ${d.videoUrl ? 'video' : 'no-video'}">VIDEO</span>
+      <a href="https://instagram.com/${d.insta}" 
+         target="_blank" 
+         style="color: var(--primary); text-decoration: none;">
+         @${d.insta}
+      </a>
+    `;
+
+    // 4) 설명 텍스트
+    infoDesc.textContent = d.desc || '';
+
+    // 5) 카드 보여주기
+    infoCard.classList.add('show');
+    updateInfoCardPosition();
+  }
     window.moveToLocation = function(lat, lng) {
     const latlng = new naver.maps.LatLng(lat, lng);
     map.setCenter(latlng);
