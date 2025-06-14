@@ -17,9 +17,40 @@
     h1, h2 {
       color: #222;
     }
+    #header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        height: 56px;
+        padding: 0 16px;
+        border-bottom: 1px solid #ddd;
+        background-color: #fff;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+    }
+
+    #header .logo {
+        font-weight: bold;
+        font-size: 20px;
+        color: #0f82d8;
+    }
+
+    #menuToggle {
+        background: none;
+        border: none;
+        font-size: 24px;
+        cursor: pointer;
+        color: #222;
+    }
+
   </style>
 </head>
 <body>
+    <header id="header">
+        <div class="logo">INWAVE</div>
+        <button id="menuToggle" aria-label="메뉴 열기/닫기">☰</button>
+    </header>
   <h1>개인정보처리방침</h1>
   <p>
     본 개인정보처리방침은 InWave(이하 ‘회사’)에서 제공하는 모바일 애플리케이션 및 관련 웹사이트에서 수집되는 개인정보 처리에 대한 정책을 설명합니다.
