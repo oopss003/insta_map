@@ -320,6 +320,26 @@
       appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
     });
     const db = firebase.firestore();
+    document.getElementById('linkHome')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/';
+    });
+    document.getElementById('linkAdwave')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/adwave1.html';
+    });
+    document.getElementById('linkWaveshare')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/waveshare.html';
+    });
+    document.getElementById('linkInvest')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/invest.html';
+    });
+    document.getElementById('linkSupport')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
+    });
 
     /* 지도 */
     const map = new naver.maps.Map('map',{
@@ -717,11 +737,11 @@
   <!-- ② 사이드 메뉴 내용 -->
   <nav id="sideMenu" aria-hidden="true">
     <ul>
-      <li><a href="https://inwave.ai.kr/register.html">가게등록</a></li>
-      <li><a href="https://inwave.ai.kr/">인웨이브</a></li>
-      <li><a href="https://inwave.ai.kr/adwave1.html">애드웨이브 1.0</a></li>
-      <li><a href="https://inwave.ai.kr/waveshare.html">웨이브쉐어</a></li>
-      <li><a href="https://inwave.ai.kr/invest.html">투자라운지</a></li>
+      <li><a href="#" id="linkHome">인웨이브</a></li>
+      <li><a href="#" id="linkAdwave">애드웨이브 1.0</a></li>
+      <li><a href="#" id="linkWaveshare">웨이브쉐어</a></li>
+      <li><a href="#" id="linkInvest">투자라운지</a></li>
+      <li><a href="#" id="linkSupport">고객지원</a></li>
     </ul>
   </nav>
 
