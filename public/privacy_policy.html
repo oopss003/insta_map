@@ -163,6 +163,16 @@
 
   <p><strong>Q2. 로그인 없이도 앱을 사용할 수 있나요?</strong><br />
   A. 네. 현재 앱은 로그인 없이 모든 기능을 사용할 수 있으며, 어떠한 개인정보도 수집하지 않습니다.</p>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const menuToggle = document.querySelector('.menu-toggle');
+        const nav = document.querySelector('nav.dropdown');
 
+        menuToggle?.addEventListener('click', () => {
+          menuToggle.classList.toggle('open');
+          nav.classList.toggle('active');
+        });
+      });
+    </script>
 </body>
 </html>
