@@ -438,80 +438,70 @@
 
     let markers=[]; let selectedMarker=null;
 
-    /* 매장 렌더링 */
-    // ─── 매장 렌더링 함수 전체 교체 ───
-    async function renderStores(){
+    let isRendering = false; // 🔹 [추가] 중복 실행 방지용 플래그
+
+    async function renderStores() {
+      // 🔹 [추가] 실행 중이면 리턴
+      if (isRendering) return;
+      isRendering = true;
+
       console.log('▶︎ renderStores 호출됨');
-      // ─── 줌 레벨에 따라 offset 사용 여부 결정 ───
+
       const zoom = map.getZoom();
-      const useOffset = zoom < 13;   // 13 미만일 때만 뭉쳐서 보여줌
-      // 1) 기존 마커·리스트 초기화
+      const useOffset = zoom < 13;
       markers.forEach(m => m.setMap(null));
       markers.length = 0;
       listEl.innerHTML = '';
 
       const now = new Date();
       const dayMap = ['일','월','화','수','목','금','토'];
-      const todayStr   = dayMap[now.getDay()];          // ex. "월"
+      const todayStr   = dayMap[now.getDay()];
       const nowMinutes = now.getHours() * 60 + now.getMinutes();
-      // 2) 화면에 보이는 영역(bounds) 가져오기
+
       const bounds = map.getBounds();
 
-      // 3) Firestore에서 전체 매장 데이터 조회
       const snap = await db.collection('stores')
                            .orderBy('created','desc')
                            .get();
-      // ────────────────────────────────────────────────────
-      // 1번: **그룹핑 코드** 시작
+
       const bucket = new Map();
       snap.forEach(doc => {
         const d = doc.data();
         const { lat, lng } = d;
-      if (typeof lat !== 'number' || typeof lng !== 'number') return;
-      // 소수점 6자리까지 동일한 lat/lng만 같은 그룹으로 묶음
-      const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
-      if (!bucket.has(key)) bucket.set(key, []);
-      bucket.get(key).push(d);
+        if (typeof lat !== 'number' || typeof lng !== 'number') return;
+        const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
+        if (!bucket.has(key)) bucket.set(key, []);
+        bucket.get(key).push(d);
       });
-      // 1번: **그룹핑 코드** 끝
-      // ────────────────────────────────────────────────────
+
       let visibleCount = 0;
 
-      // ────────────────────────────────────────────────────
-      // 4번: 그룹(bucket)마다 원형 분산(off­set) 계산 → 마커 생성
       bucket.forEach((items, key) => {
-        // key: "lat_lng", items: 같은 그룹(배열) 안에 있는 매장 데이터들
         const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
         const centerPos = new naver.maps.LatLng(someLat, someLng);
-        if (!bounds.hasLatLng(centerPos)) return; // 화면 밖이면 건너뜀
+        if (!bounds.hasLatLng(centerPos)) return;
 
-        // 그룹 크기, 분산 반지름 설정
         const groupSize = items.length;
-        const baseRadius = 0.001; // 약 3미터 내외 분산 (필요에 따라 조정)
+        const baseRadius = 0.001;
 
         items.forEach((data, idx) => {
           const {
             lat, lng, name, insta, desc, photo, vimeo, hashtags,
-            offDays,    // 오늘 쉬는 날 체크용
-            openTime,   // 영업 시작 시각 문자열
-            closeTime,  // 영업 종료 시각 문자열
-            breakStart, // 브레이크 시작 문자열
-            breakEnd    // 브레이크 종료 문자열
+            offDays, openTime, closeTime, breakStart, breakEnd
           } = data;
-          // 1) 오늘 쉬는 날이면 스킵
+
           if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
-          // 2) 영업시간 체크
+
           const openMin  = toMinutes(openTime);
           const closeMin = toMinutes(closeTime);
           if (nowMinutes < openMin || nowMinutes >= closeMin) return;
-          // 3) 브레이크타임 체크 (값이 있으면)
+
           if (breakStart && breakEnd) {
             const bs = toMinutes(breakStart);
             const be = toMinutes(breakEnd);
             if (nowMinutes >= bs && nowMinutes < be) return;
           }
 
-          // ① 원래 lat/lng를 기반으로 offset 계산
           let newLat = lat;
           let newLng = lng;
           if (useOffset && groupSize > 1) {
@@ -523,27 +513,23 @@
             newLng = lng + offsetLng;
           }
 
-          // ② 화면 내 여부 확인 후, 마커 생성
           const position = new naver.maps.LatLng(newLat, newLng);
           if (!bounds.hasLatLng(position)) return;
           visibleCount++;
 
-          // ③ 해시태그에서 첫 번째 텍스트 꺼내오기
           let tagText = "";
           if (Array.isArray(hashtags) && hashtags.length > 0) {
             tagText = hashtags[0];
           }
           const customIcon = createMarkerIconWithText(tagText);
 
-          // ④ 마커 생성 (offset 위치 + customIcon)
           const marker = new naver.maps.Marker({
-           position,
+            position,
             map,
             icon: customIcon
           });
           markers.push(marker);
 
-          // ⑤ 클릭 시 원래 lat/lng(중앙 좌표)로 이동 + InfoCard 표시
           function openStore() {
             map.setCenter(new naver.maps.LatLng(lat, lng));
             map.setZoom(20);
@@ -551,7 +537,6 @@
           }
           naver.maps.Event.addListener(marker, 'click', openStore);
 
-          // ⑥ 리스트 카드(기존대로)
           const li = document.createElement('li');
           li.className = 'card';
           li.innerHTML = `
@@ -565,9 +550,10 @@
           listEl.appendChild(li);
         });
       });
-      // ────────────────────────────────────────────────────
-      // 5) 화면 내 매장 수 반영
+
       storeCnt.textContent = `매장 ${visibleCount}개`;
+
+      isRendering = false; // 🔹 [추가] 렌더링 종료 후 플래그 해제
     }
 
     // 맵이 움직일 때마다 리스트 갱신
