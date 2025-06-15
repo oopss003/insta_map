@@ -1,9 +1,26 @@
+/* 1) 터치 시 기본 파란 하이라이트 완전 제거 */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 기존 스타일 */
 body {
   font-family: 'Arial', sans-serif;
   margin: 20px;
 }
+
 input, button {
   margin: 5px 0;
   padding: 8px;
   width: 300px;
+}
+
+/* 2) ‘2차어디가’ 버튼 눌림(딸각) 효과 */
+/* HTML 버튼에 id="app-button" 이라고 달았을 때 동작합니다. */
+#app-button {
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+#app-button:active {
+  transform: scale(0.97);
+  opacity: 0.8;
 }
