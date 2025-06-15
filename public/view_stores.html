@@ -553,8 +553,10 @@
 
       storeCnt.textContent = `매장 ${visibleCount}개`;
       storeCnt.innerText   = `매장 ${visibleCount}개`;  // 🔹 추가
-      storeCnt.style.display = 'block';                 // 🔹 추가
-      
+      setTimeout(() => {
+        storeCnt.style.display = 'block';
+      }, 50);                // 🔹 추가
+
       isRendering = false; // 🔹 [추가] 렌더링 종료 후 플래그 해제
     }
 
