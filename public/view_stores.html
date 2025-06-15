@@ -28,17 +28,46 @@
     --radius:14px;
   }
   *{box-sizing:border-box;font-family:"Pretendard",system-ui,sans-serif;margin:0;padding:0}
-  html,body{width:100%;height:100%;background:var(--bg);color:var(--text);overflow:hidden}
+  html,body {
+    margin: 0;                      /* ✅ 여백 제거 */
+    padding: 0;                     /* ✅ 패딩 제거 */
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    position: relative;             /* ✅ 좌표 기준 보정 */
+  }
+
+  
 
   /* 지도 */
-  #map{position:absolute;top:0;left:0;width:100%;height:100%;z-index:0}
+  #map {
+  position: fixed;                /* ✅ 화면 고정 */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
 
   /* ① 타이틀兼내위치 버튼(Pill) */
-  #titleBtn{
-    position:fixed;top:12px;left:50%;transform:translateX(-50%);
-    padding:10px 30px;background:var(--bg);border-radius:40px;z-index:1003;
-    box-shadow:0 2px 8px rgba(0,0,0,.12);text-align:center;cursor:pointer;
+  #titleBtn {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0) + 8px);   /* ✅ 상단 safe area 대응 */
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 30px;
+    background: var(--bg);
+    border-radius: 40px;
+    z-index: 1003;
+    box-shadow: 0 2px 8px rgba(0,0,0,.12);
+    text-align: center;
+    cursor: pointer;
   }
+
   #titleBtn b{display:block;font-size:15px;letter-spacing:-.3px}
   #titleBtn span{font-size:12px;color:var(--muted)}
 
