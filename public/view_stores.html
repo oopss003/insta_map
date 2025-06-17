@@ -634,6 +634,10 @@
         map.setCenter(latlng); map.setZoom(18);
         new naver.maps.Marker({position:latlng,map,icon:markerIcon});
         hideInfoCard();            // 위치 이동 시 열린 카드 닫기
+        // ✅ 여기 ↓ 추가하세요!
+        setTimeout(() => {
+          naver.maps.Event.trigger(map, 'resize');
+        }, 200);
       },()=>alert('위치 권한 필요'));
     });
 
