@@ -15,9 +15,6 @@
   <!-- Pretendard 폰트 -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
-  <!-- Font Awesome 아이콘 -->
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
-
   <!-- Naver Maps SDK -->
   <script defer src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
   <script src="https://openapi.map.naver.com/openapi/v3/markerclusterer.js"></script>
@@ -278,40 +275,6 @@
   }
 
 /* ──────────────────────────────────────────────────────────────────── */
-  /* ⑤: 하단 메뉴 바 스타일 ------------------------------------------------ */
-  #bottomNavBar {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 60px; /* 메뉴 바 높이 */
-    background: var(--bg);
-    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: space-around; /* 아이템들을 균등하게 분배 */
-    align-items: center;
-    z-index: 1000; /* 다른 요소들 위에 오도록 */
-    padding-bottom: env(safe-area-inset-bottom); /* 하단 safe area 여백 */
-  }
-
-  #bottomNavBar .nav-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-decoration: none;
-    color: var(--muted); /* 기본 색상 */
-    font-size: 12px;
-    transition: color 0.2s ease;
-  }
-
-  #bottomNavBar .nav-item i {
-    font-size: 20px; /* 아이콘 크기 */
-    margin-bottom: 4px; /* 아이콘과 텍스트 간 간격 */
-  }
-
-  #bottomNavBar .nav-item.active {
-    color: var(--primary); /* 활성 메뉴 색상 */
-  }
 
 </style>
 </head>
@@ -354,9 +317,9 @@
   <!-- ───────── JS ───────── -->
   <script>
   document.addEventListener('DOMContentLoaded', ()=>{
+
     /* Firebase 초기화 */
     firebase.initializeApp({
-      // NOTE: Replace with your actual Firebase config
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
@@ -779,22 +742,5 @@
       <li><a href="#" id="linkSupport">고객지원</a></li>
     </ul>
   </nav>
-
-  <!-- ───────── 여기부터 하단 메뉴 바 요소 시작 ───────── -->
-  <nav id="bottomNavBar">
-    <a href="#" class="nav-item" id="navHome">
-      <i class="fas fa-home"></i>
-      <span>홈</span>
-    </a>
-    <a href="#" class="nav-item" id="navSearch">
-      <i class="fas fa-search"></i>
-      <span>검색</span>
-    </a>
-    <a href="#" class="nav-item" id="navMy">
-      <i class="fas fa-user"></i>
-      <span>MY</span>
-    </a>
-  </nav>
-  <!-- ↑ 하단 메뉴 바 요소 끝 ↑ -->
 
 </body>
