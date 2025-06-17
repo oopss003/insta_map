@@ -3,12 +3,16 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-/* 기존 스타일 */
-body {
+/* 기본 레이아웃 초기화 및 전체 화면 설정 */
+html, body {
+  margin: 0;                      /* ✔️ 여백 제거 */
+  padding: 0;                     /* ✔️ 패딩 제거 */
+  height: 100%;                   /* ✔️ 전체 화면 채우기 */
+  overflow: hidden;              /* ✔️ 스크롤 제거 */
   font-family: 'Arial', sans-serif;
-  margin: 20px;
 }
 
+/* input, button 공통 스타일 */
 input, button {
   margin: 5px 0;
   padding: 8px;
@@ -16,11 +20,18 @@ input, button {
 }
 
 /* 2) ‘2차어디가’ 버튼 눌림(딸각) 효과 */
-/* HTML 버튼에 id="app-button" 이라고 달았을 때 동작합니다. */
-#app-button {
+#titleBtn {
   transition: transform 0.1s ease, opacity 0.1s ease;
+  top: calc(env(safe-area-inset-top, 0) + 8px);   /* ✔️ iOS 상단 inset 보정 */
 }
-#app-button:active {
+
+/* 클릭 시 효과 */
+#titleBtn:active {
   transform: scale(0.97);
   opacity: 0.8;
+}
+
+/* 하단 drawer 위치 조정 (iOS 하단 inset 보정용) */
+#drawer {
+  bottom: calc(env(safe-area-inset-bottom, 0));
 }
