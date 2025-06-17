@@ -1,12 +1,15 @@
 /* 1) 터치 시 기본 파란 하이라이트 완전 제거 */
 * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
 /* 기존 스타일 */
 body {
   font-family: 'Arial', sans-serif;
-  margin: 20px;
+  margin: 0px;
 }
 
 input, button {
