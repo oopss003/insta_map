@@ -93,7 +93,10 @@
       카카오로 로그인
     </button>
 
-    <div id="googleLoginBtn" class="login-button google"></div>
+    <button id="googleLoginBtn" class="login-button google">
+      <img src="/images/google.svg" alt="Google" class="icon" />
+      Google 계정으로 로그인
+    </button>
 
     <button class="login-button apple">
       <img src="/images/apple_w.svg" alt="Apple" class="icon" />
@@ -118,10 +121,13 @@
     </div>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
     const loginBtn = document.getElementById('kakaoLoginBtn');
+    const googleBtn = document.getElementById('googleLoginBtn');
     const userInfo = document.getElementById('userInfo');
 
+    // 카카오 로그인
     loginBtn.addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -145,24 +151,24 @@
       });
     });
 
+    // 구글 로그인 - 커스텀 버튼
     window.onload = () => {
-      google.accounts.id.initialize({
+      window.google.accounts.id.initialize({
         client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
         callback: handleGoogleCredentialResponse
       });
-      google.accounts.id.renderButton(
-        document.getElementById('googleLoginBtn'),
-        { theme: 'outline', size: 'large' }
-      );
     };
+
+    googleBtn.addEventListener('click', () => {
+      google.accounts.id.prompt();
+    });
 
     function handleGoogleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
       userInfo.style.display = 'block';
       userInfo.innerText = `안녕하세요, ${data.name}님!`;
-      document.getElementById('googleLoginBtn').style.display = 'none';
+      googleBtn.style.display = 'none';
     }
   </script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </body>
 </html>
