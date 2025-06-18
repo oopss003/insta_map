@@ -10,8 +10,9 @@
       margin: 0;
       padding: 0;
       background: #fff;
-      height: 100%;
-      -webkit-tap-highlight-color: transparent;
+      min-height: 100vh;
+      padding-bottom: 80px; /* ⬅ footer 높이만큼 확보 */
+      box-sizing: border-box;
     }
     .container {
       padding: 24px;
@@ -57,7 +58,7 @@
       background: #fff;
       padding: 12px;
       box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
-      z-index: 10;
+      z-index: 999;
     }
     .footer button {
       width: 100%;
