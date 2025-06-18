@@ -72,6 +72,34 @@
     .footer div.active {
       color: #0F9ED5;
     }
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 10px 0;
+    }
+
+    .footer div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+    }
+
+    .footer div.active {
+      color: #0F9ED5;
+    }
+
   </style>
 </head>
 <body>
@@ -95,10 +123,20 @@
 
 
   <div class="footer">
-    <div>홈</div>
-    <div>검색</div>
-    <div class="active">MY</div>
+    <div>
+      <img src="/images/home-simple-door.svg" alt="홈" class="tab-icon" /><br>
+      홈
+    </div>
+    <div>
+      <img src="/images/search.svg" alt="검색" class="tab-icon" /><br>
+      검색
+    </div>
+    <div class="active">
+      <img src="/images/user-profile.svg" alt="MY" class="tab-icon" /><br>
+      MY
+    </div>
   </div>
+
 </body>
 </html>
 
