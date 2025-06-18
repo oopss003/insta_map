@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>약관 동의</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fff;
+    }
+    .container {
+      padding: 24px;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    h2 {
+      font-size: 20px;
+      text-align: center;
+      margin: 16px 0;
+    }
+    .desc {
+      text-align: center;
+      color: #444;
+      margin-bottom: 24px;
+    }
+    .checkbox-group {
+      margin-bottom: 24px;
+    }
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+    }
+    label input {
+      margin-right: 12px;
+    }
+    .view-link {
+      color: #999;
+      font-size: 14px;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      max-width: 480px;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
+    }
+    .footer button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      background: #0F9ED5;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.4;
+    }
+    .footer button.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>약관동의</h2>
+    <p class="desc">
+      인웨이브의 원활한 서비스 제공을 위해<br>
+      다음 약관에 동의가 필요합니다.
+    </p>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="allAgree" /> 전체동의</label>
+      <label><input type="checkbox" class="required" /> 서비스 이용약관 (필수) <span class="view-link">보기 &gt;</span></label>
+      <label><input type="checkbox" class="required" /> 개인정보 수집 및 이용 동의 (필수) <span class="view-link">보기 &gt;</span></label>
+      <label><input type="checkbox" class="required" /> 위치기반서비스 이용약관 (필수) <span class="view-link">보기 &gt;</span></label>
+      <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
+      <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button id="nextBtn" disabled>다음</button>
+  </div>
+
+  <script>
+    const allAgree = document.getElementById('allAgree');
+    const requiredCheckboxes = document.querySelectorAll('.required');
+    const nextBtn = document.getElementById('nextBtn');
+
+    allAgree.addEventListener('change', () => {
+      requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
+      updateButtonState();
+    });
+
+    requiredCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateButtonState);
+    });
+
+    function updateButtonState() {
+      const allChecked = [...requiredCheckboxes].every(cb => cb.checked);
+      nextBtn.disabled = !allChecked;
+      nextBtn.classList.toggle('active', allChecked);
+    }
+
+    nextBtn.addEventListener('click', () => {
+      location.href = '/select-business.html';
+    });
+  </script>
+</body>
+</html>
