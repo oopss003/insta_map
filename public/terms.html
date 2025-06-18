@@ -9,11 +9,10 @@
       font-family: sans-serif;
       margin: 0;
       padding: 0;
-      background: #fff;
-      min-height: 100vh;
-      padding-bottom: 80px; /* ⬅ footer 높이만큼 확보 */
+      padding-bottom: 80px; /* footer 높이만큼 확보 */
       box-sizing: border-box;
     }
+
     .container {
       padding: 24px;
       max-width: 480px;
@@ -49,17 +48,20 @@
       color: #999;
       font-size: 14px;
     }
+
     .footer {
       position: fixed;
       bottom: 0;
       left: 0;
+      right: 0;              /* ✅ 추가: 좌우 전체 차지 */
       width: 100%;
       max-width: 480px;
+      margin: 0 auto;         /* ✅ 추가: 중앙 정렬 */
       background: #fff;
       padding: 12px;
       box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
-      z-index: 999;
     }
+
     .footer button {
       width: 100%;
       padding: 16px;
@@ -70,7 +72,6 @@
       color: #fff;
       cursor: pointer;
       opacity: 0.4;
-      z-index: 11;
     }
     .footer button.active {
       opacity: 1;
