@@ -29,11 +29,20 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      display: flex;             /* ✅ 추가 */
+      align-items: center;       /* ✅ 추가 */
+      justify-content: center;   /* ✅ 추가 */
+      gap: 8px;                  /* ✅ 추가 */
     }
     .kakao { background: #FEE500; color: #000; }
     .google { border: 1px solid #ccc; background: #fff; }
     .apple { border: 1px solid #000; background: #000; color: #fff; }
 
+    .icon {
+      width: 20px;
+      height: 20px;
+    }
+    
     .or-text {
       margin: 16px 0;
       color: #666;
@@ -67,15 +76,23 @@
 </head>
 <body>
   <div class="login-container">
-    <p>⚡ 5초 만에 가입하기</p>
-    <button class="login-button kakao">카카오로 로그인</button>
-    <button class="login-button google">구글로 로그인</button>
-    <button class="login-button apple">Apple로 로그인</button>
-    <div class="or-text">or</div>
-    <div class="link">이메일 로그인하기 | 이메일로 가입하기</div>
-    <br><br>
-    <div class="link">서비스 둘러보기</div>
+
+    <button class="login-button kakao">
+      <img src="/images/logo-kakaotalk.svg" alt="Kakao" class="icon" />
+      카카오로 로그인
+    </button>
+
+    <button class="login-button google">
+      <img src="/images/google.svg" alt="Google" class="icon" />
+      구글로 로그인
+    </button>
+
+    <button class="login-button apple">
+      <img src="/images/apple.svg" alt="Apple" class="icon" />
+      Apple로 로그인
+    </button>
   </div>
+
 
   <div class="footer">
     <div>홈</div>
