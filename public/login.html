@@ -4,6 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>로그인</title>
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
+    console.log('Kakao SDK Initialized:', Kakao.isInitialized());
+  </script>
   <style>
     body {
       margin: 0; padding: 0;
@@ -29,10 +34,10 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      display: flex;             /* ✅ 추가 */
-      align-items: center;       /* ✅ 추가 */
-      justify-content: center;   /* ✅ 추가 */
-      gap: 8px;                  /* ✅ 추가 */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
     }
     .kakao { background: #FEE500; color: #000; }
     .google { border: 1px solid #ccc; background: #fff; }
@@ -77,35 +82,12 @@
       height: 24px;
       margin-bottom: 4px;
     }
-
-    .footer {
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      max-width: 480px;
-      border-top: 1px solid #ddd;
-      display: flex;
-      justify-content: space-around;
-      background: #fff;
-      padding: 10px 0;
-    }
-
-    .footer div {
-      text-align: center;
-      font-size: 12px;
-      color: #333;
-    }
-
-    .footer div.active {
-      color: #0F9ED5;
-    }
-
   </style>
 </head>
 <body>
   <div class="login-container">
-
-    <button class="login-button kakao">
+    <p>⚡ 5초 만에 가입하기</p>
+    <button id="kakaoLoginBtn" class="login-button kakao">
       <img src="/images/logo-kakaotalk.svg" alt="Kakao" class="icon" />
       카카오로 로그인
     </button>
@@ -119,8 +101,9 @@
       <img src="/images/apple_w.svg" alt="Apple" class="icon" />
       Apple로 로그인
     </button>
-  </div>
 
+    <div id="userInfo" style="margin-top:16px; display:none;"></div>
+  </div>
 
   <div class="footer">
     <div>
@@ -137,6 +120,32 @@
     </div>
   </div>
 
+  <script>
+    const loginBtn = document.getElementById('kakaoLoginBtn');
+    const userInfo = document.getElementById('userInfo');
+
+    loginBtn.addEventListener('click', () => {
+      Kakao.Auth.login({
+        scope: 'profile_nickname, account_email',
+        success: function(authObj) {
+          Kakao.API.request({
+            url: '/v2/user/me',
+            success: function(res) {
+              const nickname = res.kakao_account.profile.nickname;
+              userInfo.style.display = 'block';
+              userInfo.innerText = `안녕하세요, ${nickname}님!`;
+              loginBtn.style.display = 'none';
+            },
+            fail: function(err) {
+              console.error('사용자 정보 요청 실패', err);
+            }
+          });
+        },
+        fail: function(err) {
+          console.error('로그인 실패', err);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
-
