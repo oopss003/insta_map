@@ -159,7 +159,15 @@
           Kakao.API.request({
             url: '/v2/user/me',
             success: function(res) {
+              const email = res.kakao_account.email;
               const nickname = res.kakao_account.profile.nickname;
+
+              // ✅ Firestore 저장 추가
+              saveUserToFirestore({
+                email: email,
+                name: nickname,
+                provider: 'kakao'
+              });
               userInfo.style.display = 'block';
               userInfo.innerText = `안녕하세요, ${nickname}님!`;
               loginBtn.style.display = 'none';
