@@ -163,6 +163,7 @@
               userInfo.style.display = 'block';
               userInfo.innerText = `안녕하세요, ${nickname}님!`;
               loginBtn.style.display = 'none';
+              location.href = '/terms.html';
             },
             fail: function(err) {
               console.error('사용자 정보 요청 실패', err);
