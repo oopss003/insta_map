@@ -11,17 +11,17 @@
     Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
   </script>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- ✅ Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-  <!-- ✅ Google OAuth Popup SDK -->
-  <script src="https://apis.google.com/js/api:client.js"></script>
+  <!-- ✅ Google Identity Services (GIS) -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
   <style>
     body {
-      margin: 0;
-      padding: 0;
+      margin: 0; padding: 0;
       font-family: sans-serif;
       display: flex;
       flex-direction: column;
@@ -94,7 +94,7 @@
   </div>
 
   <script>
-    // ✅ Firebase 설정
+    // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
       authDomain: "instamap-9b595.firebaseapp.com",
@@ -121,7 +121,7 @@
       });
     }
 
-    // ✅ 로그인 후 페이지 분기
+    // ✅ 로그인 후 리디렉션 처리
     function handleLogin({ email, name, provider }) {
       const normalizedEmail = email.trim().toLowerCase();
       const docRef = db.collection("users").doc(normalizedEmail);
@@ -135,7 +135,7 @@
           docRef.get({ source: 'server' }).then(updatedDoc => {
             const userData = updatedDoc.data();
             console.log("✅ 사용자 ID:", normalizedEmail);
-            console.log("✅ agreedToTerms:", userData?.agreedToTerms);
+            console.log("✅ agreedToTerms (최종):", userData?.agreedToTerms);
 
             if (isNewUser) {
               location.href = '/team.html';
@@ -152,7 +152,7 @@
       });
     }
 
-    // ✅ 카카오 로그인 처리
+    // ✅ 카카오 로그인
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -170,34 +170,26 @@
       });
     });
 
-    // ✅ 구글 로그인 초기화
-    let auth2;
-    function initGoogleAuth() {
-      gapi.load('auth2', function () {
-        auth2 = gapi.auth2.init({
-          client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com', // ✅ 기존 client_id 사용
-          cookiepolicy: 'single_host_origin'
-        });
+    // ✅ Google GIS 초기화
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
+        callback: handleGoogleCredentialResponse
       });
-    }
+    };
 
-    // ✅ 구글 로그인 버튼 클릭
+    // ✅ Google 로그인 버튼 클릭 시 prompt 띄우기
     document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      if (!auth2) {
-        alert('Google 인증 초기화 중입니다. 잠시 후 다시 시도해주세요.');
-        return;
-      }
-      auth2.signIn().then(googleUser => {
-        const profile = googleUser.getBasicProfile();
-        const email = profile.getEmail();
-        const name = profile.getName();
-        handleLogin({ email, name, provider: 'google' });
-      }).catch(err => {
-        console.error('❌ Google 로그인 실패:', err);
-      });
+      google.accounts.id.prompt(); // 팝업 또는 One Tap 자동 로그인
     });
 
-    window.onload = initGoogleAuth;
+    // ✅ Google 로그인 응답 처리
+    function handleGoogleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      const email = data.email;
+      const name = data.name;
+      handleLogin({ email, name, provider: 'google' });
+    }
   </script>
 </body>
 </html>
