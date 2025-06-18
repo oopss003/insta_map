@@ -9,6 +9,7 @@
     Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
     console.log('Kakao SDK Initialized:', Kakao.isInitialized());
   </script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
   <style>
     body {
       margin: 0; padding: 0;
@@ -47,7 +48,7 @@
       width: 20px;
       height: 20px;
     }
-    
+
     .or-text {
       margin: 16px 0;
       color: #666;
@@ -92,10 +93,7 @@
       카카오로 로그인
     </button>
 
-    <button class="login-button google">
-      <img src="/images/google.svg" alt="Google" class="icon" />
-      구글로 로그인
-    </button>
+    <div id="googleLoginBtn" class="login-button google"></div>
 
     <button class="login-button apple">
       <img src="/images/apple_w.svg" alt="Apple" class="icon" />
@@ -146,6 +144,25 @@
         }
       });
     });
+
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
+        callback: handleGoogleCredentialResponse
+      });
+      google.accounts.id.renderButton(
+        document.getElementById('googleLoginBtn'),
+        { theme: 'outline', size: 'large' }
+      );
+    };
+
+    function handleGoogleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      userInfo.style.display = 'block';
+      userInfo.innerText = `안녕하세요, ${data.name}님!`;
+      document.getElementById('googleLoginBtn').style.display = 'none';
+    }
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </body>
 </html>
