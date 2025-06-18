@@ -109,39 +109,36 @@
       }, { merge: true });
     }
 
-    const loginBtn = document.getElementById('kakaoLoginBtn');
-    const googleBtn = document.getElementById('googleLoginBtn');
-    const userInfo = document.getElementById('userInfo');
-
     function handleLogin({ email, name, provider }) {
       const normalizedEmail = email.trim().toLowerCase();
+      const docRef = db.collection("users").doc(normalizedEmail);
 
-      db.collection("users").doc(normalizedEmail).get({ source: 'server' })
-        .then(doc => {
-          const isNewUser = !doc.exists;
+      docRef.get({ source: 'server' }).then(initialDoc => {
+        const isNewUser = !initialDoc.exists;
 
-          console.log("📄 문서 ID:", normalizedEmail);
-          console.log("📄 문서 존재:", doc.exists);
-          console.log("📄 데이터 내용:", doc.data());
+        saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
+          docRef.get({ source: 'server' }).then(updatedDoc => {
+            console.log("📄 사용자 ID:", normalizedEmail);
+            console.log("📌 기존 사용자 여부:", !isNewUser);
+            console.log("📌 agreedToTerms:", updatedDoc.data()?.agreedToTerms);
 
-          return saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
             if (isNewUser) {
               location.href = '/team.html';
-            } else if (doc.data()?.agreedToTerms) {
+            } else if (updatedDoc.data()?.agreedToTerms) {
               location.href = '/mypage.html';
             } else {
               location.href = '/terms.html';
             }
           });
-        })
-        .catch(err => {
-          console.error('❌ Firestore 서버 fetch 오류:', err);
-          alert('로그인 중 문제가 발생했습니다.');
         });
+      }).catch(err => {
+        console.error('❌ Firestore 오류:', err);
+        alert('로그인 중 문제가 발생했습니다.');
+      });
     }
 
     // 카카오 로그인
-    loginBtn.addEventListener('click', () => {
+    document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
         success: function () {
@@ -166,7 +163,7 @@
       });
     };
 
-    googleBtn.addEventListener('click', () => {
+    document.getElementById('googleLoginBtn').addEventListener('click', () => {
       google.accounts.id.prompt();
     });
 
