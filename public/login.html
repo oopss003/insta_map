@@ -113,6 +113,30 @@
     const googleBtn = document.getElementById('googleLoginBtn');
     const userInfo = document.getElementById('userInfo');
 
+    // ✅ 공통 처리 함수
+    function handleLogin({ email, name, provider }) {
+      const normalizedEmail = email.trim().toLowerCase();
+      db.collection("users").doc(normalizedEmail).get({ source: 'server' }).then(doc => {
+        const isNew = !doc.exists;
+        console.log("📄 문서 ID:", normalizedEmail);
+        console.log("📄 문서 존재:", doc.exists);
+        console.log("📄 데이터 내용:", doc.data());
+
+        saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
+          if (isNew) {
+            location.href = '/team.html';
+          } else if (doc.data()?.agreedToTerms) {
+            location.href = '/mypage.html';
+          } else {
+            location.href = '/terms.html';
+          }
+        });
+      }).catch(err => {
+        console.error('❌ Firestore 서버 fetch 오류:', err);
+        alert('로그인 중 문제가 발생했습니다.');
+      });
+    }
+
     // 카카오 로그인
     loginBtn.addEventListener('click', () => {
       Kakao.Auth.login({
@@ -121,29 +145,9 @@
           Kakao.API.request({
             url: '/v2/user/me',
             success: function (res) {
-              const rawEmail = res.kakao_account.email;
+              const email = res.kakao_account.email;
               const name = res.kakao_account.profile.nickname;
-              const email = rawEmail.trim().toLowerCase(); // 🔒 정규화
-
-              db.collection("users").doc(email).get().then(doc => {
-                const isNew = !doc.exists;
-                console.log("📄 문서 ID:", email);
-                console.log("📄 문서 존재:", doc.exists);
-                console.log("📄 데이터 내용:", doc.data());
-
-                saveUserToFirestore({ email, name, provider: 'kakao' }).then(() => {
-                  if (isNew) {
-                    location.href = '/team.html';
-                  } else if (doc.data()?.agreedToTerms) {
-                    location.href = '/mypage.html';
-                  } else {
-                    location.href = '/terms.html';
-                  }
-                });
-              }).catch(err => {
-                console.error('❌ Firestore 오류:', err);
-                alert('로그인 중 문제가 발생했습니다.');
-              });
+              handleLogin({ email, name, provider: 'kakao' });
             }
           });
         },
@@ -165,29 +169,9 @@
 
     function handleGoogleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
-      const rawEmail = data.email;
+      const email = data.email;
       const name = data.name;
-      const email = rawEmail.trim().toLowerCase(); // 🔒 정규화
-
-      db.collection("users").doc(email).get().then(doc => {
-        const isNew = !doc.exists;
-        console.log("📄 문서 ID:", email);
-        console.log("📄 문서 존재:", doc.exists);
-        console.log("📄 데이터 내용:", doc.data());
-
-        saveUserToFirestore({ email, name, provider: 'google' }).then(() => {
-          if (isNew) {
-            location.href = '/team.html';
-          } else if (doc.data()?.agreedToTerms) {
-            location.href = '/mypage.html';
-          } else {
-            location.href = '/terms.html';
-          }
-        });
-      }).catch(err => {
-        console.error('❌ Firestore 오류:', err);
-        alert('로그인 중 문제가 발생했습니다.');
-      });
+      handleLogin({ email, name, provider: 'google' });
     }
   </script>
 </body>
