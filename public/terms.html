@@ -113,6 +113,9 @@
     }
 
     nextBtn.addEventListener('click', () => {
+      // 약관 동의 여부를 저장
+      localStorage.setItem('agreedToTerms', 'true');
+      // 다음 페이지로 이동
       location.href = '/select-business.html';
     });
   </script>
