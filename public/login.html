@@ -10,6 +10,8 @@
     console.log('Kakao SDK Initialized:', Kakao.isInitialized());
   </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore.js"></script>
   <style>
     body {
       margin: 0; padding: 0;
@@ -123,11 +125,32 @@
 
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "SENDER_ID",
+      appId: "APP_ID"
+    };
+
+    const app = firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function saveUserToFirestore(user) {
+      db.collection("users").doc(user.email).set({
+        nickname: user.name,
+        email: user.email,
+        provider: user.provider || 'google',
+        agreedToTerms: false,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+
     const loginBtn = document.getElementById('kakaoLoginBtn');
     const googleBtn = document.getElementById('googleLoginBtn');
     const userInfo = document.getElementById('userInfo');
 
-    // 카카오 로그인
     loginBtn.addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -151,7 +174,6 @@
       });
     });
 
-    // 구글 로그인 - 커스텀 버튼
     window.onload = () => {
       window.google.accounts.id.initialize({
         client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
@@ -165,9 +187,22 @@
 
     function handleGoogleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
+      saveUserToFirestore({
+        email: data.email,
+        name: data.name,
+        provider: 'google'
+      });
+
       userInfo.style.display = 'block';
       userInfo.innerText = `안녕하세요, ${data.name}님!`;
       googleBtn.style.display = 'none';
+
+      const agreed = localStorage.getItem('agreedToTerms');
+      if (agreed === 'true') {
+        location.href = '/mypage.html';
+      } else {
+        location.href = '/terms.html';
+      }
     }
   </script>
 </body>
