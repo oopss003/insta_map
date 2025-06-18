@@ -117,6 +117,8 @@
         const isNewUser = !initialDoc.exists;
 
         saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
+          localStorage.setItem('userEmail', normalizedEmail); // ✅ 약관 동의용 저장
+
           docRef.get({ source: 'server' }).then(updatedDoc => {
             console.log("📄 사용자 ID:", normalizedEmail);
             console.log("📌 기존 사용자 여부:", !isNewUser);
