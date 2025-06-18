@@ -127,12 +127,12 @@
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
     const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_PROJECT_ID.appspot.com",
-      messagingSenderId: "SENDER_ID",
-      appId: "APP_ID"
+      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399933",
+      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
     };
 
     const app = firebase.initializeApp(firebaseConfig);
@@ -146,6 +146,8 @@
         agreedToTerms: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
+      .then(() => console.log('✅ Firestore 저장 성공:', user.email))
+      .catch(err => console.error('❌ Firestore 저장 실패:', err));
     }
 
     const loginBtn = document.getElementById('kakaoLoginBtn');
