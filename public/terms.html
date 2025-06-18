@@ -9,7 +9,7 @@
       font-family: sans-serif;
       margin: 0;
       padding: 0;
-      padding-bottom: 80px; /* footer 높이만큼 확보 */
+      padding-bottom: 80px;
       box-sizing: border-box;
     }
 
@@ -17,21 +17,25 @@
       padding: 24px;
       max-width: 480px;
       margin: 0 auto;
-      padding-bottom: 100px; /* footer 공간 확보 */
+      padding-bottom: 100px;
     }
+
     h2 {
       font-size: 20px;
       text-align: center;
       margin: 16px 0;
     }
+
     .desc {
       text-align: center;
       color: #444;
       margin-bottom: 24px;
     }
+
     .checkbox-group {
       margin-bottom: 24px;
     }
+
     label {
       display: flex;
       justify-content: space-between;
@@ -41,9 +45,11 @@
       font-size: 15px;
       cursor: pointer;
     }
+
     label input {
       margin-right: 12px;
     }
+
     .view-link {
       color: #999;
       font-size: 14px;
@@ -53,10 +59,10 @@
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;              /* ✅ 추가: 좌우 전체 차지 */
+      right: 0;
       width: 100%;
       max-width: 480px;
-      margin: 0 auto;         /* ✅ 추가: 중앙 정렬 */
+      margin: 0 auto;
       background: #fff;
       padding: 12px;
       box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
@@ -73,6 +79,7 @@
       cursor: pointer;
       opacity: 0.4;
     }
+
     .footer button.active {
       opacity: 1;
     }
@@ -100,6 +107,23 @@
     <button id="nextBtn" disabled>다음</button>
   </div>
 
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script>
+    // Firebase 초기화
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399933",
+      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+  </script>
+
   <script>
     const allAgree = document.getElementById('allAgree');
     const requiredCheckboxes = document.querySelectorAll('.required');
@@ -121,10 +145,23 @@
     }
 
     nextBtn.addEventListener('click', () => {
-      localStorage.setItem('agreedToTerms', 'true');
-      location.href = '/mypage.html';
+      const email = localStorage.getItem('userEmail');
+      if (!email) {
+        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+        return;
+      }
+
+      const normalizedEmail = email.trim().toLowerCase();
+      db.collection("users").doc(normalizedEmail).update({
+        agreedToTerms: true
+      }).then(() => {
+        localStorage.setItem('agreedToTerms', 'true');
+        location.href = '/mypage.html';
+      }).catch(err => {
+        console.error("🔥 약관 동의 저장 실패:", err);
+        alert("약관 동의 처리 중 오류가 발생했습니다.");
+      });
     });
   </script>
 </body>
 </html>
-
