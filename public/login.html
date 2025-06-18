@@ -1,1 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>로그인</title>
+  <style>
+    body {
+      margin: 0; padding: 0;
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: #fff;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 320px;
+      padding: 24px;
+      text-align: center;
+    }
+    .login-button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    .kakao { background: #FEE500; color: #000; }
+    .google { border: 1px solid #ccc; background: #fff; }
+    .apple { border: 1px solid #000; background: #000; color: #fff; }
+
+    .or-text {
+      margin: 16px 0;
+      color: #666;
+      font-size: 14px;
+    }
+    .link {
+      font-size: 14px;
+      color: #007aff;
+      cursor: pointer;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 10px 0;
+    }
+    .footer div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+    }
+    .footer div.active {
+      color: #0F9ED5;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <p>⚡ 5초 만에 가입하기</p>
+    <button class="login-button kakao">카카오로 로그인</button>
+    <button class="login-button google">구글로 로그인</button>
+    <button class="login-button apple">Apple로 로그인</button>
+    <div class="or-text">or</div>
+    <div class="link">이메일 로그인하기 | 이메일로 가입하기</div>
+    <br><br>
+    <div class="link">서비스 둘러보기</div>
+  </div>
+
+  <div class="footer">
+    <div>홈</div>
+    <div>검색</div>
+    <div class="active">MY</div>
+  </div>
+</body>
+</html>
 
