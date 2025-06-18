@@ -10,9 +10,9 @@
     console.log('Kakao SDK Initialized:', Kakao.isInitialized());
   </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <!-- Firebase SDK (compat) -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <style>
     body {
       margin: 0; padding: 0;
@@ -46,22 +46,7 @@
     .kakao { background: #FEE500; color: #000; }
     .google { border: 1px solid #ccc; background: #fff; }
     .apple { border: 1px solid #000; background: #000; color: #fff; }
-
-    .icon {
-      width: 20px;
-      height: 20px;
-    }
-
-    .or-text {
-      margin: 16px 0;
-      color: #666;
-      font-size: 14px;
-    }
-    .link {
-      font-size: 14px;
-      color: #007aff;
-      cursor: pointer;
-    }
+    .icon { width: 20px; height: 20px; }
     .footer {
       position: fixed;
       bottom: 0;
@@ -78,53 +63,30 @@
       font-size: 12px;
       color: #333;
     }
-    .footer div.active {
-      color: #0F9ED5;
-    }
-    .tab-icon {
-      width: 24px;
-      height: 24px;
-      margin-bottom: 4px;
-    }
+    .footer div.active { color: #0F9ED5; }
+    .tab-icon { width: 24px; height: 24px; margin-bottom: 4px; }
   </style>
 </head>
 <body>
   <div class="login-container">
     <p>⚡ 5초 만에 가입하기</p>
     <button id="kakaoLoginBtn" class="login-button kakao">
-      <img src="/images/logo-kakaotalk.svg" alt="Kakao" class="icon" />
-      카카오로 로그인
+      <img src="/images/logo-kakaotalk.svg" alt="Kakao" class="icon" /> 카카오로 로그인
     </button>
-
     <button id="googleLoginBtn" class="login-button google">
-      <img src="/images/google.svg" alt="Google" class="icon" />
-      Google 계정으로 로그인
+      <img src="/images/google.svg" alt="Google" class="icon" /> Google 계정으로 로그인
     </button>
-
     <button class="login-button apple">
-      <img src="/images/apple_w.svg" alt="Apple" class="icon" />
-      Apple로 로그인
+      <img src="/images/apple_w.svg" alt="Apple" class="icon" /> Apple로 로그인
     </button>
-
     <div id="userInfo" style="margin-top:16px; display:none;"></div>
   </div>
-
   <div class="footer">
-    <div>
-      <img src="/images/home-simple-door.svg" alt="홈" class="tab-icon" /><br>
-      홈
-    </div>
-    <div>
-      <img src="/images/search.svg" alt="검색" class="tab-icon" /><br>
-      검색
-    </div>
-    <div class="active">
-      <img src="/images/user-profile.svg" alt="MY" class="tab-icon" /><br>
-      MY
-    </div>
+    <div><img src="/images/home-simple-door.svg" alt="홈" class="tab-icon" /><br>홈</div>
+    <div><img src="/images/search.svg" alt="검색" class="tab-icon" /><br>검색</div>
+    <div class="active"><img src="/images/user-profile.svg" alt="MY" class="tab-icon" /><br>MY</div>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
@@ -145,9 +107,7 @@
         provider: user.provider || 'google',
         agreedToTerms: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true })
-      .then(() => console.log('✅ Firestore 저장 성공:', user.email))
-      .catch(err => console.error('❌ Firestore 저장 실패:', err));
+      }, { merge: true });
     }
 
     const loginBtn = document.getElementById('kakaoLoginBtn');
@@ -157,50 +117,36 @@
     loginBtn.addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
-        success: function(authObj) {
+        success: function () {
           Kakao.API.request({
             url: '/v2/user/me',
-            success: function(res) {
+            success: function (res) {
               const email = res.kakao_account.email;
               const nickname = res.kakao_account.profile.nickname;
-
-              saveUserToFirestore({
-                email: email,
-                name: nickname,
-                provider: 'kakao'
-              }).then(() => {
-                db.collection("users").doc(email).get().then(doc => {
-                  const agreed = doc.exists && doc.data().agreedToTerms;
-
+              saveUserToFirestore({ email, name: nickname, provider: 'kakao' })
+                .then(() => db.collection("users").doc(email).get())
+                .then(doc => {
                   userInfo.style.display = 'block';
                   userInfo.innerText = `안녕하세요, ${nickname}님!`;
                   loginBtn.style.display = 'none';
 
-                  // ✅ 조건 분기
                   if (!doc.exists) {
                     location.href = '/team.html';
-                  } else if (agreed) {
+                  } else if (doc.data().agreedToTerms) {
                     location.href = '/mypage.html';
                   } else {
                     location.href = '/terms.html';
                   }
-
-                }).catch(err => {
-                  console.error('❌ Firestore 조회 실패:', err);
-                  alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
+                })
+                .catch(err => {
+                  console.error('❌ 오류:', err);
+                  alert('로그인 중 문제가 발생했습니다.');
                 });
-              }).catch(err => {
-                console.error('❌ Firestore 저장 실패:', err);
-              });
             },
-            fail: function(err) {
-              console.error('사용자 정보 요청 실패', err);
-            }
+            fail: err => console.error('사용자 정보 요청 실패', err)
           });
         },
-        fail: function(err) {
-          console.error('로그인 실패', err);
-        }
+        fail: err => console.error('로그인 실패', err)
       });
     });
 
@@ -221,30 +167,25 @@
         email: data.email,
         name: data.name,
         provider: 'google'
-      });
-      // ✅ Firestore에서 agreedToTerms 조회 후 분기
-      db.collection("users").doc(data.email).get().then(doc => {
-        const agreed = doc.exists && doc.data().agreedToTerms;
+      })
+        .then(() => db.collection("users").doc(data.email).get())
+        .then(doc => {
+          userInfo.style.display = 'block';
+          userInfo.innerText = `안녕하세요, ${data.name}님!`;
+          googleBtn.style.display = 'none';
 
-        userInfo.style.display = 'block';
-        userInfo.innerText = `안녕하세요, ${data.name}님!`;
-        googleBtn.style.display = 'none';
-
-        // ✅ 조건 분기 후 이동
-        if (!doc.exists) {
-          // ✅ 아예 등록되지 않은 유저는 → 팀 등록 먼저
-          location.href = '/team.html';
-        } else if (doc.data().agreedToTerms) {
-          // ✅ 등록 + 약관 동의한 유저는 → 마이페이지
-          location.href = '/mypage.html';
-        } else {
-          // ✅ 등록은 됐지만 약관 동의 안한 유저는 → 약관 동의
-          location.href = '/terms.html';
-        }
-      }).catch(err => {
-        console.error('❌ Firestore 조회 실패:', err);
-        alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
-      });
+          if (!doc.exists) {
+            location.href = '/team.html';
+          } else if (doc.data().agreedToTerms) {
+            location.href = '/mypage.html';
+          } else {
+            location.href = '/terms.html';
+          }
+        })
+        .catch(err => {
+          console.error('❌ Firestore 조회 실패:', err);
+          alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
+        });
     }
   </script>
 </body>
