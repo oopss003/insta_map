@@ -7,7 +7,6 @@
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
   <script>
     Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
-    console.log('Kakao SDK Initialized:', Kakao.isInitialized());
   </script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -71,20 +70,20 @@
   <div class="login-container">
     <p>⚡ 5초 만에 가입하기</p>
     <button id="kakaoLoginBtn" class="login-button kakao">
-      <img src="/images/logo-kakaotalk.svg" alt="Kakao" class="icon" /> 카카오로 로그인
+      <img src="/images/logo-kakaotalk.svg" class="icon" /> 카카오로 로그인
     </button>
     <button id="googleLoginBtn" class="login-button google">
-      <img src="/images/google.svg" alt="Google" class="icon" /> Google 계정으로 로그인
+      <img src="/images/google.svg" class="icon" /> Google 계정으로 로그인
     </button>
     <button class="login-button apple">
-      <img src="/images/apple_w.svg" alt="Apple" class="icon" /> Apple로 로그인
+      <img src="/images/apple_w.svg" class="icon" /> Apple로 로그인
     </button>
     <div id="userInfo" style="margin-top:16px; display:none;"></div>
   </div>
   <div class="footer">
-    <div><img src="/images/home-simple-door.svg" alt="홈" class="tab-icon" /><br>홈</div>
-    <div><img src="/images/search.svg" alt="검색" class="tab-icon" /><br>검색</div>
-    <div class="active"><img src="/images/user-profile.svg" alt="MY" class="tab-icon" /><br>MY</div>
+    <div><img src="/images/home-simple-door.svg" class="tab-icon" /><br>홈</div>
+    <div><img src="/images/search.svg" class="tab-icon" /><br>검색</div>
+    <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
   </div>
 
   <script>
@@ -96,7 +95,6 @@
       messagingSenderId: "280950399933",
       appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
     };
-
     const app = firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -114,6 +112,7 @@
     const googleBtn = document.getElementById('googleLoginBtn');
     const userInfo = document.getElementById('userInfo');
 
+    // 카카오 로그인
     loginBtn.addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -122,34 +121,31 @@
             url: '/v2/user/me',
             success: function (res) {
               const email = res.kakao_account.email;
-              const nickname = res.kakao_account.profile.nickname;
-              saveUserToFirestore({ email, name: nickname, provider: 'kakao' })
-                .then(() => db.collection("users").doc(email).get())
-                .then(doc => {
-                  userInfo.style.display = 'block';
-                  userInfo.innerText = `안녕하세요, ${nickname}님!`;
-                  loginBtn.style.display = 'none';
+              const name = res.kakao_account.profile.nickname;
 
-                  if (!doc.exists) {
+              db.collection("users").doc(email).get().then(doc => {
+                const isNew = !doc.exists;
+                saveUserToFirestore({ email, name, provider: 'kakao' }).then(() => {
+                  if (isNew) {
                     location.href = '/team.html';
                   } else if (doc.data().agreedToTerms) {
                     location.href = '/mypage.html';
                   } else {
                     location.href = '/terms.html';
                   }
-                })
-                .catch(err => {
-                  console.error('❌ 오류:', err);
-                  alert('로그인 중 문제가 발생했습니다.');
                 });
-            },
-            fail: err => console.error('사용자 정보 요청 실패', err)
+              }).catch(err => {
+                console.error('❌ 오류:', err);
+                alert('로그인 중 문제가 발생했습니다.');
+              });
+            }
           });
         },
-        fail: err => console.error('로그인 실패', err)
+        fail: err => console.error('카카오 로그인 실패', err)
       });
     });
 
+    // 구글 로그인
     window.onload = () => {
       window.google.accounts.id.initialize({
         client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
@@ -163,29 +159,24 @@
 
     function handleGoogleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
-      saveUserToFirestore({
-        email: data.email,
-        name: data.name,
-        provider: 'google'
-      })
-        .then(() => db.collection("users").doc(data.email).get())
-        .then(doc => {
-          userInfo.style.display = 'block';
-          userInfo.innerText = `안녕하세요, ${data.name}님!`;
-          googleBtn.style.display = 'none';
+      const email = data.email;
+      const name = data.name;
 
-          if (!doc.exists) {
+      db.collection("users").doc(email).get().then(doc => {
+        const isNew = !doc.exists;
+        saveUserToFirestore({ email, name, provider: 'google' }).then(() => {
+          if (isNew) {
             location.href = '/team.html';
           } else if (doc.data().agreedToTerms) {
             location.href = '/mypage.html';
           } else {
             location.href = '/terms.html';
           }
-        })
-        .catch(err => {
-          console.error('❌ Firestore 조회 실패:', err);
-          alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
         });
+      }).catch(err => {
+        console.error('❌ 오류:', err);
+        alert('로그인 중 문제가 발생했습니다.');
+      });
     }
   </script>
 </body>
