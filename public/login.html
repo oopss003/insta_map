@@ -145,7 +145,7 @@
         provider: user.provider || 'google',
         agreedToTerms: false,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      }, { merge: true })
       .then(() => console.log('✅ Firestore 저장 성공:', user.email))
       .catch(err => console.error('❌ Firestore 저장 실패:', err));
     }
