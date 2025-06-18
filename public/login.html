@@ -99,14 +99,19 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // ✅ 수정된 Firestore 저장 함수
     function saveUserToFirestore(user) {
-      return db.collection("users").doc(user.email).set({
-        nickname: user.name,
-        email: user.email,
-        provider: user.provider || 'google',
-        agreedToTerms: false,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true });
+      const docRef = db.collection("users").doc(user.email);
+      return docRef.get().then(doc => {
+        const agreed = doc.exists ? doc.data().agreedToTerms : false;
+        return docRef.set({
+          nickname: user.name,
+          email: user.email,
+          provider: user.provider || 'google',
+          agreedToTerms: agreed,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      });
     }
 
     function handleLogin({ email, name, provider }) {
@@ -117,16 +122,17 @@
         const isNewUser = !initialDoc.exists;
 
         saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
-          localStorage.setItem('userEmail', normalizedEmail); // ✅ 반드시 저장
+          localStorage.setItem('userEmail', normalizedEmail); // ✅ terms.html용 저장
 
           docRef.get({ source: 'server' }).then(updatedDoc => {
-            console.log("✅ 이메일:", normalizedEmail);
+            const userData = updatedDoc.data();
+            console.log("✅ 사용자 ID:", normalizedEmail);
             console.log("✅ 문서 존재:", updatedDoc.exists);
-            console.log("✅ agreedToTerms:", updatedDoc.data()?.agreedToTerms);
+            console.log("✅ agreedToTerms:", userData?.agreedToTerms);
 
             if (!updatedDoc.exists || isNewUser) {
               location.href = '/team.html';
-            } else if (updatedDoc.data()?.agreedToTerms) {
+            } else if (userData?.agreedToTerms) {
               location.href = '/mypage.html';
             } else {
               location.href = '/terms.html';
@@ -139,7 +145,7 @@
       });
     }
 
-    // 카카오 로그인
+    // ✅ 카카오 로그인
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -157,7 +163,7 @@
       });
     });
 
-    // 구글 로그인
+    // ✅ 구글 로그인
     window.onload = () => {
       window.google.accounts.id.initialize({
         client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
