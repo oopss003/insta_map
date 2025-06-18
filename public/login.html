@@ -170,11 +170,25 @@
                 name: nickname,
                 provider: 'kakao'
               });
-              userInfo.style.display = 'block';
-              userInfo.innerText = `안녕하세요, ${nickname}님!`;
-              loginBtn.style.display = 'none';
-              location.href = '/terms.html';
-            },
+              // ✅ Firestore에서 agreedToTerms 값 조회 후 조건 분기
+              db.collection("users").doc(email).get().then(doc => {
+                const agreed = doc.exists && doc.data().agreedToTerms;
+
+                userInfo.style.display = 'block';
+                userInfo.innerText = `안녕하세요, ${nickname}님!`;
+                loginBtn.style.display = 'none';
+
+                // ✅ 조건 분기 후 이동
+                if (agreed) {
+                  location.href = '/mypage.html';
+                } else {
+                  location.href = '/terms.html';
+                }
+              }).catch(err => {
+                console.error('❌ Firestore 조회 실패:', err);
+                alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
+              });
+            },  
             fail: function(err) {
               console.error('사용자 정보 요청 실패', err);
             }
@@ -204,17 +218,24 @@
         name: data.name,
         provider: 'google'
       });
+      // ✅ Firestore에서 agreedToTerms 조회 후 분기
+      db.collection("users").doc(data.email).get().then(doc => {
+        const agreed = doc.exists && doc.data().agreedToTerms;
 
-      userInfo.style.display = 'block';
-      userInfo.innerText = `안녕하세요, ${data.name}님!`;
-      googleBtn.style.display = 'none';
+        userInfo.style.display = 'block';
+        userInfo.innerText = `안녕하세요, ${data.name}님!`;
+        googleBtn.style.display = 'none';
 
-      const agreed = localStorage.getItem('agreedToTerms');
-      if (agreed === 'true') {
-        location.href = '/mypage.html';
-      } else {
-        location.href = '/terms.html';
-      }
+        // ✅ 조건 분기 후 이동
+        if (agreed) {
+          location.href = '/mypage.html';
+        } else {
+          location.href = '/terms.html';
+        }
+      }).catch(err => {
+        console.error('❌ Firestore 조회 실패:', err);
+        alert('로그인 후 페이지 이동 중 오류가 발생했습니다.');
+      });
     }
   </script>
 </body>
