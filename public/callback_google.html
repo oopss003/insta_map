@@ -30,6 +30,8 @@
       const email = decoded.email;
       const name = decoded.name;
 
+      localStorage.setItem('userEmail', email);  // ✅ 여기에 추가!
+      
       const docRef = db.collection("users").doc(email.toLowerCase());
 
       docRef.get({ source: 'server' }).then(doc => {
