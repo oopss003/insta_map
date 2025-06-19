@@ -15,10 +15,6 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-  <!-- ✅ Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
-
   <style>
     body {
       margin: 0; padding: 0;
@@ -82,7 +78,7 @@
     <button id="googleLoginBtn" class="login-button google">
       <img src="/images/google.svg" class="icon" /> Google 계정으로 로그인
     </button>
-    <button class="login-button apple">
+    <button class="login-button apple" disabled>
       <img src="/images/apple_w.svg" class="icon" /> Apple로 로그인
     </button>
   </div>
@@ -94,6 +90,32 @@
   </div>
 
   <script>
+    // ✅ Google Redirect 방식
+    function redirectToGoogleLogin() {
+      const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
+      const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
+      const scope = "email profile openid";
+      const response_type = "token id_token";
+      const state = new Date().getTime();
+      const nonce = Math.random().toString(36).substring(2);
+
+      const url = `https://accounts.google.com/o/oauth2/v2/auth` +
+        `?client_id=${GOOGLE_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+        `&response_type=${response_type}` +
+        `&scope=${encodeURIComponent(scope)}` +
+        `&state=${state}` +
+        `&nonce=${nonce}` +
+        `&prompt=select_account`;
+
+      window.location.href = url;
+    }
+
+    // ✅ Google 버튼 클릭 시 리디렉션
+    document.getElementById('googleLoginBtn').addEventListener('click', () => {
+      redirectToGoogleLogin();
+    });
+
     // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
@@ -124,16 +146,16 @@
 
         saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
           localStorage.setItem('userEmail', normalizedEmail);
-
           if (agreed) {
             location.href = '/mypage.html';
           } else {
-            location.href = '/terms.html';  // 약관 동의 페이지
+            location.href = '/terms.html';
           }
         });
       });
     }
 
+    // ✅ Kakao 로그인
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
@@ -150,24 +172,7 @@
         fail: err => console.error('카카오 로그인 실패', err)
       });
     });
-
-    window.onload = () => {
-      google.accounts.id.initialize({
-        client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
-        callback: handleGoogleCredentialResponse
-      });
-    };
-
-    document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      google.accounts.id.prompt();
-    });
-
-    function handleGoogleCredentialResponse(response) {
-      const data = jwt_decode(response.credential);
-      const email = data.email;
-      const name = data.name;
-      handleLogin({ email, name, provider: 'google' });
-    }
   </script>
 </body>
 </html>
+
