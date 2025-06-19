@@ -50,34 +50,10 @@
       }
     }
 
-    // ✅ URL 파라미터 파싱 함수
-    function getHashParams() {
-      const hash = window.location.hash.substr(1);
-      return hash.split('&').reduce((res, item) => {
-        const [key, val] = item.split('=');
-        res[key] = decodeURIComponent(val);
-        return res;
-      }, {});
-    }
-
-    // ✅ 메인 처리
-    async function handleGoogleLogin() {
-      const params = getHashParams();
-      const idToken = params['id_token'];
-      const accessToken = params['access_token'];
-
-      if (!idToken || !accessToken) {
-        alert("로그인 정보가 유효하지 않습니다.");
-        window.location.href = "/login.html";
-        return;
-      }
-
-      try {
-        // ✅ Firebase Auth 연동
-        const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
-        const result = await auth.signInWithCredential(credential);
+    // ✅ 메인 처리 (getRedirectResult 방식)
+    auth.getRedirectResult()
+      .then(async (result) => {
         const user = result.user;
-
         if (user) {
           await saveUserToFirestore({
             email: user.email,
@@ -85,18 +61,15 @@
             provider: "google"
           });
         } else {
-          alert("로그인에 실패했습니다.");
+          alert("로그인 정보가 없습니다.");
           location.href = "/login.html";
         }
-
-      } catch (err) {
-        console.error("Firebase 로그인 실패:", err);
+      })
+      .catch((error) => {
+        console.error("Firebase 로그인 실패:", error);
         alert("로그인 처리 중 오류가 발생했습니다.");
         location.href = "/login.html";
-      }
-    }
-
-    handleGoogleLogin();
+      });
   </script>
 </body>
 </html>
