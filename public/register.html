@@ -583,7 +583,12 @@
         reader.readAsDataURL(file); /* 12-6) 파일을 DataURL로 변환 */
       });
     }
-
+    function convertToActualTime(timeStr) {
+      const [hour, min] = timeStr.split(':').map(Number);
+      const actualHour = hour >= 24 ? hour - 24 : hour;
+      const isNextDay = hour >= 24;
+      return { hour: actualHour, min, isNextDay };
+    }
     /**
      * 13. parseVimeoInput 함수: 사용자가 입력한 Vimeo 값(iframe 코드, embed URL, 공유 URL)에서
      *    실제 재생용 player src URL만 추출하여 반환
