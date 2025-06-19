@@ -5,13 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>가게 등록</title>
 
-  <!-- 1. Kakao SDK 불러오기 및 초기화 -->
-  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script> <!-- 1-1) 카카오 JavaScript SDK 로드 -->
-  <script>
-    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491'); /* 1-2) 카카오 앱 키로 SDK 초기화 */
-    console.log('Kakao SDK Initialized:', Kakao.isInitialized()); /* 1-3) 초기화 여부 콘솔 출력 */
-  </script>
-
   <!-- 2. Naver Maps SDK 로드 -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script> <!-- 2-1) 네이버 지도 API 사용을 위한 스크립트 포함 -->
 
@@ -519,34 +512,6 @@
         map.setZoom(18); /* 확대 레벨 18로 설정 */
       },()=>alert('위치 권한을 허용해주세요.')); /* 권한 거부 시 알림 */
     };
-
-    /* ─────────── 11. Kakao 로그인/로그아웃 기능 ─────────── */
-    document.getElementById('kakaoLoginBtn').addEventListener('click',()=>{ /* 11-1) 로그인 버튼 클릭 이벤트 */
-      Kakao.Auth.login({
-        scope:'profile_nickname,account_email', /* 11-1-1) 요청할 동의 범위 */
-        success:authObj=>{ /* 11-1-2) 로그인 성공 시 */
-          Kakao.API.request({
-            url:'/v2/user/me', /* 사용자 프로필 정보 요청 */
-            success:res=>{ /* 11-1-3) 프로필 정보 가져오기 성공 */
-              alert(`안녕하세요, ${res.kakao_account.profile.nickname}님!`); /* 닉네임 표시 */
-              isLoggedIn=true; /* 11-1-4) 로그인 상태 true */
-              document.getElementById('kakaoLoginBtn').style.display='none'; /* 로그인 버튼 숨김 */
-              document.getElementById('kakaoLogoutBtn').style.display='inline-block'; /* 로그아웃 버튼 표시 */
-            },
-            fail:e=>console.error('사용자 정보 실패',e) /* 프로필 정보 요청 실패 시 에러 로그 */
-          });
-        },
-        fail:e=>console.error('로그인 실패',e) /* 로그인 실패 시 에러 로그 */
-      });
-    });
-    document.getElementById('kakaoLogoutBtn').addEventListener('click',()=>{ /* 11-2) 로그아웃 버튼 클릭 이벤트 */
-      Kakao.Auth.logout(()=>{ /* 카카오 로그아웃 API 호출 */
-        alert('로그아웃 되었습니다.');
-        isLoggedIn=false; /* 로그인 상태 false */
-        document.getElementById('kakaoLoginBtn').style.display='inline-block'; /* 로그인 버튼 다시 표시 */
-        document.getElementById('kakaoLogoutBtn').style.display='none'; /* 로그아웃 버튼 숨김 */
-      });
-    });
 
     /* ─────────── 12. 이미지 압축 함수 (<=1MB) ─────────── */
     function compressImage(file,maxBytes=1_000_000){ /* 12-1) compressImage 함수 정의 */
