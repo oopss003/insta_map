@@ -111,9 +111,10 @@
       window.location.href = url;
     }
 
-    // ✅ Google 버튼 클릭 시 리디렉션
+    // ✅ Firebase Authentication을 통한 Google 로그인 방식
     document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      redirectToGoogleLogin();
+      const provider = new firebase.auth.GoogleAuthProvider();
+      firebase.auth().signInWithRedirect(provider);
     });
 
     // ✅ Firebase 초기화
