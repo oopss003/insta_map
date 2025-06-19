@@ -12,6 +12,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>         <!-- 3-1) Firebase 앱 초기화용 SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>   <!-- 3-2) Firestore 데이터베이스 사용용 SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>     <!-- 3-3) Storage(이미지 저장) 사용용 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <style>
     /* 4. 공통 스타일 정의
@@ -602,7 +603,14 @@
             const offDays    = Array.from(
               document.querySelectorAll('[name="offDays[]"]:checked')
             ).map(cb => cb.value);
+            const user = firebase.auth().currentUser;  // ✅ 현재 로그인된 사용자 가져오기
 
+            if (!user) {
+              alert('로그인 후 등록이 가능합니다.');
+              overlay.style.display = 'none';
+              saveBtn.disabled = false;
+              return;
+            }
             /* ---------- 15-4) 저장 객체 ---------- */
             const store = {
               name   : document.querySelector('[name=name]').value.trim(),
@@ -612,13 +620,14 @@
               lng    : parseFloat(document.getElementById('lng').value),
               photo  : "",
               vimeo  : vimeoUrl,
-              created: firebase.firestore.FieldValue.serverTimestamp(),
               hashtags  : tags,
               openTime  : openTime,
               closeTime : closeTime,
               breakStart: breakStart,
               breakEnd  : breakEnd,
-              offDays   : offDays
+              offDays   : offDays,
+              userEmail: user.email,  // ✅ 로그인한 사용자의 이메일 저장
+              created: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)
