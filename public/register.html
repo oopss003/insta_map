@@ -472,22 +472,22 @@
 
     const auth = firebase.auth();
     auth.onAuthStateChanged(async user => {
-      if (user) {
-        currentUser = user;
-        console.log("✅ 로그인됨:", user.email);
+      if (!user) {
+        alert("로그인이 필요합니다. 로그인 후 다시 시도해주세요.");
+        window.location.href = "login.html";  // 또는 로그인 페이지
+        return;
+      }
 
-        // 기존 매장 있는지 확인
-        const docRef = db.collection("stores").doc(user.email);
-        const docSnap = await docRef.get();
-        if (docSnap.exists) {
-          loadStoreToForm({ id: user.email, data: () => docSnap.data() });
-        }
+      currentUser = user;
+      console.log("✅ 로그인됨:", user.email);
 
-      } else {
-        currentUser = null;
-        console.log("❌ 로그인되지 않음");
+      const docRef = db.collection("stores").doc(user.email);
+      const docSnap = await docRef.get();
+      if (docSnap.exists) {
+        loadStoreToForm({ id: user.email, data: () => docSnap.data() });
       }
     });
+
 
     /* ─────────── 10. 지도 & 위치 선택 기능 ─────────── */
     const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15}); /* 10-2) 네이버 지도 생성 (기본 중심: 서울 시청) */
