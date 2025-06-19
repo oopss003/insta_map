@@ -113,8 +113,7 @@
   </div>
 
   <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
   <script>
     // Firebase 초기화
     const firebaseConfig = {
@@ -150,13 +149,12 @@
     }
 
     nextBtn.addEventListener('click', () => {
-      const user = firebase.auth().currentUser;
-      if (!user || !user.email) {
-        alert("사용자 인증 정보가 없습니다. 다시 로그인해주세요.");
+      const email = localStorage.getItem('userEmail');
+      if (!email) {
+        alert("이메일 정보가 없습니다. 다시 로그인해주세요.");
         return;
       }
 
-      const email = user.email;
       const normalizedEmail = email.trim().toLowerCase();
 
       db.collection("users").doc(normalizedEmail).update({
