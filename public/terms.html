@@ -145,13 +145,15 @@
     }
 
     nextBtn.addEventListener('click', () => {
-      const email = localStorage.getItem('userEmail');
-      if (!email) {
-        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+      const user = firebase.auth().currentUser;
+      if (!user || !user.email) {
+        alert("사용자 인증 정보가 없습니다. 다시 로그인해주세요.");
         return;
       }
 
+      const email = user.email;
       const normalizedEmail = email.trim().toLowerCase();
+
       db.collection("users").doc(normalizedEmail).update({
         agreedToTerms: true
       }).then(() => {
