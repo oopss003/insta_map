@@ -470,15 +470,24 @@
 
     let currentUser = null;
 
-    firebase.auth().onAuthStateChanged(user => {
+    firebase.auth().onAuthStateChanged(async user => {
       if (user) {
         currentUser = user;
         console.log("✅ 로그인됨:", user.email);
+
+        const docRef = db.collection("stores").doc(user.email);
+        const docSnap = await docRef.get();
+        if (docSnap.exists) {
+          // 이미 등록된 경우 → 수정 모드로 전환
+          loadStoreToForm({ id: user.email, data: () => docSnap.data() });
+        }
+
       } else {
         currentUser = null;
         console.log("❌ 로그인되지 않음");
       }
     });
+
     
     /* ─────────── 10. 지도 & 위치 선택 기능 ─────────── */
     const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15}); /* 10-2) 네이버 지도 생성 (기본 중심: 서울 시청) */
@@ -573,7 +582,7 @@
     // 14-3) 선택한 업체를 폼에 로드: Firestore 문서 데이터를 각각의 입력 필드에 채우고 마커 이동
     function loadStoreToForm(doc) {
       const data = doc.data();
-      editingId = doc.id; /* 14-3-1) 수정 모드로 전환: 선택한 문서 ID 저장 */
+      editingId = currentUser.email; /* 14-3-1) 수정 모드로 전환: 선택한 문서 ID 저장 */
       document.querySelector('[name=name]').value     = data.name;  /* 14-3-2) 가게 이름 설정 */
       document.querySelector('[name=insta_id]').value = data.insta; /* 14-3-3) 인스타 ID 설정 */
       document.querySelector('[name=desc]').value     = data.desc;  /* 14-3-4) 설명 설정 */
@@ -658,11 +667,18 @@
             }
 
             /* ---------- 15-6) Firestore 저장 ---------- */
+            const storeRef = db.collection('stores').doc(currentUser.email);
             if (editingId) {
-              await db.collection('stores').doc(editingId).update(store);
+              await storeRef.update(store);
               alert('수정되었습니다!');
             } else {
-              await db.collection('stores').add(store);
+              const exists = await storeRef.get();
+              if (exists.exists) {
+                alert("이미 등록된 가게입니다. 수정 모드로 전환됩니다.");
+                loadStoreToForm({ id: currentUser.email, data: () => exists.data() });
+                return;
+              }
+              await storeRef.set(store);
               alert('등록되었습니다!');
             }
 
