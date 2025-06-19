@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MY</title>
 
-  <!-- ✅ Firebase SDK 추가 -->
+  <!-- ✅ Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -17,35 +17,20 @@
       background: #fff;
     }
 
-    .profile {
+    .mypage-header {
       padding: 24px;
       border-bottom: 1px solid #eee;
     }
 
-    .name {
+    .mypage-header strong {
       font-weight: bold;
       font-size: 18px;
     }
 
-    .status {
-      display: flex;
-      align-items: center;
-      margin-top: 8px;
+    .user-subtext {
       font-size: 14px;
       color: #888;
-    }
-
-    .status .badge {
-      background: #F4D03F;
-      color: #000;
-      border-radius: 50%;
-      width: 24px;
-      height: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-right: 8px;
-      font-weight: bold;
+      margin-top: 8px;
     }
 
     .grid-menu {
@@ -75,7 +60,7 @@
     .section-title {
       font-size: 16px;
       font-weight: 500;
-      color: #222222;
+      color: #222;
       padding: 12px 0;
     }
 
@@ -90,28 +75,35 @@
       background: #fff;
       padding: 10px 0;
     }
+
     .footer div {
       text-align: center;
       font-size: 12px;
       color: #333;
     }
-    .footer div.active { color: #0F9ED5; }
-    .tab-icon { width: 24px; height: 24px; margin-bottom: 4px; }
+
+    .footer div.active {
+      color: #0F9ED5;
+    }
+
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
     }
   </style>
 </head>
-<!-- ✅ 중략된 <head>와 스타일 생략: 기존 그대로 유지 -->
 
 <body>
   <div class="mypage-header">
     <strong id="userNickname">사용자</strong>
-    <div class="user-subtext">⚡ </div>
+    <div class="user-subtext">⚡ 로그인된 계정</div>
   </div>
 
   <div class="grid-menu">
     <div id="storeMenu">
       <img src="/images/store.svg" alt="매장정보">
-      <div>로딩중...</div> <!-- 🔄 매장정보 또는 등록하기로 변경됨 -->
+      <div>로딩중...</div>
     </div>
     <div onclick="location.href='https://inwave.ai.kr/guide.html'">
       <img src="/images/guide.svg" alt="송출가이드">
@@ -127,7 +119,6 @@
     </div>
   </div>
 
-  <!-- ✅ 하단 섹션 & 푸터 동일 유지 -->
   <div class="section" onclick="location.href='https://inwave.ai.kr'">
     <div class="section-title">인웨이브</div>
   </div>
@@ -156,7 +147,7 @@
     </a>
   </div>
 
-  <!-- ✅ Firebase 초기화 및 사용자/매장 정보 표시 -->
+  <!-- ✅ Firebase 연동 -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
@@ -164,8 +155,9 @@
       projectId: "instamap-9b595",
       storageBucket: "instamap-9b595.firebasestorage.app",
       messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
@@ -173,7 +165,7 @@
     if (email) {
       const lowerEmail = email.toLowerCase();
 
-      // 사용자 닉네임 표시
+      // 사용자 닉네임 가져오기
       db.collection("users").doc(lowerEmail).get().then(doc => {
         if (doc.exists) {
           const nickname = doc.data().nickname || "사용자";
@@ -181,27 +173,9 @@
         }
       });
 
-      // 매장 등록 여부 체크 후 메뉴 동적 변경
+      // 매장 등록 여부 확인
       db.collection("stores").doc(lowerEmail).get().then(doc => {
         const storeMenu = document.getElementById("storeMenu");
         if (doc.exists) {
           storeMenu.innerHTML = `
-            <img src="/images/store.svg" alt="매장정보">
-            <div>매장정보</div>
-          `;
-          storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/store_view.html';
-        } else {
-          storeMenu.innerHTML = `
-            <img src="/images/store.svg" alt="매장등록">
-            <div>매장등록</div>
-          `;
-          storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/register.html';
-        }
-      });
-    } else {
-      console.warn("📛 localStorage에 userEmail이 없습니다.");
-    }
-  </script>
-</body>
-</html>
-
+            <img src="/images/store.svg" al
