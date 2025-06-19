@@ -4,6 +4,23 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>카카오 로그인 처리 중...</title>
+
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <script>
+    // ✅ Firebase 초기화
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399933",
+      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
 </head>
 <body>
   <p>카카오 로그인 처리 중입니다...</p>
@@ -52,7 +69,11 @@
         // ✅ 로컬 스토리지에 저장
         localStorage.setItem('userEmail', email);
 
-        // ✅ Firebase 저장 후 리디렉션
+        // ✅ Firebase 익명 로그인 후 이동
+        return firebase.auth().signInAnonymously();
+      })
+      .then(() => {
+        // 로그인 성공 후 약관 페이지로 이동
         window.location.href = '/terms.html';
       })
       .catch(err => {
