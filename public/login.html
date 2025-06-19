@@ -7,9 +7,11 @@
 
   <!-- ✅ Kakao SDK -->
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-  <script>Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');</script>
+  <script>
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
+  </script>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- ✅ Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
@@ -91,12 +93,6 @@
     <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
   </div>
 
-  <!-- ✅ Firebase -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
-  <!-- ✅ Google 로그인은 redirect URL로 이동 처리 -->
-
   <script>
     // ✅ Firebase 초기화
     const firebaseConfig = {
@@ -109,33 +105,91 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-  </script>
 
-  <!-- ✅ 카카오 로그인 리디렉션 방식 -->
-  <script>
+    // ✅ Firestore에 사용자 저장 (기존 agreedToTerms 유지)
+    function saveUserToFirestore(user) {
+      const docRef = db.collection("users").doc(user.email);
+      return docRef.get({ source: 'server' }).then(doc => {
+        const agreedToTermsValue = doc.exists && doc.data().agreedToTerms === true;
+        return docRef.set({
+          nickname: user.name,
+          email: user.email,
+          provider: user.provider || 'google',
+          agreedToTerms: agreedToTermsValue,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      });
+    }
+
+    // ✅ 로그인 후 리디렉션 처리
+    function handleLogin({ email, name, provider }) {
+      const normalizedEmail = email.trim().toLowerCase();
+      const docRef = db.collection("users").doc(normalizedEmail);
+
+      docRef.get({ source: 'server' }).then(initialDoc => {
+        const isNewUser = !initialDoc.exists;
+
+        saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
+          localStorage.setItem('userEmail', normalizedEmail);
+
+          docRef.get({ source: 'server' }).then(updatedDoc => {
+            const userData = updatedDoc.data();
+            console.log("✅ 사용자 ID:", normalizedEmail);
+            console.log("✅ agreedToTerms (최종):", userData?.agreedToTerms);
+
+            if (isNewUser) {
+              location.href = '/team.html';
+            } else if (userData?.agreedToTerms) {
+              location.href = '/mypage.html';
+            } else {
+              location.href = '/terms.html';
+            }
+          });
+        });
+      }).catch(err => {
+        console.error('❌ Firestore 오류:', err);
+        alert('로그인 중 문제가 발생했습니다.');
+      });
+    }
+
+    // ✅ 카카오 로그인
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
-      Kakao.Auth.authorize({
-        redirectUri: 'https://inwave.ai.kr/callback_kakao.html',
+      Kakao.Auth.login({
+        scope: 'profile_nickname, account_email',
+        success: function () {
+          Kakao.API.request({
+            url: '/v2/user/me',
+            success: function (res) {
+              const email = res.kakao_account.email;
+              const name = res.kakao_account.profile.nickname;
+              handleLogin({ email, name, provider: 'kakao' });
+            }
+          });
+        },
+        fail: err => console.error('카카오 로그인 실패', err)
       });
     });
-  </script>
 
-  <!-- ✅ 구글 로그인 리디렉션 방식 -->
-  <script>
+    // ✅ Google GIS 초기화
+    window.onload = () => {
+      google.accounts.id.initialize({
+        client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
+        callback: handleGoogleCredentialResponse
+      });
+    };
+
+    // ✅ Google 로그인 버튼 클릭 시 prompt 띄우기
     document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      const client_id = '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com';
-      const redirect_uri = 'https://inwave.ai.kr/callback_google.html';  // 반드시 구글 콘솔에 등록
-
-      const loginUrl = `https://accounts.google.com/o/oauth2/v2/auth` +
-        `?client_id=${client_id}` +
-        `&redirect_uri=${redirect_uri}` +
-        `&response_type=token` +
-        `&scope=email%20profile` +
-        `&prompt=select_account`;
-
-      window.location.href = loginUrl;
+      google.accounts.id.prompt(); // 팝업 또는 One Tap 자동 로그인
     });
+
+    // ✅ Google 로그인 응답 처리
+    function handleGoogleCredentialResponse(response) {
+      const data = jwt_decode(response.credential);
+      const email = data.email;
+      const name = data.name;
+      handleLogin({ email, name, provider: 'google' });
+    }
   </script>
 </body>
 </html>
-
