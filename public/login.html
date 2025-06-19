@@ -93,6 +93,19 @@
     <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
   </div>
 
+  <!-- ✅ 외부 스크립트 로드 -->
+  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
+  </script>
+
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <!-- ✅ Google 로그인용 GIS 스크립트 -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
   <script>
     // ✅ Firebase 초기화
     const firebaseConfig = {
@@ -106,7 +119,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ✅ Firestore에 사용자 저장 (기존 agreedToTerms 유지)
+    // ✅ 사용자 정보 Firestore에 저장
     function saveUserToFirestore(user) {
       const docRef = db.collection("users").doc(user.email);
       return docRef.get({ source: 'server' }).then(doc => {
@@ -121,7 +134,7 @@
       });
     }
 
-    // ✅ 로그인 후 리디렉션 처리
+    // ✅ 로그인 후 처리
     function handleLogin({ email, name, provider }) {
       const normalizedEmail = email.trim().toLowerCase();
       const docRef = db.collection("users").doc(normalizedEmail);
@@ -170,7 +183,7 @@
       });
     });
 
-    // ✅ Google GIS 초기화
+    // ✅ Google 로그인 초기화
     window.onload = () => {
       google.accounts.id.initialize({
         client_id: '280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com',
@@ -180,10 +193,10 @@
 
     // ✅ Google 로그인 버튼 클릭 시 prompt 띄우기
     document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      google.accounts.id.prompt(); // 팝업 또는 One Tap 자동 로그인
+      google.accounts.id.prompt(); // 팝업 또는 One Tap
     });
 
-    // ✅ Google 로그인 응답 처리
+    // ✅ Google 응답 처리
     function handleGoogleCredentialResponse(response) {
       const data = jwt_decode(response.credential);
       const email = data.email;
