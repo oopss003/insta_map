@@ -60,12 +60,15 @@
       bottom: 0;
       left: 0;
       right: 0;
-      width: 100%;
-      max-width: 480px;
-      margin: 0 auto;
       background: #fff;
       padding: 12px;
       box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+
+    .footer-inner {
+      max-width: 480px;
+      margin: 0 auto;
     }
 
     .footer button {
@@ -104,14 +107,15 @@
   </div>
 
   <div class="footer">
-    <button id="nextBtn" disabled>다음</button>
+    <div class="footer-inner">
+      <button id="nextBtn" disabled>다음</button>
+    </div>
   </div>
 
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script>
-    // Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
       authDomain: "instamap-9b595.firebaseapp.com",
