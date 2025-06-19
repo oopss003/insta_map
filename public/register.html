@@ -468,6 +468,18 @@
     const db       = firebase.firestore(); /* 9-3) Firestore 인스턴스 생성 */
     const storage  = firebase.storage();   /* 9-4) Storage 인스턴스 생성 */
 
+    let currentUser = null;
+
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        currentUser = user;
+        console.log("✅ 로그인됨:", user.email);
+      } else {
+        currentUser = null;
+        console.log("❌ 로그인되지 않음");
+      }
+    });
+    
     /* ─────────── 10. 지도 & 위치 선택 기능 ─────────── */
     const map = new naver.maps.Map('map',{center:new naver.maps.LatLng(37.5665,126.9780),zoom:15}); /* 10-2) 네이버 지도 생성 (기본 중심: 서울 시청) */
     let marker = null; /* 10-3) 마커 변수 초기값 null */
@@ -603,7 +615,6 @@
             const offDays    = Array.from(
               document.querySelectorAll('[name="offDays[]"]:checked')
             ).map(cb => cb.value);
-            const user = firebase.auth().currentUser;  // ✅ 현재 로그인된 사용자 가져오기
 
             if (!user) {
               alert('로그인 후 등록이 가능합니다.');
@@ -614,7 +625,7 @@
             /* ---------- 15-4) 저장 객체 ---------- */
             const store = {
               name   : document.querySelector('[name=name]').value.trim(),
-             insta  : document.querySelector('[name=insta_id]').value.trim(),
+              insta  : document.querySelector('[name=insta_id]').value.trim(),
               desc   : document.querySelector('[name=desc]').value.trim(),
               lat    : parseFloat(document.getElementById('lat').value),
               lng    : parseFloat(document.getElementById('lng').value),
@@ -626,7 +637,7 @@
               breakStart: breakStart,
               breakEnd  : breakEnd,
               offDays   : offDays,
-              userEmail: user.email,  // ✅ 로그인한 사용자의 이메일 저장
+              userEmail: currentUser.email,  // ✅ 로그인한 사용자의 이메일 저장
               created: firebase.firestore.FieldValue.serverTimestamp()
             };
 
