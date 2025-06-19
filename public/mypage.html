@@ -100,17 +100,18 @@
     }
   </style>
 </head>
-<body>
+<!-- ✅ 중략된 <head>와 스타일 생략: 기존 그대로 유지 -->
 
-    <div class="mypage-header">
-      <strong id="userNickname">사용자</strong>
-      <div class="user-subtext">⚡ 무료 이용중 워터마크 제거가 궁금하다면?</div>
-    </div>
+<body>
+  <div class="mypage-header">
+    <strong id="userNickname">사용자</strong>
+    <div class="user-subtext">⚡ 무료 이용중 워터마크 제거가 궁금하다면?</div>
+  </div>
 
   <div class="grid-menu">
-    <div onclick="location.href='https://inwave.ai.kr/register.html'">
+    <div id="storeMenu">
       <img src="/images/store.svg" alt="매장정보">
-      <div>매장정보</div>
+      <div>로딩중...</div> <!-- 🔄 매장정보 또는 등록하기로 변경됨 -->
     </div>
     <div onclick="location.href='https://inwave.ai.kr/guide.html'">
       <img src="/images/guide.svg" alt="송출가이드">
@@ -126,6 +127,7 @@
     </div>
   </div>
 
+  <!-- ✅ 하단 섹션 & 푸터 동일 유지 -->
   <div class="section" onclick="location.href='https://inwave.ai.kr'">
     <div class="section-title">인웨이브</div>
   </div>
@@ -142,20 +144,19 @@
     <div class="section-title">고객지원</div>
   </div>
 
-    <div class="footer">
-      <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
-        <div><img src="/images/home-simple-door.svg" class="tab-icon" /><br>홈</div>
-      </a>
-      <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
-        <div><img src="/images/search.svg" class="tab-icon" /><br>검색</div>
-      </a>
-      <a href="https://inwave.ai.kr/profile.html" style="text-decoration: none;">
-        <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
-      </a>
-    </div>
+  <div class="footer">
+    <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
+      <div><img src="/images/home-simple-door.svg" class="tab-icon" /><br>홈</div>
+    </a>
+    <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
+      <div><img src="/images/search.svg" class="tab-icon" /><br>검색</div>
+    </a>
+    <a href="https://inwave.ai.kr/profile.html" style="text-decoration: none;">
+      <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
+    </a>
+  </div>
 
-
-  <!-- ✅ Firebase 초기화 및 사용자 정보 표시 -->
+  <!-- ✅ Firebase 초기화 및 사용자/매장 정보 표시 -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
@@ -168,16 +169,34 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ✅ localStorage 기반으로 사용자 이메일 가져오기
     const email = localStorage.getItem('userEmail');
     if (email) {
-      db.collection("users").doc(email.toLowerCase()).get().then(doc => {
+      const lowerEmail = email.toLowerCase();
+
+      // 사용자 닉네임 표시
+      db.collection("users").doc(lowerEmail).get().then(doc => {
         if (doc.exists) {
           const nickname = doc.data().nickname || "사용자";
           document.getElementById("userNickname").textContent = nickname;
         }
-      }).catch(err => {
-        console.error("사용자 정보 불러오기 실패:", err);
+      });
+
+      // 매장 등록 여부 체크 후 메뉴 동적 변경
+      db.collection("stores").doc(lowerEmail).get().then(doc => {
+        const storeMenu = document.getElementById("storeMenu");
+        if (doc.exists) {
+          storeMenu.innerHTML = `
+            <img src="/images/store.svg" alt="매장정보">
+            <div>매장정보</div>
+          `;
+          storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/store_view.html';
+        } else {
+          storeMenu.innerHTML = `
+            <img src="/images/store.svg" alt="매장등록">
+            <div>매장등록</div>
+          `;
+          storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/register.html';
+        }
       });
     } else {
       console.warn("📛 localStorage에 userEmail이 없습니다.");
@@ -185,3 +204,4 @@
   </script>
 </body>
 </html>
+
