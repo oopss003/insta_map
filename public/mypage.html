@@ -4,6 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MY</title>
+
+  <!-- ✅ Firebase SDK 추가 -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -48,7 +54,7 @@
       text-align: center;
       padding: 20px 12px;
       gap: 16px;
-      font-size: 13px;
+      font-size: 14px;
     }
 
     .grid-menu div {
@@ -67,8 +73,10 @@
     }
 
     .section-title {
-      font-size: 14px;
-      color: #666;
+      font-size: 16px;
+      font-weight: 500;
+      color: #222222;
+      padding: 12px 0;
     }
 
     .footer {
@@ -98,22 +106,12 @@
       height: 24px;
       margin-bottom: 4px;
     }
-    .section-title {
-      font-size: 16px;       /* 기존 14px → 16px */
-      font-weight: 500;      /* 약간 더 두껍게 */
-      color: #222222;        /* 더 진한 회색 */
-      padding: 12px 0;
-    }
-    .grid-menu div {
-      font-size: 14px;       /* 메뉴 글씨 조금 키움 */
-    }
-
   </style>
 </head>
 <body>
 
   <div class="profile">
-    <div class="name">박재훈</div>
+    <div class="name" id="userName">사용자</div>
     <div class="status">
       <div class="badge">F</div>
       무료 이용중 &nbsp;&nbsp; <span>워터마크 제거가 궁금하다면?</span>
@@ -169,6 +167,34 @@
       MY
     </div>
   </div>
+
+  <!-- ✅ Firebase 초기화 및 사용자 정보 표시 -->
+  <script>
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_PROJECT_ID.appspot.com",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+      if (user) {
+        try {
+          const userDoc = await db.collection("users").doc(user.email).get();
+          if (userDoc.exists) {
+            const nickname = userDoc.data().nickname || "사용자";
+            document.getElementById("userName").textContent = nickname;
+          }
+        } catch (e) {
+          console.error("사용자 정보 불러오기 실패:", e);
+        }
+      }
+    });
+  </script>
 
 </body>
 </html>
