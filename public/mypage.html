@@ -102,13 +102,10 @@
 </head>
 <body>
 
-  <div class="profile">
-    <div class="name" id="userName">사용자</div>
-    <div class="status">
-      <div class="badge">F</div>
-      무료 이용중 &nbsp;&nbsp; <span>워터마크 제거가 궁금하다면?</span>
+    <div class="mypage-header">
+      <strong id="userNickname">사용자</strong>
+      <div class="user-subtext">⚡ 무료 이용중 워터마크 제거가 궁금하다면?</div>
     </div>
-  </div>
 
   <div class="grid-menu">
     <div onclick="location.href='https://inwave.ai.kr/register.html'">
@@ -171,20 +168,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    firebase.auth().onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          const userDoc = await db.collection("users").doc(user.email).get();
-          if (userDoc.exists) {
-            const nickname = userDoc.data().nickname || "사용자";
-            document.getElementById("userName").textContent = nickname;
-          }
-        } catch (e) {
-          console.error("사용자 정보 불러오기 실패:", e);
+    // ✅ localStorage 기반으로 사용자 이메일 가져오기
+    const email = localStorage.getItem('userEmail');
+    if (email) {
+      db.collection("users").doc(email.toLowerCase()).get().then(doc => {
+        if (doc.exists) {
+          const nickname = doc.data().nickname || "사용자";
+          document.getElementById("userNickname").textContent = nickname;
         }
-      }
-    });
+      }).catch(err => {
+        console.error("사용자 정보 불러오기 실패:", err);
+      });
+    } else {
+      console.warn("📛 localStorage에 userEmail이 없습니다.");
+    }
   </script>
-
 </body>
 </html>
