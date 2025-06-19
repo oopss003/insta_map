@@ -2,68 +2,62 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>카카오 로그인 처리 중...</title>
-  <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
-  <script>
-    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491'); // 본인의 JavaScript 키 사용
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <p style="text-align:center; margin-top:50px;">카카오 로그인 처리 중입니다...</p>
+  <p>카카오 로그인 처리 중입니다...</p>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399933",
-      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    const KAKAO_CLIENT_ID = '4e1dd9cccad37f9748bb3a3254b88491';
+    const REDIRECT_URI = 'https://inwave.ai.kr/callback_kakao.html';
 
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const accessToken = params.get('access_token');
+    const code = new URLSearchParams(window.location.search).get('code');
 
-    if (!accessToken) {
-      alert("카카오 로그인 처리 중 오류가 발생했습니다.");
+    if (!code) {
+      alert('카카오 인가 코드가 없습니다.');
     } else {
-      Kakao.Auth.setAccessToken(accessToken);
-      Kakao.API.request({
-        url: '/v2/user/me',
-        success: function (res) {
-          const email = res.kakao_account.email;
-          const name = res.kakao_account.profile.nickname;
-          const normalizedEmail = email.trim().toLowerCase();
-
-          db.collection("users").doc(normalizedEmail).get().then(doc => {
-            const agreedToTerms = doc.exists && doc.data().agreedToTerms === true;
-            return db.collection("users").doc(normalizedEmail).set({
-              nickname: name,
-              email: normalizedEmail,
-              provider: 'kakao',
-              agreedToTerms: agreedToTerms,
-              createdAt: firebase.firestore.FieldValue.serverTimestamp()
-            }, { merge: true });
-          }).then(() => {
-            localStorage.setItem('userEmail', normalizedEmail);
-            return db.collection("users").doc(normalizedEmail).get();
-          }).then(updatedDoc => {
-            const userData = updatedDoc.data();
-            if (userData.agreedToTerms) {
-              location.href = "/mypage.html";
-            } else {
-              location.href = "/terms.html";
-            }
-          });
+      // 1. 토큰 요청
+      fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
         },
-        fail: function (err) {
-          console.error("🔥 카카오 사용자 정보 요청 오류:", err);
-          alert("카카오 사용자 정보 요청 중 오류가 발생했습니다.");
-        }
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: KAKAO_CLIENT_ID,
+          redirect_uri: REDIRECT_URI,
+          code: code
+        })
+      })
+      .then(res => res.json())
+      .then(tokenData => {
+        if (tokenData.error) throw new Error(tokenData.error_description);
+
+        const accessToken = tokenData.access_token;
+
+        // 2. 사용자 정보 요청
+        return fetch('https://kapi.kakao.com/v2/user/me', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      })
+      .then(res => res.json())
+      .then(userInfo => {
+        const email = userInfo.kakao_account.email;
+        const name = userInfo.kakao_account.profile.nickname;
+
+        // ✅ 로컬 스토리지에 저장
+        localStorage.setItem('userEmail', email);
+
+        // ✅ Firebase 저장 후 리디렉션
+        window.location.href = '/terms.html';
+      })
+      .catch(err => {
+        console.error('카카오 로그인 처리 오류:', err);
+        alert('카카오 로그인 처리 중 오류가 발생했습니다.');
       });
     }
   </script>
