@@ -2,27 +2,18 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>카카오 로그인 처리 중...</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #333;
-    }
-  </style>
   <script src="https://developers.kakao.com/sdk/js/kakao.js"></script>
+  <script>
+    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491'); // 본인의 JavaScript 키 사용
+  </script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 </head>
 <body>
-  <p>카카오 로그인 처리 중입니다...</p>
-
+  <p style="text-align:center; margin-top:50px;">카카오 로그인 처리 중입니다...</p>
   <script>
-    // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
       authDomain: "instamap-9b595.firebaseapp.com",
@@ -34,57 +25,48 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // ✅ 카카오 초기화
-    Kakao.init('4e1dd9cccad37f9748bb3a3254b88491');
+    const params = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = params.get('access_token');
 
-    // ✅ Firestore 저장 함수
-    function saveUserToFirestore(user) {
-      const docRef = db.collection("users").doc(user.email);
-      return docRef.get().then(doc => {
-        const agreedToTermsValue = doc.exists && doc.data().agreedToTerms === true;
-        return docRef.set({
-          nickname: user.name,
-          email: user.email,
-          provider: 'kakao',
-          agreedToTerms: agreedToTermsValue,
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).then(() => ({ isNewUser: !doc.exists, agreedToTerms: agreedToTermsValue }));
+    if (!accessToken) {
+      alert("카카오 로그인 처리 중 오류가 발생했습니다.");
+    } else {
+      Kakao.Auth.setAccessToken(accessToken);
+      Kakao.API.request({
+        url: '/v2/user/me',
+        success: function (res) {
+          const email = res.kakao_account.email;
+          const name = res.kakao_account.profile.nickname;
+          const normalizedEmail = email.trim().toLowerCase();
+
+          db.collection("users").doc(normalizedEmail).get().then(doc => {
+            const agreedToTerms = doc.exists && doc.data().agreedToTerms === true;
+            return db.collection("users").doc(normalizedEmail).set({
+              nickname: name,
+              email: normalizedEmail,
+              provider: 'kakao',
+              agreedToTerms: agreedToTerms,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+          }).then(() => {
+            localStorage.setItem('userEmail', normalizedEmail);
+            return db.collection("users").doc(normalizedEmail).get();
+          }).then(updatedDoc => {
+            const userData = updatedDoc.data();
+            if (userData.agreedToTerms) {
+              location.href = "/mypage.html";
+            } else {
+              location.href = "/terms.html";
+            }
+          });
+        },
+        fail: function (err) {
+          console.error("🔥 카카오 사용자 정보 요청 오류:", err);
+          alert("카카오 사용자 정보 요청 중 오류가 발생했습니다.");
+        }
       });
     }
-
-    // ✅ 메인 실행
-    (async () => {
-      try {
-        // 1. 현재 URL에서 인가 코드 or access_token 추출
-        const hashParams = new URLSearchParams(location.hash.substring(1));
-        const accessToken = hashParams.get('access_token');
-        if (!accessToken) throw new Error('카카오 access_token 없음');
-
-        Kakao.Auth.setAccessToken(accessToken);
-
-        // 2. 사용자 정보 요청
-        const res = await Kakao.API.request({ url: '/v2/user/me' });
-        const email = res.kakao_account.email;
-        const name = res.kakao_account.profile.nickname;
-
-        const normalizedEmail = email.trim().toLowerCase();
-        localStorage.setItem('userEmail', normalizedEmail);
-
-        const { isNewUser, agreedToTerms } = await saveUserToFirestore({ email: normalizedEmail, name });
-
-        if (isNewUser) {
-          location.href = '/team.html';
-        } else if (agreedToTerms) {
-          location.href = '/mypage.html';
-        } else {
-          location.href = '/terms.html';
-        }
-
-      } catch (err) {
-        console.error('🔥 카카오 로그인 처리 오류:', err);
-        alert("카카오 로그인 처리 중 오류가 발생했습니다.");
-      }
-    })();
   </script>
 </body>
 </html>
+
