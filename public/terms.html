@@ -1,11 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <!-- ✅ 추가 -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>약관 동의</title>
@@ -113,7 +108,8 @@
   </div>
 
   <!-- Firebase SDK -->
-
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script>
     // Firebase 초기화
     const firebaseConfig = {
@@ -149,14 +145,13 @@
     }
 
     nextBtn.addEventListener('click', () => {
-      const user = firebase.auth().currentUser;
-      if (!user || !user.email) {
-        alert("인증된 사용자 정보를 찾을 수 없습니다.");
+      const email = localStorage.getItem('userEmail');
+      if (!email) {
+        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
         return;
       }
 
-      const normalizedEmail = user.email.trim().toLowerCase();
-
+      const normalizedEmail = email.trim().toLowerCase();
       db.collection("users").doc(normalizedEmail).update({
         agreedToTerms: true
       }).then(() => {
