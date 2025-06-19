@@ -178,9 +178,9 @@
       }
 
       const normalizedEmail = email.trim().toLowerCase();
-      db.collection("users").doc(normalizedEmail).update({
+      db.collection("users").doc(normalizedEmail).set({
         agreedToTerms: true
-      }).then(() => {
+      }, { merge: true }).then(() => {
         localStorage.setItem('agreedToTerms', 'true');
         location.href = '/mypage.html';
       }).catch(err => {
@@ -188,6 +188,7 @@
         alert("약관 동의 처리 중 오류가 발생했습니다.");
       });
     });
+
   </script>
 </body>
 </html>
