@@ -120,7 +120,6 @@
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
       Kakao.Auth.authorize({
         redirectUri: 'https://inwave.ai.kr/callback_kakao.html',
-        responseType: 'token' // 👈 이 줄을 반드시 추가!
       });
     });
   </script>
