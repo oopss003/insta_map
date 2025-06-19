@@ -53,15 +53,6 @@
     .google { border: 1px solid #ccc; background: #fff; }
     .apple { border: 1px solid #000; background: #000; color: #fff; }
     .icon { width: 20px; height: 20px; }
-    .agreements {
-      font-size: 13px;
-      text-align: left;
-      margin-top: 16px;
-    }
-    .agreements label {
-      display: block;
-      margin-bottom: 6px;
-    }
     .footer {
       position: fixed;
       bottom: 0;
@@ -85,7 +76,6 @@
 <body>
   <div class="login-container">
     <p>⚡ 5초 만에 가입하기</p>
-
     <button id="kakaoLoginBtn" class="login-button kakao">
       <img src="/images/logo-kakaotalk.svg" class="icon" /> 카카오로 로그인
     </button>
@@ -95,13 +85,6 @@
     <button class="login-button apple">
       <img src="/images/apple_w.svg" class="icon" /> Apple로 로그인
     </button>
-
-    <div class="agreements">
-      <label><input type="checkbox" id="check1"> [필수] 서비스 이용약관 동의</label>
-      <label><input type="checkbox" id="check2"> [필수] 개인정보 수집 및 이용 동의</label>
-      <label><input type="checkbox" id="check3"> [선택] 마케팅 수신 동의</label>
-      <small>※ 로그인 시 위 조건에 동의하게 됩니다.</small>
-    </div>
   </div>
 
   <div class="footer">
@@ -123,52 +106,35 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function checkAgreements() {
-      const a = document.getElementById('check1').checked;
-      const b = document.getElementById('check2').checked;
-      return a && b;
-    }
-
     function saveUserToFirestore(user) {
       return db.collection("users").doc(user.email).set({
         nickname: user.name,
         email: user.email,
         provider: user.provider || 'google',
-        agreedToTerms: true,
-        marketingAgree: document.getElementById('check3').checked,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       }, { merge: true });
     }
 
     function handleLogin({ email, name, provider }) {
-      if (!checkAgreements()) {
-        alert("필수 약관에 모두 동의해주세요.");
-        return;
-      }
-
       const normalizedEmail = email.trim().toLowerCase();
-      saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
-        localStorage.setItem('userEmail', normalizedEmail);
+      const docRef = db.collection("users").doc(normalizedEmail);
 
-        // ✅ React Native WebView로 전달
-        if (window.ReactNativeWebView) {
-          window.ReactNativeWebView.postMessage(JSON.stringify({
-            type: 'LOGIN_SUCCESS',
-            email: normalizedEmail,
-            name: name,
-            provider: provider
-          }));
-        }
+      docRef.get({ source: 'server' }).then(doc => {
+        const agreed = doc.exists && doc.data()?.agreedToTerms === true;
 
-        location.href = '/mypage.html';
+        saveUserToFirestore({ email: normalizedEmail, name, provider }).then(() => {
+          localStorage.setItem('userEmail', normalizedEmail);
+
+          if (agreed) {
+            location.href = '/mypage.html';
+          } else {
+            location.href = '/team.html';  // 약관 동의 페이지
+          }
+        });
       });
     }
 
     document.getElementById('kakaoLoginBtn').addEventListener('click', () => {
-      if (!checkAgreements()) {
-        alert("필수 약관에 모두 동의해주세요.");
-        return;
-      }
       Kakao.Auth.login({
         scope: 'profile_nickname, account_email',
         success: function () {
@@ -193,10 +159,6 @@
     };
 
     document.getElementById('googleLoginBtn').addEventListener('click', () => {
-      if (!checkAgreements()) {
-        alert("필수 약관에 모두 동의해주세요.");
-        return;
-      }
       google.accounts.id.prompt();
     });
 
