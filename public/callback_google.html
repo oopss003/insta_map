@@ -1,57 +1,102 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head><meta charset="UTF-8"><title>구글 로그인 중...</title></head>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Google 로그인 처리 중...</title>
+
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
 <body>
   <p>로그인 처리 중입니다...</p>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
   <script>
+    // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
+      storageBucket: "instamap-9b595.appspot.com",
       messagingSenderId: "280950399933",
       appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
     };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
 
-    // URL에서 access_token 및 id_token 추출
-    const params = new URLSearchParams(window.location.hash.substring(1));
-    const idToken = params.get("id_token");
+    // ✅ Firestore 저장 함수
+    async function saveUserToFirestore(user) {
+      const docRef = db.collection("users").doc(user.email);
+      const doc = await docRef.get({ source: "server" });
+      const agreed = doc.exists && doc.data()?.agreedToTerms === true;
 
-    if (!idToken) {
-      alert("로그인에 실패했습니다.");
-    } else {
-      const decoded = jwt_decode(idToken);
-      const email = decoded.email;
-      const name = decoded.name;
+      await docRef.set({
+        nickname: user.name,
+        email: user.email,
+        provider: "google",
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
 
-      localStorage.setItem('userEmail', email);  // ✅ 여기에 추가!
-      
-      const docRef = db.collection("users").doc(email.toLowerCase());
+      localStorage.setItem('userEmail', user.email);
 
-      docRef.get({ source: 'server' }).then(doc => {
-        const agreed = doc.exists && doc.data()?.agreedToTerms === true;
-
-        db.collection("users").doc(email.toLowerCase()).set({
-          nickname: name,
-          email: email.toLowerCase(),
-          provider: 'google',
-          createdAt: firebase.firestore.FieldValue.serverTimestamp()
-        }, { merge: true }).then(() => {
-          if (agreed) {
-            location.href = "/mypage.html";
-          } else {
-            location.href = "/terms.html";  // 약관 동의 페이지로 이동
-          }
-        });
-      });
+      // ✅ 약관 동의 여부에 따라 페이지 분기
+      if (agreed) {
+        location.href = "/mypage.html";
+      } else {
+        location.href = "/terms.html";
+      }
     }
+
+    // ✅ URL 파라미터 파싱 함수
+    function getHashParams() {
+      const hash = window.location.hash.substr(1);
+      return hash.split('&').reduce((res, item) => {
+        const [key, val] = item.split('=');
+        res[key] = decodeURIComponent(val);
+        return res;
+      }, {});
+    }
+
+    // ✅ 메인 처리
+    async function handleGoogleLogin() {
+      const params = getHashParams();
+      const idToken = params['id_token'];
+      const accessToken = params['access_token'];
+
+      if (!idToken || !accessToken) {
+        alert("로그인 정보가 유효하지 않습니다.");
+        window.location.href = "/login.html";
+        return;
+      }
+
+      try {
+        // ✅ Firebase Auth 연동
+        const credential = firebase.auth.GoogleAuthProvider.credential(idToken, accessToken);
+        const result = await auth.signInWithCredential(credential);
+        const user = result.user;
+
+        if (user) {
+          await saveUserToFirestore({
+            email: user.email,
+            name: user.displayName,
+            provider: "google"
+          });
+        } else {
+          alert("로그인에 실패했습니다.");
+          location.href = "/login.html";
+        }
+
+      } catch (err) {
+        console.error("Firebase 로그인 실패:", err);
+        alert("로그인 처리 중 오류가 발생했습니다.");
+        location.href = "/login.html";
+      }
+    }
+
+    handleGoogleLogin();
   </script>
 </body>
 </html>
-
