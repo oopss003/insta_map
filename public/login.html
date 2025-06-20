@@ -29,10 +29,11 @@
     }
 
     .login-box {
-      background: #ffffff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+      /* 배경/그림자 제거 */
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -53,6 +54,8 @@
       cursor: pointer;
       gap: 8px;
       transition: background 0.2s;
+      /* 버튼 자체의 그림자도 제거 */
+      box-shadow: none;
     }
 
     .login-button:hover {
@@ -63,12 +66,13 @@
       width: 20px;
       height: 20px;
     }
+
   </style>
 </head>
 <body>
   <div class="container">
     <!-- 상단 로고 이미지 -->
-    <img src="images/Hero_banner.JPG" alt="2차어디가 로고" class="logo-img" />
+    <img src="images/2ck.png" alt="2차어디가 로고" class="logo-img" />
 
     <!-- 로그인 버튼 영역 -->
     <div class="login-box">
@@ -77,7 +81,7 @@
         구글로 로그인
       </button>
       <button class="login-button">
-        <img src="images/apple_w.svg" alt="Apple 아이콘" />
+        <img src="images/apple.svg" alt="Apple 아이콘" />
         Apple로 로그인
       </button>
     </div>
