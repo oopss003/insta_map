@@ -455,14 +455,16 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
+    
+    // 전역에서 한 번만 선언
     const auth = firebase.auth();
-
     let currentUser = null;
 
-    firebase.auth().onAuthStateChanged(async user => {
+    auth.onAuthStateChanged(async user => {
       if (!user) {
         alert("로그인이 필요합니다.");
-        return window.location.href = "/login.html";
+        window.location.href = "/login.html";
+        return;
       }
 
       currentUser = user;
@@ -473,7 +475,8 @@
         const userDoc = await db.collection("users").doc(email).get();
         if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
           alert("약관 동의가 필요합니다.");
-          return window.location.href = "/terms.html";
+          window.location.href = "/terms.html";
+          return;
         }
 
         const storeDoc = await db.collection("stores").doc(user.email).get();
@@ -481,9 +484,9 @@
           loadStoreToForm({ id: user.email, data: () => storeDoc.data() });
         }
       } catch (err) {
-        console.error("🔥 Firestore 접근 오류:", err);
-        alert("데이터 접근 중 오류가 발생했습니다.");
-      }
+        console.error("❗ Firestore 오류:", err);
+        alert("데이터 불러오는 중 오류 발생.");
+      }    
     });
 
     auth.onAuthStateChanged(async user => {
