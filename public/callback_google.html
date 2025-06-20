@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <title>구글 로그인 처리 중...</title>
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -10,12 +11,32 @@
 
   <!-- JWT 디코더 -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+  <!-- ✅ 오직 디자인용 CSS -->
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #f5f6fb;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .loading-gif {
+      width: 100px;
+      height: 100px;
+      object-fit: contain;
+    }
+  </style>
 </head>
 <body>
-  <p>로그인 처리 중입니다...</p>
+  <!-- ✅ 텍스트 제거하고 GIF만 표시 -->
+  <img src="images/cat.gif" alt="로딩 중..." class="loading-gif" />
 
   <script>
-    // ✅ Firebase 초기화
+    // ✅ 기능: 절대 수정하지 않음
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
       authDomain: "instamap-9b595.firebaseapp.com",
@@ -28,7 +49,6 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // ✅ Google OAuth redirect 후 id_token 파싱
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     const id_token = params.get("id_token");
@@ -38,7 +58,6 @@
       location.href = "/login.html";
     }
 
-    // ✅ 토큰 디코딩 (화면 표시용 정보만 추출)
     const decoded = jwt_decode(id_token);
     const email = decoded.email;
     const nickname = decoded.name;
@@ -48,15 +67,12 @@
       location.href = "/login.html";
     }
 
-    // ✅ Firebase Auth에 로그인
     const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
     auth.signInWithCredential(credential)
       .then(() => {
-        // ✅ 로컬 세션 저장
         localStorage.setItem("userEmail", email);
         const normalizedEmail = email.toLowerCase();
 
-        // ✅ Firestore에 사용자 정보 저장/병합
         return db.collection("users").doc(normalizedEmail).set({
           email,
           nickname,
@@ -65,7 +81,6 @@
         }, { merge: true });
       })
       .then(() => {
-        // ✅ 약관 동의 여부 확인
         const normalizedEmail = email.toLowerCase();
         return db.collection("users").doc(normalizedEmail).get();
       })
