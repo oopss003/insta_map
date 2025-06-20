@@ -3,8 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <title>구글 로그인 처리 중...</title>
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <!-- JWT 디코더 -->
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 </head>
 <body>
@@ -22,6 +26,7 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
+    const auth = firebase.auth();
 
     // ✅ Google OAuth redirect 후 id_token 파싱
     const hash = window.location.hash.substring(1);
@@ -33,7 +38,7 @@
       location.href = "/login.html";
     }
 
-    // ✅ 토큰 디코딩
+    // ✅ 토큰 디코딩 (화면 표시용 정보만 추출)
     const decoded = jwt_decode(id_token);
     const email = decoded.email;
     const nickname = decoded.name;
@@ -43,32 +48,40 @@
       location.href = "/login.html";
     }
 
-    // ✅ 이메일 저장 (세션 유지용)
-    localStorage.setItem("userEmail", email);
+    // ✅ Firebase Auth에 로그인
+    const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
+    auth.signInWithCredential(credential)
+      .then(() => {
+        // ✅ 로컬 세션 저장
+        localStorage.setItem("userEmail", email);
+        const normalizedEmail = email.toLowerCase();
 
-    // ✅ Firestore에 사용자 정보 저장/병합
-    const normalizedEmail = email.toLowerCase();
-    db.collection("users").doc(normalizedEmail).set({
-      email,
-      nickname,
-      provider: "google",
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => {
-      // ✅ 약관 동의 여부 확인 후 분기
-      db.collection("users").doc(normalizedEmail).get().then(doc => {
+        // ✅ Firestore에 사용자 정보 저장/병합
+        return db.collection("users").doc(normalizedEmail).set({
+          email,
+          nickname,
+          provider: "google",
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+      })
+      .then(() => {
+        // ✅ 약관 동의 여부 확인
+        const normalizedEmail = email.toLowerCase();
+        return db.collection("users").doc(normalizedEmail).get();
+      })
+      .then(doc => {
         const agreed = doc.exists && doc.data().agreedToTerms === true;
-
         if (agreed) {
           location.href = "/mypage.html";
         } else {
           location.href = "/terms.html";
         }
+      })
+      .catch(err => {
+        console.error("❌ 로그인 처리 중 오류:", err);
+        alert("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
+        location.href = "/login.html";
       });
-    }).catch(err => {
-      console.error("Firestore 저장 중 오류 발생:", err);
-      alert("로그인 처리 중 오류가 발생했습니다.");
-      location.href = "/login.html";
-    });
   </script>
 </body>
 </html>
