@@ -3,11 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <title>구글 로그인 처리 중...</title>
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, getRedirectResult, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-    import { getFirestore, doc, setDoc, getDoc, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+</head>
+<body>
+  <p>로그인 처리 중입니다...</p>
 
+  <script>
+    // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
       authDomain: "instamap-9b595.firebaseapp.com",
@@ -16,54 +20,55 @@
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    // ✅ Google OAuth redirect 후 id_token 파싱
+    const hash = window.location.hash.substring(1);
+    const params = new URLSearchParams(hash);
+    const id_token = params.get("id_token");
 
-    // ✅ Firebase의 getRedirectResult를 사용하여 로그인 결과 처리
-    getRedirectResult(auth)
-      .then(async (result) => {
-        // result.credential은 Google Access Token 등을 포함할 수 있습니다.
-        // result.user는 Firebase 인증된 사용자 객체입니다.
-        const user = result.user;
+    if (!id_token) {
+      alert("로그인 실패: 토큰이 없습니다.");
+      location.href = "/login.html";
+    }
 
-        if (user) {
-          const email = user.email.toLowerCase();
-          localStorage.setItem("userEmail", email); // 보조적으로 사용, 주된 인증 확인은 Firebase Auth에 의존
+    // ✅ 토큰 디코딩
+    const decoded = jwt_decode(id_token);
+    const email = decoded.email;
+    const nickname = decoded.name;
 
-          // Firestore에 사용자 정보 저장/병합
-          const userDocRef = doc(db, "users", email);
-          await setDoc(userDocRef, {
-            email: user.email,
-            nickname: user.displayName,
-            provider: user.providerId, // GoogleAuthProvider.PROVIDER_ID (google.com)
-            createdAt: serverTimestamp()
-          }, { merge: true });
+    if (!email) {
+      alert("이메일 정보를 불러올 수 없습니다.");
+      location.href = "/login.html";
+    }
 
-          // 약관 동의 여부 확인 후 분기
-          const userDocSnap = await getDoc(userDocRef);
-          const agreed = userDocSnap.exists() && userDocSnap.data().agreedToTerms === true;
+    // ✅ 이메일 저장 (세션 유지용)
+    localStorage.setItem("userEmail", email);
 
-          if (agreed) {
-            location.href = '/mypage.html'; // 약관 동의 완료 -> 마이페이지
-          } else {
-            location.href = '/terms.html'; // 약관 동의 필요 -> 약관 페이지
-          }
+    // ✅ Firestore에 사용자 정보 저장/병합
+    const normalizedEmail = email.toLowerCase();
+    db.collection("users").doc(normalizedEmail).set({
+      email,
+      nickname,
+      provider: "google",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+      // ✅ 약관 동의 여부 확인 후 분기
+      db.collection("users").doc(normalizedEmail).get().then(doc => {
+        const agreed = doc.exists && doc.data().agreedToTerms === true;
+
+        if (agreed) {
+          location.href = "/mypage.html";
         } else {
-          // 사용자가 로그인하지 않았거나 오류가 발생한 경우
-          alert("로그인 실패: 사용자 정보를 가져올 수 없습니다.");
-          location.href = "/login.html";
+          location.href = "/terms.html";
         }
-      })
-      .catch((error) => {
-        console.error("Google 로그인 리다이렉트 처리 오류:", error);
-        alert("로그인 처리 중 오류가 발생했습니다. 다시 시도해주세요.");
-        location.href = "/login.html";
       });
+    }).catch(err => {
+      console.error("Firestore 저장 중 오류 발생:", err);
+      alert("로그인 처리 중 오류가 발생했습니다.");
+      location.href = "/login.html";
+    });
   </script>
-</head>
-<body>
-  <p>로그인 처리 중입니다...</p>
-  </body>
+</body>
 </html>
