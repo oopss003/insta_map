@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>로그인 처리 중...</title>
+  <title>구글 로그인 처리 중...</title>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
@@ -11,45 +11,64 @@
   <p>로그인 처리 중입니다...</p>
 
   <script>
+    // ✅ Firebase 초기화
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
       storageBucket: "instamap-9b595.firebasestorage.app",
       messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // ✅ Google OAuth redirect 후 id_token 파싱
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     const id_token = params.get("id_token");
 
-    if (id_token) {
-      const decoded = jwt_decode(id_token);
-      const email = decoded.email;
-      const nickname = decoded.name;
-
-      if (!email) {
-        alert("이메일 정보를 가져올 수 없습니다.");
-        location.href = "/login.html";
-      }
-
-      // 이메일 로컬저장 + Firestore 저장
-      localStorage.setItem("userEmail", email);
-      db.collection("users").doc(email.toLowerCase()).set({
-        email,
-        nickname,
-        provider: "google",
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
-        location.href = "/terms.html";
-      });
-    } else {
-      alert("로그인 실패: 토큰 없음");
+    if (!id_token) {
+      alert("로그인 실패: 토큰이 없습니다.");
       location.href = "/login.html";
     }
+
+    // ✅ 토큰 디코딩
+    const decoded = jwt_decode(id_token);
+    const email = decoded.email;
+    const nickname = decoded.name;
+
+    if (!email) {
+      alert("이메일 정보를 불러올 수 없습니다.");
+      location.href = "/login.html";
+    }
+
+    // ✅ 이메일 저장 (세션 유지용)
+    localStorage.setItem("userEmail", email);
+
+    // ✅ Firestore에 사용자 정보 저장/병합
+    const normalizedEmail = email.toLowerCase();
+    db.collection("users").doc(normalizedEmail).set({
+      email,
+      nickname,
+      provider: "google",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+      // ✅ 약관 동의 여부 확인 후 분기
+      db.collection("users").doc(normalizedEmail).get().then(doc => {
+        const agreed = doc.exists && doc.data().agreedToTerms === true;
+
+        if (agreed) {
+          location.href = "/mypage.html";
+        } else {
+          location.href = "/terms.html";
+        }
+      });
+    }).catch(err => {
+      console.error("Firestore 저장 중 오류 발생:", err);
+      alert("로그인 처리 중 오류가 발생했습니다.");
+      location.href = "/login.html";
+    });
   </script>
 </body>
 </html>
