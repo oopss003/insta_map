@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -16,7 +16,14 @@
 
     .mypage-header {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: 1fr 3fr; /* 비율로 균등하게 맞춤 */
+      gap: 12px;
+      padding: 12px;
+    }
+
+    .mypage-header {
+      display: grid;
+      grid-template-columns: 1fr 3fr;
       gap: 12px;
       padding: 12px;
     }
@@ -28,21 +35,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       height: 80px;
-    }
-
-    .mypage-header .back-btn {
-      grid-column: span 1;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     .mypage-header .user-info-box {
-      height: 80px; /* 고정 */
-      display: flex;
       flex-direction: column;
-      justify-content: center; /* 세로 중앙 정렬 */
-      align-items: flex-end; /* 우측 정렬 */
-      padding: 0 10px; /* 상하 패딩 제거 */
+      align-items: flex-end;
+      justify-content: center;
+      padding: 0 10px;
       box-sizing: border-box;
     }
 
