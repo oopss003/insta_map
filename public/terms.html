@@ -4,6 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>약관 동의</title>
+  <script type="module">
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    let currentUserEmail = null; // 현재 로그인된 사용자 이메일
+
+    const overlay = document.getElementById('loadingOverlay');
+    const content = document.getElementById('pageContent');
+
+    // ✅ Firebase 인증 상태 변화 감지 리스너
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUserEmail = user.email.toLowerCase();
+
+        // Firestore에서 약관 동의 여부 확인
+        const userDocRef = doc(db, "users", currentUserEmail);
+        const userDocSnap = await getDoc(userDocRef);
+
+        if (userDocSnap.exists() && userDocSnap.data().agreedToTerms === true) {
+          // 이미 약관 동의 완료 -> 마이페이지로 리다이렉트
+          alert("이미 약관에 동의하셨습니다. MY 페이지로 이동합니다.");
+          location.href = "/mypage.html";
+        } else {
+          // 약관 동의 필요
+          content.style.display = 'block';
+          overlay.style.display = 'none';
+        }
+      } else {
+        // 로그인되지 않은 경우
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        location.href = "/login.html";
+      }
+    });
+
+    // 페이지 초기화 및 로딩 오버레이
+    document.addEventListener("DOMContentLoaded", () => {
+      content.style.display = 'none'; // 기본적으로 숨김
+      overlay.style.display = 'flex'; // 로딩 오버레이 표시
+    });
+
+
+    // --- 기존 약관 동의 로직 (Firebase 모듈 방식에 맞게 수정) ---
+    const allAgree = document.getElementById('allAgree');
+    const requiredCheckboxes = document.querySelectorAll('.required');
+    const nextBtn = document.getElementById('nextBtn');
+
+    allAgree.addEventListener('change', () => {
+      requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
+      updateButtonState();
+    });
+
+    requiredCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateButtonState);
+    });
+
+    function updateButtonState() {
+      const allChecked = [...requiredCheckboxes].every(cb => cb.checked);
+      nextBtn.disabled = !allChecked;
+      nextBtn.classList.toggle('active', allChecked);
+    }
+
+    nextBtn.addEventListener('click', async () => {
+      if (!currentUserEmail) {
+        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+        location.href = "/login.html";
+        return;
+      }
+
+      // 약관 동의 상태 업데이트
+      const userDocRef = doc(db, "users", currentUserEmail);
+      try {
+        await setDoc(userDocRef, {
+          agreedToTerms: true
+        }, { merge: true });
+        location.href = '/mypage.html';
+      } catch (err) {
+        console.error("🔥 약관 동의 저장 실패:", err);
+        alert("약관 동의 처리 중 오류가 발생했습니다.");
+      }
+    });
+
+    // 초기 버튼 상태 업데이트
+    updateButtonState();
+  </script>
   <style>
     html, body {
       font-family: sans-serif;
@@ -51,152 +150,117 @@
     }
 
     .view-link {
+      font-size: 13px;
       color: #999;
-      font-size: 14px;
+      text-decoration: none;
     }
 
-    .footer {
+    .button-fixed-bottom {
       position: fixed;
       bottom: 0;
       left: 0;
-      right: 0;
-      background: #fff;
-      padding: 12px;
-      box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
-      z-index: 100;
-    }
-
-    .footer-inner {
-      max-width: 480px;
-      margin: 0 auto;
-    }
-
-    .footer button {
       width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 24px;
-      font-size: 16px;
-      background: #0F9ED5;
-      color: #fff;
-      cursor: pointer;
-      opacity: 0.4;
+      padding: 12px 24px;
+      box-sizing: border-box;
+      background-color: white;
+      border-top: 1px solid #eee;
+      text-align: center;
     }
 
-    .footer button.active {
-      opacity: 1;
+    .button-fixed-bottom button {
+      width: 100%;
+      padding: 12px 0;
+      font-size: 16px;
+      background-color: #ddd;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: not-allowed;
+      transition: background-color 0.3s ease;
+    }
+
+    .button-fixed-bottom button.active {
+      background-color: #007bff;
+      cursor: pointer;
+    }
+
+    .button-fixed-bottom button.active:hover {
+      background-color: #0056b3;
+    }
+
+    /* 로딩 오버레이 스타일 */
+    #loadingOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      flex-direction: column;
+    }
+
+    .spinner {
+      border: 4px solid rgba(0, 0, 0, 0.1);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border-left-color: #007bff;
+      animation: spin 1s ease infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    #loadingOverlay p {
+      margin-top: 10px;
+      font-size: 16px;
+      color: #333;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>약관동의</h2>
-    <p class="desc">
-      인웨이브의 원활한 서비스 제공을 위해<br>
-      다음 약관에 동의가 필요합니다.
-    </p>
-
-    <div class="checkbox-group">
-      <label><input type="checkbox" id="allAgree" /> 전체동의</label>
-
-      <label>
-        <span>
-          <input type="checkbox" class="required" />
-          서비스 이용약관 (필수)
-        </span>
-        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
-      </label>
-
-      <label>
-        <span>
-          <input type="checkbox" class="required" />
-          개인정보 수집 및 이용 동의 (필수)
-        </span>
-        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
-      </label>
-
-      <label>
-        <span>
-          <input type="checkbox" class="required" />
-          위치기반서비스 이용약관 (필수)
-        </span>
-        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
-      </label>
-
-      <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
-      <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
-    </div>
+  <div id="loadingOverlay">
+    <div class="spinner"></div>
+    <p>정보를 불러오는 중입니다...</p>
   </div>
 
-  <div class="footer">
-    <div class="footer-inner">
+  <div id="pageContent" style="display:none;">
+    <div class="container">
+      <h2>서비스 이용 약관 동의</h2>
+      <p class="desc">원활한 서비스 이용을 위해 필수 약관에 동의해주세요.</p>
+
+      <div class="checkbox-group">
+        <label>
+          <input type="checkbox" id="allAgree" />
+          <span>전체 동의</span>
+        </label>
+        <label>
+          <input type="checkbox" class="required" />
+          <span>[필수] 서비스 이용 약관</span>
+          <a href="#" class="view-link">보기</a>
+        </label>
+        <label>
+          <input type="checkbox" class="required" />
+          <span>[필수] 개인정보 수집 및 이용 동의</span>
+          <a href="#" class="view-link">보기</a>
+        </label>
+        <label>
+          <input type="checkbox" />
+          <span>[선택] 마케팅 정보 수신 동의</span>
+          <a href="#" class="view-link">보기</a>
+        </label>
+      </div>
+    </div>
+
+    <div class="button-fixed-bottom">
       <button id="nextBtn" disabled>다음</button>
     </div>
   </div>
-
-  <!-- ✅ Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-  </script>
-
-  <!-- ✅ 약관 체크 및 저장 -->
-  <script>
-    const allAgree = document.getElementById('allAgree');
-    const requiredCheckboxes = document.querySelectorAll('.required');
-    const nextBtn = document.getElementById('nextBtn');
-
-    allAgree.addEventListener('change', () => {
-      requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
-      updateButtonState();
-    });
-
-    requiredCheckboxes.forEach(cb => {
-      cb.addEventListener('change', updateButtonState);
-    });
-
-    function updateButtonState() {
-      const allChecked = [...requiredCheckboxes].every(cb => cb.checked);
-      nextBtn.disabled = !allChecked;
-      nextBtn.classList.toggle('active', allChecked);
-    }
-
-    nextBtn.addEventListener('click', () => {
-      const email = localStorage.getItem('userEmail');
-      if (!email || email.trim() === "") {
-        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
-        return;
-      }
-
-      const normalizedEmail = email.trim().toLowerCase();
-      db.collection("users").doc(normalizedEmail).set({
-        agreedToTerms: true
-      }, { merge: true }).then(() => {
-        location.href = '/mypage.html';
-      }).catch(err => {
-        console.error("🔥 약관 동의 저장 실패:", err);
-        alert("약관 동의 처리 중 오류가 발생했습니다.");
-      });
-    });
-
-    // ✅ 로그인 여부 확인 (페이지 진입 시)
-    document.addEventListener("DOMContentLoaded", () => {
-      const email = localStorage.getItem("userEmail");
-      if (!email || email.trim() === "") {
-        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
-        window.location.href = "/login.html";
-      }
-    });
-  </script>
 </body>
 </html>
