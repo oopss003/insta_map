@@ -183,18 +183,14 @@
         // 매장 등록 여부 확인
         db.collection("stores").doc(lowerEmail).get().then(storeDoc => {
           const storeMenu = document.getElementById("storeMenu");
-          if (storeDoc.exists) {
-            storeMenu.innerHTML = `
-              <img src="/images/store.svg" alt="매장정보">
-              <div>매장정보</div>
-            `;
-            storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/store_view.html';
-          } else {
-            storeMenu.innerHTML = `
-              <img src="/images/store.svg" alt="매장등록">
-              <div>매장등록</div>
-            `;
-            storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/register.html';
+
+          storeMenu.innerHTML = `
+            <img src="/images/store.svg" alt="매장정보">
+            <div>매장정보</div>
+`         ;
+
+          storeMenu.onclick = () => {
+            location.href = 'https://inwave.ai.kr/store_view.html';
           }
         });
       });
