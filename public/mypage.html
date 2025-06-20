@@ -4,64 +4,68 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MY</title>
-
-  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-
   <style>
     body {
       margin: 0;
-      font-family: sans-serif;
-      background: #fff;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
     }
 
     .mypage-header {
-      padding: 24px;
-      border-bottom: 1px solid #eee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: #fff;
     }
 
-    .mypage-header strong {
-      font-weight: bold;
-      font-size: 18px;
+    .mypage-header .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
     }
 
-    .user-subtext {
-      font-size: 14px;
+    .mypage-header .user-info strong {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .mypage-header .user-info .user-subtext {
+      font-size: 13px;
       color: #888;
-      margin-top: 8px;
+    }
+
+    .mypage-header .back-btn {
+      width: 24px;
+      height: 24px;
     }
 
     .grid-menu {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       text-align: center;
-      padding: 20px 12px;
+      padding: 16px 12px;
       gap: 16px;
-      font-size: 14px;
-    }
-
-    .grid-menu div {
-      color: #222;
+      font-size: 13px;
+      background: #fff;
     }
 
     .grid-menu img {
-      width: 36px;
-      height: 36px;
-      margin-bottom: 4px;
+      width: 32px;
+      height: 32px;
+      margin-bottom: 6px;
     }
 
     .section {
-      padding: 12px 16px;
-      border-top: 8px solid #f5f5f5;
-    }
-
-    .section-title {
-      font-size: 16px;
+      padding: 16px;
+      background: #fff;
+      margin-top: 8px;
+      font-size: 15px;
       font-weight: 500;
       color: #222;
-      padding: 12px 0;
     }
 
     .footer {
@@ -95,8 +99,11 @@
 </head>
 <body>
   <div class="mypage-header">
-    <strong id="userNickname">사용자</strong>
-    <div class="user-subtext">⚡ 로그인된 계정</div>
+    <img src="/images/arrow-left-1.svg" class="back-btn" onclick="history.back()" alt="뒤로가기">
+    <div class="user-info">
+      <strong id="userNickname">사용자</strong>
+      <div class="user-subtext">⚡ 로그인된 계정</div>
+    </div>
   </div>
 
   <div class="grid-menu">
@@ -118,21 +125,11 @@
     </div>
   </div>
 
-  <div class="section" onclick="location.href='https://inwave.ai.kr'">
-    <div class="section-title">인웨이브</div>
-  </div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/adwave1.html'">
-    <div class="section-title">애드웨이브 1.0</div>
-  </div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/waveshare.html'">
-    <div class="section-title">웨이브쉐어</div>
-  </div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/invest.html'">
-    <div class="section-title">투자라운지</div>
-  </div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/privacy_policy.html'">
-    <div class="section-title">고객지원</div>
-  </div>
+  <div class="section" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
+  <div class="section" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
+  <div class="section" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
+  <div class="section" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
+  <div class="section" onclick="location.href='https://inwave.ai.kr/privacy_policy.html'">고객지원</div>
 
   <div class="footer">
     <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
@@ -167,8 +164,6 @@
       }
 
       const lowerEmail = email.toLowerCase();
-
-      // 약관 동의 확인
       db.collection("users").doc(lowerEmail).get().then(doc => {
         if (!doc.exists || doc.data().agreedToTerms !== true) {
           alert("약관 동의가 필요합니다.");
@@ -176,19 +171,14 @@
           return;
         }
 
-        // 닉네임 표시
         const nickname = doc.data().nickname || "사용자";
         document.getElementById("userNickname").textContent = nickname;
 
-        // 매장 등록 여부 확인
         db.collection("stores").doc(lowerEmail).get().then(storeDoc => {
           const storeMenu = document.getElementById("storeMenu");
-
           storeMenu.innerHTML = `
             <img src="/images/store.svg" alt="매장정보">
-            <div>매장정보</div>
-`         ;
-
+            <div>매장정보</div>`;
           storeMenu.onclick = () => {
             location.href = 'https://inwave.ai.kr/register.html';
           }
