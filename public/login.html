@@ -5,40 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로그인</title>
   <link rel="stylesheet" href="css/style.css" />
-  <script type="module">
-    import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getAuth, GoogleAuthProvider, signInWithRedirect } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js';
-
-    // Firebase 설정은 여러분의 프로젝트 설정에 맞춰야 합니다.
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-    };
-
-    // Firebase 앱 초기화
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const googleProvider = new GoogleAuthProvider();
-
-    document.getElementById("googleLoginBtn").addEventListener("click", () => {
-      // Firebase의 Google 로그인 리다이렉트 방식 사용
-      // 이 함수를 호출하면 Google 로그인 페이지로 이동했다가,
-      // Firebase Console에 설정된 '인증 > 로그인 방식 > Google > 승인된 리디렉션 URI'로 돌아옵니다.
-      // 이 URI는 일반적으로 'https://<YOUR_PROJECT_ID>.firebaseapp.com/__/auth/handler' 입니다.
-      // 여기서는 `callback_google.html`을 사용하지 않고 Firebase의 기본 핸들러를 사용하거나,
-      // `callback_google.html`을 이 기본 핸들러 페이지의 역할을 하도록 변경해야 합니다.
-      // 현재 프로젝트 구조상 `callback_google.html`을 유지하려면, Firebase Console에 해당 URL을 추가해야 합니다.
-      signInWithRedirect(auth, googleProvider);
-    });
-  </script>
 </head>
 <body>
   <div class="container">
     <button id="googleLoginBtn" class="custom-button">Google로 로그인</button>
   </div>
+
+  <script>
+    const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
+    const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
+    const scope = "email profile openid";
+    const response_type = "id_token token";
+
+    const state = new Date().getTime();
+    const nonce = Math.random().toString(36).substring(2);
+
+    document.getElementById("googleLoginBtn").addEventListener("click", () => {
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
+      window.location.href = url;
+    });
+  </script>
 </body>
 </html>
