@@ -456,12 +456,27 @@
     const db       = firebase.firestore(); /* 9-3) Firestore 인스턴스 생성 */
     const storage  = firebase.storage();   /* 9-4) Storage 인스턴스 생성 */
 
+    // ✅ 로그인 & 약관 동의 여부 확인
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (!email || email.trim() === "") {
+        alert("로그인이 필요합니다.");
+        location.href = "/login.html";
+        return;
+      }
+  
+      db.collection("users").doc(email.toLowerCase()).get().then(doc => {
+        if (!doc.exists || doc.data().agreedToTerms !== true) {
+          alert("약관 동의가 필요합니다.");
+          location.href = "/terms.html";
+        }
+      });
+    });
     let currentUser = null;
 
     const auth = firebase.auth();
     auth.onAuthStateChanged(async user => {
       if (!user) {
-        alert("로그인이 필요합니다. 로그인 후 다시 시도해주세요.");
         window.location.href = "login.html";  // 또는 로그인 페이지
         return;
       }
