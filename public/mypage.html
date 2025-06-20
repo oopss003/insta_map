@@ -37,10 +37,13 @@
     }
 
     .mypage-header .user-info-box {
-      grid-column: span 3;
+      height: 80px; /* 고정 */
+      display: flex;
       flex-direction: column;
-      align-items: flex-end;
-      padding: 10px;
+      justify-content: center; /* 세로 중앙 정렬 */
+      align-items: flex-end; /* 우측 정렬 */
+      padding: 0 10px; /* 상하 패딩 제거 */
+      box-sizing: border-box;
     }
 
     .mypage-header .user-info-box strong {
