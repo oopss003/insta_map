@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>MY</title>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -93,7 +93,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="mypage-header">
     <strong id="userNickname">사용자</strong>
@@ -147,7 +146,6 @@
     </a>
   </div>
 
-  <!-- ✅ Firebase 연동 -->
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
@@ -157,25 +155,50 @@
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    const email = localStorage.getItem('userEmail');
-    if (email) {
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem('userEmail');
+      if (!email || email.trim() === "") {
+        alert("로그인이 필요합니다.");
+        location.href = "/login.html";
+        return;
+      }
+
       const lowerEmail = email.toLowerCase();
 
-      // 사용자 닉네임 가져오기
+      // 약관 동의 확인
       db.collection("users").doc(lowerEmail).get().then(doc => {
-        if (doc.exists) {
-          const nickname = doc.data().nickname || "사용자";
-          document.getElementById("userNickname").textContent = nickname;
+        if (!doc.exists || doc.data().agreedToTerms !== true) {
+          alert("약관 동의가 필요합니다.");
+          window.location.href = "/terms.html";
+          return;
         }
-      });
 
-      // 매장 등록 여부 확인
-      db.collection("stores").doc(lowerEmail).get().then(doc => {
-        const storeMenu = document.getElementById("storeMenu");
-        if (doc.exists) {
-          storeMenu.innerHTML = `
-            <img src="/images/store.svg" al
+        // 닉네임 표시
+        const nickname = doc.data().nickname || "사용자";
+        document.getElementById("userNickname").textContent = nickname;
+
+        // 매장 등록 여부 확인
+        db.collection("stores").doc(lowerEmail).get().then(storeDoc => {
+          const storeMenu = document.getElementById("storeMenu");
+          if (storeDoc.exists) {
+            storeMenu.innerHTML = `
+              <img src="/images/store.svg" alt="매장정보">
+              <div>매장정보</div>
+            `;
+            storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/store_view.html';
+          } else {
+            storeMenu.innerHTML = `
+              <img src="/images/store.svg" alt="매장등록">
+              <div>매장등록</div>
+            `;
+            storeMenu.onclick = () => location.href = 'https://inwave.ai.kr/register.html';
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
