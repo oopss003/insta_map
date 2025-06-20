@@ -15,32 +15,42 @@
     }
 
     .mypage-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      background: #fff;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      padding: 12px;
     }
 
-    .mypage-header .user-info {
+    .mypage-header .back-btn,
+    .mypage-header .user-info-box {
+      background: #fff;
+      border-radius: 16px;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      height: 80px;
+    }
+
+    .mypage-header .back-btn {
+      grid-column: span 1;
+    }
+
+    .mypage-header .user-info-box {
+      grid-column: span 3;
       flex-direction: column;
       align-items: flex-end;
+      padding: 10px;
     }
 
-    .mypage-header .user-info strong {
+    .mypage-header .user-info-box strong {
       font-size: 16px;
       font-weight: 600;
     }
 
-    .mypage-header .user-info .user-subtext {
+    .mypage-header .user-info-box .user-subtext {
       font-size: 13px;
       color: #888;
-    }
-
-    .mypage-header .back-btn {
-      width: 24px;
-      height: 24px;
     }
 
     .grid-menu {
@@ -48,9 +58,15 @@
       grid-template-columns: repeat(4, 1fr);
       text-align: center;
       padding: 16px 12px;
-      gap: 16px;
+      gap: 12px;
       font-size: 13px;
+    }
+
+    .grid-item {
       background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 12px 0;
     }
 
     .grid-menu img {
@@ -60,12 +76,21 @@
     }
 
     .section {
-      padding: 16px;
       background: #fff;
-      margin-top: 8px;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      margin: 12px;
+      padding: 16px;
       font-size: 15px;
       font-weight: 500;
       color: #222;
+    }
+
+    .section.ad {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .footer {
@@ -99,31 +124,35 @@
 </head>
 <body>
   <div class="mypage-header">
-    <img src="/images/arrow-left-1.svg" class="back-btn" onclick="history.back()" alt="뒤로가기">
-    <div class="user-info">
+    <div class="back-btn">
+      <img src="/images/arrow-left-1.svg" alt="뒤로가기" onclick="history.back()" style="width:24px;height:24px;">
+    </div>
+    <div class="user-info-box">
       <strong id="userNickname">사용자</strong>
-      <div class="user-subtext">⚡ 로그인된 계정</div>
+      <div class="user-subtext">안녕하세요. 반가워요!</div>
     </div>
   </div>
 
   <div class="grid-menu">
-    <div id="storeMenu">
+    <div class="grid-item" id="storeMenu">
       <img src="/images/store.svg" alt="매장정보">
       <div>로딩중...</div>
     </div>
-    <div onclick="location.href='https://inwave.ai.kr/guide.html'">
-      <img src="/images/guide.svg" alt="송출가이드">
-      <div>송출가이드</div>
-    </div>
-    <div onclick="location.href='https://inwave.ai.kr/subscribe.html'">
+    <div class="grid-item" onclick="location.href='https://inwave.ai.kr/subscribe.html'">
       <img src="/images/news-subscribe.svg" alt="구독정보">
       <div>구독정보</div>
     </div>
-    <div onclick="location.href='https://inwave.ai.kr/profile.html'">
+    <div class="grid-item" onclick="location.href='https://inwave.ai.kr/guide.html'">
+      <img src="/images/guide.svg" alt="송출가이드">
+      <div>송출가이드</div>
+    </div>
+    <div class="grid-item" onclick="location.href='https://inwave.ai.kr/profile.html'">
       <img src="/images/user-profile.svg" alt="내정보">
       <div>내정보</div>
     </div>
   </div>
+
+  <div class="section ad">광고 이미지 영역</div>
 
   <div class="section" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
   <div class="section" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
