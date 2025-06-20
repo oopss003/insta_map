@@ -452,31 +452,40 @@
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
     };
-    firebase.initializeApp(firebaseConfig); /* 9-2) Firebase 앱 초기화 */
-    const db       = firebase.firestore(); /* 9-3) Firestore 인스턴스 생성 */
-    const storage  = firebase.storage();   /* 9-4) Storage 인스턴스 생성 */
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    const storage = firebase.storage();
+    const auth = firebase.auth();
 
-    // ✅ 로그인 & 약관 동의 여부 확인
-    document.addEventListener("DOMContentLoaded", () => {
-      firebase.auth().onAuthStateChanged(user => {
-        if (user) {
-          const email = user.email;
-          localStorage.setItem("userEmail", email); // ✅ 로컬스토리지 복구
+    let currentUser = null;
 
-          // 추가 로직이 있다면 여기에 이어서 작성 가능
-          // ✅ 약관 동의 여부 확인
-          db.collection("users").doc(email.toLowerCase()).get().then(doc => {
-            if (!doc.exists || doc.data().agreedToTerms !== true) {
-              alert("약관 동의가 필요합니다.");
-              location.href = "/terms.html";
-            }
-          });
-        } else {
-          alert("로그인이 필요합니다.");
-          window.location.href = "/login.html";
+    firebase.auth().onAuthStateChanged(async user => {
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        return window.location.href = "/login.html";
+      }
+
+      currentUser = user;
+      const email = user.email.toLowerCase();
+      localStorage.setItem("userEmail", email);
+
+      try {
+        const userDoc = await db.collection("users").doc(email).get();
+        if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
+          alert("약관 동의가 필요합니다.");
+          return window.location.href = "/terms.html";
         }
-      });
+
+        const storeDoc = await db.collection("stores").doc(user.email).get();
+        if (storeDoc.exists) {
+          loadStoreToForm({ id: user.email, data: () => storeDoc.data() });
+        }
+      } catch (err) {
+        console.error("🔥 Firestore 접근 오류:", err);
+        alert("데이터 접근 중 오류가 발생했습니다.");
+      }
     });
+
     let currentUser = null;
 
     const auth = firebase.auth();
