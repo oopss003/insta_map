@@ -435,7 +435,7 @@
 
   </form> <!-- 7-5) 최상위 form 닫기 -->
 
-  <script>
+<script>
   const overlay = document.getElementById('loadingOverlay');
   const saveBtn  = document.getElementById('saveBtn');
   let editingId = "";
@@ -453,11 +453,13 @@
   firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
   const storage = firebase.storage();
+  const auth = firebase.auth();
 
-  firebase.auth().onAuthStateChanged(async user => {
+  auth.onAuthStateChanged(async user => {
     if (!user) {
       alert("로그인이 필요합니다.");
-      return window.location.href = "/login.html";
+      window.location.href = "/login.html";
+      return;
     }
 
     currentUser = user;
@@ -468,17 +470,18 @@
       const userDoc = await db.collection("users").doc(email).get();
       if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
         alert("약관 동의가 필요합니다.");
-        return window.location.href = "/terms.html";
+        window.location.href = "/terms.html";
+        return;
       }
 
-      const storeDoc = await db.collection("stores").doc(user.email).get();
+      const storeDoc = await db.collection("stores").doc(email).get();
       if (storeDoc.exists) {
-        loadStoreToForm({ id: user.email, data: () => storeDoc.data() });
+        loadStoreToForm({ id: email, data: () => storeDoc.data() });
       }
     } catch (err) {
-      console.error("❗ Firestore 오류:", err);
+      console.error("\u2757 Firestore 오류:", err);
       alert("데이터 불러오는 중 오류 발생.");
-    }    
+    }
   });
 
   const map = new naver.maps.Map('map', {
