@@ -134,7 +134,7 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- ✅ Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script>
@@ -144,12 +144,13 @@
       projectId: "instamap-9b595",
       storageBucket: "instamap-9b595.firebasestorage.app",
       messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
   </script>
 
+  <!-- ✅ 약관 체크 및 저장 -->
   <script>
     const allAgree = document.getElementById('allAgree');
     const requiredCheckboxes = document.querySelectorAll('.required');
@@ -172,7 +173,7 @@
 
     nextBtn.addEventListener('click', () => {
       const email = localStorage.getItem('userEmail');
-      if (!email) {
+      if (!email || email.trim() === "") {
         alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
         return;
       }
@@ -181,12 +182,20 @@
       db.collection("users").doc(normalizedEmail).set({
         agreedToTerms: true
       }, { merge: true }).then(() => {
-        localStorage.setItem('agreedToTerms', 'true');
         location.href = '/mypage.html';
       }).catch(err => {
         console.error("🔥 약관 동의 저장 실패:", err);
         alert("약관 동의 처리 중 오류가 발생했습니다.");
       });
+    });
+
+    // ✅ 로그인 여부 확인 (페이지 진입 시)
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (!email || email.trim() === "") {
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        window.location.href = "/login.html";
+      }
     });
   </script>
 </body>
