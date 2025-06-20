@@ -458,17 +458,22 @@
 
     // ✅ 로그인 & 약관 동의 여부 확인
     document.addEventListener("DOMContentLoaded", () => {
-      const email = localStorage.getItem("userEmail");
-      if (!email || email.trim() === "") {
-        alert("로그인이 필요합니다.");
-        location.href = "/login.html";
-        return;
-      }
-  
-      db.collection("users").doc(email.toLowerCase()).get().then(doc => {
-        if (!doc.exists || doc.data().agreedToTerms !== true) {
-          alert("약관 동의가 필요합니다.");
-          location.href = "/terms.html";
+      firebase.auth().onAuthStateChanged(user => {
+        if (user) {
+          const email = user.email;
+          localStorage.setItem("userEmail", email); // ✅ 로컬스토리지 복구
+
+          // 추가 로직이 있다면 여기에 이어서 작성 가능
+          // ✅ 약관 동의 여부 확인
+          db.collection("users").doc(email.toLowerCase()).get().then(doc => {
+            if (!doc.exists || doc.data().agreedToTerms !== true) {
+              alert("약관 동의가 필요합니다.");
+              location.href = "/terms.html";
+            }
+          });
+        } else {
+          alert("로그인이 필요합니다.");
+          window.location.href = "/login.html";
         }
       });
     });
