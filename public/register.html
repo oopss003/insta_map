@@ -5,23 +5,17 @@
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>가게 등록</title>
 
-  <!-- 2. Naver Maps SDK 로드 -->
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script> <!-- 2-1) 네이버 지도 API 사용을 위한 스크립트 포함 -->
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
 
-  <!-- 3. Firebase SDK 로드 (Firestore, Storage) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>         <!-- 3-1) Firebase 앱 초기화용 SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>   <!-- 3-2) Firestore 데이터베이스 사용용 SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>     <!-- 3-3) Storage(이미지 저장) 사용용 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <style>
-    /* 4. 공통 스타일 정의
-       4-1) body: 기본 폰트, 최대 너비, 중앙 정렬, 패딩
-       4-2) #map: 지도 영역 크기, 테두리, 둥근 모서리, 마진
-       4-3) label, input, textarea, select: 폼 요소 스타일
-    */                         /* ← 여기에 닫는 주석 추가 */
+    /* 기존 스타일 코드 (변경 없음) */
     input,textarea,select{
-    box-sizing: border-box;  /* ← 이 줄 추가 */
+    box-sizing: border-box;
       width:100%;
       padding:8px;
       margin-top:4px;
@@ -29,14 +23,9 @@
       border-radius:4px;
       font-size:14px;
      }
-    /* 
-       4-4) button: 버튼 기본 스타일
-       4-5) #getLocBtn, #saveBtn: 버튼별 배경색 지정
-       4-6) #header, #authButtons: 헤더 영역 정렬 및 버튼 스타일
-    */
-    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px} /* 4-1 */
-    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px} /* 4-2 */
-    label{display:block;margin-top:12px;font-weight:700} /* 4-3 */
+    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px}
+    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px}
+    label{display:block;margin-top:12px;font-weight:700}
       .off-days {
         display: flex;
         align-items: center;
@@ -54,42 +43,36 @@
         height: 16px;
       }
 
-    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer} /* 4-4 */
-    #getLocBtn{background:#28a745;color:#fff} /* 4-5 */
-    #saveBtn{background:#2d8cff;color:#fff}  /* 4-5 */
-    /* ─────────── 4-6) 헤더 영역 & 버튼 스타일 ─────────── */
+    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
+    #getLocBtn{background:#28a745;color:#fff}
+    #saveBtn{background:#2d8cff;color:#fff}
     #header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      /* margin-bottom:12px;  ← 필요 없으면 지워도 됩니다 */
-      height: 60px;            /* 헤더 높이 고정 */
-      box-sizing: border-box;  /* padding 포함하여 계산 */
+      height: 60px;
+      box-sizing: border-box;
     }
 
-    /* 제목 가운데 정렬 */
     #header h2 {
       margin: 0;
-      line-height: 60px;       /* #header 높이와 일치 */
+      line-height: 60px;
       font-size: 1.25rem;
     }
 
-    /* 뒤로가기 버튼도 헤더 높이에 맞춰서 */
     .back-button {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      height: 100%;          /* 헤더 높이(60px)를 그대로 따름 */
-      padding: 0 8px;        /* 클릭 영역 확보 */
-  
-      font-size: 32px;       /* 화살표 크기 */
-      line-height: 1;        /* 텍스트가 넘치지 않도록 */
+      height: 100%;
+      padding: 0 8px;
+      font-size: 32px;
+      line-height: 1;
       color: var(--text);
       text-decoration: none;
       margin-right: 8px;
     }
 
-    /* ─── 로딩 오버레이 스타일 ─── */
     #loadingOverlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -99,7 +82,6 @@
       justify-content: center;
       z-index: 9999;
     }
-    /* ─── 스피너 애니메이션 ─── */
     .spinner {
       width: 48px;
       height: 48px;
@@ -111,16 +93,14 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-      /* 버튼 그룹 정렬 */
     .btn-group {
       display: flex;
       gap: 8px;
       margin-bottom: 16px;
       justify-content:space-between;
     }
-    /* ② 참고 영상 버튼 */
     #helpVideoBtn{
-    margin-left:auto;      /* ← 우측으로 밀착 */
+    margin-left:auto;
     }
     .main-btn {
       padding: 8px 16px;
@@ -131,7 +111,6 @@
       cursor: pointer;
     }
 
-    /* ─── 모달 배경 (그대로) ─── */
     .modal{
       position:fixed;inset:0;display:none;
       justify-content:center;align-items:center;
@@ -140,36 +119,31 @@
 
     .modal-content{
       position:relative;
-      width :min(90vw,calc(90vh*9/16));   /* 가로,세로 중 작은 값 선택 */
-      height:min(90vh,calc(90vw*16/9));   /* → 항상 9:16 유지       */
+      width :min(90vw,calc(90vh*9/16));
+      height:min(90vh,calc(90vw*16/9));
       border-radius:16px; overflow:hidden;
     }
 
-    /* ─── iframe 가득 채우기 ─── */
     #videoFrame{width:100%;height:100%;border:0;}
 
-    /* ─── 닫기(X) 버튼 ─── */
     #closeVideo{
       position:absolute; top:8px; right:8px;
       width:40px; height:40px; border:none;
       border-radius:50%; background:#fff;
-      font-size:24px; line-height:1; 
-      display:flex;                    /* ① */
-      align-items:center;              /* ② 수직 중앙 */
-      justify-content:center;          /* ③ 수평 중앙 */
+      font-size:24px; line-height:1;
+      display:flex;
+      align-items:center;
+      justify-content:center;
       cursor:pointer;
       box-shadow:0 2px 6px rgba(0,0,0,.3);
     }
   </style>
 </head>
 <body>
-    <!-- 로딩 오버레이 -->
-  <div id="loadingOverlay" style="display:none;">
+    <div id="loadingOverlay" style="display:none;">
     <div class="spinner"></div>
   </div>
-  <!-- 5. 헤더 영역 (제목 + 카카오 로그인/로그아웃 버튼) -->
   <div id="header">
-    <!-- 뒤로가기 화살표 -->
     <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">&lt;</a>
       <div style="display: flex; align-items: center; gap: 6px;">
       <img src="images/store.svg" alt="매장 등록" style="width: 24px; height: 24px;" />
@@ -178,37 +152,33 @@
 
   </div>
 
-  <!-- 6. 지도 영역 및 현재 위치 가져오기 버튼 -->
-  <div id="map"></div> <!-- 6-1) 네이버 지도가 렌더링될 영역 -->  
- 
+  <div id="map"></div>
+  
 <div class="btn-group">
   <button type="button" id="getLocBtn" class="main-btn">현재 위치 가져오기</button>
   <button type="button" id="helpVideoBtn" class="main-btn">참고 영상</button>
 </div>
 
-  <!-- 폼 시작: 이 줄을 꼭 추가 -->
   <form id="storeForm">
-    <!-- 8. 등록/수정 폼 (한 번만 쓰기) -->
-    <label>가게 이름</label> <!-- 8-1) 가게 이름 라벨 -->
-    <input name="name" required /> <!-- 8-2) 가게 이름 입력 필드 -->
+    <label>가게 이름</label>
+    <input name="name" required />
 
-    <label>인스타그램 ID (@ 제외)</label> <!-- 8-3) 인스타그램 ID 라벨 -->
-    <input name="insta_id" required /> <!-- 8-4) 인스타그램 ID 입력 필드 -->
+    <label>인스타그램 ID (@ 제외)</label>
+    <input name="insta_id" required />
 
-    <label>가게 설명</label> <!-- 8-5) 가게 설명 라벨 -->
-    <textarea name="desc" rows="4"></textarea> <!-- 8-6) 가게 설명 입력 필드 -->
+    <label>가게 설명</label>
+    <textarea name="desc" rows="4"></textarea>
 
-    <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label> <!-- 8-7) 사진 업로드 라벨 -->
-    <input type="file" id="photo" accept="image/*" /> <!-- 8-8) 사진 선택 필드 -->
+    <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label>
+    <input type="file" id="photo" accept="image/*" />
 
-    <label>Vimeo 동영상</label> <!-- 8-9) Vimeo 링크 라벨 -->
+    <label>Vimeo 동영상</label>
     <input name="vimeo" type="text"
-           placeholder="동영상은 검수를 통해 업로드 됩니다." /> <!-- 8-10) Vimeo 입력 필드 -->
-    <label>해시태그 (고객에게 노출되는 문구)</label>             <!-- 주석 8-11) 해시태그 라벨 -->
+            placeholder="동영상은 검수를 통해 업로드 됩니다." />
+    <label>해시태그 (고객에게 노출되는 문구)</label>
     <input name="hashtags" placeholder="#음식, #카페 등 직관적으로 볼 수 있는 이름으로 5글자 미만" />
-    <!-- 오픈/마감 시간 입력 필드 시작 -->
-    <label>오픈 시간 (24시간 기준, 30분 단위)</label>      <!-- 주석 8-12) 오픈 시간 라벨 -->
-    <select name="openTime">                               <!-- 주석 8-13) 오픈 시간 셀렉트 -->
+    <label>오픈 시간 (24시간 기준, 30분 단위)</label>
+    <select name="openTime">
       <option value="3:00">3:00</option>
       <option value="3:30">3:30</option>
       <option value="4:00">4:00</option>
@@ -253,8 +223,8 @@
       <option value="23:30">23:30</option>
     </select>
 
-    <label>마감 시간 (24시간 기준, 30분 단위)</label>      <!-- 주석 8-14) 마감 시간 라벨 -->
-    <select name="closeTime">                              <!-- 주석 8-15) 마감 시간 셀렉트 -->
+    <label>마감 시간 (24시간 기준, 30분 단위)</label>
+    <select name="closeTime">
       <option value="3:00">3:00</option>
       <option value="3:30">3:30</option>
       <option value="4:00">4:00</option>
@@ -306,8 +276,7 @@
       <option value="27:00">27:00 (다음날 3:00)</option>
     </select>
 
-      <!-- 1) 쉬는 날 체크박스 -->
-    <label>쉬는 날</label>
+      <label>쉬는 날</label>
     <div class="off-days">
       <label><input type="checkbox" name="offDays[]" value="월"> 월요일</label>
       <label><input type="checkbox" name="offDays[]" value="화"> 화요일</label>
@@ -318,7 +287,6 @@
       <label><input type="checkbox" name="offDays[]" value="일"> 일요일</label>
     </div>
 
-    <!-- 2) 브레이크 타임 -->
     <label>브레이크 타임 시작 (24시간 기준, 30분 단위)</label>
     <select name="breakStart">
       <option value="">선택 안함</option>
@@ -425,22 +393,21 @@
       <option value="23:30">23:30</option>
     </select>
     
-    <!-- 오픈/마감 시간 입력 필드 끝 -->
-    <label>위도</label> <!-- 8-16) 위도 라벨 -->
-    <input id="lat" readonly required /> <!-- 8-17) 위도 값 표시 필드 (읽기 전용) -->
-    <label>경도</label> <!-- 8-18) 경도 라벨 -->
-    <input id="lng" readonly required /> <!-- 8-19) 경도 값 표시 필드 (읽기 전용) -->
+    <label>위도</label>
+    <input id="lat" readonly required />
+    <label>경도</label>
+    <input id="lng" readonly required />
 
-    <button id="saveBtn" type="button">저장</button> <!-- 8-20) 저장 버튼 -->
+    <button id="saveBtn" type="button">저장</button>
 
-  </form> <!-- 7-5) 최상위 form 닫기 -->
+  </form>
 
   <script>
     const overlay = document.getElementById('loadingOverlay');
     const saveBtn = document.getElementById('saveBtn');
     let editingId = "";
-    let currentUser = null;
 
+    // Firebase 초기화는 한 번만 수행합니다.
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
       authDomain: "instamap-9b595.firebaseapp.com",
@@ -455,6 +422,10 @@
     const storage = firebase.storage();
     const auth = firebase.auth();
 
+    // currentUser 선언을 전역 스코프에서 한 번만 합니다.
+    let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
+
+    // onAuthStateChanged 리스너를 하나만 유지합니다.
     auth.onAuthStateChanged(async user => {
       if (!user) {
         alert("로그인이 필요합니다.");
@@ -474,9 +445,9 @@
           return;
         }
 
-        const storeDoc = await db.collection("stores").doc(email).get();
+        const storeDoc = await db.collection("stores").doc(email).get(); // user.email 대신 email 변수 사용
         if (storeDoc.exists) {
-          loadStoreToForm({ id: email, data: () => storeDoc.data() });
+          loadStoreToForm({ id: email, data: () => storeDoc.data() }); // user.email 대신 email 변수 사용
         }
       } catch (err) {
         console.error("\u2757 Firestore 오류:", err);
@@ -563,6 +534,22 @@
       document.getElementById('lat').value = data.lat;
       document.getElementById('lng').value = data.lng;
       document.querySelector('[name=vimeo]').value = data.vimeo || "";
+      // 해시태그 로드 (콤마로 구분된 문자열로 변환)
+      document.querySelector('[name=hashtags]').value = (data.hashtags || []).join(', ');
+
+      // 오픈/마감 시간, 브레이크 타임, 쉬는 날 로드
+      document.querySelector('[name=openTime]').value = data.openTime || '';
+      document.querySelector('[name=closeTime]').value = data.closeTime || '';
+      document.querySelector('[name=breakStart]').value = data.breakStart || '';
+      document.querySelector('[name=breakEnd]').value = data.breakEnd || '';
+
+      // 쉬는 날 체크박스 초기화 및 체크
+      document.querySelectorAll('[name="offDays[]"]').forEach(cb => cb.checked = false);
+      (data.offDays || []).forEach(day => {
+        const checkbox = document.querySelector(`[name="offDays[]"][value="${day}"]`);
+        if (checkbox) checkbox.checked = true;
+      });
+
       setLatLng(data.lat, data.lng);
       document.getElementById('saveBtn').textContent = "수정 저장";
     }
@@ -593,8 +580,11 @@
         const breakEnd = document.querySelector('[name=breakEnd]').value;
         const offDays = Array.from(document.querySelectorAll('[name="offDays[]"]:checked')).map(cb => cb.value);
 
+
+        // currentUser가 null일 경우 다시 로그인 경고 및 리턴
         if (!currentUser) {
           alert('로그인 후 등록이 가능합니다.');
+          window.location.href = "/login.html"; // 로그인 페이지로 리다이렉트 추가
           return;
         }
 
@@ -632,6 +622,13 @@
 
         const storeRef = db.collection('stores').doc(currentUser.email);
         if (editingId) {
+          // 사진을 새로 업로드하지 않았다면 기존 photo 필드 유지
+          if (!file) {
+             const existingStore = await storeRef.get();
+             if (existingStore.exists) {
+               store.photo = existingStore.data().photo || "";
+             }
+          }
           await storeRef.update(store);
           alert('수정되었습니다!');
         } else {
@@ -645,6 +642,7 @@
           alert('등록되었습니다!');
         }
 
+        // 폼 초기화 및 지도 마커 제거
         document.getElementById('storeForm').reset();
         if (marker) marker.setMap(null);
         editingId = "";
@@ -663,7 +661,7 @@
   
   <div id="videoModal" class="modal">
   <div class="modal-content">
-    <button id="closeVideo">&times;</button>   <!-- 닫기 버튼 -->
+    <button id="closeVideo">&times;</button>
     <iframe
       id="videoFrame"
       src=""
@@ -681,20 +679,19 @@ const closeBtn   = document.getElementById('closeVideo');
 
 helpBtn.addEventListener('click', () => {
   const url = 'https://player.vimeo.com/video/1091824548?h=bfd071815a&autoplay=1&muted=1';
-  videoFrame.src = url;              // 재생 시작
-  videoModal.style.display = 'flex'; // 모달 열기
+  videoFrame.src = url;
+  videoModal.style.display = 'flex';
 });
 
 function hideModal() {
-  videoFrame.src = '';               // 정지 & 메모리 해제
+  videoFrame.src = '';
   videoModal.style.display = 'none';
 }
 closeBtn.addEventListener('click', hideModal);
 videoModal.addEventListener('click', e => {
-  if (e.target === videoModal) hideModal();  // 검은 배경 터치 → 닫기
+  if (e.target === videoModal) hideModal();
 });
 </script>
-
 
 </body>
 </html>
