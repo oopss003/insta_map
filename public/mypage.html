@@ -12,13 +12,18 @@
       margin: 0;
       font-family: 'Pretendard', sans-serif;
       background: #f5f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
     .mypage-header {
       display: flex;
+      justify-content: center;
       align-items: center;
-      padding: 12px;
       gap: 12px;
+      margin-top: 12px;
+      width: 360px;
     }
 
     .back-btn {
@@ -30,20 +35,17 @@
       justify-content: center;
       align-items: center;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      flex-shrink: 0;
     }
 
     .user-info-box {
-      flex-grow: 1;
-      height: 80px;
+      width: 255px;
+      height: 77px;
       background: #fff;
       border-radius: 16px;
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
       justify-content: center;
       padding: 0 12px;
-      box-sizing: border-box;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
@@ -61,7 +63,9 @@
       display: flex;
       justify-content: center;
       gap: 12px;
+      width: 360px;
       margin: 20px 0;
+      flex-wrap: wrap;
     }
 
     .grid-item {
@@ -70,49 +74,55 @@
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      padding: 8px;
-      text-align: center;
-      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
     }
 
-    .grid-item img {
+    .grid-menu img {
       width: 32px;
       height: 32px;
       margin-bottom: 6px;
     }
 
-    .section.ad {
-      width: 308px;
-      height: 230px;
-      margin: 0 auto 16px;
+    .ad-area {
+      width: 344px;
+      height: 260px;
       background: #fff;
       border-radius: 16px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
+      margin-bottom: 16px;
     }
 
-    .square-grid {
-      width: 344px;
+    .section-2x2 {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, 166px);
       gap: 12px;
-      margin: 0 auto 16px;
+      justify-content: center;
+      margin-bottom: 16px;
     }
 
-    .square-item {
+    .section-2x2 .section {
       width: 166px;
       height: 166px;
       background: #fff;
       border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
       font-size: 15px;
       font-weight: 500;
       color: #222;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      text-align: center;
     }
 
     .footer {
@@ -174,13 +184,13 @@
     </div>
   </div>
 
-  <div class="section ad">광고 이미지 영역</div>
+  <div class="ad-area">광고 이미지 영역</div>
 
-  <div class="square-grid">
-    <div class="square-item" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
-    <div class="square-item" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
-    <div class="square-item" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
-    <div class="square-item" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
+  <div class="section-2x2">
+    <div class="section" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
+    <div class="section" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
+    <div class="section" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
+    <div class="section" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
   </div>
 
   <div class="footer">
