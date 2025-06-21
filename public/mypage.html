@@ -1,4 +1,4 @@
-  <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -15,44 +15,44 @@
     }
 
     .mypage-header {
-      display: grid;
-      grid-template-columns: 1fr 3fr; /* 비율로 균등하게 맞춤 */
-      gap: 12px;
+      display: flex;
+      align-items: center;
       padding: 12px;
+      gap: 12px;
     }
 
-    .mypage-header {
-      display: grid;
-      grid-template-columns: 1fr 3fr;
-      gap: 12px;
-      padding: 12px;
-    }
-
-    .mypage-header .back-btn,
-    .mypage-header .user-info-box {
+    .back-btn {
       background: #fff;
       border-radius: 16px;
+      width: 72px;
+      height: 80px;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 80px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
     }
 
-    .mypage-header .user-info-box {
+    .user-info-box {
+      flex-grow: 1;
+      height: 80px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
       flex-direction: column;
       align-items: flex-end;
       justify-content: center;
-      padding: 0 10px;
+      padding: 0 12px;
       box-sizing: border-box;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
-    .mypage-header .user-info-box strong {
+    .user-info-box strong {
       font-size: 16px;
       font-weight: 600;
     }
 
-    .mypage-header .user-info-box .user-subtext {
+    .user-subtext {
       font-size: 13px;
       color: #888;
     }
@@ -61,10 +61,10 @@
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       text-align: center;
-      padding: 20px 12px 0; /* 상단 패딩만 */
+      padding: 20px 12px 0;
       gap: 16px;
       font-size: 14px;
-      margin-bottom: 16px; /* ✅ 아래 광고와 간격 */
+      margin-bottom: 16px;
     }
 
     .grid-item {
@@ -84,7 +84,7 @@
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      margin: 0 16px 16px 16px; /* ✅ 아래 버튼들과 간격 동일하게 */
+      margin: 0 16px 16px 16px;
       padding: 16px;
       font-size: 15px;
       font-weight: 500;
@@ -96,10 +96,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 16px 16px 16px; /* ✅ 위 간격은 grid-menu가 맡음 */
+      margin: 0 16px 16px 16px;
       background: #fff;
-      border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     .footer {
