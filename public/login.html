@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로그인</title>
-  <link rel="stylesheet" href="js/css/style.css" />
   <style>
     body {
       margin: 0;
@@ -21,24 +20,17 @@
       min-height: 100vh;
       padding: 20px;
       max-width: 100%;
-      background: none;
-      box-shadow: none;
     }
 
     .logo-img {
       width: 80%;
       max-width: 300px;
       margin-bottom: 40px;
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
-      border-radius: 20px; /* 그림자가 부드럽게 보이게 */
+      border-radius: 20px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
     }
 
     .login-box {
-      /* 배경/그림자 제거 */
-      background: none;
-      padding: 0;
-      border-radius: 0;
-      box-shadow: none;
       display: flex;
       flex-direction: column;
       gap: 16px;
@@ -53,14 +45,13 @@
       padding: 12px;
       font-size: 16px;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       background-color: white;
       font-weight: 500;
       cursor: pointer;
-      gap: 8px;
-      transition: background 0.2s;
-      /* 버튼 자체의 그림자도 제거 */
-      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+      gap: 10px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+      transition: background-color 0.2s ease;
     }
 
     .login-button:hover {
@@ -71,15 +62,12 @@
       width: 20px;
       height: 20px;
     }
-
   </style>
 </head>
 <body>
   <div class="container">
-    <!-- 상단 로고 이미지 -->
     <img src="images/1024.png" alt="2차어디가 로고" class="logo-img" />
 
-    <!-- 로그인 버튼 영역 -->
     <div class="login-box">
       <button id="googleLoginBtn" class="login-button">
         <img src="images/google.svg" alt="Google 아이콘" />
@@ -97,7 +85,6 @@
     const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
     const scope = "email profile openid";
     const response_type = "id_token token";
-
     const state = new Date().getTime();
     const nonce = Math.random().toString(36).substring(2);
 
@@ -108,3 +95,4 @@
   </script>
 </body>
 </html>
+
