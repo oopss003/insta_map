@@ -13,129 +13,149 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <style>
-    /* 기존 스타일 코드 (변경 없음) */
-    input,textarea,select{
-    box-sizing: border-box;
-      width:100%;
-      padding:8px;
-      margin-top:4px;
-      border:1px solid #bbb;
-      border-radius:4px;
-      font-size:14px;
-     }
-    body{font-family:sans-serif;max-width:640px;margin:24px auto;padding:0 12px}
-    #map{width:100%;height:320px;border:1px solid #ccc;border-radius:6px;margin-bottom:16px}
-    label{display:block;margin-top:12px;font-weight:700}
-      .off-days {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-        flex-wrap: wrap;
-      }
-      .off-days label {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-weight: 500;
-      }
-      .off-days input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-      }
-
-    button{margin-top:14px;padding:10px 18px;font-size:15px;border:none;border-radius:4px;cursor:pointer}
-    #getLocBtn{background:#28a745;color:#fff}
-    #saveBtn{background:#2d8cff;color:#fff}
-    #header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 60px;
-      box-sizing: border-box;
-    }
-
-    #header h2 {
+    body {
       margin: 0;
-      line-height: 60px;
-      font-size: 1.25rem;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .back-button {
-      display: inline-flex;
-      align-items: center;
+    .mypage-header {
+      display: flex;
       justify-content: center;
-      height: 100%;
-      padding: 0 8px;
-      font-size: 32px;
-      line-height: 1;
-      color: var(--text);
-      text-decoration: none;
-      margin-right: 8px;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      width: 344px;
     }
 
-    #loadingOverlay {
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.4);
+    .back-btn {
+      background: #fff;
+      border-radius: 16px;
+      width: 77px;
+      height: 77px;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .user-info-box {
+      width: 255px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .user-info-box strong {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .user-subtext {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .grid-menu {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      width: 344px;
+      margin: 20px 0;
+    }
+
+    .grid-item {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      z-index: 9999;
+      font-size: 12px;
     }
-    .spinner {
-      width: 48px;
-      height: 48px;
-      border: 4px solid rgba(255,255,255,0.6);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
+
+    .grid-menu img {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 6px;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-    .btn-group {
+
+    .ad-area {
+      width: 344px;
+      height: 260px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
       display: flex;
-      gap: 8px;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
       margin-bottom: 16px;
-      justify-content:space-between;
-    }
-    #helpVideoBtn{
-    margin-left:auto;
-    }
-    .main-btn {
-      padding: 8px 16px;
-      background: #0F9ED5;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
     }
 
-    .modal{
-      position:fixed;inset:0;display:none;
-      justify-content:center;align-items:center;
-      background:rgba(0,0,0,.8);z-index:2000;
+    .section-2x2 {
+      display: grid;
+      grid-template-columns: repeat(2, 166px);
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 16px;
     }
 
-    .modal-content{
-      position:relative;
-      width :min(90vw,calc(90vh*9/16));
-      height:min(90vh,calc(90vw*16/9));
-      border-radius:16px; overflow:hidden;
+    .section-2x2 .section {
+      width: 166px;
+      height: 166px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
+      text-align: center;
     }
 
-    #videoFrame{width:100%;height:100%;border:0;}
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      max-width: 480px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      background: #fff;
+      padding: 10px 0;
+    }
 
-    #closeVideo{
-      position:absolute; top:8px; right:8px;
-      width:40px; height:40px; border:none;
-      border-radius:50%; background:#fff;
-      font-size:24px; line-height:1;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      cursor:pointer;
-      box-shadow:0 2px 6px rgba(0,0,0,.3);
+    .footer div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+    }
+
+    .footer div.active {
+      color: #0F9ED5;
+    }
+
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
     }
   </style>
 </head>
