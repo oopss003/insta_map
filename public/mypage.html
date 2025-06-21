@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
@@ -24,8 +24,8 @@
     .back-btn {
       background: #fff;
       border-radius: 16px;
-      width: 72px;
-      height: 80px;
+      width: 77px;
+      height: 77px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -58,46 +58,61 @@
     }
 
     .grid-menu {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      text-align: center;
-      padding: 20px 12px 0;
-      gap: 16px;
-      font-size: 14px;
-      margin-bottom: 16px;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 20px 0;
     }
 
     .grid-item {
+      width: 77px;
+      height: 77px;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      padding: 12px 0;
+      padding: 8px;
+      text-align: center;
+      font-size: 14px;
     }
 
-    .grid-menu img {
+    .grid-item img {
       width: 32px;
       height: 32px;
       margin-bottom: 6px;
     }
 
-    .section {
+    .section.ad {
+      width: 308px;
+      height: 230px;
+      margin: 0 auto 16px;
       background: #fff;
       border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-      margin: 0 16px 16px 16px;
-      padding: 16px;
-      font-size: 15px;
-      font-weight: 500;
-      color: #222;
-    }
-
-    .section.ad {
-      height: 180px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 16px 16px 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .square-grid {
+      width: 344px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin: 0 auto 16px;
+    }
+
+    .square-item {
+      width: 166px;
+      height: 166px;
       background: #fff;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     }
 
     .footer {
@@ -161,11 +176,12 @@
 
   <div class="section ad">광고 이미지 영역</div>
 
-  <div class="section" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
-  <div class="section" onclick="location.href='https://inwave.ai.kr/privacy_policy.html'">고객지원</div>
+  <div class="square-grid">
+    <div class="square-item" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
+    <div class="square-item" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
+    <div class="square-item" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
+    <div class="square-item" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
+  </div>
 
   <div class="footer">
     <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
