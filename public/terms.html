@@ -107,7 +107,15 @@
     .select-image.selected {
       border: 3px solid #0F9ED5;
     }
-
+    .style-desc {
+      text-align: center;
+      font-size: 15px;
+      color: #444;
+      margin: 0 auto 16px auto;
+      line-height: 1.5;
+      max-width: 360px;
+    }
+    
  </style>
 </head>
 <body>
@@ -148,7 +156,12 @@
       <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
       <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
     </div>
-
+    
+    <p class="style-desc">
+      당신의 취향에 딱 맞는 2차,<br>
+      먼저 추천해드릴게요. 스타일을 골라주세요!
+    </p>
+    
     <div class="image-selector">
       <img src="images/001.png" class="select-image" data-value="001" />
       <img src="images/002.png" class="select-image" data-value="002" />
