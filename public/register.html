@@ -157,9 +157,36 @@
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
+  .custom-field-box {
+    width: 344px;
+    height: 77px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .custom-field-box label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .custom-field-box input {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    padding: 4px 0;
+    background: none;
+  }
+
   </style>
-
-
 
 </head>
 <body>
@@ -183,8 +210,10 @@
 </div>
 
   <form id="storeForm">
-    <label>가게 이름</label>
-    <input name="name" required />
+    <div class="custom-field-box">
+      <label for="name">가게 이름</label>
+      <input name="name" id="name" required />
+    </div>
 
     <label>인스타그램 ID (@ 제외)</label>
     <input name="insta_id" required />
