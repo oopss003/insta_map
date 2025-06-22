@@ -1,1 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내정보</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 344px;
+      padding: 16px 0 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .back-btn,
+    .profile-icon {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .image-card {
+      width: 100%;
+      background: #fff0e5;
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .image-card img {
+      width: 100px;
+      height: 100px;
+      border-radius: 16px;
+    }
+
+    .desc {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .image-card button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-box,
+    .event-box,
+    .action-btn {
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #222;
+    }
+
+    .info-box strong,
+    .event-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .action-btn {
+      height: 77px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+      background: #eee;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- 헤더: 뒤로가기 / 프로필 -->
+    <div class="header">
+      <div class="back-btn" onclick="history.back()">
+        <img src="/images/arrow-left-1.svg" width="24" />
+      </div>
+      <div class="profile-icon">
+        <img src="/images/user-profile.svg" width="32" />
+      </div>
+    </div>
+
+    <!-- 프로필 이미지 카드 -->
+    <div class="image-card">
+      <img src="/images/avatar.png" alt="프로필 이미지" />
+      <div class="desc">
+        사진 잘 나오는 감성 술집, 여기 다 있어요.<br />
+        분위기와 감성까지 챙기는 당신을 위한 추천 리스트!
+      </div>
+      <button onclick="alert('변경 기능 준비 중')">변경하기</button>
+    </div>
+
+    <!-- 이메일 -->
+    <div class="info-box">
+      <strong>E-mail</strong>
+      jhpark8271@gmail.com
+    </div>
+
+    <!-- 닉네임 -->
+    <div class="info-box">
+      <strong>닉네임</strong>
+      동영상은 검수를 통해 업로드 됩니다.
+    </div>
+
+    <!-- 이벤트 내역 -->
+    <div class="event-box">
+      <strong>이벤트 내역</strong>
+      <!-- 아직 내용 없음 -->
+    </div>
+
+    <!-- 로그아웃 -->
+    <div class="action-btn" onclick="logout()">로그아웃</div>
+
+    <!-- 탈퇴하기 -->
+    <div class="action-btn" onclick="withdraw()">탈퇴하기</div>
+
+  </div>
+
+  <script>
+    function logout() {
+      alert("로그아웃 처리 예정");
+      // TODO: Firebase Auth logout
+    }
+
+    function withdraw() {
+      const confirmOut = confirm("정말 탈퇴하시겠습니까?");
+      if (confirmOut) {
+        alert("탈퇴 처리 예정");
+        // TODO: Firestore & Auth 탈퇴 처리
+      }
+    }
+  </script>
+</body>
+</html>
 
