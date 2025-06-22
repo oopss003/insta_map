@@ -254,14 +254,15 @@
             location.href = 'https://inwave.ai.kr/register.html';
           }
         });
- 
-    const bannerImages = [
-      "test0001.png",
-
-    ];
-
-    const randomImage = bannerImages[Math.floor(Math.random() * bannerImages.length)];
-    document.getElementById("randomBanner").src = `/imagesbanner/${randomImage}`;
-  </script>
+  
+      // ✅ 광고 배너 이미지 설정
+      const bannerImages = [
+        "test0001.png"
+      ];
+      const randomImage = bannerImages[Math.floor(Math.random() * bannerImages.length)];
+      document.getElementById("randomBanner").src = `/imagesbanner/${randomImage}`;
+    });
+  });
+</script>
 </body>
 </html>
