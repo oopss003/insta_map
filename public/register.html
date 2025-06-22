@@ -178,12 +178,14 @@
     margin: 0;
   }
 
-  .custom-field-box input {
+  .custom-field-box input,
+  .custom-field-box textarea {
     border: none;
     outline: none;
     font-size: 15px;
     padding: 4px 0;
     background: none;
+    resize: none;
   }
 
   </style>
@@ -211,15 +213,24 @@
 
   <form id="storeForm">
     <div class="custom-field-box">
+      <label for="hashtags">해시태그 (고객에게 노출되는 문구)</label>
+      <input name="hashtags" id="hashtags" placeholder="#음식, #카페 등 직관적으로 볼 수 있는 이름으로 5글자 미만" />
+    </div>
+    
+    <div class="custom-field-box">
       <label for="name">가게 이름</label>
       <input name="name" id="name" required />
     </div>
 
-    <label>인스타그램 ID (@ 제외)</label>
-    <input name="insta_id" required />
+    <div class="custom-field-box">
+      <label for="insta_id">인스타그램 ID (@ 제외)</label>
+      <input name="insta_id" id="insta_id" required />
+    </div>
 
-    <label>가게 설명</label>
-    <textarea name="desc" rows="4"></textarea>
+    <div class="custom-field-box" style="height: auto; min-height: 120px;">
+      <label for="desc">가게 설명</label>
+      <textarea name="desc" id="desc" rows="4"></textarea>
+    </div>
 
     <label>가게 사진 (선택) <small style="font-weight:400">(자동으로 1 MB 미만으로 저장됩니다)</small></label>
     <input type="file" id="photo" accept="image/*" />
@@ -227,8 +238,7 @@
     <label>Vimeo 동영상</label>
     <input name="vimeo" type="text"
             placeholder="동영상은 검수를 통해 업로드 됩니다." />
-    <label>해시태그 (고객에게 노출되는 문구)</label>
-    <input name="hashtags" placeholder="#음식, #카페 등 직관적으로 볼 수 있는 이름으로 5글자 미만" />
+    
     <label>오픈 시간 (24시간 기준, 30분 단위)</label>
     <select name="openTime">
       <option value="3:00">3:00</option>
