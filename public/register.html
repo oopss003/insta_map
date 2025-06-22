@@ -162,6 +162,8 @@
     right: 8px;
     width: 16px;
     height: 16px;
+    accent-color: #2d8cff; /* 선택 시 색상 지정 */
+    z-index: 1;
   }
     
   #saveBtn {
@@ -230,22 +232,27 @@
   }
 
   .off-days label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
     width: 77px;
     height: 77px;
     border-radius: 16px;
     background: #fff;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-    font-weight: 600;
-    font-size: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    text-align: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
   }
 
+  .off-days input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    transform: scale(1.2);
+  }
+    
   .custom-header {
-    width: 360px;
+    width: 368px;
     display: flex;
     justify-content: space-between;
     align-items: center;
