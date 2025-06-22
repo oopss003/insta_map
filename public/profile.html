@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>내정보</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <style>
     body {
       margin: 0;
@@ -114,13 +117,12 @@
       transform: scale(0.97);
       background: #eee;
     }
-
   </style>
 </head>
 <body>
   <div class="container">
 
-    <!-- 헤더: 뒤로가기 / 프로필 -->
+    <!-- 헤더 -->
     <div class="header">
       <div class="back-btn" onclick="history.back()">
         <img src="/images/arrow-left-1.svg" width="24" />
@@ -132,30 +134,30 @@
 
     <!-- 프로필 이미지 카드 -->
     <div class="image-card">
-      <img src="/images/avatar.png" alt="프로필 이미지" />
+      <img id="profileImage" src="/images/loading.png" alt="프로필 이미지" />
       <div class="desc">
         사진 잘 나오는 감성 술집, 여기 다 있어요.<br />
         분위기와 감성까지 챙기는 당신을 위한 추천 리스트!
       </div>
-      <button onclick="alert('변경 기능 준비 중')">변경하기</button>
+      <button onclick="alert('프로필 이미지 변경 기능 준비 중')">변경하기</button>
     </div>
 
     <!-- 이메일 -->
-    <div class="info-box">
+    <div class="info-box" id="emailBox">
       <strong>E-mail</strong>
-      jhpark8271@gmail.com
+      로딩 중...
     </div>
 
     <!-- 닉네임 -->
-    <div class="info-box">
+    <div class="info-box" id="nicknameBox">
       <strong>닉네임</strong>
-      동영상은 검수를 통해 업로드 됩니다.
+      로딩 중...
     </div>
 
     <!-- 이벤트 내역 -->
     <div class="event-box">
       <strong>이벤트 내역</strong>
-      <!-- 아직 내용 없음 -->
+      <!-- 비어 있음 -->
     </div>
 
     <!-- 로그아웃 -->
@@ -167,19 +169,74 @@
   </div>
 
   <script>
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.appspot.com",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const email = localStorage.getItem("userEmail");
+      if (!email) {
+        alert("로그인이 필요합니다.");
+        location.href = "/login.html";
+        return;
+      }
+
+      const lowerEmail = email.toLowerCase();
+      db.collection("users").doc(lowerEmail).get().then(doc => {
+        const data = doc.data();
+        if (!data) {
+          alert("사용자 정보를 찾을 수 없습니다.");
+          return;
+        }
+
+        // 이메일 출력
+        document.getElementById("emailBox").innerHTML = `
+          <strong>E-mail</strong><br />
+          ${data.email || '이메일 없음'}
+        `;
+
+        // 닉네임 출력
+        document.getElementById("nicknameBox").innerHTML = `
+          <strong>닉네임</strong><br />
+          ${data.nickname || '닉네임 없음'}
+        `;
+
+        // 프로필 이미지 출력
+        const selectedStyle = data.selectedStyle || "001";
+        const imagePath = `https://oopss003.github.io/insta_map/images/${selectedStyle}.png`;
+        document.getElementById("profileImage").src = imagePath;
+      });
+    });
+
     function logout() {
-      alert("로그아웃 처리 예정");
-      // TODO: Firebase Auth logout
+      firebase.auth().signOut().then(() => {
+        alert("로그아웃 되었습니다.");
+        location.href = "/login.html";
+      });
     }
 
     function withdraw() {
-      const confirmOut = confirm("정말 탈퇴하시겠습니까?");
-      if (confirmOut) {
-        alert("탈퇴 처리 예정");
-        // TODO: Firestore & Auth 탈퇴 처리
+      const confirmed = confirm("정말 탈퇴하시겠습니까?");
+      if (confirmed) {
+        const user = firebase.auth().currentUser;
+        if (user) {
+          user.delete().then(() => {
+            alert("탈퇴 완료되었습니다.");
+            location.href = "/login.html";
+          }).catch(error => {
+            alert("재로그인 후 다시 시도해 주세요.");
+          });
+        }
       }
     }
   </script>
 </body>
 </html>
-
