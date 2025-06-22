@@ -131,22 +131,39 @@
   }
 
   .off-days {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 20px;
   }
 
   .off-days label {
-    background: #fff;
-    padding: 8px 12px;
+    width: 77px;
+    height: 77px;
     border-radius: 16px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+    font-size: 16px;
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    gap: 4px;
-    font-weight: 500;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease
   }
 
+  .off-days input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+  }
+    
   #saveBtn {
     width: 100%;
     background: #2d8cff;
