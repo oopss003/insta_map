@@ -298,6 +298,44 @@
     line-height: 1.4;
   }
 
+  .off-days {
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .day-box {
+    display: inline-block;
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 체크박스 숨기기 */
+  .day-box input[type="checkbox"] {
+    display: none;
+  }
+
+  /* 선택된 경우 스타일 변경 */
+  .day-box input[type="checkbox"]:checked + span {
+    background-color: #2d8cff;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+  }    
   </style>
 
 </head>
@@ -572,19 +610,38 @@
       </select>
       </div>
     
-    <label style="font-weight:700; margin-top: 16px;">쉬는 날</label>
-    <div class="off-days">
-      <label><input type="checkbox" name="offDays[]" value="월">월</label>
-      <label><input type="checkbox" name="offDays[]" value="화">화</label>
-      <label><input type="checkbox" name="offDays[]" value="수">수</label>
-      <label><input type="checkbox" name="offDays[]" value="목">목</label>
-      <label><input type="checkbox" name="offDays[]" value="금">금</label>
-      <label><input type="checkbox" name="offDays[]" value="토">토</label>
-      <label><input type="checkbox" name="offDays[]" value="일">일</label>
-      <div></div> <!-- 빈칸 (마지막 칸 채우기 용도) -->
-    </div>
+      <label style="font-weight:700; margin-top: 16px;">쉬는 날</label>
+      <div class="off-days">
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="월" />
+          <span>월</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="화" />
+          <span>화</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="수" />
+          <span>수</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="목" />
+          <span>목</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="금" />
+          <span>금</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="토" />
+          <span>토</span>
+        </label>
+        <label class="day-box">
+          <input type="checkbox" name="offDays[]" value="일" />
+          <span>일</span>
+        </label>
+      </div>
 
-    
     <label>위도</label>
     <input id="lat" readonly required />
     <label>경도</label>
