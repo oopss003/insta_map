@@ -86,7 +86,29 @@
     .footer button.active {
       opacity: 1;
     }
-  </style>
+    .image-selector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .select-image {
+      width: 344px;
+      height: 200px;
+      border: 3px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      object-fit: cover;
+      transition: border 0.2s ease-in-out;
+    }
+
+    .select-image.selected {
+      border: 3px solid #0F9ED5;
+    }
+
+ </style>
 </head>
 <body>
   <div class="container">
@@ -126,6 +148,13 @@
       <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
       <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
     </div>
+
+    <div class="image-selector">
+      <img src="images/001.png" class="select-image" data-value="001" />
+      <img src="images/002.png" class="select-image" data-value="002" />
+      <img src="images/003.png" class="select-image" data-value="003" />
+      <img src="images/004.png" class="select-image" data-value="004" />
+    </div>
   </div>
 
   <div class="footer">
@@ -150,27 +179,41 @@
     const db = firebase.firestore();
   </script>
 
-  <!-- ✅ 약관 체크 및 저장 -->
+  <!-- ✅ 약관 + 스타일 선택 + 저장 -->
   <script>
     const allAgree = document.getElementById('allAgree');
     const requiredCheckboxes = document.querySelectorAll('.required');
     const nextBtn = document.getElementById('nextBtn');
+    let selectedImageValue = null;
 
+    // 전체 동의 클릭 시 하위 체크 반영
     allAgree.addEventListener('change', () => {
       requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
       updateButtonState();
     });
 
+    // 필수 체크박스 개별 체크 이벤트
     requiredCheckboxes.forEach(cb => {
       cb.addEventListener('change', updateButtonState);
     });
 
+    // 버튼 활성화 조건
     function updateButtonState() {
       const allChecked = [...requiredCheckboxes].every(cb => cb.checked);
       nextBtn.disabled = !allChecked;
       nextBtn.classList.toggle('active', allChecked);
     }
 
+    // 이미지 선택 처리
+    document.querySelectorAll('.select-image').forEach(img => {
+      img.addEventListener('click', () => {
+        document.querySelectorAll('.select-image').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+        selectedImageValue = img.dataset.value;
+      });
+    });
+
+    // 다음 버튼 클릭 시 Firebase 저장
     nextBtn.addEventListener('click', () => {
       const email = localStorage.getItem('userEmail');
       if (!email || email.trim() === "") {
@@ -178,9 +221,15 @@
         return;
       }
 
+      if (!selectedImageValue) {
+        alert("스타일을 하나 선택해주세요.");
+        return;
+      }
+
       const normalizedEmail = email.trim().toLowerCase();
       db.collection("users").doc(normalizedEmail).set({
-        agreedToTerms: true
+        agreedToTerms: true,
+        selectedStyle: selectedImageValue
       }, { merge: true }).then(() => {
         location.href = '/mypage.html';
       }).catch(err => {
@@ -189,7 +238,7 @@
       });
     });
 
-    // ✅ 로그인 여부 확인 (페이지 진입 시)
+    // 페이지 진입 시 로그인 확인
     document.addEventListener("DOMContentLoaded", () => {
       const email = localStorage.getItem("userEmail");
       if (!email || email.trim() === "") {
