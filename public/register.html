@@ -288,6 +288,11 @@
       <textarea name="desc" id="desc" rows="4"></textarea>
     </div>
 
+    <div class="custom-field-box">
+      <label for="phone">전화번호</label>
+      <input name="phone" id="phone" type="tel" placeholder="예: 010-1234-5678" />
+    </div>
+    
     <!-- 가게 사진 -->
     <div class="custom-field-box" style="height: auto;">
       <label for="photo">가게 사진 (선택) <small style="font-weight:400">(메인이미지로 등록됩니다.)</small></label>
@@ -662,6 +667,7 @@
       document.querySelector('[name=name]').value = data.name;
       document.querySelector('[name=insta_id]').value = data.insta;
       document.querySelector('[name=desc]').value = data.desc;
+      document.querySelector('[name=phone]').value = data.phone || ""; // ✅ 추가
       document.getElementById('lat').value = data.lat;
       document.getElementById('lng').value = data.lng;
       document.querySelector('[name=vimeo]').value = data.vimeo || "";
@@ -723,6 +729,7 @@
           name: document.querySelector('[name=name]').value.trim(),
           insta: document.querySelector('[name=insta_id]').value.trim(),
           desc: document.querySelector('[name=desc]').value.trim(),
+          phone: document.querySelector('[name=phone]').value.trim(), // ✅ 추가
           lat: parseFloat(document.getElementById('lat').value),
           lng: parseFloat(document.getElementById('lng').value),
           photo: "",
