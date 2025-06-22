@@ -204,6 +204,28 @@
     -webkit-appearance: none;
     -moz-appearance: none;
   }
+  .off-days {
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .off-days label {
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+  }
 
   </style>
 
@@ -472,16 +494,18 @@
       </select>
       </div>
     
-      <label>쉬는 날</label>
+    <label style="font-weight:700; margin-top: 16px;">쉬는 날</label>
     <div class="off-days">
-      <label><input type="checkbox" name="offDays[]" value="월"> 월요일</label>
-      <label><input type="checkbox" name="offDays[]" value="화"> 화요일</label>
-      <label><input type="checkbox" name="offDays[]" value="수"> 수요일</label>
-      <label><input type="checkbox" name="offDays[]" value="목"> 목요일</label>
-      <label><input type="checkbox" name="offDays[]" value="금"> 금요일</label>
-      <label><input type="checkbox" name="offDays[]" value="토"> 토요일</label>
-      <label><input type="checkbox" name="offDays[]" value="일"> 일요일</label>
+      <label><input type="checkbox" name="offDays[]" value="월">월</label>
+      <label><input type="checkbox" name="offDays[]" value="화">화</label>
+      <label><input type="checkbox" name="offDays[]" value="수">수</label>
+      <label><input type="checkbox" name="offDays[]" value="목">목</label>
+      <label><input type="checkbox" name="offDays[]" value="금">금</label>
+      <label><input type="checkbox" name="offDays[]" value="토">토</label>
+      <label><input type="checkbox" name="offDays[]" value="일">일</label>
+      <div></div> <!-- 빈칸 (마지막 칸 채우기 용도) -->
     </div>
+
     
     <label>위도</label>
     <input id="lat" readonly required />
