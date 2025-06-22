@@ -92,7 +92,7 @@
 
     .ad-area {
       width: 344px;
-      height: 260px;
+      height: 150px;
       background: #fff;
       border-radius: 16px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -247,6 +247,22 @@
         });
       });
     });
+  </script>
+  <div class="ad-area">
+    <img id="randomBanner" src="" alt="광고 배너" style="width: 344px; height: 150px; object-fit: cover; border-radius: 16px;" />
+  </div>
+
+  <!-- 다른 내용들 ... -->
+
+  <!-- ✅ 여기 아래에 넣으세요 -->
+  <script>
+    const bannerImages = [
+      "test0001.png",
+
+    ];
+
+    const randomImage = bannerImages[Math.floor(Math.random() * bannerImages.length)];
+    document.getElementById("randomBanner").src = `/imagesbanner/${randomImage}`;
   </script>
 </body>
 </html>
