@@ -243,15 +243,22 @@
     flex-direction: column;
     text-align: center;
   }
+  .header-wrapper {
+    width: 100%;
+    max-width: 344px;
+    margin: 12px auto 16px;
+    padding: 0; /* ✅ 여백 없음 */
+    box-sizing: border-box;
+  }
+
   .custom-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 344px;
+    width: 100%; /* ✅ 부모 기준으로 꽉 차게 */
     height: 77px;
-    margin: 0 auto 16px;
     gap: 12px;
-   }
+  }
 
   .back-button {
     width: 77px;
