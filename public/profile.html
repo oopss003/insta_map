@@ -4,9 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>내정보</title>
+
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
   <style>
     body {
       margin: 0;
@@ -60,6 +63,7 @@
       width: 100px;
       height: 100px;
       border-radius: 16px;
+      background: #eee;
     }
 
     .desc {
@@ -134,7 +138,7 @@
 
     <!-- 프로필 이미지 카드 -->
     <div class="image-card">
-      <img id="profileImage" src="/images/loading.png" alt="프로필 이미지" />
+      <img id="profileImage" src="" alt="프로필 이미지" />
       <div class="desc">
         사진 잘 나오는 감성 술집, 여기 다 있어요.<br />
         분위기와 감성까지 챙기는 당신을 위한 추천 리스트!
@@ -197,19 +201,19 @@
           return;
         }
 
-        // 이메일 출력
+        // 이메일
         document.getElementById("emailBox").innerHTML = `
           <strong>E-mail</strong><br />
           ${data.email || '이메일 없음'}
         `;
 
-        // 닉네임 출력
+        // 닉네임
         document.getElementById("nicknameBox").innerHTML = `
           <strong>닉네임</strong><br />
           ${data.nickname || '닉네임 없음'}
         `;
 
-        // 프로필 이미지 출력
+        // 프로필 이미지 (selectedStyle 기준)
         const selectedStyle = data.selectedStyle || "001";
         const imagePath = `https://oopss003.github.io/insta_map/images/${selectedStyle}.png`;
         document.getElementById("profileImage").src = imagePath;
