@@ -91,20 +91,27 @@
     }
 
     .ad-area {
-      width: 344px;
+      width: 100%;
+      max-width: 344px;
       height: 150px;
-      background: #fff;
+      margin: 0 auto;
       border-radius: 16px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      overflow: hidden;
+      background: #f0f0f0;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-size: 15px;
-      font-weight: 500;
-      color: #222;
-      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
+    #ad-area img,
+    #ad-area #randomBanner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
     .section-2x2 {
       display: grid;
       grid-template-columns: repeat(2, 166px);
@@ -247,17 +254,7 @@
             location.href = 'https://inwave.ai.kr/register.html';
           }
         });
-      });
-    });
-  </script>
-  <div class="ad-area">
-    <img id="randomBanner" src="" alt="광고 배너" style="width: 344px; height: 150px; object-fit: cover; border-radius: 16px;" />
-  </div>
-
-  <!-- 다른 내용들 ... -->
-
-  <!-- ✅ 여기 아래에 넣으세요 -->
-  <script>
+ 
     const bannerImages = [
       "test0001.png",
 
