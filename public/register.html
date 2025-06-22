@@ -243,6 +243,35 @@
     flex-direction: column;
     text-align: center;
   }
+  .custom-header {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .greeting-box {
+    flex: 1;
+    background: #fff;
+    border-radius: 20px;
+    padding: 12px 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .greeting-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .greeting-sub {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.4;
+  }
 
   </style>
 
@@ -251,13 +280,12 @@
     <div id="loadingOverlay" style="display:none;">
     <div class="spinner"></div>
   </div>
-  <div id="header">
+  <div id="header" class="custom-header">
     <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">&lt;</a>
-      <div style="display: flex; align-items: center; gap: 6px;">
-      <img src="images/store.svg" alt="매장 등록" style="width: 24px; height: 24px;" />
-      <h2 style="margin: 0; font-size: 1.1rem;">매장 등록</h2>
+    <div class="greeting-box">
+      <div class="greeting-title">매장 등록</div>
+      <div class="greeting-sub">필수 정보를 입력해주세요.</div>
     </div>
-
   </div>
 
   <div id="map"></div>
