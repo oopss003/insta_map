@@ -147,11 +147,16 @@
       height: 24px;
       margin-bottom: 4px;
     }
+    .custom-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
   </style>
 </head>
 <body>
   <div class="mypage-header">
-    <div class="back-btn">
+    <div class="back-btn custom-button" onclick="history.back()">
       <img src="/images/arrow-left-1.svg" alt="뒤로가기" onclick="history.back()" style="width:24px;height:24px;">
     </div>
     <div class="user-info-box">
