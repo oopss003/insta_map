@@ -246,37 +246,35 @@
   .custom-header {
     display: flex;
     align-items: center;
-    gap: 0px;
+    justify-content: space-between;
+    width: 344px;
+    height: 77px;
     margin: 0 auto 16px;
-    max-width: 344px;
+    gap: 12px;
    }
 
   .back-button {
     width: 77px;
     height: 77px;
-    border-radius: 16px;
+    border-radius: 20px;
     background: #fff;
     display: flex;
-    justify-content: center;
     align-items: center;
-    font-size: 28px;
-    text-decoration: none;
-    color: #000;
+    justify-content: center;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    flex-shrink: 0;
+    font-size: 24px;
   }
 
   .greeting-box {
-    height: 77px;
     flex: 1;
+    height: 77px;
     background: #fff;
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 12px 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     display: flex;
     flex-direction: column;
     justify-content: center;
-    box-sizing: border-box;
   }
 
   .greeting-title {
@@ -299,7 +297,10 @@
     <div class="spinner"></div>
   </div>
   <div id="header" class="custom-header">
-    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">&lt;</a>
+    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">
+      <span>&lt;</span>
+    </a>
+    
     <div class="greeting-box">
       <div class="greeting-title">매장 등록</div>
       <div class="greeting-sub">필수 정보를 입력해주세요.</div>
