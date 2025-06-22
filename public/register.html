@@ -247,7 +247,7 @@
     width: 100%;
     max-width: 344px;
     margin: 12px auto 16px;
-    padding: 0; /* ✅ 여백 없음 */
+    padding: 12px auto 12px; /* ✅ 여백 없음 */
     box-sizing: border-box;
   }
 
@@ -270,6 +270,8 @@
     justify-content: center;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     font-size: 24px;
+    text-decoration: none;
+  c  olor: #000;
   }
 
   .greeting-box {
@@ -304,16 +306,17 @@
     <div id="loadingOverlay" style="display:none;">
     <div class="spinner"></div>
   </div>
-  <div id="header" class="custom-header">
-    <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">
-      <span>&lt;</span>
-    </a>
+  <div class="header-wrapper">
+    <div id="header" class="custom-header">
+      <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">
+        <span>&lt;</span>
+      </a>
     
-    <div class="greeting-box">
-      <div class="greeting-title">매장 등록</div>
-      <div class="greeting-sub">필수 정보를 입력해주세요.</div>
+      <div class="greeting-box">
+        <div class="greeting-title">매장 등록</div>
+        <div class="greeting-sub">필수 정보를 입력해주세요.</div>
+      </div>
     </div>
-  </div>
 
   <div id="map"></div>
   
