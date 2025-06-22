@@ -337,6 +337,25 @@
     width: 100%;
     border-radius: 16px;
   }    
+  .custom-button {
+    background-color: #2d8cff;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.12);
+    transition: all 0.1s ease-in-out;
+    transform: translateY(0);
+  }
+
+  .custom-button:active {
+    transform: translateY(2px); /* 아래로 눌림 */
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1); /* 그림자 축소 */
+    background-color: #1c6cd4; /* 색도 약간 어둡게 */
+  }
+
   </style>
 
 </head>
@@ -345,7 +364,7 @@
     <div class="spinner"></div>
   </div>
     <div id="header" class="custom-header">
-      <a href="https://inwave.ai.kr/view_stores.html" class="back-button" aria-label="뒤로가기">
+      <a href="https://inwave.ai.kr/view_stores.html" class="back-button custom-button" aria-label="뒤로가기">
         <span>&lt;</span>
       </a>
     
