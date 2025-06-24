@@ -818,9 +818,9 @@
       try {
         const raw = document.querySelector('[name=hashtags]').value;
         const tags = raw.split(',').map(t => t.trim()).filter(Boolean);
-        const invalid = tags.filter(t => Array.from(t).length > 5);
+        const invalid = tags.filter(t => Array.from(t).length > 6);
         if (invalid.length) {
-          alert(`다음 해시태그는 5글자를 초과합니다:\n${invalid.join(', ')}`);
+          alert(`다음 해시태그는 6글자를 초과합니다:\n${invalid.join(', ')}`);
           return;
         }
 
