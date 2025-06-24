@@ -276,6 +276,10 @@
   #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
     transform: rotate(90deg);
   }
+  #panel {
+  touch-action: none;
+  }
+
 
 /* ──────────────────────────────────────────────────────────────────── */
 
@@ -694,28 +698,84 @@
   <!-- ↓ 여기가 사이드 메뉴 토글 로직을 넣을 위치입니다. ↓ -->
    
   <script>
-  document.addEventListener('DOMContentLoaded', ()=> {
-    /* ─── 사이드 메뉴 열기/닫기 토글 ─── */
-    const menuBtn  = document.getElementById('menuBtn');
+  document.addEventListener('DOMContentLoaded', () => {
+    /* ─── 사이드 메뉴 열기/닫기 ─── */
+    const menuBtn = document.getElementById('menuBtn');
     const sideMenu = document.getElementById('sideMenu');
     let menuOpen = false;
-
-    function toggleSideMenu(){
+  
+    function toggleSideMenu() {
       menuOpen = !menuOpen;
       sideMenu.classList.toggle('open', menuOpen);
       menuBtn.classList.toggle('open', menuOpen);
       sideMenu.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
     }
 
-    menuBtn.addEventListener('click', toggleSideMenu);
+    menuBtn?.addEventListener('click', toggleSideMenu);
 
-    /*  (선택) 메뉴 외부 클릭 시 닫기 */
     document.addEventListener('click', e => {
       if (menuOpen && !sideMenu.contains(e.target) && e.target !== menuBtn) {
         toggleSideMenu();
       }
     });
+
+    /* ─── 드래그로 패널 열고 닫기 ─── */
+    let startY = 0;
+    let currentY = 0;
+    let dragging = false;
+    let threshold = 50;
+    let initialPanelOpen = false;
+
+    const panel = document.getElementById('panel');
+    const drawer = document.getElementById('drawer');
+
+    panel.addEventListener('touchstart', (e) => {
+      if (e.touches.length > 1) return;
+      startY = e.touches[0].clientY;
+      currentY = startY;
+      dragging = true;
+      initialPanelOpen = panel.classList.contains('open');
+      panel.style.transition = 'none';
+    }, { passive: true });
+
+    panel.addEventListener('touchmove', (e) => {
+      if (!dragging || e.touches.length > 1) return;
+      currentY = e.touches[0].clientY;
+      const deltaY = currentY - startY;
+
+      if (deltaY > 0 && initialPanelOpen) {
+        panel.style.transform = `translateY(${deltaY}px)`;
+      }
+      if (deltaY < 0 && !initialPanelOpen) {
+        panel.style.transform = `translateY(${deltaY}px)`;
+      }
+
+      e.preventDefault();
+    }, { passive: false });
+
+    panel.addEventListener('touchend', () => {
+      if (!dragging) return;
+      const deltaY = currentY - startY;
+      panel.style.transition = '';
+      panel.style.transform = '';
+  
+      if (Math.abs(deltaY) > threshold) {
+        if (deltaY < 0 && !initialPanelOpen) {
+          panelOpen = true;
+          panel.classList.add('open');
+          drawer.classList.add('hide');
+        } else if (deltaY > 0 && initialPanelOpen) {
+          panelOpen = false;
+          panel.classList.remove('open');
+          drawer.classList.remove('hide');
+        }
+        updateInfoCardPosition();
+      }
+
+      dragging = false;
+    });
   });
+
   </script>
   <!-- ↑ 사이드 메뉴 토글 로직 끝 ↑ -->
 
