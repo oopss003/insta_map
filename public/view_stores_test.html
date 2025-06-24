@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
+  <!-- 다크 모드 비지원 명시 -->
+  <meta name="color-scheme" content="light">
+  <!-- CSS 레벨에서도 강제 light 모드 -->
+  <style>
+    html { color-scheme: light; }
+  </style>  
+  <link rel="stylesheet" href="style.css" />
+  <title>저장된 매장 목록</title>
+
+  <!-- Pretendard 폰트 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
+
+  <!-- Naver Maps SDK -->
+  <script defer src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+  <script src="https://openapi.map.naver.com/openapi/v3/markerclusterer.js"></script>
+  <!-- Firebase SDK (compat) -->
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script defer src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
+  <style>
+  :root{
+    --primary:#0F9ED5; --primary-dark:#0E2841; --bg:#FFF; --text:#222; --muted:#666;
+    --radius:14px;
+  }
+  *{box-sizing:border-box;font-family:"Pretendard",system-ui,sans-serif;margin:0;padding:0}
+  html, body {
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;       
+  }
+
+  /* 지도 */
+  #map{position:absolute;top:0;left:0;width:100vw;height:100vh;z-index:0}
+
+  /* ① 타이틀兼내위치 버튼(Pill) */
+  #titleBtn{
+    position:fixed;top:12px;left:50%;transform:translateX(-50%);
+    padding:10px 30px;background:var(--bg);border-radius:40px;z-index:1003;
+    box-shadow:0 2px 8px rgba(0,0,0,.12);text-align:center;cursor:pointer;
+  }
+  #titleBtn b{display:block;font-size:15px;letter-spacing:-.3px}
+  #titleBtn span{font-size:12px;color:var(--muted)}
+
+  /* ─── drawer (닫힌 상태에서만 보이는 손잡이 바) ─── */
+  #drawer{
+    position:fixed;left:0;right:0;bottom:env(safe-area-inset-bottom, 0);z-index:1001;
+    height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--bg);box-shadow:0 -1px 6px rgba(0,0,0,.12);
+    cursor:pointer;user-select:none;transition:transform .25s;
+  }
+  #drawer .handle{
+    width:38px;height:4px;border-radius:3px;background:#ccc;margin-bottom:6px;
+  }
+  #drawer span{font-size:13px;color:var(--muted)}
+  #drawer.hide{transform:translateY(100%);}  /* 패널 열릴 때 drawer 숨김 */
+
+  /* ─── 패널 위치·애니메이션 변경 ─── */
+  #panel{
+    position:fixed;left:0;right:0;bottom:-50%;height:50vh;z-index:1002;
+    background:var(--bg);border-top-left-radius:var(--radius);border-top-right-radius:var(--radius);
+    box-shadow:0 -4px 8px rgba(0,0,0,.15);transition:bottom .25s;
+    display:flex;flex-direction:column;padding-top:8px;
+  }
+
+  /* 매장 리스트 패널 (기존) */
+
+  #panel.open{bottom:0}
+  #panel .handle{width:38px;height:4px;border-radius:3px;background:#ccc;margin:0 auto 12px}
+  #list{flex:1;overflow-y:auto;padding:0 12px 20px;display:flex;flex-direction:column;gap:12px}
+  .card{
+    display:flex;gap:12px;padding:12px;background:#F9F9F9;border-radius:var(--radius);
+    align-items:center;cursor:pointer;transition:background .15s;
+  }
+  .card:hover{background:#EEF8FF}
+  .card img{width:64px;height:64px;border-radius:8px;object-fit:cover;flex-shrink:0;background:#DDD}
+  .meta{flex:1;font-size:14px;min-width:0}
+  .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:normal;overflow:visible;text-overflow:clip}
+  .meta span{color:var(--muted);font-size:13px;white-space:normal;overflow:visible;text-overflow:clip}
+
+
+  /* ② 마커 클릭 시 표시되는 하단 카드 */
+/* 카드 전체 (하단 오버레이)  ───────── */
+  #infoCard{
+    position:fixed;left:12px;right:12px;bottom:-320px;z-index:1002;
+    display:flex;align-items:flex-start;gap:14px;
+    padding:14px 16px;background:var(--bg);
+    border-radius:18px;                /* ⬆︎ 시안과 같은 큰 라운드 */
+    box-shadow:0 8px 16px rgba(0,0,0,.25);  /* ↘︎ 방향의 두터운 그림자 */
+    transition:bottom .25s ease;
+  }
+
+  /* 카드가 열렸을 때 위치 (FAB 위 간격) */
+  #infoCard.show{bottom:96px}
+
+  /* 이미지 영역 ─── */
+  #infoCard img{
+    width:96px;height:96px;            /* 시안 비율 */
+    border-radius:14px;                /* 모서리 동일 */
+    object-fit:cover;                  /* “꽉 차게” */
+    flex-shrink:0;
+  }
+
+  /* 텍스트 메타 */
+  #infoCard .meta{flex:1;min-width:0;font-size:14px;line-height:1.35}
+  #infoCard .meta b{display:block;font-size:15px;margin-bottom:2px;white-space:normal;overflow:visible;text-overflow:clip}
+  #infoCard .meta span{color:var(--muted);font-size:13px;white-space:normal;overflow:visible;text-overflow:clip}
+  /* 모달 백그라운드 (Flex 중앙 정렬) */
+  #videoModal {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+  }
+
+  /* 닫기 버튼 (우측 상단) */
+  #closeVideo {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.9);
+    border: none;
+    border-radius: 50%;
+    width: 32px; height: 32px;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    z-index: 1;
+  }
+  @supports not (aspect-ratio: 1 / 1) {
+    #videoModal .modal-content {
+      /* '세로 9:16' 비율을 width 로 계산 */
+      width: calc(90vh * (9 / 16));
+      height: 90vh;
+      max-width: 90vw;
+    }
+  }
+  #videoModal .modal-content {
+    position: relative;
+    height: 90vh;
+    aspect-ratio: 9 / 16;
+    max-width: 90vw;
+    /* 아래 두 줄을 추가 */
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* iframe (풀사이즈) */
+  #videoModal iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    /* 옵션: iframe 자체에 라운드도 주려면 아래 추가 */
+    border-radius: 16px;
+  }
+  /* 모바일 화면(너비 600px 이하)에서 높이·여백 조금 조정 */
+  @media (max-width: 600px) {
+  #videoModal .modal-content {
+    height: 85vh;
+  }
+  #titleBtn {
+    padding: 8px 24px;
+    font-size: 14px;
+  }
+}
+  /* InfoCard 내 비디오 여부 태그 (타이틀 위) */
+  #infoCard .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    border-radius: 12px;
+    /* 기본은 투명 배경 */
+    background: transparent;
+  }
+
+  /* 비디오 있을 때: 파란 테두리·파란 글씨 */
+  #infoCard .tag.video {
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    /* background: none; 이미 투명 */
+  }
+
+  /* 비디오 없을 때: 회색 테두리·회색 글씨 */
+  #infoCard .tag.no-video {
+    border: 1px solid var(--muted);
+    color: var(--muted);
+  }
+  /* ──────────────────────────────────────────────────────────────────── */
+  /* ③: 사이드 메뉴 스타일 ------------------------------------------------ */
+  /* 사이드 메뉴 패널 초기 상태: 화면 왼쪽 밖으로 숨김 */
+  #sideMenu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 240px;               /* 메뉴 너비 */
+    height: 100%;
+    background: var(--bg);      /* 기존 변수 사용 */
+    box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    z-index: 3000;              /* 다른 요소보다 위에 보이도록 충분히 높게 */
+    padding-top: 60px;          /* 메뉴 항목 위 여유 공간 (버튼 아래 간격) */
+    overflow-y: auto;
+  }
+
+  /* 메뉴가 열린 상태일 때 translateX(0) */
+  #sideMenu.open {
+    transform: translateX(0);
+  }
+
+  /* 메뉴 내부 ul·li 기본 스타일 제거 */
+  #sideMenu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px; 
+  }
+
+  /* 메뉴 링크 스타일 */
+  #sideMenu a {
+    display: block;
+    padding: 12px 20px;
+    font-size: 16px;
+    color: var(--text);
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  #sideMenu a:hover {
+    background: rgba(0,0,0,0.04);
+  }
+
+  /* ④: 메뉴 열기/닫기 버튼 (×) */
+  #menuBtn {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    z-index: 3100;            /* sideMenu보다 더 위에 띄우기 */
+    width: 32px;
+    height: 32px;
+    background: var(--bg);
+    border: 1px solid var(--muted);
+    border-radius: 50%; 
+    font-size: 20px;
+    line-height: 1;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: background 0.15s, transform 0.15s;
+  }
+  #menuBtn:hover {
+    background: #f5f5f5;
+  }
+  #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
+    transform: rotate(90deg);
+  }
+
+/* ──────────────────────────────────────────────────────────────────── */
+
+</style>
+</head>
+<body>
+  <!-- 지도 -->
+  <div id="map"></div>
+
+  <!-- ① 타이틀兼내위치 -->
+  <div id="titleBtn" aria-label="내 위치로 이동">
+    <b>2차 어디가?</b>
+    <span>탭하면 내 주변으로 이동</span>
+  </div>
+  <!-- ① FAB 버튼 블록 삭제  (기존 <button id="fab">…</button>) -->
+
+  <!-- 매장 리스트 패널 -->
+  <div id="panel" aria-label="매장 리스트">
+    <div class="handle"></div>
+    <ul id="list"></ul>
+  </div>
+
+  <!-- ② drawer(손잡이 바) 추가 – #panel 바로 아래 넣어주세요 -->
+  <div id="drawer">
+    <div class="handle"></div>
+    <span id="storeCnt">매장 0개</span>
+  </div>
+
+  <!-- ② 마커 클릭 시 하단 카드 -->
+  <div id="infoCard">
+    <img id="infoImg" src="" alt="">
+    <div class="meta">
+     <div id="infoTopRow" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+        <span id="infoTag" class="tag"></span>
+        <a id="infoInsta" href="#" target="_blank" style="color: var(--primary); text-decoration: none;"></a>
+      </div>
+      <span id="infoHash" style="color: var(--muted); font-size: 13px; margin-bottom: 4px; display: block;"></span>
+      <b id="infoName"></b>
+      <span id="infoDesc"></span>
+    </div>
+
+  <!-- ───────── JS ───────── -->
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=>{
+
+    /* Firebase 초기화 */
+    firebase.initializeApp({
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
+    });
+    const db = firebase.firestore();
+    document.getElementById('linkHome')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/';
+    });
+    document.getElementById('linkAdwave')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/adwave1.html';
+    });
+    document.getElementById('linkWaveshare')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/waveshare.html';
+    });
+    document.getElementById('linkInvest')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/invest.html';
+    });
+    document.getElementById('linkSupport')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
+    });
+
+    /* 지도 */
+    const map = new naver.maps.Map('map',{
+      center:new naver.maps.LatLng(37.5665,126.9780),zoom:12
+    });
+    // ─── 현재 줌 저장 & 변경 감지 ───
+    let currentZoom = map.getZoom();
+    naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      const newZoom = map.getZoom();
+      // 12↔13 구간에서만 다시 렌더
+      if ((currentZoom < 13 && newZoom >= 13) ||
+          (currentZoom >= 13 && newZoom < 13)) {
+        renderStores();
+      }
+      currentZoom = newZoom;
+  });
+
+    /* 커스텀 마커 */
+    const markerIcon={
+      content:'<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
+      size:new naver.maps.Size(24,24),anchor:new naver.maps.Point(12,12)
+    };
+    // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
+
+    // "HH:mm" 문자열 → 총 분(0~1439) 반환
+    function toMinutes(hhmm) {
+      if (!hhmm) return null;
+      const [h, m] = hhmm.split(':').map(Number);
+      return h * 60 + m;
+    }
+
+    // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
+    function createMarkerIconWithText(text) {
+      return {
+        content: `
+          <div style="
+            position: relative;
+            transform: translate(-50%, -100%);
+            background: #fff;
+            color: #222;
+            padding: 4px 10px;
+            border: 2px solid #fff;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,.12);
+            font-size: 12px;
+            white-space: nowrap;
+          ">
+            ${text}
+          </div>
+        `,
+        size: new naver.maps.Size(0, 0),
+        anchor: new naver.maps.Point(0, 0)
+      };
+    }
+  // ────────────────────────────────────────────────
+    /* DOM 캐시 */
+    const listEl   = document.getElementById('list');
+    const infoCard = document.getElementById('infoCard');
+    const infoImg  = document.getElementById('infoImg');
+    const infoName = document.getElementById('infoName');
+    const infoInsta= document.getElementById('infoInsta');
+    const infoDesc = document.getElementById('infoDesc');
+    const storeCnt = document.getElementById('storeCnt');   // 매장 수 텍스트
+    // 모달 요소 캐시
+    const videoModal = document.getElementById('videoModal');
+    const videoFrame = document.getElementById('videoFrame');
+    const closeVideo = document.getElementById('closeVideo');
+
+    // 이미지 클릭 시 모달 열기
+    infoImg.style.cursor = 'pointer';
+    infoImg.addEventListener('click', () => {
+      const url = infoImg.dataset.videoUrl;
+      if (!url) return alert('등록된 영상이 없습니다');
+      // 공통 파라미터
+      const params = 'autoplay=1&muted=1&playsinline=1';
+      // 기존 URL에 붙일 구분자 결정
+      const sep = url.includes('?') ? '&' : '?';
+      // 최종 재생 URL
+      videoFrame.src = url + sep + params;
+
+      videoModal.style.display = 'flex';
+      videoModal.setAttribute('aria-hidden', 'false');
+    });
+
+    // 모달 닫기
+    function hideVideoModal(){
+      videoFrame.src = '';
+      videoModal.style.display = 'none';
+      videoModal.setAttribute('aria-hidden', 'true');
+    }
+    closeVideo.addEventListener('click', hideVideoModal);
+    videoModal.addEventListener('click', e => {
+      if (e.target === videoModal) hideVideoModal();
+    });
+
+    let markers=[]; let selectedMarker=null;
+
+    let isRendering = false; // 🔹 [추가] 중복 실행 방지용 플래그
+
+    async function renderStores() {
+      // 🔹 [추가] 실행 중이면 리턴
+      if (isRendering) return;
+      isRendering = true;
+
+      console.log('▶︎ renderStores 호출됨');
+
+      const zoom = map.getZoom();
+      const useOffset = zoom < 13;
+      markers.forEach(m => m.setMap(null));
+      markers.length = 0;
+      listEl.innerHTML = '';
+
+      const now = new Date();
+      const dayMap = ['일','월','화','수','목','금','토'];
+      const todayStr   = dayMap[now.getDay()];
+      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+
+      const bounds = map.getBounds();
+
+      const snap = await db.collection('stores')
+                           .orderBy('created','desc')
+                           .get();
+
+      const bucket = new Map();
+      snap.forEach(doc => {
+        const d = doc.data();
+        const { lat, lng } = d;
+        if (typeof lat !== 'number' || typeof lng !== 'number') return;
+        const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
+        if (!bucket.has(key)) bucket.set(key, []);
+        bucket.get(key).push(d);
+      });
+
+      let visibleCount = 0;
+
+      bucket.forEach((items, key) => {
+        const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
+        const centerPos = new naver.maps.LatLng(someLat, someLng);
+        if (!bounds.hasLatLng(centerPos)) return;
+
+        const groupSize = items.length;
+        const baseRadius = 0.001;
+
+        items.forEach((data, idx) => {
+          const {
+            lat, lng, name, insta, desc, photo, vimeo, hashtags,
+            offDays, openTime, closeTime, breakStart, breakEnd
+          } = data;
+
+          if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
+
+          const openMin  = toMinutes(openTime);
+          const closeMin = toMinutes(closeTime);
+          if (nowMinutes < openMin || nowMinutes >= closeMin) return;
+
+          if (breakStart && breakEnd) {
+            const bs = toMinutes(breakStart);
+            const be = toMinutes(breakEnd);
+            if (nowMinutes >= bs && nowMinutes < be) return;
+          }
+
+          let newLat = lat;
+          let newLng = lng;
+          if (useOffset && groupSize > 1) {
+            const angleDeg = (360 / groupSize) * idx;
+            const angleRad = angleDeg * Math.PI / 180;
+            const offsetLat = baseRadius * Math.cos(angleRad);
+            const offsetLng = baseRadius * Math.sin(angleRad);
+            newLat = lat + offsetLat;
+            newLng = lng + offsetLng;
+          }
+
+          const position = new naver.maps.LatLng(newLat, newLng);
+          if (!bounds.hasLatLng(position)) return;
+          visibleCount++;
+
+          let tagText = "";
+          if (Array.isArray(hashtags) && hashtags.length > 0) {
+            tagText = hashtags[0];
+          }
+          const customIcon = createMarkerIconWithText(tagText);
+
+          const marker = new naver.maps.Marker({
+            position,
+            map,
+            icon: customIcon
+          });
+          markers.push(marker);
+
+          function openStore() {
+            map.setCenter(new naver.maps.LatLng(lat, lng));
+            map.setZoom(20);
+            showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo });
+          }
+          naver.maps.Event.addListener(marker, 'click', openStore);
+
+          const li = document.createElement('li');
+          li.className = 'card';
+          li.innerHTML = `
+            <img src="${photo||''}" alt="">
+            <div class="meta">
+              <b>${name}</b>
+              <span>@${insta}</span><br>
+              <span>${desc||''}</span>
+            </div>`;
+          li.addEventListener('click', openStore);
+          listEl.appendChild(li);
+        });
+      });
+
+      storeCnt.textContent = `매장 ${visibleCount}개`;
+      storeCnt.innerText   = `매장 ${visibleCount}개`;  // 🔹 추가
+      setTimeout(() => {
+        storeCnt.style.display = 'block';
+      }, 50);                // 🔹 추가
+
+      isRendering = false; // 🔹 [추가] 렌더링 종료 후 플래그 해제
+    }
+
+    // 맵이 움직일 때마다 리스트 갱신
+    naver.maps.Event.addListener(map, 'idle', renderStores);
+    renderStores();
+
+  function showInfoCard(d) {
+    infoImg.src = d.thumbnail || '';
+    infoImg.dataset.videoUrl = d.videoUrl || '';
+
+    // 1. VIDEO 마크
+    const tag = document.getElementById('infoTag');
+    if (d.videoUrl) {
+      tag.textContent = 'VIDEO';
+      tag.classList.add('video');
+      tag.classList.remove('no-video');
+    } else {
+      tag.textContent = 'VIDEO';
+      tag.classList.add('no-video');
+      tag.classList.remove('video');
+    }
+
+    // 2. 인스타그램 ID
+    const instaLink = document.getElementById('infoInsta');
+    instaLink.textContent = `@${d.insta}`;
+    instaLink.href = `https://instagram.com/${d.insta}`;
+
+    // 3. 해시태그 (첫 번째)
+    const hash = Array.isArray(d.hashtags) && d.hashtags.length > 0 ? d.hashtags[0] : '';
+    document.getElementById('infoHash').textContent = hash;
+
+    // 4. 이름과 설명
+    infoName.textContent = d.name;
+    infoDesc.textContent = d.desc || '';
+
+    infoCard.classList.add('show');
+    updateInfoCardPosition();
+  }
+
+    window.moveToLocation = function(lat, lng) {
+    const latlng = new naver.maps.LatLng(lat, lng);
+    map.setCenter(latlng);
+    map.setZoom(18);
+    new naver.maps.Marker({ position: latlng, map, icon: markerIcon });
+    hideInfoCard();
+  };
+    function hideInfoCard(){
+      infoCard.classList.remove('show');
+      // ── 팝업카드를 화면 아래(숨김) 위치로 되돌립니다 ──
+      infoCard.style.bottom = '-320px';
+    }
+    /* 지도 아무 곳 클릭하면 카드 닫기(InfoCard) + 패널이 열려 있으면 닫기 */
+    naver.maps.Event.addListener(map, 'click', () => {
+    // 1) InfoCard 닫기
+    hideInfoCard();
+     // 2) 패널이 열려 있으면 togglePanel() 호출
+    if (panelOpen) {
+      togglePanel();
+    }
+  });
+    /* 타이틀兼내위치 버튼 */
+    document.getElementById('titleBtn').addEventListener('click',()=>{
+      if(!navigator.geolocation) return alert('GeoLocation 미지원 브라우저');
+      navigator.geolocation.getCurrentPosition(p=>{
+        const {latitude,longitude}=p.coords;
+        const latlng=new naver.maps.LatLng(latitude,longitude);
+        map.setCenter(latlng); map.setZoom(18);
+        new naver.maps.Marker({position:latlng,map,icon:markerIcon});
+        hideInfoCard();            // 위치 이동 시 열린 카드 닫기
+        // ✅ 여기 ↓ 추가하세요!
+        setTimeout(() => {
+          naver.maps.Event.trigger(map, 'resize');
+        }, 200);
+      },()=>alert('위치 권한 필요'));
+    });
+
+    /* drawer ↔ 패널 토글 --------------------- */
+    const panel    = document.getElementById('panel');
+    const drawer   = document.getElementById('drawer');
+
+    let panelOpen  = false;
+
+    function togglePanel(){
+    panelOpen = !panelOpen;
+    panel.classList.toggle('open',  panelOpen);  // 패널 슬라이드
+    drawer.classList.toggle('hide', panelOpen);  // drawer 숨김/표시
+    updateInfoCardPosition();
+    }
+
+    /* drawer 바 자체를 탭하면 열고 닫기 */
+    drawer.addEventListener('click', togglePanel);
+    /* 패널 상단 handle(첫 번째 div.handle) 탭해서도 닫기 */
+    panel.querySelector('.handle').addEventListener('click', togglePanel);
+    /**
+     * 슬라이드패널(open/close) 상태에 따라
+     * 팝업카드(#infoCard)의 bottom 값을 동적으로 계산하여 적용한다.
+     */
+    function updateInfoCardPosition() {
+      // (1) 팝업카드가 실제로 보이는 상태인지 확인
+      if (!infoCard.classList.contains('show')) {
+        return;  // 보이지 않는 상태라면 위치 계산 안 함
+      }
+        
+  if (panelOpen) {
+    // ── ① 패널이 열린 상태 ──
+    // 패널의 실제 높이(px)를 가져온다
+    const panelHeight = panel.offsetHeight;
+
+    // 카드와 패널 사이에 붙일 여백(px)
+    const gapBetween = 8;
+
+    // 팝업카드를 패널 위로 띄우기
+    infoCard.style.bottom = (panelHeight + gapBetween) + 'px';
+  } else {
+    // ── ② 패널이 닫힌 상태 ──
+    // 화면 바닥에서 고정으로 띄우고 싶던 기존 값 (예: 96px)
+    const defaultBottom = 96;
+    infoCard.style.bottom = defaultBottom + 'px';
+  }
+}
+
+    });
+  </script>
+  <!-- ↓ 여기가 사이드 메뉴 토글 로직을 넣을 위치입니다. ↓ -->
+   
+  <script>
+  document.addEventListener('DOMContentLoaded', ()=> {
+    /* ─── 사이드 메뉴 열기/닫기 토글 ─── */
+    const menuBtn  = document.getElementById('menuBtn');
+    const sideMenu = document.getElementById('sideMenu');
+    let menuOpen = false;
+
+    function toggleSideMenu(){
+      menuOpen = !menuOpen;
+      sideMenu.classList.toggle('open', menuOpen);
+      menuBtn.classList.toggle('open', menuOpen);
+      sideMenu.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
+    }
+
+    menuBtn.addEventListener('click', toggleSideMenu);
+
+    /*  (선택) 메뉴 외부 클릭 시 닫기 */
+    document.addEventListener('click', e => {
+      if (menuOpen && !sideMenu.contains(e.target) && e.target !== menuBtn) {
+        toggleSideMenu();
+      }
+    });
+  });
+  </script>
+  <!-- ↑ 사이드 메뉴 토글 로직 끝 ↑ -->
+
+  <div id="videoModal" aria-hidden="true">
+  <div class="modal-content">
+    <button id="closeVideo" aria-label="닫기">&times;</button>
+    <iframe
+      id="videoFrame"
+      src=""
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen
+      playsinline
+      webkit-playsinline
+    ></iframe>
+  </div>
+</div>
+
+  <!-- ───────── 여기부터 사이드 메뉴 요소 시작 ───────── -->
+
+  <!-- ① 메뉴 열기/닫기 버튼 (×) -->
+  <button id="menuBtn" aria-label="메뉴 열기/닫기">✚</button>
+
+  <!-- ② 사이드 메뉴 내용 -->
+  <nav id="sideMenu" aria-hidden="true">
+    <ul>
+      <li><a href="#" id="linkHome">인웨이브</a></li>
+      <li><a href="#" id="linkAdwave">애드웨이브 1.0</a></li>
+      <li><a href="#" id="linkWaveshare">웨이브쉐어</a></li>
+      <li><a href="#" id="linkInvest">투자라운지</a></li>
+      <li><a href="#" id="linkSupport">고객지원</a></li>
+    </ul>
+  </nav>
+
+</body>
