@@ -889,6 +889,7 @@
           }
           await storeRef.update(store);
           alert('수정되었습니다!');
+          window.location.href = "/mypage.html";  // ✅ 수정 후 마이페이지로 이동
         } else {
           const exists = await storeRef.get();
           if (exists.exists) {
@@ -898,6 +899,7 @@
           }
           await storeRef.set(store);
           alert('등록되었습니다!');
+          window.location.href = "/mypage.html";  // ✅ 신규 등록 후 마이페이지로 이동
         }
 
         // 폼 초기화 및 지도 마커 제거
