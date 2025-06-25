@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://appleid.cdn-apple.com/appleauth/static/jsapi/appleid/1/en_US/appleid.auth.js"></script>
   <title>로그인</title>
   <link rel="stylesheet" href="js/css/style.css" />
   <style>
@@ -93,17 +94,33 @@
   </div>
 
   <script>
+    const state = Date.now().toString(); // 하나로 통일
+    const nonce = Math.random().toString(36).substring(2);
+
     const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
     const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
     const scope = "email profile openid";
     const response_type = "id_token token";
 
-    const state = new Date().getTime();
-    const nonce = Math.random().toString(36).substring(2);
-
     document.getElementById("googleLoginBtn").addEventListener("click", () => {
       const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
       window.location.href = url;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      AppleID.auth.init({
+        clientId: 'ai.kr.inwave.web',
+        scope: 'name email',
+        redirectURI: 'https://inwave.ai.kr/callback_apple.html',
+        state,
+        nonce,
+        usePopup: true,
+      });
+
+      const appleBtn = document.querySelector('.login-button img[alt="Apple 아이콘"]').closest('button');
+      appleBtn.addEventListener('click', () => {
+        AppleID.auth.signIn();
+      });
     });
   </script>
 </body>
