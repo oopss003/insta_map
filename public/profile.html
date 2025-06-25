@@ -149,17 +149,16 @@
     <!-- 스타일 선택 모달 -->
     <div id="styleModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
       <div style="background:#fff; border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center;">
-        <p>프로필 스타일을 선택하세요</p>
-        <div style="display:flex; gap:12px; flex-wrap:wrap; justify-content:center;">
-          <img src="https://oopss003.github.io/insta_map/public/images/001.png" width="80" onclick="selectStyle('001')" style="cursor:pointer; border-radius:12px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/002.png" width="80" onclick="selectStyle('002')" style="cursor:pointer; border-radius:12px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/003.png" width="80" onclick="selectStyle('003')" style="cursor:pointer; border-radius:12px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/004.png" width="80" onclick="selectStyle('004')" style="cursor:pointer; border-radius:12px;" />
+        <h3 style="margin-bottom:20px;">프로필 스타일을 선택하세요</h3>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <img src="https://oopss003.github.io/insta_map/public/images/001.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/002.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/003.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/004.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
         </div>
-        <button onclick="closeStyleModal()" style="margin-top:16px;">닫기</button>
+        <button onclick="closeStyleModal()" style="margin-top:24px; padding:10px 24px; border:1px solid #888; border-radius:8px; background:#fff;">닫기</button>
       </div>
     </div>
-
 
     <!-- 이메일 -->
     <div class="info-box" id="emailBox">
