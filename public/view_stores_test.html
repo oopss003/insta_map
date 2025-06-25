@@ -279,7 +279,28 @@
   #panel {
   touch-action: none;
   }
+  #myPageBtn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    background: var(--bg);
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 1003;
+    padding: 0;
+  }
 
+  #myPageBtn img {
+    width: 24px;
+    height: 24px;
+  }
 
 /* ──────────────────────────────────────────────────────────────────── */
 
@@ -295,6 +316,10 @@
     <span>탭하면 내 주변으로 이동</span>
   </div>
   <!-- ① FAB 버튼 블록 삭제  (기존 <button id="fab">…</button>) -->
+  <!-- 마이페이지 버튼 -->
+  <button id="myPageBtn" aria-label="마이페이지 이동">
+    <img src="/images/store.svg" alt="마이페이지" />
+  </button>
 
   <!-- 매장 리스트 패널 -->
   <div id="panel" aria-label="매장 리스트">
@@ -323,60 +348,71 @@
 
   <!-- ───────── JS ───────── -->
   <script>
-  document.addEventListener('DOMContentLoaded', ()=>{
+document.addEventListener('DOMContentLoaded', () => {
+  /* Firebase 초기화 */
+  firebase.initializeApp({
+    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+    authDomain: "instamap-9b595.firebaseapp.com",
+    projectId: "instamap-9b595",
+    storageBucket: "instamap-9b595.firebasestorage.app",
+    messagingSenderId: "280950399393",
+    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
+  });
+  const db = firebase.firestore();
 
-    /* Firebase 초기화 */
-    firebase.initializeApp({
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
-    });
-    const db = firebase.firestore();
-    document.getElementById('linkHome')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = 'https://inwave.ai.kr/';
-    });
-    document.getElementById('linkAdwave')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = 'https://inwave.ai.kr/adwave1.html';
-    });
-    document.getElementById('linkWaveshare')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = 'https://inwave.ai.kr/waveshare.html';
-    });
-    document.getElementById('linkInvest')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = 'https://inwave.ai.kr/invest.html';
-    });
-    document.getElementById('linkSupport')?.addEventListener('click', e => {
-      e.preventDefault();
-      window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
-    });
-
-    /* 지도 */
-    const map = new naver.maps.Map('map',{
-      center:new naver.maps.LatLng(37.5665,126.9780),zoom:12
-    });
-    // ─── 현재 줌 저장 & 변경 감지 ───
-    let currentZoom = map.getZoom();
-    naver.maps.Event.addListener(map, 'zoom_changed', () => {
-      const newZoom = map.getZoom();
-      // 12↔13 구간에서만 다시 렌더
-      if ((currentZoom < 13 && newZoom >= 13) ||
-          (currentZoom >= 13 && newZoom < 13)) {
-        renderStores();
-      }
-      currentZoom = newZoom;
+  // 메뉴 링크 이벤트 설정
+  document.getElementById('linkHome')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = 'https://inwave.ai.kr/';
+  });
+  document.getElementById('linkAdwave')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = 'https://inwave.ai.kr/adwave1.html';
+  });
+  document.getElementById('linkWaveshare')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = 'https://inwave.ai.kr/waveshare.html';
+  });
+  document.getElementById('linkInvest')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = 'https://inwave.ai.kr/invest.html';
+  });
+  document.getElementById('linkSupport')?.addEventListener('click', e => {
+    e.preventDefault();
+    window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
   });
 
-    /* 커스텀 마커 */
-    const markerIcon={
-      content:'<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
-      size:new naver.maps.Size(24,24),anchor:new naver.maps.Point(12,12)
-    };
+  // ✅ 마이페이지 버튼 이벤트는 여기에서 단 1번만 등록
+  const myPageBtn = document.getElementById('myPageBtn');
+  if (myPageBtn) {
+    myPageBtn.addEventListener('click', () => {
+      window.location.href = 'https://inwave.ai.kr/mypage.html';
+    });
+  }
+
+  /* 지도 생성 */
+  const map = new naver.maps.Map('map', {
+    center: new naver.maps.LatLng(37.5665, 126.9780),
+    zoom: 12
+  });
+
+  // 줌 변경 시 처리 (중복 이벤트 등록 없이 깔끔하게)
+  let currentZoom = map.getZoom();
+  naver.maps.Event.addListener(map, 'zoom_changed', () => {
+    const newZoom = map.getZoom();
+    if ((currentZoom < 13 && newZoom >= 13) ||
+        (currentZoom >= 13 && newZoom < 13)) {
+      renderStores();
+    }
+    currentZoom = newZoom;
+  });
+
+  /* 커스텀 마커 */
+  const markerIcon = {
+    content: '<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
+    size: new naver.maps.Size(24, 24),
+    anchor: new naver.maps.Point(12, 12)
+  };
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
 
     // "HH:mm" 문자열 → 총 분(0~1439) 반환
