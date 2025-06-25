@@ -811,5 +811,19 @@
       <li><a href="#" id="linkSupport">고객지원</a></li>
     </ul>
   </nav>
-
+<!-- ✅ 이 아래에 추가해주세요 -->
+  <script>
+    window.addEventListener('message', async (event) => {
+      try {
+        const { type, token, email } = JSON.parse(event.data);
+        if (type === 'LOGIN' && token) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(token);
+          await firebase.auth().signInWithCredential(credential);
+          console.log("✅ Firebase 로그인 성공:", email);
+        }
+      } catch (err) {
+        console.error("❌ WebView 로그인 실패:", err);
+      }
+    });
+  </script>
 </body>
