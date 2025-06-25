@@ -60,6 +60,8 @@
         const user = result.user;
         const decoded = jwt_decode(id_token);
         const email = decoded.email;
+        localStorage.setItem("userEmail", email);  // ✅ 약관 페이지 등에서 사용하기 위해 저장
+
 
         // ✅ Firestore 저장
         db.collection("users").doc(email).set({
@@ -71,7 +73,7 @@
         }, { merge: true });
 
         // ✅ 다음 페이지로 이동
-        window.location.href = "/view_stores.html";
+        window.location.href = "/view_stores_test.html";
       })
       .catch(error => {
         console.error("🔥 Firebase 로그인 실패", error);
