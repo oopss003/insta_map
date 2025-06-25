@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>애플 로그인 처리 중...</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <!-- JWT 디코딩 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background-color: #f5f6fb;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Pretendard', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div>로그인 처리 중입니다...</div>
+
+  <script>
+    // ✅ Firebase 초기화
+    firebase.initializeApp({
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.appspot.com",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    });
+
+    const db = firebase.firestore();
+
+    // ✅ URL에서 id_token 추출
+    const params = new URLSearchParams(window.location.search);
+    const id_token = params.get("id_token");
+
+    if (!id_token) {
+      alert("애플 로그인 토큰이 없습니다.");
+      location.href = "/login.html";
+    }
+
+    const credential = firebase.auth.OAuthProvider('apple.com').credential({
+      idToken: id_token,
+      rawNonce: localStorage.getItem('apple_nonce') || '' // 필요 시 저장해둔 nonce 사용
+    });
+
+    // ✅ Firebase 로그인 처리
+    firebase.auth().signInWithCredential(credential)
+      .then(result => {
+        const user = result.user;
+        const decoded = jwt_decode(id_token);
+        const email = decoded.email;
+
+        // ✅ Firestore 저장
+        db.collection("users").doc(email).set({
+          email: email,
+          name: decoded.name || "Apple 사용자",
+          loginMethod: "apple",
+          agreedToTerms: false,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge: true });
+
+        // ✅ 다음 페이지로 이동
+        window.location.href = "/view_stores.html";
+      })
+      .catch(error => {
+        console.error("🔥 Firebase 로그인 실패", error);
+        alert("애플 로그인 실패: " + error.message);
+        window.location.href = "/login.html";
+      });
+  </script>
+</body>
+</html>
