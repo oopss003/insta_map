@@ -46,25 +46,34 @@
 
     if (!id_token) {
       alert("애플 로그인 토큰이 없습니다.");
-      location.href = "/login.html";
+      window.location.href = "/login.html";
     }
 
-    const credential = firebase.auth.OAuthProvider('apple.com').credential({
+    const rawNonce = localStorage.getItem('apple_nonce') || '';
+
+    // ✅ 애플 로그인용 credential 생성
+    const credential = new firebase.auth.OAuthProvider('apple.com').credential({
       idToken: id_token,
-      rawNonce: localStorage.getItem('apple_nonce') || '' // 필요 시 저장해둔 nonce 사용
+      rawNonce: rawNonce
     });
 
     // ✅ Firebase 로그인 처리
     firebase.auth().signInWithCredential(credential)
-      .then(result => {
+      .then(async result => {
         const user = result.user;
         const decoded = jwt_decode(id_token);
-        const email = decoded.email;
-        localStorage.setItem("userEmail", email);  // ✅ 약관 페이지 등에서 사용하기 위해 저장
+        const email = decoded.email || user.email || ""; // 일부 케이스는 여기서만 이메일 제공됨
 
+        if (!email) {
+          alert("이메일 정보를 가져오지 못했습니다.");
+          window.location.href = "/login.html";
+          return;
+        }
+
+        localStorage.setItem("userEmail", email);
 
         // ✅ Firestore 저장
-        db.collection("users").doc(email).set({
+        await db.collection("users").doc(email).set({
           email: email,
           name: decoded.name || "Apple 사용자",
           loginMethod: "apple",
@@ -72,7 +81,7 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
 
-        // ✅ 다음 페이지로 이동
+        // ✅ 약관 페이지로 이동
         window.location.href = "/terms.html";
       })
       .catch(error => {
@@ -83,3 +92,4 @@
   </script>
 </body>
 </html>
+
