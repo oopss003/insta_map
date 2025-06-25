@@ -214,65 +214,71 @@
     </a>
   </div>
 
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+    authDomain: "instamap-9b595.firebaseapp.com",
+    projectId: "instamap-9b595",
+    storageBucket: "instamap-9b595.firebasestorage.app",
+    messagingSenderId: "280950399393",
+    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+  };
 
-    document.addEventListener("DOMContentLoaded", () => {
-      let email = localStorage.getItem('userEmail');
-      
-      // 🔁 쿼리스트링에서 email이 있으면 localStorage에 저장
-      const urlParams = new URLSearchParams(window.location.search);
-      const emailFromQuery = urlParams.get("email");
-      if (!email && emailFromQuery) {
-        email = emailFromQuery.trim().toLowerCase();
-        localStorage.setItem("userEmail", email);
-      }
-      
-      if (!email || email.trim() === "") {
-        alert("로그인이 필요합니다.");
-        location.href = "/login.html";
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  firebase.auth().onAuthStateChanged(async user => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "/login.html";
+      return;
+    }
+
+    // ✅ 이메일 처리 (쿼리스트링이 우선)
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromQuery = urlParams.get("email");
+    const finalEmail = (emailFromQuery || user.email).toLowerCase();
+
+    localStorage.setItem("userEmail", finalEmail);
+
+    try {
+      // ✅ 사용자 정보 불러오기
+      const userDoc = await db.collection("users").doc(finalEmail).get();
+      if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
+        alert("약관 동의가 필요합니다.");
+        window.location.href = "/terms.html";
         return;
       }
 
-      const lowerEmail = email.toLowerCase();
-      
-      db.collection("users").doc(lowerEmail).get().then(doc => {
-        if (!doc.exists || doc.data().agreedToTerms !== true) {
-          alert("약관 동의가 필요합니다.");
-          window.location.href = "/terms.html";
-          return;
-        }
+      const nickname = userDoc.data().nickname || "사용자";
+      document.getElementById("userNickname").textContent = nickname;
 
-        const nickname = doc.data().nickname || "사용자";
-        document.getElementById("userNickname").textContent = nickname;
+      // ✅ 매장 등록 여부 확인
+      const storeDoc = await db.collection("stores").doc(finalEmail).get();
+      const storeMenu = document.getElementById("storeMenu");
+      storeMenu.innerHTML = `
+        <img src="/images/store.svg" alt="매장정보">
+        <div>매장정보</div>`;
+      storeMenu.onclick = () => {
+        const targetUrl = storeDoc.exists 
+          ? 'https://inwave.ai.kr/register.html?mode=view'
+          : 'https://inwave.ai.kr/register.html?mode=new';
+        location.href = targetUrl;
+      };
 
-        db.collection("stores").doc(lowerEmail).get().then(storeDoc => {
-          const storeMenu = document.getElementById("storeMenu");
-          storeMenu.innerHTML = `
-            <img src="/images/store.svg" alt="매장정보">
-            <div>매장정보</div>`;
-          storeMenu.onclick = () => {
-            location.href = 'https://inwave.ai.kr/register.html';
-          }
-        });
-  
-      // ✅ 광고 배너 이미지 설정
+      // ✅ 광고 배너 이미지 랜덤 설정
       const bannerImages = [
         "test0001.png"
       ];
       const randomImage = bannerImages[Math.floor(Math.random() * bannerImages.length)];
       document.getElementById("randomBanner").src = `/imagesbanner/${randomImage}`;
-    });
+
+    } catch (error) {
+      console.error("❌ 사용자 또는 매장 정보 로딩 실패:", error);
+      alert("정보를 불러오는 데 문제가 발생했습니다.");
+    }
   });
 </script>
+
 </body>
 </html>
