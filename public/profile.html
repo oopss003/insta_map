@@ -152,9 +152,9 @@
         <h3 style="margin-bottom:20px;">프로필 스타일을 선택하세요</h3>
         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
           <img src="https://oopss003.github.io/insta_map/public/images/001.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/002.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/003.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
-          <img src="https://oopss003.github.io/insta_map/public/images/004.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/002.png" width="344" height="150" onclick="selectStyle('002')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/003.png" width="344" height="150" onclick="selectStyle('003')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/004.png" width="344" height="150" onclick="selectStyle('004')" style="cursor:pointer; border-radius:16px;" />
         </div>
         <button onclick="closeStyleModal()" style="margin-top:24px; padding:10px 24px; border:1px solid #888; border-radius:8px; background:#fff;">닫기</button>
       </div>
@@ -277,13 +277,14 @@
       selectedStyle: styleCode
     }).then(() => {
       // 이미지 갱신
-      const imagePath = `https://oopss003.github.io/insta_map/images/${styleCode}.png`;
+      const imagePath = `https://oopss003.github.io/insta_map/public/images/${styleCode}.png`;
       document.getElementById("profileImage").src = imagePath;
       closeStyleModal();
     }).catch(error => {
       alert("이미지 변경 실패: " + error.message);
     });
   }
+
 
 </script>
 
