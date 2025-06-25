@@ -59,11 +59,12 @@
       position: relative;
     }
 
-    .image-card img {
-      width: 100px;
-      height: 100px;
+     .image-card img {
+      width: 100%;       /* 부모 너비에 맞춤 (344px) */
+      height: auto;      /* 비율 유지 */
       border-radius: 16px;
       background: #eee;
+      object-fit: cover; /* 이미지 잘리는 경우 커버로 유지 */
     }
 
     .desc {
