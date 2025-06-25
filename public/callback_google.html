@@ -70,12 +70,13 @@
 
     auth.signInWithCredential(credential)
       .then(result => {
-        const user = result.user;
-        const uid = user.uid;
+        const user = result.user;            // 로그인된 사용자 정보
+        const uid = user.uid;                // UID 추출
 
-        localStorage.setItem("userEmail", email);
-        localStorage.setItem("userUid", uid);
+        localStorage.setItem("userEmail", email); // 이메일 저장
+        localStorage.setItem("userUid", uid);     // ✅ UID 저장 (필수!)
 
+        // Firestore에 사용자 정보 저장 (문서 ID = UID 기준)
         return db.collection("users").doc(uid).set({
           email: email,
           nickname: nickname,
@@ -83,6 +84,7 @@
           createdAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
       })
+
       .then(() => {
         const uid = localStorage.getItem("userUid");
         return db.collection("users").doc(uid).get();
