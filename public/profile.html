@@ -172,75 +172,79 @@
 
   </div>
 
-  <script>
-    // Firebase 설정
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.appspot.com",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+    authDomain: "instamap-9b595.firebaseapp.com",
+    projectId: "instamap-9b595",
+    storageBucket: "instamap-9b595.appspot.com",
+    messagingSenderId: "280950399393",
+    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const email = localStorage.getItem("userEmail");
-      if (!email) {
-        alert("로그인이 필요합니다.");
-        location.href = "/login.html";
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      location.href = "/login.html";
+      return;
+    }
+
+    const email = user.email.toLowerCase();
+    localStorage.setItem("userEmail", email);  // 추후 사용을 위한 저장
+
+    db.collection("users").doc(email).get().then(doc => {
+      const data = doc.data();
+      if (!data) {
+        alert("사용자 정보를 찾을 수 없습니다.");
         return;
       }
 
-      const lowerEmail = email.toLowerCase();
-      db.collection("users").doc(lowerEmail).get().then(doc => {
-        const data = doc.data();
-        if (!data) {
-          alert("사용자 정보를 찾을 수 없습니다.");
-          return;
-        }
+      // 이메일
+      document.getElementById("emailBox").innerHTML = `
+        <strong>E-mail</strong><br />
+        ${email}
+      `;
 
-        // 이메일
-        document.getElementById("emailBox").innerHTML = `
-          <strong>E-mail</strong><br />
-          ${data.email || '이메일 없음'}
-        `;
+      // 닉네임
+      document.getElementById("nicknameBox").innerHTML = `
+        <strong>닉네임</strong><br />
+        ${data.nickname || '닉네임 없음'}
+      `;
 
-        // 닉네임
-        document.getElementById("nicknameBox").innerHTML = `
-          <strong>닉네임</strong><br />
-          ${data.nickname || '닉네임 없음'}
-        `;
-
-        // 프로필 이미지 (selectedStyle 기준)
-        const selectedStyle = data.selectedStyle || "001";
-        const imagePath = `https://oopss003.github.io/insta_map/images/${selectedStyle}.png`;
-        document.getElementById("profileImage").src = imagePath;
-      });
+      // 프로필 이미지
+      const selectedStyle = data.selectedStyle || "001";
+      const imagePath = `https://oopss003.github.io/insta_map/images/${selectedStyle}.png`;
+      document.getElementById("profileImage").src = imagePath;
+    }).catch(err => {
+      console.error("🔥 Firestore 오류", err);
+      alert("사용자 정보를 불러오는 데 실패했습니다.");
     });
+  });
 
-    function logout() {
-      firebase.auth().signOut().then(() => {
-        alert("로그아웃 되었습니다.");
-        location.href = "/login.html";
-      });
-    }
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      alert("로그아웃 되었습니다.");
+      location.href = "/login.html";
+    });
+  }
 
-    function withdraw() {
-      const confirmed = confirm("정말 탈퇴하시겠습니까?");
-      if (confirmed) {
-        const user = firebase.auth().currentUser;
-        if (user) {
-          user.delete().then(() => {
-            alert("탈퇴 완료되었습니다.");
-            location.href = "/login.html";
-          }).catch(error => {
-            alert("재로그인 후 다시 시도해 주세요.");
-          });
-        }
+  function withdraw() {
+    const confirmed = confirm("정말 탈퇴하시겠습니까?");
+    if (confirmed) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        user.delete().then(() => {
+          alert("탈퇴 완료되었습니다.");
+          location.href = "/login.html";
+        }).catch(error => {
+          alert("재로그인 후 다시 시도해 주세요.");
+        });
       }
     }
-  </script>
+  }
+</script>
+
 </body>
 </html>
