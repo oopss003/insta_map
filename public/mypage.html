@@ -227,7 +227,16 @@
     const db = firebase.firestore();
 
     document.addEventListener("DOMContentLoaded", () => {
-      const email = localStorage.getItem('userEmail');
+      let email = localStorage.getItem('userEmail');
+      
+      // 🔁 쿼리스트링에서 email이 있으면 localStorage에 저장
+      const urlParams = new URLSearchParams(window.location.search);
+      const emailFromQuery = urlParams.get("email");
+      if (!email && emailFromQuery) {
+        email = emailFromQuery.trim().toLowerCase();
+        localStorage.setItem("userEmail", email);
+      }
+      
       if (!email || email.trim() === "") {
         alert("로그인이 필요합니다.");
         location.href = "/login.html";
@@ -235,6 +244,7 @@
       }
 
       const lowerEmail = email.toLowerCase();
+      
       db.collection("users").doc(lowerEmail).get().then(doc => {
         if (!doc.exists || doc.data().agreedToTerms !== true) {
           alert("약관 동의가 필요합니다.");
