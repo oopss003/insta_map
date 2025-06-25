@@ -215,7 +215,7 @@
 
       // 프로필 이미지
       const selectedStyle = data.selectedStyle || "001";
-      const imagePath = `https://oopss003.github.io/insta_map/images/${selectedStyle}.png`;
+      const imagePath = `https://oopss003.github.io/insta_map/public/images/${selectedStyle}.png`;
       document.getElementById("profileImage").src = imagePath;
     }).catch(err => {
       console.error("🔥 Firestore 오류", err);
