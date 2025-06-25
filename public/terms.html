@@ -12,25 +12,30 @@
       padding-bottom: 80px;
       box-sizing: border-box;
     }
+
     .container {
       padding: 24px;
       max-width: 480px;
       margin: 0 auto;
       padding-bottom: 100px;
     }
+
     h2 {
       font-size: 20px;
       text-align: center;
       margin: 16px 0;
     }
+
     .desc {
       text-align: center;
       color: #444;
       margin-bottom: 24px;
     }
+
     .checkbox-group {
       margin-bottom: 24px;
     }
+
     label {
       display: flex;
       justify-content: space-between;
@@ -40,13 +45,16 @@
       font-size: 15px;
       cursor: pointer;
     }
+
     label input {
       margin-right: 12px;
     }
+
     .view-link {
       color: #999;
       font-size: 14px;
     }
+
     .footer {
       position: fixed;
       bottom: 0;
@@ -57,10 +65,12 @@
       box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
       z-index: 100;
     }
+
     .footer-inner {
       max-width: 480px;
       margin: 0 auto;
     }
+
     .footer button {
       width: 100%;
       padding: 16px;
@@ -72,6 +82,7 @@
       cursor: pointer;
       opacity: 0.4;
     }
+
     .footer button.active {
       opacity: 1;
     }
@@ -82,6 +93,7 @@
       gap: 12px;
       margin-bottom: 24px;
     }
+
     .select-image {
       width: 344px;
       height: 150px;
@@ -91,6 +103,7 @@
       object-fit: cover;
       transition: border 0.2s ease-in-out;
     }
+
     .select-image.selected {
       border: 3px solid #0F9ED5;
     }
@@ -102,7 +115,8 @@
       line-height: 1.5;
       max-width: 360px;
     }
-  </style>
+    
+ </style>
 </head>
 <body>
   <div class="container">
@@ -114,19 +128,41 @@
 
     <div class="checkbox-group">
       <label><input type="checkbox" id="allAgree" /> 전체동의</label>
-      <label><span><input type="checkbox" class="required" /> 서비스 이용약관 (필수)</span><a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a></label>
-      <label><span><input type="checkbox" class="required" /> 개인정보 수집 및 이용 동의 (필수)</span><a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a></label>
-      <label><span><input type="checkbox" class="required" /> 위치기반서비스 이용약관 (필수)</span><a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a></label>
+
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          서비스 이용약관 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          개인정보 수집 및 이용 동의 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          위치기반서비스 이용약관 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+
       <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
       <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
     </div>
-
+    
     <p class="style-desc">
       당신의 취향에 딱 맞는 2차,<br>
-      먼저 추천해드릴게요. 스타일을 골라주세요!<br>
+      먼저 추천해드릴게요. 스타일을 골라주세요!
       나중에 수정도 가능해요.
     </p>
-
+    
     <div class="image-selector">
       <img src="images/001.png" class="select-image" data-value="001" />
       <img src="images/002.png" class="select-image" data-value="002" />
@@ -141,11 +177,9 @@
     </div>
   </div>
 
-  <!-- Firebase SDK -->
+  <!-- ✅ Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
@@ -157,30 +191,34 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
-    const auth = firebase.auth();
   </script>
 
+  <!-- ✅ 약관 + 스타일 선택 + 저장 -->
   <script>
     const allAgree = document.getElementById('allAgree');
     const requiredCheckboxes = document.querySelectorAll('.required');
     const nextBtn = document.getElementById('nextBtn');
     let selectedImageValue = null;
 
+    // 전체 동의 클릭 시 하위 체크 반영
     allAgree.addEventListener('change', () => {
       requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
       updateButtonState();
     });
 
+    // 필수 체크박스 개별 체크 이벤트
     requiredCheckboxes.forEach(cb => {
       cb.addEventListener('change', updateButtonState);
     });
 
+    // 버튼 활성화 조건
     function updateButtonState() {
       const allChecked = [...requiredCheckboxes].every(cb => cb.checked);
       nextBtn.disabled = !allChecked;
       nextBtn.classList.toggle('active', allChecked);
     }
 
+    // 이미지 선택 처리
     document.querySelectorAll('.select-image').forEach(img => {
       img.addEventListener('click', () => {
         document.querySelectorAll('.select-image').forEach(i => i.classList.remove('selected'));
@@ -189,35 +227,35 @@
       });
     });
 
+    // 다음 버튼 클릭 시 Firebase 저장
     nextBtn.addEventListener('click', () => {
-      auth.onAuthStateChanged(user => {
-        if (!user) {
-          alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
-          window.location.href = "/login.html";
-          return;
-        }
+      const email = localStorage.getItem('userEmail');
+      if (!email || email.trim() === "") {
+        alert("사용자 정보를 찾을 수 없습니다. 다시 로그인해주세요.");
+        return;
+      }
 
-        const email = user.email.toLowerCase();
+      if (!selectedImageValue) {
+        alert("스타일을 하나 선택해주세요.");
+        return;
+      }
 
-        if (!selectedImageValue) {
-          alert("스타일을 하나 선택해주세요.");
-          return;
-        }
-
-        db.collection("users").doc(email).set({
-          agreedToTerms: true,
-          selectedStyle: selectedImageValue
-        }, { merge: true }).then(() => {
-          location.href = '/mypage.html';
-        }).catch(err => {
-          console.error("🔥 약관 동의 저장 실패:", err);
-          alert("약관 동의 처리 중 오류가 발생했습니다.");
-        });
+      const normalizedEmail = email.trim().toLowerCase();
+      db.collection("users").doc(normalizedEmail).set({
+        agreedToTerms: true,
+        selectedStyle: selectedImageValue
+      }, { merge: true }).then(() => {
+        location.href = '/view_stores_test.html';
+      }).catch(err => {
+        console.error("🔥 약관 동의 저장 실패:", err);
+        alert("약관 동의 처리 중 오류가 발생했습니다.");
       });
     });
 
+    // 페이지 진입 시 로그인 확인
     document.addEventListener("DOMContentLoaded", () => {
-      if (!auth.currentUser) {
+      const email = localStorage.getItem("userEmail");
+      if (!email || email.trim() === "") {
         alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
         window.location.href = "/login.html";
       }
