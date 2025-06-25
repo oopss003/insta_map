@@ -89,7 +89,7 @@
       .then(doc => {
         const agreed = doc.exists && doc.data().agreedToTerms === true;
         if (agreed) {
-          location.href = "/mypage.html";
+          location.href = "/view_stores_test.html";
         } else {
           location.href = "/terms.html";
         }
