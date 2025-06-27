@@ -551,11 +551,24 @@ async function renderStores() {
       const openMin  = toMinutes(openTime);
       const closeMin = toMinutes(closeTime);
       
-      const isOpen = closeMin > openMin
-        ? nowMinutes >= openMin && nowMinutes < closeMin
-        : nowMinutes >= openMin || nowMinutes < closeMin;
+      let isOpen;
+      
+      // 1) 마감시간이 자정(1440분) 넘어가면 익일 마감으로 처리
+      if (closeMin > 1440) {
+        const adjClose = closeMin - 1440;  // 예: 27:00 → 1620분, 1620−1440 = 180분(익일 03:00)
+        isOpen = nowMinutes >= openMin   // 오늘 오픈 이후
+              || nowMinutes <  adjClose;  // 익일 마감 전
+      }
+      // 2) 정상적인 당일 마감
+      else if (closeMin > openMin) {
+        isOpen = nowMinutes >= openMin && nowMinutes < closeMin;
+      // 3) (경우가 희박하지만) closeMin ≤ openMin 인 경우
+      } else {
+        isOpen = nowMinutes >= openMin || nowMinutes < closeMin;
+      }
       
       if (!isOpen) return;
+
       
       // 브레이크 타임
       const breakStart = breakTimes?.[todayStr]?.start;
