@@ -558,8 +558,8 @@ async function renderStores() {
       if (!isOpen) return;
       
       // 브레이크 타임
-      const breakStart = break && break[todayStr] && break[todayStr].start;
-      const breakEnd   = break && break[todayStr] && break[todayStr].end;
+      const breakStart = breakTimes?.[todayStr]?.start;
+      const breakEnd   = breakTimes?.[todayStr]?.end;
       if (breakStart && breakEnd) {
         const bs = toMinutes(breakStart);
         const be = toMinutes(breakEnd);
