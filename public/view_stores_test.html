@@ -542,29 +542,30 @@ async function renderStores() {
       if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
 
       // ✅ 요일별 영업시간 가져오기
-      const todayHours = hours?.[todayStr]?.time || {};
+      const todayHours = (hours && hours[todayStr] && hours[todayStr].time) || {};
       const openTime = todayHours.start;
       const closeTime = todayHours.end;
-
-      if (!openTime || !closeTime) return;  // 시간이 없으면 제외
-
+      
+      if (!openTime || !closeTime) return;
+      
       const openMin  = toMinutes(openTime);
       const closeMin = toMinutes(closeTime);
-
+      
       const isOpen = closeMin > openMin
         ? nowMinutes >= openMin && nowMinutes < closeMin
         : nowMinutes >= openMin || nowMinutes < closeMin;
-
+      
       if (!isOpen) return;
-
-      // ✅ 브레이크 타임 필터 (기존처럼 유지)
-      const breakStart = break?.[todayStr]?.start;
-      const breakEnd   = break?.[todayStr]?.end;
+      
+      // 브레이크 타임
+      const breakStart = break && break[todayStr] && break[todayStr].start;
+      const breakEnd   = break && break[todayStr] && break[todayStr].end;
       if (breakStart && breakEnd) {
         const bs = toMinutes(breakStart);
         const be = toMinutes(breakEnd);
         if (nowMinutes >= bs && nowMinutes < be) return;
       }
+
 
       let newLat = lat;
       let newLng = lng;
