@@ -536,7 +536,7 @@ async function renderStores() {
     items.forEach((data, idx) => {
       const {
         lat, lng, name, insta, desc, photo, vimeo, hashtags,
-        offDays, hours, break
+        offDays, hours, break: breakTimes
       } = data;
 
       if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
