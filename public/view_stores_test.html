@@ -544,8 +544,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
           const openMin  = toMinutes(openTime);
           const closeMin = toMinutes(closeTime);
-          if (nowMinutes < openMin || nowMinutes >= closeMin) return;
 
+          const isOpen = closeMin > openMin
+            ? nowMinutes >= openMin && nowMinutes < closeMin
+            : nowMinutes >= openMin || nowMinutes < closeMin;
+
+        if (!isOpen) return;
+          
           if (breakStart && breakEnd) {
             const bs = toMinutes(breakStart);
             const be = toMinutes(breakEnd);
