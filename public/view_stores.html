@@ -450,125 +450,127 @@
 
     let isRendering = false; // 🔹 [추가] 중복 실행 방지용 플래그
 
-    async function renderStores() {
-      // 🔹 [추가] 실행 중이면 리턴
-      if (isRendering) return;
-      isRendering = true;
+  async function renderStores() {
+    if (isRendering) return;
+    isRendering = true;
 
-      console.log('▶︎ renderStores 호출됨');
+    console.log('▶︎ renderStores 호출됨');
 
-      const zoom = map.getZoom();
-      const useOffset = zoom < 13;
-      markers.forEach(m => m.setMap(null));
-      markers.length = 0;
-      listEl.innerHTML = '';
+    const zoom = map.getZoom();
+    const useOffset = zoom < 13;
+    markers.forEach(m => m.setMap(null));
+    markers.length = 0;
+    listEl.innerHTML = '';
 
-      const now = new Date();
-      const dayMap = ['일','월','화','수','목','금','토'];
-      const todayStr   = dayMap[now.getDay()];
-      const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const now = new Date();
+    const dayMap = ['일','월','화','수','목','금','토'];
+    const todayStr   = dayMap[now.getDay()];
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-      const bounds = map.getBounds();
+    const bounds = map.getBounds();
+  
+    const snap = await db.collection('stores')
+                         .orderBy('created','desc')
+                         .get();
 
-      const snap = await db.collection('stores')
-                           .orderBy('created','desc')
-                           .get();
+    const bucket = new Map();
+    snap.forEach(doc => {
+      const d = doc.data();
+      const lat = Number(d.lat);
+      const lng = Number(d.lng);
+      if (isNaN(lat) || isNaN(lng)) return;
 
-      const bucket = new Map();
-      snap.forEach(doc => {
-        const d = doc.data();
-        const { lat, lng } = d;
-        if (typeof lat !== 'number' || typeof lng !== 'number') return;
-        const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
-        if (!bucket.has(key)) bucket.set(key, []);
-        bucket.get(key).push(d);
-      });
+      const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
+      if (!bucket.has(key)) bucket.set(key, []);
+      bucket.get(key).push(d);
+    });
 
-      let visibleCount = 0;
+    let visibleCount = 0;
 
-      bucket.forEach((items, key) => {
-        const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
-        const centerPos = new naver.maps.LatLng(someLat, someLng);
-        if (!bounds.hasLatLng(centerPos)) return;
+    bucket.forEach((items, key) => {
+      const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
+      const centerPos = new naver.maps.LatLng(someLat, someLng);
+      if (!bounds.hasLatLng(centerPos)) return;
 
-        const groupSize = items.length;
-        const baseRadius = 0.001;
+      const groupSize = items.length;
+      const baseRadius = 0.001;
 
-        items.forEach((data, idx) => {
-          const {
-            lat, lng, name, insta, desc, photo, vimeo, hashtags,
-            offDays, openTime, closeTime, breakStart, breakEnd
-          } = data;
+      items.forEach((data, idx) => {
+        const {
+          lat, lng, name, insta, desc, photo, vimeo, hashtags, hours
+        } = data;
 
-          if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
+        const hourInfo = hours?.[todayStr] || {};
+        const openTime = hourInfo.time?.start || "";
+        const closeTime = hourInfo.time?.end || "";
+        const breakStart = hourInfo.break?.start || "";
+        const breakEnd = hourInfo.break?.end || "";
 
-          const openMin  = toMinutes(openTime);
-          const closeMin = toMinutes(closeTime);
-          if (nowMinutes < openMin || nowMinutes >= closeMin) return;
+        const openMin  = toMinutes(openTime);
+        const closeMin = toMinutes(closeTime);
+        if (openMin && closeMin && (nowMinutes < openMin || nowMinutes >= closeMin)) return;
 
-          if (breakStart && breakEnd) {
-            const bs = toMinutes(breakStart);
-            const be = toMinutes(breakEnd);
-            if (nowMinutes >= bs && nowMinutes < be) return;
-          }
+        if (breakStart && breakEnd) {
+          const bs = toMinutes(breakStart);
+          const be = toMinutes(breakEnd);
+          if (nowMinutes >= bs && nowMinutes < be) return;
+        }
 
-          let newLat = lat;
-          let newLng = lng;
-          if (useOffset && groupSize > 1) {
-            const angleDeg = (360 / groupSize) * idx;
-            const angleRad = angleDeg * Math.PI / 180;
-            const offsetLat = baseRadius * Math.cos(angleRad);
-            const offsetLng = baseRadius * Math.sin(angleRad);
-            newLat = lat + offsetLat;
-            newLng = lng + offsetLng;
-          }
+        let newLat = Number(lat);
+        let newLng = Number(lng);
+        if (useOffset && groupSize > 1) {
+          const angleDeg = (360 / groupSize) * idx;
+          const angleRad = angleDeg * Math.PI / 180;
+          const offsetLat = baseRadius * Math.cos(angleRad);
+          const offsetLng = baseRadius * Math.sin(angleRad);
+          newLat += offsetLat;
+          newLng += offsetLng;
+        }
 
-          const position = new naver.maps.LatLng(newLat, newLng);
-          if (!bounds.hasLatLng(position)) return;
-          visibleCount++;
-
-          let tagText = "";
-          if (Array.isArray(hashtags) && hashtags.length > 0) {
-            tagText = hashtags[0];
-          }
-          const customIcon = createMarkerIconWithText(tagText);
-
-          const marker = new naver.maps.Marker({
-            position,
-            map,
-            icon: customIcon
-          });
-          markers.push(marker);
-
-          function openStore() {
-            map.setCenter(new naver.maps.LatLng(lat, lng));
-            map.setZoom(20);
-            showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo });
-          }
-          naver.maps.Event.addListener(marker, 'click', openStore);
-
-          const li = document.createElement('li');
-          li.className = 'card';
-          li.innerHTML = `
-            <img src="${photo||''}" alt="">
-            <div class="meta">
-              <b>${name}</b>
-              <span>@${insta}</span><br>
-              <span>${desc||''}</span>
-            </div>`;
-          li.addEventListener('click', openStore);
-          listEl.appendChild(li);
+        const position = new naver.maps.LatLng(newLat, newLng);
+        if (!bounds.hasLatLng(position)) return;
+        visibleCount++;
+  
+        let tagText = Array.isArray(hashtags) && hashtags.length > 0 ? hashtags[0] : "";
+        const customIcon = createMarkerIconWithText(tagText);
+  
+        const marker = new naver.maps.Marker({
+          position,
+          map,
+          icon: customIcon
         });
+        markers.push(marker);
+  
+        function openStore() {
+          map.setCenter(new naver.maps.LatLng(Number(lat), Number(lng)));
+          map.setZoom(20);
+          showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo, hashtags });
+        }
+        naver.maps.Event.addListener(marker, 'click', openStore);
+  
+        const li = document.createElement('li');
+        li.className = 'card';
+        li.innerHTML = `
+          <img src="${photo || ''}" alt="">
+          <div class="meta">
+            <b>${name}</b>
+            <span>@${insta}</span><br>
+            <span>${desc || ''}</span>
+          </div>`;
+        li.addEventListener('click', openStore);
+        listEl.appendChild(li);
       });
-
-      storeCnt.textContent = `매장 ${visibleCount}개`;
-      storeCnt.innerText   = `매장 ${visibleCount}개`;  // 🔹 추가
-      setTimeout(() => {
-        storeCnt.style.display = 'block';
-      }, 50);                // 🔹 추가
-
-      isRendering = false; // 🔹 [추가] 렌더링 종료 후 플래그 해제
-    }
+    });
+  
+    storeCnt.textContent = `매장 ${visibleCount}개`;
+    storeCnt.innerText   = `매장 ${visibleCount}개`;
+  
+    setTimeout(() => {
+      storeCnt.style.display = 'block';
+    }, 50);
+  
+    isRendering = false;
+  }
 
     // 맵이 움직일 때마다 리스트 갱신
     naver.maps.Event.addListener(map, 'idle', renderStores);
