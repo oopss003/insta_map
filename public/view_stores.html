@@ -630,9 +630,25 @@
     infoName.textContent = d.name;
     infoDesc.textContent = d.desc || '';
 
+    // 3. 오늘의 영업시간/라스트오더
+    const now = new Date();
+    const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+    const todayStr = dayMap[now.getDay()];
+    const todayHours = d.hours?.[todayStr];
+
     infoCard.classList.add('show');
     updateInfoCardPosition();
-  }
+
+    let hourText = '';
+    if (todayHours) {
+      const end = todayHours.time?.end || '';
+      const last = todayHours.lastOrder?.time || '';
+      hourText = `영업 마감 ${end || '-'} / 라스트오더 ${last || '-'}`;
+    } else {
+      hourText = '영업시간 정보 없음';
+    }
+    document.getElementById('infoDesc').textContent = hourText;
+    document.getElementById('infoAddress').textContent = d.address || '';
 
     window.moveToLocation = function(lat, lng) {
     const latlng = new naver.maps.LatLng(lat, lng);
