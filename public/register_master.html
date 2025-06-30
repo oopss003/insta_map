@@ -915,18 +915,30 @@
         }
       });
       
-      // 쉬는 날 체크박스 초기화 및 체크
-      document.querySelectorAll('[name="offDays[]"]').forEach(cb => cb.checked = false);
-      (data.dayOff || []).forEach(entry => {
-        const checkbox = document.querySelector(`[name="offDays[]"][value="${entry.day}"]`);
-        if (checkbox) checkbox.checked = true;
+      // 쉬는 날 체크박스 초기화
+      document.querySelectorAll('[name="offDays[]"]').forEach(cb => {
+        cb.checked = false;
+      });
+      
+      // 저장된 dayOff 배열을 순회하며 체크 & 반복 조건 세팅
+      ;(data.dayOff || []).forEach(entry => {
+        const checkbox = document.querySelector(
+          `[name="offDays[]"][value="${entry.day}"]`
+        );
+        if (checkbox) {
+          // 체크박스 체크
+          checkbox.checked = true;
+      
+          // 반복 조건(select) 설정
           const repeatSel = document.querySelector(
             `select[name="repeat_${entry.day}"]`
           );
-          if (repeatSel) repeatSel.value = entry.repeat;
+          if (repeatSel) {
+            repeatSel.value = entry.repeat;
+          }
         }
-      }
-    });
+      });
+
 
       setLatLng(data.lat, data.lng);
       document.getElementById('saveBtn').textContent = "수정 저장";
