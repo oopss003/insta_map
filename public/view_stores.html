@@ -382,11 +382,12 @@
       return h * 60 + m;
     }
 
+
+    
     function verticalOffset(idx, groupSize) {
       const gapM = 12;
-      const metersPerDeg = 111_320;
       const half = (groupSize - 1) / 2;
-      return (idx - half) * (gapM / metersPerDeg);   // 위도 오프셋(°)
+      return (idx - half) * gapPx;
     }
         
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
