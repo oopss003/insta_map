@@ -382,12 +382,10 @@
       return h * 60 + m;
     }
 
-
-    
     function verticalOffset(idx, groupSize) {
-      const gapM = 12;
+      const gapM = 15;
       const half = (groupSize - 1) / 2;
-      return (idx - half) * gapPx;
+      return (idx - half) * gapM;   // 0-, ±gap, ±2·gap … 으로 배치
     }
         
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
@@ -548,25 +546,9 @@
             newLng += offsetLng;
           /* ② 줌인(13 이상) ⇒ 세로 쌓기 (Y축만 이동) */
           } else {
-            // 위·경도 → 픽셀
-            let pt = map.coordToPoint(new naver.maps.LatLng(lat, lng));
-            // 세로 방향으로 gapPx(12px) 간격 적용
-            pt.y += verticalOffsetPx(idx, groupSize);
-            // 픽셀 → 다시 위·경도
-            const position = map.pointToCoord(pt);
-        
-            // position 을 이후 로직에 쓰도록 변경
-            if (!bounds.hasLatLng(position)) return;
-            visibleCount++;
-        
-            // 커스텀 마커 생성
-            const marker = new naver.maps.Marker({
-              position,
-              map,
-              icon: createMarkerIconWithText(tagText)
-            });
-            markers.push(marker);
-            return;           // 아래(기존 newLat/newLng 사용 부분)로 내려가지 않도록 조기 종료
+            // gap(미터)을 위도에 환산  (1° ≒ 111 000 m)
+            const dLat = verticalOffset(idx, groupSize) / 111000;
+            newLat += dLat;
           }
         }
             
