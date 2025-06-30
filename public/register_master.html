@@ -750,6 +750,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
+    // ─ 로그인 없이 이 계정 문서를 바로 읽고 씁니다
+    const USER_EMAIL = 'jhpark8271@gmail.com';
 
     // currentUser 선언을 전역 스코프에서 한 번만 합니다.
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
@@ -801,6 +803,10 @@
             editingId = doc.id;
             loadStoreToForm({ id: doc.id, data: () => data });
           });
+          // ─ 이 페이지는 나만 쓰는 편집 페이지이므로, USER_EMAIL 문서 하나만 로드
+          db.collection('stores').doc(USER_EMAIL).get()
+            .then(doc => { if (doc.exists) loadStoreToForm({ id: doc.id, data: () => doc.data() }); })
+            .catch(err => console.error('단일 매장 로드 실패:', err));
         });
       })
       .catch(err => console.error('가게 불러오기 실패:', err));
@@ -970,14 +976,6 @@
         const breakEnd = document.querySelector('[name=breakEnd]').value;
         const offDays = Array.from(document.querySelectorAll('[name="offDays[]"]:checked')).map(cb => cb.value);
 
-
-        // currentUser가 null일 경우 다시 로그인 경고 및 리턴
-        if (!currentUser) {
-          alert('로그인 후 등록이 가능합니다.');
-          window.location.href = "/login.html"; // 로그인 페이지로 리다이렉트 추가
-          return;
-        }
-
         const dayOff = Array.from(
           document.querySelectorAll('[name="offDays[]"]:checked')
         ).map(cb => {
@@ -1037,7 +1035,7 @@
           store.photo = await ref.getDownloadURL();
         }
 
-        const storeRef = db.collection('stores').doc(currentUser.email);
+        const storeRef = db.collection('stores').doc(USER_EMAIL);
         if (editingId) {
           // 사진을 새로 업로드하지 않았다면 기존 photo 필드 유지
           if (!file) {
