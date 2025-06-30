@@ -32,36 +32,50 @@
 
     // 이미지 압축
     function compressImage(file, maxBytes=1000000) {
-      return new Promise(resolve=>{
-        const img=new Image(), reader=new FileReader();
-        reader.onload=e=>{ img.onload=()=>{
-            const canvas=document.createElement('canvas');
-            const maxW=500, scale=Math.min(1, maxW/img.width);
-            canvas.width=img.width*scale; canvas.height=img.height*scale;
-            const ctx=canvas.getContext('2d'); ctx.drawImage(img,0,0,canvas.width,canvas.height);
-            let quality=0.8;
-            (function exportBlob(){ canvas.toBlob(blob=>{ if(blob.size<=maxBytes||quality<0.4) resolve(blob); else{ quality-=0.1; exportBlob(); } },'image/jpeg',quality); })();
-          }; img.src=e.target.result;
-        }; reader.readAsDataURL(file);
+      return new Promise(resolve => {
+        const img = new Image(), reader = new FileReader();
+        reader.onload = e => {
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const maxW = 500, scale = Math.min(1, maxW / img.width);
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            let quality = 0.8;
+            (function exportBlob() {
+              canvas.toBlob(blob => {
+                if (blob.size <= maxBytes || quality < 0.4) resolve(blob);
+                else { quality -= 0.1; exportBlob(); }
+              }, 'image/jpeg', quality);
+            })();
+          };
+          img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
       });
     }
 
     // 지도 및 InfoWindow
-    const map=new naver.maps.Map('map',{ center:new naver.maps.LatLng(37.5665,126.9780), zoom:13 });
-    const infoWindow=new naver.maps.InfoWindow({ content:'', borderWidth:0, anchorSkew:true });
+    const map = new naver.maps.Map('map', { center: new naver.maps.LatLng(37.5665, 126.9780), zoom: 13 });
+    const infoWindow = new naver.maps.InfoWindow({ content: '', borderWidth: 0, anchorSkew: true });
 
     // 마커와 폼 처리
-    db.collection('stores').get().then(snapshot=>{
-      snapshot.forEach(doc=>{
-        const data=doc.data();
-        const pos=new naver.maps.LatLng(data.lat,data.lng);
-        const marker=new naver.maps.Marker({ position:pos, map:map, icon:{ content:`<div class="custom-marker">${data.name}</div>`, anchor:new naver.maps.Point(0,30) } });
+    db.collection('stores').get().then(snapshot => {
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const pos = new naver.maps.LatLng(data.lat, data.lng);
+        const marker = new naver.maps.Marker({
+          position: pos,
+          map: map,
+          icon: { content: `<div class="custom-marker">${data.name}</div>`, anchor: new naver.maps.Point(0, 30) }
+        });
 
-        marker.addListener('click',()=>{ openForm(); });
+        marker.addListener('click', () => { openForm(); });
 
-        function openForm(){
-          const id=doc.id;
-          const formHtml=`
+        function openForm() {
+          const id = doc.id;
+          const formHtml = `
             <div class="info-form" id="form-${id}">
               <input type="file" accept="image/*" name="photo" />
               <input name="name" value="${data.name||''}" placeholder="가게 이름" />
@@ -80,36 +94,55 @@
           infoWindow.setContent(formHtml);
           infoWindow.open(map, marker);
 
-          setTimeout(()=>{
-            const form=document.getElementById(`form-${id}`);
-            const moveBtn=form.querySelector(`#move-btn-${id}`);
-            const saveBtn=form.querySelector(`#save-btn-${id}`);
+          setTimeout(() => {
+            const formEl = document.getElementById(`form-${id}`);
+            const moveBtn = formEl.querySelector(`#move-btn-${id}`);
+            const saveBtn = formEl.querySelector(`#save-btn-${id}`);
 
             // 위치 변경 처리
-            moveBtn.onclick=()=>{
+            moveBtn.onclick = () => {
               infoWindow.close();
               alert('지도에서 새로운 위치를 클릭하세요.');
-              naver.maps.Event.addListenerOnce(map,'click',e=>{
+              naver.maps.Event.addListenerOnce(map, 'click', e => {
                 marker.setPosition(e.coord);
-                document.getElementById(`lat-${id}`).value=e.coord.lat();
-                document.getElementById(`lng-${id}`).value=e.coord.lng();
+                document.getElementById(`lat-${id}`).value = e.coord.lat();
+                document.getElementById(`lng-${id}`).value = e.coord.lng();
                 openForm();
               });
             };
 
-            // 저장 처리
-            saveBtn.onclick=async ()=>{
-              try{
-                const updated={
-                  name:form.name.value.trim(), insta:form.insta.value.trim(), desc:form.desc.value.trim(), phone:form.phone.value.trim(), hashtags:form.hashtags.value.split(',').map(t=>t.trim()).filter(Boolean), vimeo:form.vimeo.value.trim(), openTime:form.openTime.value, closeTime:form.closeTime.value, lat:parseFloat(document.getElementById(`lat-${id}`).value), lng:parseFloat(document.getElementById(`lng-${id}`).value)
-                };
-                const fileInput=form.querySelector('input[type=file]');
-                if(fileInput.files.length){ const blob=await compressImage(fileInput.files[0]); const filename=`store_photos/${Date.now()}_${fileInput.files[0].name.replace(/\s+/g,'')}`; const ref=storage.ref().child(filename); await ref.put(blob); updated.photo=await ref.getDownloadURL(); }
+            // 저장 처리: formEl.querySelector로 필드 찾기
+            saveBtn.onclick = async () => {
+              try {
+                const updated = {};
+                updated.name = formEl.querySelector('input[name="name"]').value.trim();
+                updated.insta = formEl.querySelector('input[name="insta"]').value.trim();
+                updated.desc = formEl.querySelector('textarea[name="desc"]').value.trim();
+                updated.phone = formEl.querySelector('input[name="phone"]').value.trim();
+                updated.hashtags = formEl.querySelector('input[name="hashtags"]').value.split(',').map(t=>t.trim()).filter(Boolean);
+                updated.vimeo = formEl.querySelector('input[name="vimeo"]').value.trim();
+                updated.openTime = formEl.querySelector('input[name="openTime"]').value;
+                updated.closeTime = formEl.querySelector('input[name="closeTime"]').value;
+                updated.lat = parseFloat(document.getElementById(`lat-${id}`).value);
+                updated.lng = parseFloat(document.getElementById(`lng-${id}`).value);
+
+                const fileInput = formEl.querySelector('input[type="file"]');
+                if (fileInput.files.length) {
+                  const blob = await compressImage(fileInput.files[0]);
+                  const filename = `store_photos/${Date.now()}_${fileInput.files[0].name.replace(/\s+/g,'')}`;
+                  const ref = storage.ref().child(filename);
+                  await ref.put(blob);
+                  updated.photo = await ref.getDownloadURL();
+                }
+
                 await db.collection('stores').doc(id).update(updated);
-                alert('저장되었습니다!'); infoWindow.close();
-              }catch(e){ alert('저장 실패: '+e); }
+                alert('저장되었습니다!');
+                infoWindow.close();
+              } catch (e) {
+                alert('저장 실패: ' + e);
+              }
             };
-          },0);
+          }, 0);
         }
       });
     }).catch(console.error);
