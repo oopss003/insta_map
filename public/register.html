@@ -748,21 +748,40 @@
           return;
         }
 
+        const days = ['월', '화', '수', '목', '금', '토', '일'];
+        const hours = {};
+        days.forEach(day => {
+          hours[day] = {
+            time: {
+              start: document.querySelector(`[name="${day}_open"]`)?.value || "",
+              end: document.querySelector(`[name="${day}_close"]`)?.value || ""
+            },
+            break: {
+              start: document.querySelector(`[name="${day}_break_start"]`)?.value || "",
+              end: document.querySelector(`[name="${day}_break_end"]`)?.value || ""
+            },
+            lastOrder: {
+              time: document.querySelector(`[name="${day}_last_order"]`)?.value || ""
+            }
+          };
+        });
+        const dayOff = offDays.map(day => ({
+          day,
+          repeat: "매주"
+        }));
+        
         const store = {
           name: document.querySelector('[name=name]').value.trim(),
           insta: document.querySelector('[name=insta_id]').value.trim(),
           desc: document.querySelector('[name=desc]').value.trim(),
-          phone: document.querySelector('[name=phone]').value.trim(), // ✅ 추가
+          phone: document.querySelector('[name=phone]').value.trim(),
           lat: parseFloat(document.getElementById('lat').value),
           lng: parseFloat(document.getElementById('lng').value),
           photo: "",
           vimeo: vimeoUrl,
           hashtags: tags,
-          openTime,
-          closeTime,
-          breakStart,
-          breakEnd,
-          offDays,
+          hours,         // ✅ 새 구조 반영
+          dayOff,        // ✅ 쉬는 날 구조
           userEmail: currentUser.email,
           created: firebase.firestore.FieldValue.serverTimestamp()
         };
