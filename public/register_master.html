@@ -787,7 +787,10 @@
           if (doc.exists) {
             editingId = doc.id;                       // 처음엔 내 문서를 편집 대상
             loadStoreToForm({ id: doc.id, data: () => doc.data() });
-          }
+            db.collection('stores').doc(doc.id).get().then(fresh => {
+              loadStoreToForm(fresh);       // 항상 최신 데이터로 로드
+              editingId = fresh.id;         // 현재 편집 대상 유지
+            });
         })
         .catch(err => console.error('내 매장 로드 실패:', err));
       
