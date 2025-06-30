@@ -1090,7 +1090,7 @@ videoModal.addEventListener('click', e => {
 
   // 1) 시간 옵션 생성
   const timeOptions = [];
-  for (let h = 0; h <= 28; h++) {
+  for (let h = 0; h <= 32; h++) {
     const hour = h < 10 ? `0${h}` : `${h}`;
     ["00","30"].forEach(min => {
       timeOptions.push(`<option value="${hour}:${min}">${hour}:${min}</option>`);
