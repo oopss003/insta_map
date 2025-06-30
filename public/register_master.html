@@ -872,6 +872,9 @@
     function loadStoreToForm(doc) {
       const data = doc.data();
 
+      // ★ 여기에 추가 ★
+      const rawHours = data.hours || {};
+      
       document.querySelector('[name=name]').value = data.name;
       document.querySelector('[name=insta_id]').value = data.insta;
       document.querySelector('[name=desc]').value = data.desc;
