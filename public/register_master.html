@@ -1042,8 +1042,9 @@
           store.photo = await ref.getDownloadURL();
         }
 
-        const storeRef = db.collection('stores').doc(USER_EMAIL);
-        await storeRef.set(store, { merge: true });
+        const storeRef = editingId
+          ? db.collection('stores').doc(editingId)   // 선택된 문서 수정
+          : db.collection('stores').doc();           // 없으면 새 문서 생성
         alert('저장되었습니다!');
 
         // 폼 초기화 및 지도 마커 제거
