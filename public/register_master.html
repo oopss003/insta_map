@@ -835,11 +835,26 @@
       document.querySelector('[name=hashtags]').value = (data.hashtags || []).join(', ');
 
       // 오픈/마감 시간, 브레이크 타임, 쉬는 날 로드
-      document.querySelector('[name=openTime]').value = data.openTime || '';
-      document.querySelector('[name=closeTime]').value = data.closeTime || '';
-      document.querySelector('[name=breakStart]').value = data.breakStart || '';
-      document.querySelector('[name=breakEnd]').value = data.breakEnd || '';
 
+      // --- 요일별 셀렉트 박스에 값 채우기 ---
+      const days = ['월','화','수','목','금','토','일'];
+      days.forEach(day => {
+        const h = data.hours?.[day] || { time: {}, break: {}, lastOrder: {} };
+        // open / close
+        const selOpen  = document.querySelector(`select[name="${day}_open"]`);
+        const selClose = document.querySelector(`select[name="${day}_close"]`);
+        if (selOpen)  selOpen.value  = h.time.start    || '';
+        if (selClose) selClose.value = h.time.end      || '';
+        // break start / end
+        const selBgn = document.querySelector(`select[name="${day}_break_start"]`);
+        const selEnd = document.querySelector(`select[name="${day}_break_end"]`);
+        if (selBgn) selBgn.value = h.break.start || '';
+        if (selEnd) selEnd.value = h.break.end   || '';
+        // last order
+        const selLo = document.querySelector(`select[name="${day}_last_order"]`);
+        if (selLo) selLo.value = h.lastOrder.time || '';
+      });
+      
       // 쉬는 날 체크박스 초기화 및 체크
       document.querySelectorAll('[name="offDays[]"]').forEach(cb => cb.checked = false);
       (data.offDays || []).forEach(day => {
