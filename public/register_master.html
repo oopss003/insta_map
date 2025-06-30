@@ -812,8 +812,8 @@
               db.collection('stores').doc(doc.id).get().then(fresh => {
                 editingId = fresh.id;
                 loadStoreToForm(fresh);
+              });
             });
-          });
         })
         .catch(err => console.error('가게 불러오기 실패:', err));
       
@@ -1056,7 +1056,6 @@
         // 폼 초기화 및 지도 마커 제거
         document.getElementById('storeForm').reset();
         if (marker) marker.setMap(null);
-        editingId = "";
         saveBtn.textContent = "저장";
 
       } catch (err) {
