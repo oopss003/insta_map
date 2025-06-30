@@ -465,7 +465,9 @@
     const now = new Date();
     const dayMap = ['일','월','화','수','목','금','토'];
     const todayStr   = dayMap[now.getDay()];
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    let nowMinutes = now.getHours() * 60 + now.getMinutes();
+    // 새벽 0-3시는 24 h를 더해 25~27시로 보정
+    if (nowMinutes < 180) nowMinutes += 1440;
 
     const bounds = map.getBounds();
   
@@ -509,11 +511,19 @@
         const openMin  = toMinutes(openTime);
         const closeMin = toMinutes(closeTime);
         if (openMin && closeMin && (nowMinutes < openMin || nowMinutes >= closeMin)) return;
+        if (openMin && closeMin) {
+          let s = openMin, e = closeMin;
+          if (e <= s) e += 1440;        // 자정 넘어가는 영업(예: 16:00~28:00)
+          // 새벽 보정: close가 24시 이상이면 now도 맞춰 줌
+          if (nowMinutes < s) nowMinutes += 1440;
+          if (nowMinutes < s || nowMinutes >= e) return;
 
         if (breakStart && breakEnd) {
-          const bs = toMinutes(breakStart);
-          const be = toMinutes(breakEnd);
-          if (nowMinutes >= bs && nowMinutes < be) return;
+          let bs = toMinutes(breakStart);
+          let be = toMinutes(breakEnd);
+          if (be <= bs) be += 1440;         // 브레이크가 자정 넘기면
+          let cur = nowMinutes < bs ? nowMinutes + 1440 : nowMinutes;
+          if (cur >= bs && cur < be) return;
         }
 
         let newLat = Number(lat);
