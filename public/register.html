@@ -421,9 +421,62 @@
     max-width: 100%;
     margin: 0 auto; /* 중앙 정렬 유지 */
   }
-
+  
+  .dayoff-box {
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    width: 344px;
+    margin-top: 20px;
+  }
+  
+  .dayoff-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .dayoff-controls select,
+  .dayoff-controls button {
+    padding: 6px 10px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    flex: 1;
+    white-space: nowrap;
+  }
+  
+  .dayoff-controls button {
+    background: #f0f0f0;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  .dayoff-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  
+  .dayoff-list li {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    justify-content: space-between;
+  }
+  
+  .remove-btn {
+    color: red;
+    font-weight: bold;
+    margin-right: 8px;
+    cursor: pointer;
+  }
   </style>
-
 
 </head>
 <body>
@@ -600,36 +653,36 @@
         </div>
       </div>
 
-      <label style="font-weight:700; margin-top: 16px;">쉬는 날</label>
-      <div class="off-days">
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="월" />
-          <span>월</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="화" />
-          <span>화</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="수" />
-          <span>수</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="목" />
-          <span>목</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="금" />
-          <span>금</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="토" />
-          <span>토</span>
-        </label>
-        <label class="day-box">
-          <input type="checkbox" name="offDays[]" value="일" />
-          <span>일</span>
-        </label>
+      <!-- 쉬는날 설정 영역 -->
+      <div class="dayoff-box">
+        <div class="dayoff-controls">
+          <select id="daySelect">
+            <option value="">요일</option>
+            <option value="월">월</option>
+            <option value="화">화</option>
+            <option value="수">수</option>
+            <option value="목">목</option>
+            <option value="금">금</option>
+            <option value="토">토</option>
+            <option value="일">일</option>
+          </select>
+      
+          <select id="repeatSelect">
+            <option value="">선택 안함</option>
+            <option value="매주">매주</option>
+            <option value="1주차">1주차</option>
+            <option value="2주차">2주차</option>
+            <option value="3주차">3주차</option>
+            <option value="4주차">4주차</option>
+            <option value="1,3주차">1,3주차</option>
+            <option value="2,4주차">2,4주차</option>
+            <option value="마지막주">마지막주</option>
+          </select>
+      
+          <button id="addDayOff">저장</button>
+        </div>
+      
+        <ul id="dayoffList" class="dayoff-list"></ul>
       </div>
 
     <label>위도</label>
@@ -982,6 +1035,36 @@ document.getElementById("copyMonday").addEventListener("click", () => {
   });
 
   alert("월요일의 시간이 화~일요일에 복사되었습니다.");
+});
+
+const daySelect = document.getElementById("daySelect");
+const repeatSelect = document.getElementById("repeatSelect");
+const addBtn = document.getElementById("addDayOff");
+const list = document.getElementById("dayoffList");
+
+addBtn.addEventListener("click", () => {
+  const day = daySelect.value;
+  const repeat = repeatSelect.value;
+
+  if (!day || !repeat) {
+    alert("요일과 반복 조건을 모두 선택해주세요.");
+    return;
+  }
+
+  const key = `${day}-${repeat}`;
+  if ([...list.children].some(li => li.dataset.key === key)) {
+    alert("이미 추가된 항목입니다.");
+    return;
+  }
+
+  const li = document.createElement("li");
+  li.dataset.key = key;
+  li.innerHTML = `
+    <span class="remove-btn">−</span> ${day}요일 ${repeat}
+  `;
+  li.querySelector(".remove-btn").addEventListener("click", () => li.remove());
+
+  list.appendChild(li);
 });
 </script>
 
