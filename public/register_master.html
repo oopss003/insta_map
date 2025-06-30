@@ -747,6 +747,19 @@
       zoom: 15
     });
 
+    // ────────── 여기에 추가 ──────────
+    /**
+     * text: 마커에 표시할 문자열
+     */
+    function createMarkerIconWithText(text) {
+      return {
+        content: `<div class="custom-marker">${text}</div>`,
+        size: new naver.maps.Size(0, 0),
+        anchor: new naver.maps.Point(0, 0)
+      };
+    }
+    // ────────── 추가 끝 ──────────
+    
     // 3) 모든 가게 데이터 불러와 마커 표시
     db.collection('stores').get()
       .then(snapshot => {
@@ -755,9 +768,11 @@
           const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
           if (isNaN(lat) || isNaN(lng)) return;
   
+          // 기존 new naver.maps.Marker 대신 icon에 helper 사용
           const storeMarker = new naver.maps.Marker({
             position: new naver.maps.LatLng(lat, lng),
-            map: map
+            map: map,
+            icon: createMarkerIconWithText(data.name)  // 여기에 매장 이름(text)을 넣어줍니다
           });
   
           storeMarker.setCursor('pointer');
