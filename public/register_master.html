@@ -781,16 +781,14 @@
         zoom: 15
       });
       
-      /* 1) 내 매장(USER_EMAIL) 문서를 한 번만 로드 */
-      db.collection('stores').doc(USER_EMAIL).get()
+      /* 1) 내 매장(USER_EMAIL) 문서를 한 번만 로드 (항상 서버 최신본) */
+      db.collection('stores')
+        .doc(USER_EMAIL)
+        .get({ source: 'server' })          // ← 서버에서 최신 스냅샷
         .then(doc => {
-          if (doc.exists) {
-            editingId = doc.id;                       // 처음엔 내 문서를 편집 대상
-            loadStoreToForm({ id: doc.id, data: () => doc.data() });
-            db.collection('stores').doc(doc.id).get().then(fresh => {
-              loadStoreToForm(fresh);       // 항상 최신 데이터로 로드
-              editingId = fresh.id;         // 현재 편집 대상 유지
-            });
+          if (!doc.exists) return;          // 문서 없으면 넘어감
+          editingId = doc.id;               // 편집 대상 docId 저장
+          loadStoreToForm(doc);             // 폼에 최신 데이터 채우기
         })
         .catch(err => console.error('내 매장 로드 실패:', err));
       
