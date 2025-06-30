@@ -342,47 +342,53 @@
     transform: scale(0.96);
     transition: transform 0.05s ease-in-out;
   }
+  
   .day-hours-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center; /* 중앙 정렬 */
-    gap: 16px; /* 요일별 간격 */
-    margin-top: 16px;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
   }
   
   .day-row {
     background-color: #fff;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-    padding: 16px;
-    width: 90%;
-    max-width: 400px; /* 반응형 폭 제한 */
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     box-sizing: border-box;
   }
   
   .day-name {
     font-weight: bold;
-    margin-bottom: 8px;
+    font-size: 16px;
+    margin-bottom: 12px;
   }
   
   .time-fields {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
   }
   
-  .time-fields select,
-  .time-fields input {
-    flex: 1 1 45%; /* 두 개씩 나란히 */
-    min-width: 120px;
+  .time-fields label {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+  
+  .time-fields select {
+    width: 100%;
     padding: 8px;
     border-radius: 6px;
     border: 1px solid #ccc;
     font-size: 14px;
-    background: #f9f9f9;
+    background-color: #f9f9f9;
   }
-
   </style>
+
 
 </head>
 <body>
@@ -452,71 +458,106 @@
         <div class="day-row" data-day="월">
           <div class="day-name">월</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="월_open"></select>
+            <label>마감 시간</label>
             <select name="월_close"></select>
+            <label>브레이크 시작</label>
             <select name="월_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="월_break_end"></select>
-            <input name="월_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <select name="월_last_order"></select>
           </div>
         </div>
         <div class="day-row" data-day="화">
           <div class="day-name">화</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="화_open"></select>
+            <label>마감 시간</label>
             <select name="화_close"></select>
+            <label>브레이크 시작</label>
             <select name="화_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="화_break_end"></select>
-            <input name="화_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="화_last_order"></select>
           </div>
         </div>
         <div class="day-row" data-day="수">
           <div class="day-name">수</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="수_open"></select>
+            <label>마감 시간</label>
             <select name="수_close"></select>
+            <label>브레이크 시작</label>
             <select name="수_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="수_break_end"></select>
-            <input name="수_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="수_last_order"></select>
           </div>
         </div>
         <div class="day-row" data-day="목">
           <div class="day-name">목</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="목_open"></select>
+            <label>마감 시간</label>
             <select name="목_close"></select>
+            <label>브레이크 시작</label>
             <select name="목_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="목_break_end"></select>
-            <input name="목_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="목_last_order"></select>
           </div>
         </div>
         <div class="day-row" data-day="금">
           <div class="day-name">금</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="금_open"></select>
+            <label>마감 시간</label>
             <select name="금_close"></select>
+            <label>브레이크 시작</label>
             <select name="금_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="금_break_end"></select>
-            <input name="금_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="금_last_order"></select>
           </div>
         </div>
         <div class="day-row" data-day="토">
           <div class="day-name">토</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="토_open"></select>
+            <label>마감 시간</label>
             <select name="토_close"></select>
+            <label>브레이크 시작</label>
             <select name="토_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="토_break_end"></select>
-            <input name="토_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="토_last_order"></select>
           </div>
         </div>
                 <div class="day-row" data-day="일">
           <div class="day-name">일</div>
           <div class="time-fields">
+            <label>오픈 시간</label>
             <select name="일_open"></select>
+            <label>마감 시간</label>
             <select name="일_close"></select>
+            <label>브레이크 시작</label>
             <select name="일_break_start"></select>
+            <label>브레이크 종료</label>
             <select name="일_break_end"></select>
-            <input name="일_last_order" placeholder="라스트오더 (선택)" />
+            <label>라스트오더</label>
+            <input name="일_last_order"></select>
           </div>
         </div>
       </div>
@@ -885,11 +926,12 @@ for (let h = 0; h <= 27; h++) {
 }
 
 ['월', '화', '수', '목', '금', '토', '일'].forEach(day => {
-  ['open', 'close', 'break_start', 'break_end'].forEach(type => {
+  ['open', 'close', 'break_start', 'break_end', 'last_order'].forEach(type => {
     const sel = document.querySelector(`select[name="${day}_${type}"]`);
     if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
   });
 });
+
 </script>
 
 </body>
