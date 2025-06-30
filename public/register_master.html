@@ -1113,80 +1113,53 @@ videoModal.addEventListener('click', e => {
 </script>
 <!-- 기존 모달 및 기타 스크립트 아래에 추가 -->
 <script>
-// 👉 여기 붙여넣기
-const timeOptions = [];
-for (let h = 0; h <= 27; h++) {
-  const hourLabel = h < 10 ? `0${h}` : `${h}`;
-  ["00", "30"].forEach(min => {
-    const label = `${hourLabel}:${min}`;
-    timeOptions.push(`<option value="${label}">${label}</option>`);
-  });
-}
 
-['월','화','수','목','금','토','일'].forEach(day => {
-  ['open','close','break_start','break_end','last_order'].forEach(type => {
-    const sel = document.querySelector(`select[name="${day}_${type}"]`);
-    if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
-  });
-});
-document.getElementById("copyMonday").addEventListener("click", () => {
-  const fields = ["open", "close", "break_start", "break_end", "last_order"];
-  const days = ["화", "수", "목", "금", "토", "일"];
-
-  fields.forEach(field => {
-    const monVal = document.querySelector(`select[name="월_${field}"]`)?.value || "";
-    days.forEach(day => {
-      const target = document.querySelector(`select[name="${day}_${field}"]`);
-      if (target) target.value = monVal;
+  // 1) 시간 옵션 생성
+  const timeOptions = [];
+  for (let h = 0; h <= 27; h++) {
+    const hour = h < 10 ? `0${h}` : `${h}`;
+    ["00","30"].forEach(min => {
+      timeOptions.push(`<option value="${hour}:${min}">${hour}:${min}</option>`);
+    });
+  }
+  ['월','화','수','목','금','토','일'].forEach(day => {
+    ['open','close','break_start','break_end','last_order'].forEach(type => {
+      const sel = document.querySelector(`select[name="${day}_${type}"]`);
+      if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
     });
   });
 
-  alert("월요일의 시간이 화~일요일에 복사되었습니다.");
-});
-
-const daySelect = document.getElementById("daySelect");
-const repeatSelect = document.getElementById("repeatSelect");
-const addBtn = document.getElementById("addDayOff");
-const list = document.getElementById("dayoffList");
-
-addBtn.addEventListener("click", () => {
-  const day = daySelect.value;
-  const repeat = repeatSelect.value;
-
-  if (!day || !repeat) {
-    alert("요일과 반복 조건을 모두 선택해주세요.");
-    return;
-  }
-
-  const key = `${day}-${repeat}`;
-  if ([...list.children].some(li => li.dataset.key === key)) {
-    alert("이미 추가된 항목입니다.");
-    return;
-  }
-
-  const li = document.createElement("li");
-  li.dataset.key = key;
-  li.innerHTML = `
-    <span class="remove-btn">−</span> ${day}요일 ${repeat}
-  `;
-  li.querySelector(".remove-btn").addEventListener("click", () => li.remove());
-
-  list.appendChild(li);
-});
-
-    const timeOptions = [];
-    for (let h = 0; h <= 27; h++) {
-      const hour = h < 10 ? `0${h}` : `${h}`;
-      ["00","30"].forEach(min => {
-        timeOptions.push(`<option value="${hour}:${min}">${hour}:${min}</option>`);
+  // 2) 월요일 복사 버튼
+  document.getElementById("copyMonday").addEventListener("click", () => {
+    const fields = ["open","close","break_start","break_end","last_order"];
+    const days = ["화","수","목","금","토","일"];
+    fields.forEach(field => {
+      const val = document.querySelector(`select[name="월_${field}"]`).value;
+      days.forEach(d => {
+        const target = document.querySelector(`select[name="${d}_${field}"]`);
+        if (target) target.value = val;
       });
+    });
+    alert("월요일 시간이 복사되었습니다.");
+  });
+
+  // 3) 쉬는 날 추가 버튼
+  const addBtn = document.getElementById("addDayOff");
+  const list   = document.getElementById("dayoffList");
+  addBtn.addEventListener("click", () => {
+    const day = document.getElementById("daySelect").value;
+    const repeat = document.getElementById("repeatSelect").value;
+    if (!day || !repeat) return alert("요일과 반복조건을 선택하세요.");
+    const key = `${day}-${repeat}`;
+    if ([...list.children].some(li => li.dataset.key===key)) {
+      return alert("이미 추가된 항목입니다.");
     }
-    ['월','화','수','목','금','토','일'].forEach(day => {
-      ['open','close','break_start','break_end','last_order'].forEach(type => {
-        const sel = document.querySelector(`select[name="${day}_${type}"]`);
-        if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
-      });
-    });
-  </script>
+    const li = document.createElement("li");
+    li.dataset.key = key;
+    li.innerHTML = `<span class="remove-btn">−</span> ${day}요일 ${repeat}`;
+    li.querySelector(".remove-btn").addEventListener("click", ()=>li.remove());
+    list.appendChild(li);
+  });
+</script>
 </body>
 </html>
