@@ -387,6 +387,7 @@
     font-size: 14px;
     background-color: #f9f9f9;
   }
+    
   </style>
 
 
@@ -451,6 +452,17 @@
       <input name="vimeo" id="vimeo" type="text" placeholder="동영상은 검수를 통해 업로드 됩니다." />
     </div>
 
+    <!-- 다른 요일에 복사 버튼 -->
+    <button type="button" id="copyMonday" style="
+      background-color: #f0f0f0;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      font-weight: bold;
+    ">다른요일에 복사</button>
+  
     <div class="custom-field-box">
       <label style="font-weight:700; margin-top: 24px;">요일별 영업시간</label>
 
@@ -931,7 +943,20 @@ for (let h = 0; h <= 27; h++) {
     if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
   });
 });
+document.getElementById("copyMonday").addEventListener("click", () => {
+  const fields = ["open", "close", "break_start", "break_end", "last_order"];
+  const days = ["화", "수", "목", "금", "토", "일"];
 
+  fields.forEach(field => {
+    const monVal = document.querySelector(`select[name="월_${field}"]`)?.value || "";
+    days.forEach(day => {
+      const target = document.querySelector(`select[name="${day}_${field}"]`);
+      if (target) target.value = monVal;
+    });
+  });
+
+  alert("월요일의 시간이 화~일요일에 복사되었습니다.");
+});
 </script>
 
 </body>
