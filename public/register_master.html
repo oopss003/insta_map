@@ -3,70 +3,817 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-  <title>내 매장 수정 (관리자용)</title>
-  <!-- 네이버 지도 API -->
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=qpbrmxiff4"></script>
-  <!-- Firebase SDK -->
+  <title>가게 등록</title>
+
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+
   <style>
-    body { font-family: 'Pretendard', sans-serif; margin:0; padding:0; }
-    #header { padding:16px; background:#fff; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
-    #header h1 { margin:0; font-size:20px; }
-    #map { width:100vw; height:80vh; }
-    .custom-marker { display:inline-block; background:#2d8cff; color:#fff; padding:4px 8px; border-radius:4px; white-space:nowrap; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
-    .info-form { display:flex; flex-direction:column; gap:8px; width:320px; }
-    .info-form input, .info-form textarea, .info-form button { width:100%; padding:8px; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; }
-    .info-form button { background:#2d8cff; color:#fff; border:none; font-weight:600; cursor:pointer; }
-    .info-form label { margin-top:8px; font-size:14px; }
+  body {
+    font-family: 'Pretendard', sans-serif;
+    background: #f5f6fb;
+    margin: 0 auto;
+    padding: 0;
+    max-width: 480px;
+  }
+
+  #header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px;
+    box-sizing: border-box;
+  }
+
+  .back-button {
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 28px;
+    text-decoration: none;
+    color: #000;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .store-button {
+    width: 255px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  #header h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+
+  #map {
+    width: 344px;
+    height: 344px;
+    margin: 0 auto 16px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+
+  .btn-group {
+    width: 344px;
+    margin: 0 auto 16px;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .main-btn {
+    height: 35px;
+    border-radius: 16px;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 0 16px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    flex: 1;
+  }
+
+  #getLocBtn {
+    background: #0F9ED5;
+    color: white;
+  }
+
+  #helpVideoBtn {
+    background: #999;
+    color: white;
+  }
+
+  form#storeForm {
+    width: 100%;
+    max-width: 344px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 🔥 중앙 정렬 핵심 */
+    gap: 12px;
+  }
+
+  form#storeForm label {
+    font-weight: 700;
+    margin-top: 12px;
+  }
+
+  input,
+  textarea,
+  select {
+    width: 100%;
+    padding: 14px;
+    border-radius: 16px;
+    border: 1px solid #ddd;
+    font-size: 15px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+  }
+
+  textarea {
+    resize: none;
+  }
+
+  .off-days {
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+    margin-top: 8px;
+    margin-bottom: 20px;
+  }
+
+  .off-days label {
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    font-weight: 600;
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s ease
+  }
+
+  .off-days input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 16px;
+    height: 16px;
+    accent-color: #2d8cff; /* 선택 시 색상 지정 */
+    z-index: 1;
+  }
+    
+  #saveBtn {
+    width: 100%;
+    background: #2d8cff;
+    color: #fff;
+    margin-top: 24px;
+    padding: 16px;
+    font-size: 16px;
+    border-radius: 16px;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  .custom-field-box {
+    width: 344px;
+    height: 77px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+    box-sizing: border-box;
+    margin-bottom: 12px; /
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+  .custom-field-box day {
+    width: 344px;
+    height: 300px;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    padding: 8px 12px;
+    box-sizing: border-box;
+    margin-bottom: 12px; /
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .custom-field-box label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    margin: 0;
+  }
+
+  .custom-field-box input,
+  .custom-field-box textarea,
+  .custom-field-box select {
+    border: none;
+    outline: none;
+    font-size: 15px;
+    padding: 4px 10;
+    background: none;
+    resize: none;
+    box-sizing: border-box; /* 이거도 추가 추천 */
+  }
+
+  .custom-field-box select {
+    width: 100%;
+    height: 36px;
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    color: #000;
+    appearance: none; /* 기본 셀렉트 화살표 제거 */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+  }
+  .off-days {
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+
+  .off-days label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    position: relative;
+  }
+
+  .off-days input[type="checkbox"] {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    transform: scale(1.2);
+  }
+    
+  .custom-header {
+    width: 368px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 16px auto 12px;
+    gap: 12px;
+  }
+
+  .back-button {
+    background: #fff;
+    border-radius: 16px;
+    width: 77px;
+    height: 77px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    flex-shrink: 0;
+  }
+
+  .greeting-box {
+    width: 255px;
+    height: 77px;
+    background: #fff;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 12px;
+    box-sizing: border-box;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: left;
+  }
+
+  .greeting-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+
+  .greeting-sub {
+    font-size: 14px;
+    color: #888;
+    line-height: 1.4;
+  }
+
+  .off-days {
+    display: grid;
+    grid-template-columns: repeat(4, 77px);
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .day-box {
+    display: inline-block;
+    width: 77px;
+    height: 77px;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* 체크박스 숨기기 */
+  .day-box input[type="checkbox"] {
+    display: none;
+  }
+
+  /* 선택된 경우 스타일 변경 */
+  .day-box input[type="checkbox"]:checked + span {
+    background-color: #2d8cff;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
+  }    
+
+  .custom-button:active {
+    transform: scale(0.96);
+    transition: transform 0.05s ease-in-out;
+  }
+  
+  .day-hours-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .day-row {
+    background-color: #fff;
+    padding: 20px;
+    width: 100%;
+    max-width: 500px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+  
+  .day-name {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  
+  .time-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  
+  .time-fields label {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+  
+  .time-fields select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  #copyMonday {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+  } 
+    .day-row {
+    width: 344px;
+    max-width: 100%;
+    margin: 0 auto; /* 중앙 정렬 유지 */
+  }
+  
+  .dayoff-box {
+  width: 344px;
+  padding: 16px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  margin-top: 20px;
+  margin-bottom: 24px;
+  box-sizing: border-box;  /* ✅ 이 줄 추가 */
+}
+  
+  .dayoff-controls {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  
+  .dayoff-controls select,
+  .dayoff-controls button {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fff;
+    box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    cursor: pointer;
+  }
+    
+  .dayoff-controls button {
+    font-weight: bold;
+  }
+  
+  .dayoff-list {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+  }
+  
+  .dayoff-list li {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+  }
+    
+  .fixed-344 {
+    width: 344px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
+  
+  .input-344 {
+    width: 344px;
+    max-width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  .remove-btn {
+    color: red;
+    font-weight: bold;
+    margin-right: 8px;
+    cursor: pointer;
+  }
   </style>
+
 </head>
 <body>
-  <div id="header"><h1>관리자 페이지: 내 매장 수정</h1></div>
+    <div id="loadingOverlay" style="display:none;">
+    <div class="spinner"></div>
+  </div>
+    <div id="header" class="custom-header">
+      <a href="https://inwave.ai.kr/mypage.html" class="back-button custom-button" aria-label="뒤로가기">
+        <span>&lt;</span>
+      </a>
+    
+      <div class="greeting-box">
+        <div class="greeting-title">매장 등록</div>
+        <div class="greeting-sub">필수 정보를 입력해주세요.</div>
+      </div>
+    </div>
+
   <div id="map"></div>
+  
+<div class="btn-group">
+  <button type="button" id="getLocBtn" class="main-btn">현재 위치 가져오기</button>
+  <button type="button" id="helpVideoBtn" class="main-btn">참고 영상</button>
+</div>
+
+  <form id="storeForm">
+    <div class="custom-field-box">
+      <label for="hashtags">해시태그 (고객에게 노출되는 문구)</label>
+      <input name="hashtags" id="hashtags" placeholder="#직관적으로 볼 수 있는 이름으로 5글자 미만" />
+    </div>
+    
+    <div class="custom-field-box">
+      <label for="name">가게 이름</label>
+      <input name="name" id="name" required />
+    </div>
+
+    <div class="custom-field-box">
+      <label for="insta_id">인스타그램 ID (@ 제외)</label>
+      <input name="insta_id" id="insta_id" required />
+    </div>
+
+    <div class="custom-field-box" style="height: auto; min-height: 120px;">
+      <label for="desc">가게 설명</label>
+      <textarea name="desc" id="desc" rows="4"></textarea>
+    </div>
+
+    <div class="custom-field-box">
+      <label for="phone">전화번호</label>
+      <input name="phone" id="phone" type="tel" placeholder="예: 010-1234-5678" />
+    </div>
+    
+    <!-- 가게 사진 -->
+    <div class="custom-field-box" style="height: auto;">
+      <label for="photo">가게 사진 (선택) <small style="font-weight:400">(메인이미지로 등록됩니다.)</small></label>
+      <input type="file" id="photo" accept="image/*" />
+    </div>
+
+    <!-- Vimeo 동영상 -->
+    <div class="custom-field-box">
+      <label for="vimeo">Vimeo 동영상</label>
+      <input name="vimeo" id="vimeo" type="text" placeholder="동영상은 검수를 통해 업로드 됩니다." />
+    </div>
+  
+    <div class="custom-field-box day">
+      <label style="font-weight:700; margin-top: 24px;">요일별 영업시간</label>
+      <!-- 다른 요일에 복사 버튼 -->
+      <button type="button" id="copyMonday">다른요일에 복사</button>
+    </div>
+      
+      <div class="day-hours-wrapper">
+        <div class="day-row" data-day="월">
+          <div class="day-name">월</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="월_open"></select>
+            <label>마감 시간</label>
+            <select name="월_close"></select>
+            <label>브레이크 시작</label>
+            <select name="월_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="월_break_end"></select>
+            <label>라스트오더</label>
+            <select name="월_last_order"></select>
+          </div>
+        </div>
+        <div class="day-row" data-day="화">
+          <div class="day-name">화</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="화_open"></select>
+            <label>마감 시간</label>
+            <select name="화_close"></select>
+            <label>브레이크 시작</label>
+            <select name="화_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="화_break_end"></select>
+            <label>라스트오더</label>
+            <select name="화_last_order"></select>
+          </div>
+        </div>
+        <div class="day-row" data-day="수">
+          <div class="day-name">수</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="수_open"></select>
+            <label>마감 시간</label>
+            <select name="수_close"></select>
+            <label>브레이크 시작</label>
+            <select name="수_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="수_break_end"></select>
+            <label>라스트오더</label>
+            <select name="수_last_order"></select>
+          </div>
+        </div>
+        <div class="day-row" data-day="목">
+          <div class="day-name">목</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="목_open"></select>
+            <label>마감 시간</label>
+            <select name="목_close"></select>
+            <label>브레이크 시작</label>
+            <select name="목_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="목_break_end"></select>
+            <label>라스트오더</label>
+            <select name="목_last_order"></select>
+          </div>
+        </div>
+        <div class="day-row" data-day="금">
+          <div class="day-name">금</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="금_open"></select>
+            <label>마감 시간</label>
+            <select name="금_close"></select>
+            <label>브레이크 시작</label>
+            <select name="금_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="금_break_end"></select>
+            <label>라스트오더</label>
+            <select name="금_last_order"></select>
+          </div>
+        </div>
+        <div class="day-row" data-day="토">
+          <div class="day-name">토</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="토_open"></select>
+            <label>마감 시간</label>
+            <select name="토_close"></select>
+            <label>브레이크 시작</label>
+            <select name="토_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="토_break_end"></select>
+            <label>라스트오더</label>
+            <select name="토_last_order"></select>
+          </div>
+        </div>
+                <div class="day-row" data-day="일">
+          <div class="day-name">일</div>
+          <div class="time-fields">
+            <label>오픈 시간</label>
+            <select name="일_open"></select>
+            <label>마감 시간</label>
+            <select name="일_close"></select>
+            <label>브레이크 시작</label>
+            <select name="일_break_start"></select>
+            <label>브레이크 종료</label>
+            <select name="일_break_end"></select>
+            <label>라스트오더</label>
+            <select name="일_last_order"></select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 쉬는날 설정 영역 -->
+      <div class="dayoff-box fixed-344">
+        <div class="dayoff-controls">
+          <select id="daySelect">
+            <option value="">요일</option>
+            <option value="월">월요일</option>
+            <option value="화">화요일</option>
+            <option value="수">수요일</option>
+            <option value="목">목요일</option>
+            <option value="금">금요일</option>
+            <option value="토">토요일</option>
+            <option value="일">일요일</option>
+          </select>
+          <select id="repeatSelect">
+            <option value="">선택 안함</option>
+            <option value="매주">매주</option>
+            <option value="1주차">1주차</option>
+            <option value="2주차">2주차</option>
+            <option value="3주차">3주차</option>
+            <option value="4주차">4주차</option>
+            <option value="1,3주차">1,3주차</option>
+            <option value="2,4주차">2,4주차</option>
+            <option value="마지막주">마지막주</option>
+          </select>
+          <button id="addDayOff" type="button">저장</button>
+        </div>
+      
+        <ul id="dayoffList" class="dayoff-list"></ul>
+      </div>
+
+    <label>위도</label>
+    <input id="lat" readonly required />
+    <label>경도</label>
+    <input id="lng" readonly required />
+
+    <button id="saveBtn" type="button">저장</button>
+
+  </form>
 
   <script>
-    // 관리자 이메일
-    const ADMIN_EMAIL = 'jhpark8271@gmail.com';
+    const overlay = document.getElementById('loadingOverlay');
+    const saveBtn = document.getElementById('saveBtn');
+    let editingId = "";
 
-    // Firebase 초기화
+    // Firebase 초기화는 한 번만 수행합니다.
     const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprg9iic",
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.appspot.com",
+      storageBucket: "instamap-9b595.firebasestorage.app",
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
+    const auth = firebase.auth();
 
-    // 이미지 압축 (1MB 이하)
-    async function compressImage(file, maxBytes = 1000000) {
+    // currentUser 선언을 전역 스코프에서 한 번만 합니다.
+    let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
+
+    // onAuthStateChanged 리스너를 하나만 유지합니다.
+    auth.onAuthStateChanged(async user => {
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login.html";
+        return;
+      }
+
+      currentUser = user;
+      const email = user.email.toLowerCase();
+      localStorage.setItem("userEmail", email);
+
+      try {
+        const userDoc = await db.collection("users").doc(email).get();
+        if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
+          alert("약관 동의가 필요합니다.");
+          window.location.href = "/terms.html";
+          return;
+        }
+
+        const storeDoc = await db.collection("stores").doc(email).get(); // user.email 대신 email 변수 사용
+        if (storeDoc.exists) {
+          loadStoreToForm({ id: email, data: () => storeDoc.data() }); // user.email 대신 email 변수 사용
+        }
+      } catch (err) {
+        console.error("\u2757 Firestore 오류:", err);
+        alert("데이터 불러오는 중 오류 발생.");
+      }
+    });
+
+    const map = new naver.maps.Map('map', {
+      center: new naver.maps.LatLng(37.5665, 126.9780),
+      zoom: 15
+    });
+    let marker = null;
+
+    function setLatLng(lat, lng) {
+      document.getElementById('lat').value = lat;
+      document.getElementById('lng').value = lng;
+      if (marker) marker.setMap(null);
+      marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(lat, lng),
+        map: map
+      });
+    }
+
+    naver.maps.Event.addListener(map, 'click', e => setLatLng(e.coord.lat(), e.coord.lng()));
+    document.getElementById('getLocBtn').onclick = () => {
+      navigator.geolocation?.getCurrentPosition(pos => {
+        const { latitude, longitude } = pos.coords;
+        setLatLng(latitude, longitude);
+        map.setCenter(new naver.maps.LatLng(latitude, longitude));
+        map.setZoom(18);
+      }, () => alert('위치 권한을 허용해주세요.'));
+    };
+
+    function compressImage(file, maxBytes = 1000000) {
       return new Promise(resolve => {
+        const img = new Image();
         const reader = new FileReader();
         reader.onload = e => {
-          const img = new Image();
           img.onload = () => {
             const canvas = document.createElement('canvas');
-            const scale = Math.min(1, 500 / img.width);
+            const maxW = 500;
+            const scale = Math.min(1, maxW / img.width);
             canvas.width = img.width * scale;
             canvas.height = img.height * scale;
             const ctx = canvas.getContext('2d');
             ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
             let quality = 0.8;
-            (function step() {
+            function exportBlob() {
               canvas.toBlob(blob => {
                 if (blob.size <= maxBytes || quality < 0.4) {
                   resolve(blob);
                 } else {
                   quality -= 0.1;
-                  step();
+                  exportBlob();
                 }
               }, 'image/jpeg', quality);
-            })();
+            }
+            exportBlob();
           };
           img.src = e.target.result;
         };
@@ -74,85 +821,268 @@
       });
     }
 
-    // 지도 초기화
-    const map = new naver.maps.Map('map', { center: new naver.maps.LatLng(37.5665,126.9780), zoom: 15 });
-    const infoWindow = new naver.maps.InfoWindow({ borderWidth: 0 });
+    function parseVimeoInput(input) {
+      input = input.replace(/<script[\s\S]*?<\/script>/gi, "");
+      const iframeMatch = input.match(/<iframe[^>]+src=["']([^"']+)["']/i);
+      if (iframeMatch) return iframeMatch[1];
+      const embedMatch = input.match(/^(https?:\/\/player\.vimeo\.com\/video\/\d+(?:\?.*)?)/i);
+      if (embedMatch) return embedMatch[1];
+      const shareMatch = input.match(/^https?:\/\/vimeo\.com\/(\d+)/i);
+      if (shareMatch) return `https://player.vimeo.com/video/${shareMatch[1]}`;
+      return "";
+      }
 
-    // 매장 데이터 로드 후 마커 생성
-    db.collection('stores').doc(ADMIN_EMAIL).get().then(doc => {
-      if (!doc.exists) { alert('등록된 매장 정보가 없습니다.'); return; }
+    function loadStoreToForm(doc) {
       const data = doc.data();
-      const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(data.lat, data.lng),
-        map: map,
-        icon: {
-          content: `<div class="custom-marker">${data.name}</div>`,
-          anchor: new naver.maps.Point(0, 30)
-        }
+      editingId = currentUser.email;
+      document.querySelector('[name=name]').value = data.name;
+      document.querySelector('[name=insta_id]').value = data.insta;
+      document.querySelector('[name=desc]').value = data.desc;
+      document.querySelector('[name=phone]').value = data.phone || ""; // ✅ 추가
+      document.getElementById('lat').value = data.lat;
+      document.getElementById('lng').value = data.lng;
+      document.querySelector('[name=vimeo]').value = data.vimeo || "";
+      // 해시태그 로드 (콤마로 구분된 문자열로 변환)
+      document.querySelector('[name=hashtags]').value = (data.hashtags || []).join(', ');
+
+      // 오픈/마감 시간, 브레이크 타임, 쉬는 날 로드
+      document.querySelector('[name=openTime]').value = data.openTime || '';
+      document.querySelector('[name=closeTime]').value = data.closeTime || '';
+      document.querySelector('[name=breakStart]').value = data.breakStart || '';
+      document.querySelector('[name=breakEnd]').value = data.breakEnd || '';
+
+      // 쉬는 날 체크박스 초기화 및 체크
+      document.querySelectorAll('[name="offDays[]"]').forEach(cb => cb.checked = false);
+      (data.offDays || []).forEach(day => {
+        const checkbox = document.querySelector(`[name="offDays[]"][value="${day}"]`);
+        if (checkbox) checkbox.checked = true;
       });
-      map.setCenter(marker.getPosition());
-      marker.addListener('click', () => renderForm(data, marker));
-      renderForm(data, marker);
-    }).catch(err => {
-      console.error('데이터 로드 오류', err);
-      alert('매장 로드 중 오류가 발생했습니다.');
-    });
 
-    // 편집 폼 렌더링
-    function renderForm(data, marker) {
-      const pos = marker.getPosition();
-      const html = `
-        <div class="info-form">
-          <input type="file" id="photo" accept="image/*" />
-          <input id="name" value="${data.name || ''}" placeholder="가게 이름" />
-          <input id="insta" value="${data.insta || ''}" placeholder="인스타 ID" />
-          <textarea id="desc" placeholder="가게 설명">${data.desc || ''}</textarea>
-          <input id="phone" value="${data.phone || ''}" placeholder="전화번호" />
-          <input id="hashtags" value="${(data.hashtags||[]).join(', ')}" placeholder="해시태그" />
-          <input id="vimeo" value="${data.vimeo || ''}" placeholder="Vimeo URL" />
-          <label>오픈 시간</label>
-          <input type="time" id="openTime" value="${data.openTime || ''}" />
-          <label>마감 시간</label>
-          <input type="time" id="closeTime" value="${data.closeTime || ''}" />
-          <button id="saveBtn">저장</button>
-        </div>
-      `;
-      infoWindow.setContent(html);
-      infoWindow.open(map, marker);
-
-      setTimeout(() => {
-        document.getElementById('saveBtn').onclick = async () => {
-          try {
-            const updated = {
-              name: document.getElementById('name').value.trim(),
-              insta: document.getElementById('insta').value.trim(),
-              desc: document.getElementById('desc').value.trim(),
-              phone: document.getElementById('phone').value.trim(),
-              hashtags: document.getElementById('hashtags').value.split(',').map(t=>t.trim()).filter(Boolean),
-              vimeo: document.getElementById('vimeo').value.trim(),
-              openTime: document.getElementById('openTime').value,
-              closeTime: document.getElementById('closeTime').value,
-              lat: pos.lat(),
-              lng: pos.lng()
-            };
-            const fileInput = document.getElementById('photo');
-            if (fileInput.files.length) {
-              const blob = await compressImage(fileInput.files[0]);
-              const path = `store_photos/${Date.now()}_${fileInput.files[0].name.replace(/\s+/g, '')}`;
-              const ref = storage.ref().child(path);
-              await ref.put(blob);
-              updated.photo = await ref.getDownloadURL();
-            }
-            await db.collection('stores').doc(ADMIN_EMAIL).update(updated);
-            alert('저장되었습니다.');
-            infoWindow.close();
-          } catch (e) {
-            console.error('저장 오류', e);
-            alert('저장 중 오류가 발생했습니다.');
-          }
-        };
-      }, 0);
+      setLatLng(data.lat, data.lng);
+      document.getElementById('saveBtn').textContent = "수정 저장";
     }
+
+    document.getElementById('saveBtn').addEventListener('click', async () => {
+      overlay.style.display = 'flex';
+      saveBtn.disabled = true;
+
+      try {
+        const raw = document.querySelector('[name=hashtags]').value;
+        const tags = raw.split(',').map(t => t.trim()).filter(Boolean);
+        const invalid = tags.filter(t => Array.from(t).length > 6);
+        if (invalid.length) {
+          alert(`다음 해시태그는 6글자를 초과합니다:\n${invalid.join(', ')}`);
+          return;
+        }
+
+        const rawInput = document.querySelector('[name=vimeo]').value.trim();
+        const vimeoUrl = rawInput ? parseVimeoInput(rawInput) : "";
+        if (rawInput && !vimeoUrl) {
+          alert('유효한 Vimeo 링크나 <iframe> 코드를 넣어주세요.');
+          return;
+        }
+
+        const openTime = document.querySelector('[name=openTime]').value;
+        const closeTime = document.querySelector('[name=closeTime]').value;
+        const breakStart = document.querySelector('[name=breakStart]').value;
+        const breakEnd = document.querySelector('[name=breakEnd]').value;
+        const offDays = Array.from(document.querySelectorAll('[name="offDays[]"]:checked')).map(cb => cb.value);
+
+
+        // currentUser가 null일 경우 다시 로그인 경고 및 리턴
+        if (!currentUser) {
+          alert('로그인 후 등록이 가능합니다.');
+          window.location.href = "/login.html"; // 로그인 페이지로 리다이렉트 추가
+          return;
+        }
+
+        const days = ['월', '화', '수', '목', '금', '토', '일'];
+        const hours = {};
+        days.forEach(day => {
+          hours[day] = {
+            time: {
+              start: document.querySelector(`[name="${day}_open"]`)?.value || "",
+              end: document.querySelector(`[name="${day}_close"]`)?.value || ""
+            },
+            break: {
+              start: document.querySelector(`[name="${day}_break_start"]`)?.value || "",
+              end: document.querySelector(`[name="${day}_break_end"]`)?.value || ""
+            },
+            lastOrder: {
+              time: document.querySelector(`[name="${day}_last_order"]`)?.value || ""
+            }
+          };
+        });
+        const dayOff = offDays.map(day => ({
+          day,
+          repeat: "매주"
+        }));
+        
+        const store = {
+          name: document.querySelector('[name=name]').value.trim(),
+          insta: document.querySelector('[name=insta_id]').value.trim(),
+          desc: document.querySelector('[name=desc]').value.trim(),
+          phone: document.querySelector('[name=phone]').value.trim(),
+          lat: parseFloat(document.getElementById('lat').value),
+          lng: parseFloat(document.getElementById('lng').value),
+          photo: "",
+          vimeo: vimeoUrl,
+          hashtags: tags,
+          hours,         // ✅ 새 구조 반영
+          dayOff,        // ✅ 쉬는 날 구조
+          userEmail: currentUser.email,
+          created: firebase.firestore.FieldValue.serverTimestamp()
+        };
+
+        if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng) || !openTime || !closeTime) {
+          alert('필수 항목을 모두 입력해주세요.');
+          return;
+        }
+
+        const file = document.getElementById('photo').files[0];
+        if (file) {
+          const blob = await compressImage(file);
+          const filename = `store_photos/${Date.now()}_${file.name.replace(/\s+/g, '')}`;
+          const ref = storage.ref().child(filename);
+          await ref.put(blob);
+          store.photo = await ref.getDownloadURL();
+        }
+
+        const storeRef = db.collection('stores').doc(currentUser.email);
+        if (editingId) {
+          // 사진을 새로 업로드하지 않았다면 기존 photo 필드 유지
+          if (!file) {
+             const existingStore = await storeRef.get();
+             if (existingStore.exists) {
+               store.photo = existingStore.data().photo || "";
+             }
+          }
+          await storeRef.update(store);
+          alert('수정되었습니다!');
+          window.location.href = "/mypage.html";  // ✅ 수정 후 마이페이지로 이동
+        } else {
+          const exists = await storeRef.get();
+          if (exists.exists) {
+            alert("이미 등록된 가게입니다. 수정 모드로 전환됩니다.");
+            loadStoreToForm({ id: currentUser.email, data: () => exists.data() });
+            return;
+          }
+          await storeRef.set(store);
+          alert('등록되었습니다!');
+          window.location.href = "/mypage.html";  // ✅ 신규 등록 후 마이페이지로 이동
+        }
+
+        // 폼 초기화 및 지도 마커 제거
+        document.getElementById('storeForm').reset();
+        if (marker) marker.setMap(null);
+        editingId = "";
+        saveBtn.textContent = "저장";
+
+      } catch (err) {
+        console.error(err);
+        alert('저장 중 오류가 발생했습니다.');
+      } finally {
+        overlay.style.display = 'none';
+        saveBtn.disabled = false;
+      }
+    });
   </script>
+
+  
+  <div id="videoModal" class="modal">
+  <div class="modal-content">
+    <button id="closeVideo">&times;</button>
+    <iframe
+      id="videoFrame"
+      src=""
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen></iframe>
+  </div>
+</div>
+<script>
+/* === 참고 영상 모달 === */
+const videoModal = document.getElementById('videoModal');
+const videoFrame = document.getElementById('videoFrame');
+const helpBtn    = document.getElementById('helpVideoBtn');
+const closeBtn   = document.getElementById('closeVideo');
+
+helpBtn.addEventListener('click', () => {
+  const url = 'https://player.vimeo.com/video/1091824548?h=bfd071815a&autoplay=1&muted=1';
+  videoFrame.src = url;
+  videoModal.style.display = 'flex';
+});
+
+function hideModal() {
+  videoFrame.src = '';
+  videoModal.style.display = 'none';
+}
+closeBtn.addEventListener('click', hideModal);
+videoModal.addEventListener('click', e => {
+  if (e.target === videoModal) hideModal();
+});
+</script>
+<!-- 기존 모달 및 기타 스크립트 아래에 추가 -->
+<script>
+// 👉 여기 붙여넣기
+const timeOptions = [];
+for (let h = 0; h <= 27; h++) {
+  const label = h < 10 ? `0${h}:00` : `${h}:00`;
+  timeOptions.push(`<option value="${label}">${label}</option>`);
+}
+
+['월', '화', '수', '목', '금', '토', '일'].forEach(day => {
+  ['open', 'close', 'break_start', 'break_end', 'last_order'].forEach(type => {
+    const sel = document.querySelector(`select[name="${day}_${type}"]`);
+    if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
+  });
+});
+document.getElementById("copyMonday").addEventListener("click", () => {
+  const fields = ["open", "close", "break_start", "break_end", "last_order"];
+  const days = ["화", "수", "목", "금", "토", "일"];
+
+  fields.forEach(field => {
+    const monVal = document.querySelector(`select[name="월_${field}"]`)?.value || "";
+    days.forEach(day => {
+      const target = document.querySelector(`select[name="${day}_${field}"]`);
+      if (target) target.value = monVal;
+    });
+  });
+
+  alert("월요일의 시간이 화~일요일에 복사되었습니다.");
+});
+
+const daySelect = document.getElementById("daySelect");
+const repeatSelect = document.getElementById("repeatSelect");
+const addBtn = document.getElementById("addDayOff");
+const list = document.getElementById("dayoffList");
+
+addBtn.addEventListener("click", () => {
+  const day = daySelect.value;
+  const repeat = repeatSelect.value;
+
+  if (!day || !repeat) {
+    alert("요일과 반복 조건을 모두 선택해주세요.");
+    return;
+  }
+
+  const key = `${day}-${repeat}`;
+  if ([...list.children].some(li => li.dataset.key === key)) {
+    alert("이미 추가된 항목입니다.");
+    return;
+  }
+
+  const li = document.createElement("li");
+  li.dataset.key = key;
+  li.innerHTML = `
+    <span class="remove-btn">−</span> ${day}요일 ${repeat}
+  `;
+  li.querySelector(".remove-btn").addEventListener("click", () => li.remove());
+
+  list.appendChild(li);
+});
+
+</script>
+
 </body>
 </html>
