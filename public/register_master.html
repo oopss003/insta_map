@@ -761,11 +761,6 @@
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
 
     let marker = null;  
-    
-    const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.4986526,126.7756436),
-      zoom: 15
-    });
 
     // ────────── 여기에 추가 ──────────
     /**
@@ -780,58 +775,73 @@
     }
     // ────────── 추가 끝 ──────────
     
-    // 3) 모든 가게 데이터 불러와 마커 표시
-    // 3) 모든 가게 데이터 불러와 마커 표시
-    db.collection('stores').get()
-      .then(snapshot => {
-        snapshot.forEach(doc => {
-          /* ★ doc.id를 data에 포함 */
-          const data = { ...doc.data(), id: doc.id };
-    
-          const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
-          if (isNaN(lat) || isNaN(lng)) return;
-    
-          const storeMarker = new naver.maps.Marker({
-            position: new naver.maps.LatLng(lat, lng),
-            map: map,
-            icon: createMarkerIconWithText(data.name)
-          });
-    
-          storeMarker.setCursor('pointer');
-          storeMarker.addListener('click', () => {
-            /* ★ 클릭하면 docId 보관 */
-            editingId = doc.id;
-            loadStoreToForm({ id: doc.id, data: () => data });
-          });
-
-          // ─ 이 페이지는 나만 쓰는 편집 페이지이므로, USER_EMAIL 문서 하나만 로드
-          db.collection('stores').doc(USER_EMAIL).get()
-            .then(doc => { if (doc.exists) loadStoreToForm({ id: doc.id, data: () => doc.data() }); })
-            .catch(err => console.error('단일 매장 로드 실패:', err));
-        });
-      })
-      .catch(err => console.error('가게 불러오기 실패:', err));
-
-    function setLatLng(lat, lng) {
-      document.getElementById('lat').value = lat;
-      document.getElementById('lng').value = lng;
-      if (marker) marker.setMap(null);
-      marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map
+      /* 0) 지도 객체를 딱 한 번만 만듭니다 */
+      const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.4986526, 126.7756436),
+        zoom: 15
       });
-    }
-
-    naver.maps.Event.addListener(map, 'click', e => setLatLng(e.coord.lat(), e.coord.lng()));
-    document.getElementById('getLocBtn').onclick = () => {
-      navigator.geolocation?.getCurrentPosition(pos => {
-        const { latitude, longitude } = pos.coords;
-        setLatLng(latitude, longitude);
-        map.setCenter(new naver.maps.LatLng(latitude, longitude));
-        map.setZoom(18);
-      }, () => alert('위치 권한을 허용해주세요.'));
-    };
-
+      
+      /* 1) 내 매장(USER_EMAIL) 문서를 한 번만 로드 */
+      db.collection('stores').doc(USER_EMAIL).get()
+        .then(doc => {
+          if (doc.exists) {
+            editingId = doc.id;                       // 처음엔 내 문서를 편집 대상
+            loadStoreToForm({ id: doc.id, data: () => doc.data() });
+          }
+        })
+        .catch(err => console.error('내 매장 로드 실패:', err));
+      
+      /* 2) 모든 매장 → 마커 표시 (get 한 번) */
+      db.collection('stores').get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            const data = { ...doc.data(), id: doc.id };   // ★ docId 포함
+      
+            const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
+            if (isNaN(lat) || isNaN(lng)) return;
+      
+            const storeMarker = new naver.maps.Marker({
+              position: new naver.maps.LatLng(lat, lng),
+              map: map,
+              icon: createMarkerIconWithText(data.name)
+            });
+      
+            storeMarker.setCursor('pointer');
+            storeMarker.addListener('click', () => {
+              editingId = doc.id;                         // 마커 클릭 → 현재 편집 문서
+              loadStoreToForm({ id: doc.id, data: () => data });
+            });
+          });
+        })
+        .catch(err => console.error('가게 불러오기 실패:', err));
+      
+      /* 3) 위치 선택 등 보조 함수 */
+      function setLatLng(lat, lng) {
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+        if (marker) marker.setMap(null);
+        marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(lat, lng),
+          map: map
+        });
+      }
+      
+      naver.maps.Event.addListener(map, 'click', e =>
+        setLatLng(e.coord.lat(), e.coord.lng())
+      );
+      
+      document.getElementById('getLocBtn').onclick = () => {
+        navigator.geolocation?.getCurrentPosition(
+          pos => {
+            const { latitude, longitude } = pos.coords;
+            setLatLng(latitude, longitude);
+            map.setCenter(new naver.maps.LatLng(latitude, longitude));
+            map.setZoom(18);
+          },
+          () => alert('위치 권한을 허용해주세요.')
+        );
+      };
+    
     function compressImage(file, maxBytes = 1000000) {
       return new Promise(resolve => {
         const img = new Image();
