@@ -342,6 +342,44 @@
     transform: scale(0.96);
     transition: transform 0.05s ease-in-out;
   }
+  .day-hours-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 344px;
+    margin: 0 auto 20px;
+  }
+  
+  .day-row {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  }
+  
+  .day-name {
+    font-weight: 600;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+  
+  .time-fields {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .time-fields input,
+  .time-fields select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: #f9f9f9;
+    font-size: 14px;
+  }
 
   </style>
 
@@ -407,216 +445,81 @@
     </div>
 
     <div class="custom-field-box">
-      <label for="openTime">오픈 시간 (24시간 기준, 30분 단위)</label>
-      <select name="openTime" id="openTime">
-        <option value="3:00">3:00</option>
-        <option value="3:30">3:30</option>
-        <option value="4:00">4:00</option>
-        <option value="4:30">4:30</option>
-        <option value="5:00">5:00</option>
-        <option value="5:30">5:30</option>
-        <option value="6:00">6:00</option>
-        <option value="6:30">6:30</option>
-        <option value="7:00">7:00</option>
-        <option value="7:30">7:30</option>
-        <option value="8:00">8:00</option>
-        <option value="8:30">8:30</option>
-        <option value="9:00">9:00</option>
-        <option value="9:30">9:30</option>
-        <option value="10:00">10:00</option>
-        <option value="10:30">10:30</option>
-        <option value="11:00">11:00</option>
-        <option value="11:30">11:30</option>
-        <option value="12:00">12:00</option>
-        <option value="12:30">12:30</option>
-        <option value="13:00">13:00</option>
-        <option value="13:30">13:30</option>
-        <option value="14:00">14:00</option>
-        <option value="14:30">14:30</option>
-        <option value="15:00">15:00</option>
-        <option value="15:30">15:30</option>
-        <option value="16:00">16:00</option>
-        <option value="16:30">16:30</option>
-        <option value="17:00">17:00</option>
-        <option value="17:30">17:30</option>
-        <option value="18:00">18:00</option>
-        <option value="18:30">18:30</option>
-        <option value="19:00">19:00</option>
-        <option value="19:30">19:30</option>
-        <option value="20:00">20:00</option>
-        <option value="20:30">20:30</option>
-        <option value="21:00">21:00</option>
-        <option value="21:30">21:30</option>
-        <option value="22:00">22:00</option>
-        <option value="22:30">22:30</option>
-        <option value="23:00">23:00</option>
-        <option value="23:30">23:30</option>
-      </select>
-    </div>
-    <div class="custom-field-box">
-      <label for="closeTime">마감 시간 (24시간 기준, 30분 단위)</label>
-      <select name="closeTime" id="closeTime">
-        <option value="3:00">3:00</option>
-        <option value="3:30">3:30</option>
-        <option value="4:00">4:00</option>
-        <option value="4:30">4:30</option>
-        <option value="5:00">5:00</option>
-        <option value="5:30">5:30</option>
-        <option value="6:00">6:00</option>
-        <option value="6:30">6:30</option>
-        <option value="7:00">7:00</option>
-        <option value="7:30">7:30</option>
-        <option value="8:00">8:00</option>
-        <option value="8:30">8:30</option>
-        <option value="9:00">9:00</option>
-        <option value="9:30">9:30</option>
-        <option value="10:00">10:00</option>
-        <option value="10:30">10:30</option>
-        <option value="11:00">11:00</option>
-        <option value="11:30">11:30</option>
-        <option value="12:00">12:00</option>
-        <option value="12:30">12:30</option>
-        <option value="13:00">13:00</option>
-        <option value="13:30">13:30</option>
-        <option value="14:00">14:00</option>
-        <option value="14:30">14:30</option>
-        <option value="15:00">15:00</option>
-        <option value="15:30">15:30</option>
-        <option value="16:00">16:00</option>
-        <option value="16:30">16:30</option>
-        <option value="17:00">17:00</option>
-        <option value="17:30">17:30</option>
-        <option value="18:00">18:00</option>
-        <option value="18:30">18:30</option>
-        <option value="19:00">19:00</option>
-        <option value="19:30">19:30</option>
-        <option value="20:00">20:00</option>
-        <option value="20:30">20:30</option>
-        <option value="21:00">21:00</option>
-        <option value="21:30">21:30</option>
-        <option value="22:00">22:00</option>
-        <option value="22:30">22:30</option>
-        <option value="23:00">23:00</option>
-        <option value="23:30">23:30</option>
-        <option value="24:00">24:00 (다음날 0:00)</option>
-        <option value="24:30">24:30 (다음날 0:30)</option>
-        <option value="25:00">25:00 (다음날 1:00)</option>
-        <option value="25:30">25:30 (다음날 1:30)</option>
-        <option value="26:00">26:00 (다음날 2:00)</option>
-        <option value="26:30">26:30 (다음날 2:30)</option>
-        <option value="27:00">27:00 (다음날 3:00)</option>
-      </select>
-    </div>
-    
-    <div class="custom-field-box">
-      <label for="breakStart">브레이크 타임 시작 (24시간 기준, 30분 단위)</label>
-      <select name="breakStart" id="breakStart">
-        <option value="">선택 안함</option>
-        <option value="00:00">00:00</option>
-        <option value="0:30">0:30</option>
-        <option value="1:00">1:00</option>
-        <option value="1:30">1:30</option>
-        <option value="2:00">2:00</option>
-        <option value="2:30">2:30</option>
-        <option value="3:00">3:00</option>
-        <option value="3:30">3:30</option>
-        <option value="4:00">4:00</option>
-        <option value="4:30">4:30</option>
-        <option value="5:00">5:00</option>
-        <option value="5:30">5:30</option>
-        <option value="6:00">6:00</option>
-        <option value="6:30">6:30</option>
-        <option value="7:00">7:00</option>
-        <option value="7:30">7:30</option>
-        <option value="8:00">8:00</option>
-        <option value="8:30">8:30</option>
-        <option value="9:00">9:00</option>
-        <option value="9:30">9:30</option>
-        <option value="10:00">10:00</option>
-        <option value="10:30">10:30</option>
-        <option value="11:00">11:00</option>
-        <option value="11:30">11:30</option>
-        <option value="12:00">12:00</option>
-        <option value="12:30">12:30</option>
-        <option value="13:00">13:00</option>
-        <option value="13:30">13:30</option>
-        <option value="14:00">14:00</option>
-        <option value="14:30">14:30</option>
-        <option value="15:00">15:00</option>
-        <option value="15:30">15:30</option>
-        <option value="16:00">16:00</option>
-        <option value="16:30">16:30</option>
-        <option value="17:00">17:00</option>
-        <option value="17:30">17:30</option>
-        <option value="18:00">18:00</option>
-        <option value="18:30">18:30</option>
-        <option value="19:00">19:00</option>
-        <option value="19:30">19:30</option>
-        <option value="20:00">20:00</option>
-        <option value="20:30">20:30</option>
-        <option value="21:00">21:00</option>
-        <option value="21:30">21:30</option>
-        <option value="22:00">22:00</option>
-        <option value="22:30">22:30</option>
-        <option value="23:00">23:00</option>
-        <option value="23:30">23:30</option>
-      </select>
-    </div>
-    <div class="custom-field-box">
-      <label for="breakEnd">브레이크 타임 종료 (24시간 기준, 30분 단위)</label>
-      <select name="breakEnd" id="breakEnd">
-        <option value="">선택 안함</option>
-        <option value="00:00">00:00</option>
-        <option value="0:30">0:30</option>
-        <option value="1:00">1:00</option>
-        <option value="1:30">1:30</option>
-        <option value="2:00">2:00</option>
-        <option value="2:30">2:30</option>
-        <option value="3:00">3:00</option>
-        <option value="3:30">3:30</option>
-        <option value="4:00">4:00</option>
-        <option value="4:30">4:30</option>
-        <option value="5:00">5:00</option>
-        <option value="5:30">5:30</option>
-        <option value="6:00">6:00</option>
-        <option value="6:30">6:30</option>
-        <option value="7:00">7:00</option>
-        <option value="7:30">7:30</option>
-        <option value="8:00">8:00</option>
-        <option value="8:30">8:30</option>
-        <option value="9:00">9:00</option>
-        <option value="9:30">9:30</option>
-        <option value="10:00">10:00</option>
-        <option value="10:30">10:30</option>
-        <option value="11:00">11:00</option>
-        <option value="11:30">11:30</option>
-        <option value="12:00">12:00</option>
-        <option value="12:30">12:30</option>
-        <option value="13:00">13:00</option>
-        <option value="13:30">13:30</option>
-        <option value="14:00">14:00</option>
-        <option value="14:30">14:30</option>
-        <option value="15:00">15:00</option>
-        <option value="15:30">15:30</option>
-        <option value="16:00">16:00</option>
-        <option value="16:30">16:30</option>
-        <option value="17:00">17:00</option>
-        <option value="17:30">17:30</option>
-        <option value="18:00">18:00</option>
-        <option value="18:30">18:30</option>
-        <option value="19:00">19:00</option>
-        <option value="19:30">19:30</option>
-        <option value="20:00">20:00</option>
-        <option value="20:30">20:30</option>
-        <option value="21:00">21:00</option>
-        <option value="21:30">21:30</option>
-        <option value="22:00">22:00</option>
-        <option value="22:30">22:30</option>
-        <option value="23:00">23:00</option>
-        <option value="23:30">23:30</option>
-      </select>
+      <label style="font-weight:700; margin-top: 24px;">요일별 영업시간</label>
+
+      <div class="day-hours-wrapper">
+        <div class="day-row" data-day="월">
+          <div class="day-name">월</div>
+          <div class="time-fields">
+            <select name="월_open"></select>
+            <select name="월_close"></select>
+            <select name="월_break_start"></select>
+            <select name="월_break_end"></select>
+            <input name="월_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+        <div class="day-row" data-day="화">
+          <div class="day-name">화</div>
+          <div class="time-fields">
+            <select name="화_open"></select>
+            <select name="화_close"></select>
+            <select name="화_break_start"></select>
+            <select name="화_break_end"></select>
+            <input name="화_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+        <div class="day-row" data-day="수">
+          <div class="day-name">수</div>
+          <div class="time-fields">
+            <select name="수_open"></select>
+            <select name="수_close"></select>
+            <select name="수_break_start"></select>
+            <select name="수_break_end"></select>
+            <input name="수_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+        <div class="day-row" data-day="목">
+          <div class="day-name">목</div>
+          <div class="time-fields">
+            <select name="목_open"></select>
+            <select name="목_close"></select>
+            <select name="목_break_start"></select>
+            <select name="목_break_end"></select>
+            <input name="목_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+        <div class="day-row" data-day="금">
+          <div class="day-name">금</div>
+          <div class="time-fields">
+            <select name="금_open"></select>
+            <select name="금_close"></select>
+            <select name="금_break_start"></select>
+            <select name="금_break_end"></select>
+            <input name="금_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+        <div class="day-row" data-day="토">
+          <div class="day-name">토</div>
+          <div class="time-fields">
+            <select name="토_open"></select>
+            <select name="토_close"></select>
+            <select name="토_break_start"></select>
+            <select name="토_break_end"></select>
+            <input name="토_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
+                <div class="day-row" data-day="일">
+          <div class="day-name">일</div>
+          <div class="time-fields">
+            <select name="일_open"></select>
+            <select name="일_close"></select>
+            <select name="일_break_start"></select>
+            <select name="일_break_end"></select>
+            <input name="일_last_order" placeholder="라스트오더 (선택)" />
+          </div>
+        </div>
       </div>
-    
+
       <label style="font-weight:700; margin-top: 16px;">쉬는 날</label>
       <div class="off-days">
         <label class="day-box">
@@ -952,6 +855,25 @@ videoModal.addEventListener('click', e => {
   if (e.target === videoModal) hideModal();
 });
 </script>
+<!-- 기존 모달 및 기타 스크립트 아래에 추가 -->
+<script>
+// 👉 여기 붙여넣기
+const timeOptions = [];
+for (let h = 0; h <= 27; h++) {
+  const label = h < 10 ? `0${h}:00` : `${h}:00`;
+  timeOptions.push(`<option value="${label}">${label}</option>`);
+}
+
+['월', '화', '수', '목', '금', '토', '일'].forEach(day => {
+  ['open', 'close', 'break_start', 'break_end'].forEach(type => {
+    const sel = document.querySelector(`select[name="${day}_${type}"]`);
+    if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
+  });
+});
+</script>
+
+</body>
+</html>
 
 </body>
 </html>
