@@ -759,12 +759,6 @@
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
 
     let marker = null;  
-
-
-    // ─── DOM 요소 캐시 ───
-    const overlay = document.getElementById('overlay');
-    // 이제부터 overlay.style.display = 'flex' / 'none' 사용해도 ReferenceError 없습니다.
-    // 
     
     const map = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.4986526,126.7756436),
