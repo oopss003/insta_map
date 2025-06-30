@@ -966,6 +966,17 @@
           return;
         }
 
+        const dayOff = Array.from(
+          document.querySelectorAll('[name="offDays[]"]:checked')
+        ).map(cb => {
+          const day = cb.value;
+          const repeatSel = document.querySelector(`select[name="repeat_${day}"]`);
+          return {
+            day,
+            repeat: repeatSel ? repeatSel.value : ''
+          };
+        });
+        
         const days = ['월', '화', '수', '목', '금', '토', '일'];
         const hours = {};
         days.forEach(day => {
@@ -983,10 +994,6 @@
             }
           };
         });
-        const dayOff = offDays.map(day => ({
-          day,
-          repeat: "매주"
-        }));
         
         const store = {
           name: document.querySelector('[name=name]').value.trim(),
