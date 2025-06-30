@@ -809,7 +809,9 @@
             storeMarker.setCursor('pointer');
             storeMarker.addListener('click', () => {
               editingId = doc.id;                         // 마커 클릭 → 현재 편집 문서
-              loadStoreToForm({ id: doc.id, data: () => data });
+              db.collection('stores').doc(doc.id).get().then(fresh => {
+                editingId = fresh.id;
+                loadStoreToForm(fresh);
             });
           });
         })
