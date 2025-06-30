@@ -13,6 +13,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 
   <style>
+  /* 전체 공통 스타일 */
   body {
     font-family: 'Pretendard', sans-serif;
     background: #f5f6fb;
@@ -20,7 +21,8 @@
     padding: 0;
     max-width: 480px;
   }
-
+  
+  /* 헤더 */
   #header {
     display: flex;
     justify-content: space-between;
@@ -28,39 +30,38 @@
     padding: 16px;
     box-sizing: border-box;
   }
-
+  
+  .back-button,
+  .store-button {
+    border-radius: 16px;
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  }
+  
   .back-button {
     width: 77px;
     height: 77px;
-    border-radius: 16px;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 28px;
     text-decoration: none;
     color: #000;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
-
+  
   .store-button {
     width: 255px;
     height: 77px;
-    border-radius: 16px;
-    background: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     font-size: 16px;
     font-weight: 600;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
-
+  
   #header h2 {
     font-size: 18px;
     margin: 0;
   }
-
+  
+  /* 맵 영역 */
   #map {
     width: 344px;
     height: 344px;
@@ -68,7 +69,8 @@
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
-
+  
+  /* 버튼 그룹 */
   .btn-group {
     width: 344px;
     margin: 0 auto 16px;
@@ -76,7 +78,7 @@
     justify-content: space-between;
     gap: 8px;
   }
-
+  
   .main-btn {
     height: 35px;
     border-radius: 16px;
@@ -88,35 +90,34 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     flex: 1;
   }
-
+  
   #getLocBtn {
     background: #0F9ED5;
     color: white;
   }
-
+  
   #helpVideoBtn {
     background: #999;
     color: white;
   }
-
+  
+  /* 스토어 폼 */
   form#storeForm {
     width: 100%;
     max-width: 344px;
     margin: 0 auto;
     display: flex;
     flex-direction: column;
-    align-items: center; /* 🔥 중앙 정렬 핵심 */
+    align-items: center;
     gap: 12px;
   }
-
+  
   form#storeForm label {
     font-weight: 700;
     margin-top: 12px;
   }
-
-  input,
-  textarea,
-  select {
+  
+  input, textarea, select {
     width: 100%;
     padding: 14px;
     border-radius: 16px;
@@ -125,47 +126,50 @@
     background: #fff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
   }
-
+  
   textarea {
     resize: none;
   }
-
+  
+  /* 쉬는날 요일 선택 */
   .off-days {
     display: grid;
     grid-template-columns: repeat(4, 77px);
     gap: 12px;
     justify-content: center;
-    margin-top: 8px;
-    margin-bottom: 20px;
+    margin: 8px 0 20px;
   }
-
-  .off-days label {
+  
+  .day-box {
     width: 77px;
     height: 77px;
     border-radius: 16px;
     background: #fff;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    font-weight: 600;
+    text-align: center;
     font-size: 16px;
+    font-weight: 600;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+  }
+  
+  .day-box input[type="checkbox"] {
+    display: none;
+  }
+  
+  .day-box input[type="checkbox"]:checked + span {
+    background-color: #2d8cff;
+    color: #fff;
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    position: relative;
-    transition: all 0.2s ease
+    height: 100%;
+    width: 100%;
+    border-radius: 16px;
   }
-
-  .off-days input[type="checkbox"] {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 16px;
-    height: 16px;
-    accent-color: #2d8cff; /* 선택 시 색상 지정 */
-    z-index: 1;
-  }
-    
+  
+  /* 저장 버튼 */
   #saveBtn {
     width: 100%;
     background: #2d8cff;
@@ -178,6 +182,8 @@
     cursor: pointer;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   }
+  
+  /* 커스텀 필드 */
   .custom-field-box {
     width: 344px;
     height: 77px;
@@ -186,248 +192,47 @@
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     padding: 8px 12px;
     box-sizing: border-box;
-    margin-bottom: 12px; /
+    margin-bottom: 12px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 4px;
   }
-  .custom-field-box day {
-    width: 344px;
-    height: 300px;
-    background: #fff;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    padding: 8px 12px;
-    box-sizing: border-box;
-    margin-bottom: 12px; /
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    gap: 4px;
-  }
-
+  
   .custom-field-box label {
     font-size: 13px;
     font-weight: 600;
     color: #333;
     margin: 0;
   }
-
+  
   .custom-field-box input,
   .custom-field-box textarea,
   .custom-field-box select {
     border: none;
     outline: none;
     font-size: 15px;
-    padding: 4px 10;
+    padding: 4px 10px;
     background: none;
     resize: none;
-    box-sizing: border-box; /* 이거도 추가 추천 */
+    box-sizing: border-box;
   }
-
+  
   .custom-field-box select {
-    width: 100%;
     height: 36px;
     padding: 4px 8px;
-    border: none;
     background: transparent;
     font-size: 15px;
-    color: #000;
-    appearance: none; /* 기본 셀렉트 화살표 제거 */
-    -webkit-appearance: none;
-    -moz-appearance: none;
-  }
-  .off-days {
-    display: grid;
-    grid-template-columns: repeat(4, 77px);
-    gap: 12px;
-    justify-content: center;
-    margin-bottom: 12px;
-  }
-
-  .off-days label {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 16px;
-    width: 77px;
-    height: 77px;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    position: relative;
-  }
-
-  .off-days input[type="checkbox"] {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    transform: scale(1.2);
-  }
-    
-  .custom-header {
-    width: 368px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 16px auto 12px;
-    gap: 12px;
-  }
-
-  .back-button {
-    background: #fff;
-    border-radius: 16px;
-    width: 77px;
-    height: 77px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    flex-shrink: 0;
-  }
-
-  .greeting-box {
-    width: 255px;
-    height: 77px;
-    background: #fff;
-    border-radius: 16px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 12px;
-    box-sizing: border-box;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    text-align: left;
-  }
-
-  .greeting-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 4px;
-  }
-
-  .greeting-sub {
-    font-size: 14px;
-    color: #888;
-    line-height: 1.4;
-  }
-
-  .off-days {
-    display: grid;
-    grid-template-columns: repeat(4, 77px);
-    gap: 12px;
-    justify-content: center;
-  }
-
-  .day-box {
-    display: inline-block;
-    width: 77px;
-    height: 77px;
-    border-radius: 16px;
-    background: #fff;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    text-align: center;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    position: relative;
-    overflow: hidden;
-  }
-
-  /* 체크박스 숨기기 */
-  .day-box input[type="checkbox"] {
-    display: none;
-  }
-
-  /* 선택된 경우 스타일 변경 */
-  .day-box input[type="checkbox"]:checked + span {
-    background-color: #2d8cff;
-    color: #fff;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-    width: 100%;
-    border-radius: 16px;
-  }    
-
-  .custom-button:active {
-    transform: scale(0.96);
-    transition: transform 0.05s ease-in-out;
+    appearance: none;
   }
   
-  .day-hours-wrapper {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    margin-top: 20px;
-  }
-  
-  .day-row {
-    background-color: #fff;
-    padding: 20px;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 16px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-    box-sizing: border-box;
-  }
-  
-  .day-name {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 12px;
-  }
-  
-  .time-fields {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px 16px;
-  }
-  
-  .time-fields label {
-    font-size: 13px;
-    color: #555;
-    margin-top: 4px;
-  }
-  
-  .time-fields select {
-    width: 100%;
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 14px;
-    background-color: #f9f9f9;
-  }
-  .day-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 12px;
-  }
-  
-  #copyMonday {
-    background-color: #f0f0f0;
-    border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
-    cursor: pointer;
-    font-weight: bold;
-  } 
-    .day-row {
-    width: 344px;
-    max-width: 100%;
-    margin: 0 auto; /* 중앙 정렬 유지 */
-  }
-  
+  /* 쉬는날 복합 설정 영역 */
   .dayoff-box {
+    width: 344px;
     padding: 16px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    width: 344px;
     margin-top: 20px;
   }
   
@@ -476,6 +281,61 @@
     margin-right: 8px;
     cursor: pointer;
   }
+  
+  /* 기타 */
+  .custom-button:active {
+    transform: scale(0.96);
+    transition: transform 0.05s ease-in-out;
+  }
+  
+  .day-row {
+    width: 344px;
+    max-width: 100%;
+    margin: 0 auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+  
+  .day-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  
+  #copyMonday {
+    background-color: #f0f0f0;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .time-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 16px;
+  }
+  
+  .time-fields label {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+  
+  .time-fields select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #f9f9f9;
+  }
+
   </style>
 
 </head>
@@ -654,33 +514,31 @@
       </div>
 
       <!-- 쉬는날 설정 영역 -->
-      <div class="dayoff-box">
-        <div class="dayoff-controls">
-          <select id="daySelect">
-            <option value="">요일</option>
-            <option value="월">월</option>
-            <option value="화">화</option>
-            <option value="수">수</option>
-            <option value="목">목</option>
-            <option value="금">금</option>
-            <option value="토">토</option>
-            <option value="일">일</option>
-          </select>
+      <div class="dayoff-box fixed-344">
+        <select id="daySelect">
+          <option value="">요일</option>
+          <option value="월">월</option>
+          <option value="화">화</option>
+          <option value="수">수</option>
+          <option value="목">목</option>
+          <option value="금">금</option>
+          <option value="토">토</option>
+          <option value="일">일</option>
+        </select>
       
-          <select id="repeatSelect">
-            <option value="">선택 안함</option>
-            <option value="매주">매주</option>
-            <option value="1주차">1주차</option>
-            <option value="2주차">2주차</option>
-            <option value="3주차">3주차</option>
-            <option value="4주차">4주차</option>
-            <option value="1,3주차">1,3주차</option>
-            <option value="2,4주차">2,4주차</option>
-            <option value="마지막주">마지막주</option>
-          </select>
+        <select id="repeatSelect">
+          <option value="">선택 안함</option>
+          <option value="매주">매주</option>
+          <option value="1주차">1주차</option>
+          <option value="2주차">2주차</option>
+          <option value="3주차">3주차</option>
+          <option value="4주차">4주차</option>
+          <option value="1,3주차">1,3주차</option>
+          <option value="2,4주차">2,4주차</option>
+          <option value="마지막주">마지막주</option>
+        </select>
       
-          <button id="addDayOff">저장</button>
-        </div>
+        <button type="button" id="addDayOff">저장</button>
       
         <ul id="dayoffList" class="dayoff-list"></ul>
       </div>
