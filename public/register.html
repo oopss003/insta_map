@@ -427,9 +427,10 @@
     padding: 16px;
     background: white;
     border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     margin-top: 20px;
-    margin-bottom: 24px; /* ✅ 추가 */
+    margin-bottom: 24px;
+    box-sizing: border-box;
   }
   
   .dayoff-controls {
@@ -438,13 +439,23 @@
     margin-bottom: 16px;
   }
   
-  .dayoff-controls select,
-  .dayoff-controls button {
-    padding: 6px 10px;
+  .dayoff-controls select {
+    flex: 1;
+    padding: 8px 12px;
     font-size: 14px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    flex: 1;
+    box-sizing: border-box;
+  }
+  
+  .dayoff-controls button {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+    font-weight: bold;
+    cursor: pointer;
     white-space: nowrap;
   }
   
@@ -696,10 +707,10 @@
           <option value="마지막주">마지막주</option>
         </select>
       
-        <button type="button" id="addDayOff">저장</button>
-      
-        <ul id="dayoffList" class="dayoff-list"></ul>
+        <button id="addDayOff">저장</button>
       </div>
+      <ul id="dayoffList" class="dayoff-list"></ul>
+    </div>
       
         <ul id="dayoffList" class="dayoff-list"></ul>
       </div>
