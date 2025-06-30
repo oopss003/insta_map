@@ -4,21 +4,21 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
   <title>내 매장 수정 (관리자용)</title>
-  <!-- 네이버 지도 API (clientId 파라미터로 변경) -->
-  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?clientId=qpbrmxiff4"></script>
+  <!-- 네이버 지도 API -->
+  <script src="https://openapi.map.naver.com/openapi/v3/maps.js?ncpClientId=qpbrmxiff4"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <style>
-    body { font-family:'Pretendard',sans-serif; margin:0;padding:0; }
-    #header { padding:12px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); text-align:center; }
-    #header h1 { margin:0; font-size:18px; }
+    body { font-family: 'Pretendard', sans-serif; margin:0; padding:0; }
+    #header { padding:16px; background:#fff; text-align:center; box-shadow:0 2px 4px rgba(0,0,0,0.1); }
+    #header h1 { margin:0; font-size:20px; }
     #map { width:100vw; height:80vh; }
-    .custom-marker { display:inline-block; background:#2d8cff; color:#fff; padding:4px 8px; border-radius:4px; white-space:nowrap; font-size:12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
-    .info-form { display:flex; flex-direction:column; gap:8px; width:300px; }
-    .info-form input, .info-form textarea, .info-form button { width:100%; padding:6px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
-    .info-form button { background:#2d8cff; color:#fff; border:none; cursor:pointer; }
+    .custom-marker { display:inline-block; background:#2d8cff; color:#fff; padding:4px 8px; border-radius:4px; white-space:nowrap; font-size:12px; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
+    .info-form { display:flex; flex-direction:column; gap:8px; width:320px; }
+    .info-form input, .info-form textarea, .info-form button { width:100%; padding:8px; box-sizing:border-box; border:1px solid #ddd; border-radius:8px; }
+    .info-form button { background:#2d8cff; color:#fff; border:none; font-weight:600; cursor:pointer; }
     .info-form label { margin-top:8px; font-size:14px; }
   </style>
 </head>
@@ -27,7 +27,7 @@
   <div id="map"></div>
 
   <script>
-    // 관리자 이메일 상수
+    // 관리자 이메일
     const ADMIN_EMAIL = 'jhpark8271@gmail.com';
 
     // Firebase 초기화
@@ -35,7 +35,7 @@
       apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprg9iic",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.web.app",
+      storageBucket: "instamap-9b595.appspot.com",
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
@@ -43,8 +43,8 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // 이미지 압축 함수 (1MB 미만)
-    function compressImage(file, maxBytes=1000000) {
+    // 이미지 압축 (1MB 이하)
+    async function compressImage(file, maxBytes = 1000000) {
       return new Promise(resolve => {
         const reader = new FileReader();
         reader.onload = e => {
@@ -54,13 +54,18 @@
             const scale = Math.min(1, 500 / img.width);
             canvas.width = img.width * scale;
             canvas.height = img.height * scale;
-            canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-            let quality=0.8;
-            (function loop(){
-              canvas.toBlob(blob=>{
-                if(blob.size<=maxBytes||quality<0.4) resolve(blob);
-                else { quality-=0.1; loop(); }
-              },'image/jpeg',quality);
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            let quality = 0.8;
+            (function step() {
+              canvas.toBlob(blob => {
+                if (blob.size <= maxBytes || quality < 0.4) {
+                  resolve(blob);
+                } else {
+                  quality -= 0.1;
+                  step();
+                }
+              }, 'image/jpeg', quality);
             })();
           };
           img.src = e.target.result;
@@ -70,75 +75,84 @@
     }
 
     // 지도 초기화
-    const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665,126.9780),
-      zoom: 15
+    const map = new naver.maps.Map('map', { center: new naver.maps.LatLng(37.5665,126.9780), zoom: 15 });
+    const infoWindow = new naver.maps.InfoWindow({ borderWidth: 0 });
+
+    // 매장 데이터 로드 후 마커 생성
+    db.collection('stores').doc(ADMIN_EMAIL).get().then(doc => {
+      if (!doc.exists) { alert('등록된 매장 정보가 없습니다.'); return; }
+      const data = doc.data();
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(data.lat, data.lng),
+        map: map,
+        icon: {
+          content: `<div class="custom-marker">${data.name}</div>`,
+          anchor: new naver.maps.Point(0, 30)
+        }
+      });
+      map.setCenter(marker.getPosition());
+      marker.addListener('click', () => renderForm(data, marker));
+      renderForm(data, marker);
+    }).catch(err => {
+      console.error('데이터 로드 오류', err);
+      alert('매장 로드 중 오류가 발생했습니다.');
     });
-    const infoWindow = new naver.maps.InfoWindow({ borderWidth:0 });
 
-    // 매장 데이터 로드
-    db.collection('stores').doc(ADMIN_EMAIL).get()
-      .then(doc=>{
-        if(!doc.exists) { alert('매장 정보가 없습니다.'); return; }
-        const data = doc.data();
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(data.lat,data.lng),
-          map,
-          icon: { content:`<div class="custom-marker">${data.name}</div>`, anchor:new naver.maps.Point(0,30) }
-        });
-        map.setCenter(marker.getPosition());
-        marker.addListener('click',()=>openForm(data,marker));
-        openForm(data,marker);
-      })
-      .catch(err=>{ console.error(err); alert('데이터 로드 오류'); });
-
-    // 편집 폼 표시 함수
-    function openForm(data,marker) {
-      const pos=marker.getPosition();
-      const html=`<div class="info-form" id="edit-form">
-        <input type="file" id="photo-input" accept="image/*"/>
-        <input id="name-input" value="${data.name||''}" placeholder="가게 이름"/>
-        <input id="insta-input" value="${data.insta||''}" placeholder="인스타 ID"/>
-        <textarea id="desc-input" placeholder="가게 설명">${data.desc||''}</textarea>
-        <input id="phone-input" value="${data.phone||''}" placeholder="전화번호"/>
-        <input id="hashtag-input" value="${(data.hashtags||[]).join(', ')}" placeholder="해시태그"/>
-        <input id="vimeo-input" value="${data.vimeo||''}" placeholder="Vimeo URL"/>
-        <label>오픈 시간</label><input type="time" id="openTime-input" value="${data.openTime||''}"/>
-        <label>마감 시간</label><input type="time" id="closeTime-input" value="${data.closeTime||''}"/>
-        <button id="save-btn">저장</button>
-      </div>`;
+    // 편집 폼 렌더링
+    function renderForm(data, marker) {
+      const pos = marker.getPosition();
+      const html = `
+        <div class="info-form">
+          <input type="file" id="photo" accept="image/*" />
+          <input id="name" value="${data.name || ''}" placeholder="가게 이름" />
+          <input id="insta" value="${data.insta || ''}" placeholder="인스타 ID" />
+          <textarea id="desc" placeholder="가게 설명">${data.desc || ''}</textarea>
+          <input id="phone" value="${data.phone || ''}" placeholder="전화번호" />
+          <input id="hashtags" value="${(data.hashtags||[]).join(', ')}" placeholder="해시태그" />
+          <input id="vimeo" value="${data.vimeo || ''}" placeholder="Vimeo URL" />
+          <label>오픈 시간</label>
+          <input type="time" id="openTime" value="${data.openTime || ''}" />
+          <label>마감 시간</label>
+          <input type="time" id="closeTime" value="${data.closeTime || ''}" />
+          <button id="saveBtn">저장</button>
+        </div>
+      `;
       infoWindow.setContent(html);
-      infoWindow.open(map,marker);
-      setTimeout(()=>{
-        document.getElementById('save-btn').onclick=async()=>{
-          try{
-            const updated={
-              name:document.getElementById('name-input').value.trim(),
-              insta:document.getElementById('insta-input').value.trim(),
-              desc:document.getElementById('desc-input').value.trim(),
-              phone:document.getElementById('phone-input').value.trim(),
-              hashtags:document.getElementById('hashtag-input').value.split(',').map(t=>t.trim()).filter(Boolean),
-              vimeo:document.getElementById('vimeo-input').value.trim(),
-              openTime:document.getElementById('openTime-input').value,
-              closeTime:document.getElementById('closeTime-input').value,
-              lat:pos.lat(),lng:pos.lng()
+      infoWindow.open(map, marker);
+
+      setTimeout(() => {
+        document.getElementById('saveBtn').onclick = async () => {
+          try {
+            const updated = {
+              name: document.getElementById('name').value.trim(),
+              insta: document.getElementById('insta').value.trim(),
+              desc: document.getElementById('desc').value.trim(),
+              phone: document.getElementById('phone').value.trim(),
+              hashtags: document.getElementById('hashtags').value.split(',').map(t=>t.trim()).filter(Boolean),
+              vimeo: document.getElementById('vimeo').value.trim(),
+              openTime: document.getElementById('openTime').value,
+              closeTime: document.getElementById('closeTime').value,
+              lat: pos.lat(),
+              lng: pos.lng()
             };
-            const fileInput=document.getElementById('photo-input');
-            if(fileInput.files.length){
-              const blob=await compressImage(fileInput.files[0]);
-              const path=`store_photos/${Date.now()}_${fileInput.files[0].name.replace(/\s+/g,'')}`;
-              const ref=storage.ref().child(path);
+            const fileInput = document.getElementById('photo');
+            if (fileInput.files.length) {
+              const blob = await compressImage(fileInput.files[0]);
+              const path = `store_photos/${Date.now()}_${fileInput.files[0].name.replace(/\s+/g, '')}`;
+              const ref = storage.ref().child(path);
               await ref.put(blob);
-              updated.photo=await ref.getDownloadURL();
+              updated.photo = await ref.getDownloadURL();
             }
             await db.collection('stores').doc(ADMIN_EMAIL).update(updated);
-            alert('저장되었습니다');
+            alert('저장되었습니다.');
             infoWindow.close();
-          }catch(e){console.error(e);alert('저장 오류');}
+          } catch (e) {
+            console.error('저장 오류', e);
+            alert('저장 중 오류가 발생했습니다.');
+          }
         };
-      },0);
+      }, 0);
     }
   </script>
 </body>
 </html>
-
