@@ -3,16 +3,19 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1, viewport-fit=cover" />
-  <title>지도 수정 마스터</title>
+  <title>내 매장 수정</title>
   <!-- 네이버 지도 API -->
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
   <style>
     body { font-family: 'Pretendard', sans-serif; margin:0; padding:0; }
-    #map { width:100vw; height:100vh; }
+    #header { padding:12px; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.1); display:flex; justify-content:space-between; align-items:center; }
+    #greeting { font-size:16px; font-weight:600; }
+    #map { width:100vw; height:80vh; }
     .custom-marker { display:inline-block; background:#2d8cff; color:#fff; padding:4px 8px; border-radius:4px; white-space:nowrap; font-size:12px; text-align:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); }
     .info-form { display:flex; flex-direction:column; gap:8px; width:300px; }
     .info-form input, .info-form textarea, .info-form button { width:100%; padding:6px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
@@ -21,117 +24,93 @@
   </style>
 </head>
 <body>
+  <div id="header"><div id="greeting">로딩 중...</div><button id="logout">로그아웃</button></div>
   <div id="map"></div>
 
   <script>
     // Firebase 초기화
-    const firebaseConfig = { apiKey:"AIzaSyCVV1XUfsREQYnah3tbEKBTprg9iic", authDomain:"instamap-9b595.firebaseapp.com", projectId:"instamap-9b595", storageBucket:"instamap-9b595.firebasestorage.app", messagingSenderId:"280950399393", appId:"1:280950399393:web:8282e0d352e50c8bcd2be0" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprg9iic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
     firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    // 이미지 압축
-    function compressImage(file, maxBytes=1000000) {
-      return new Promise(resolve => {
-        const img = new Image(), reader = new FileReader();
-        reader.onload = e => {
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const maxW = 500, scale = Math.min(1, maxW / img.width);
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            let quality = 0.8;
-            (function exportBlob() {
-              canvas.toBlob(blob => {
-                if (blob.size <= maxBytes || quality < 0.4) resolve(blob);
-                else { quality -= 0.1; exportBlob(); }
-              }, 'image/jpeg', quality);
-            })();
-          };
-          img.src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
+    // 로그아웃 버튼
+    document.getElementById('logout').onclick = () => auth.signOut();
 
-    // 지도 및 InfoWindow
-    const map = new naver.maps.Map('map', { center:new naver.maps.LatLng(37.5665,126.9780), zoom:13 });
-    const infoWindow = new naver.maps.InfoWindow({ borderWidth:0 });
-
-    // 매장 마커 표시
-    db.collection('stores').get().then(snapshot => {
-      snapshot.forEach(doc => createMarker(doc.id, doc.data()));
+    // 인증 상태 감지
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        window.location.href = '/login.html';
+      } else {
+        document.getElementById('greeting').textContent = `${user.email} 님 환영합니다`;
+        initMap(user.email);
+      }
     });
 
-    // 마커 생성
-    function createMarker(id, data) {
-      const marker = new naver.maps.Marker({
-        position:new naver.maps.LatLng(data.lat, data.lng),
-        map:map,
-        icon:{ content:`<div class="custom-marker">${data.name}</div>`, anchor:new naver.maps.Point(0,30) }
-      });
-      marker.addListener('click', ()=> openForm(id, data, marker));
+    // 지도 초기화 및 내 매장 로드
+    function initMap(email) {
+      const map = new naver.maps.Map('map', { center:new naver.maps.LatLng(37.5665,126.9780), zoom:13 });
+      const infoWindow = new naver.maps.InfoWindow({ borderWidth:0 });
+
+      // 내 매장만 로드
+      db.collection('stores').doc(email).get().then(doc => {
+        if (!doc.exists) { alert('등록된 매장이 없습니다.'); return; }
+        const data = doc.data();
+        const marker = new naver.maps.Marker({
+          position:new naver.maps.LatLng(data.lat,data.lng), map:map,
+          icon:{ content:`<div class="custom-marker">${data.name}</div>`, anchor:new naver.maps.Point(0,30) }
+        });
+        map.setCenter(marker.getPosition());
+        marker.addListener('click', () => openForm(email, data, marker));
+        // 자동으로 폼 열기
+        openForm(email, data, marker);
+      }).catch(err => console.error(err));
     }
 
-    // 폼 열기
+    // 편집 폼
     function openForm(id, data, marker) {
       const pos = marker.getPosition();
-      const formHtml = `
+      const html = `
         <div class="info-form" id="form-${id}">
           <input type="file" accept="image/*" id="photo-${id}" />
           <input name="name" value="${data.name||''}" placeholder="가게 이름" />
           <input name="insta" value="${data.insta||''}" placeholder="인스타 ID" />
           <textarea name="desc" placeholder="가게 설명">${data.desc||''}</textarea>
           <input name="phone" value="${data.phone||''}" placeholder="전화번호" />
-          <input name="hashtags" value="${(data.hashtags||[]).join(', ')}" placeholder="해시태그(콤마로 구분)" />
+          <input name="hashtags" value="${(data.hashtags||[]).join(', ')}" placeholder="해시태그" />
           <input name="vimeo" value="${data.vimeo||''}" placeholder="Vimeo URL" />
           <label>오픈 시간</label><input type="time" name="openTime" value="${data.openTime||''}" />
           <label>마감 시간</label><input type="time" name="closeTime" value="${data.closeTime||''}" />
-          <input type="hidden" id="lat-${id}" value="${pos.lat()}" />
-          <input type="hidden" id="lng-${id}" value="${pos.lng()}" />
-          <button id="move-${id}" type="button">위치 변경</button>
           <button id="save-${id}" type="button">저장</button>
         </div>`;
-      infoWindow.setContent(formHtml);
+      infoWindow.setContent(html);
       infoWindow.open(map, marker);
 
-      setTimeout(()=>{
+      setTimeout(() => {
         const formEl = document.getElementById(`form-${id}`);
-        const moveBtn = document.getElementById(`move-${id}`);
         const saveBtn = document.getElementById(`save-${id}`);
         const fileInput = document.getElementById(`photo-${id}`);
 
-        // 위치 변경: 마커 드래그 가능토글
-        let dragging = false;
-        moveBtn.onclick = () => {
-          dragging = !dragging;
-          marker.setDraggable(dragging);
-          moveBtn.textContent = dragging ? '위치 저장' : '위치 변경';
-          if (dragging) {
-            alert('마커를 드래그하여 위치를 조정한 다음 [위치 저장]을 누르세요.');
-          } else {
-            const newPos = marker.getPosition();
-            document.getElementById(`lat-${id}`).value = newPos.lat();
-            document.getElementById(`lng-${id}`).value = newPos.lng();
-          }
-        };
-
-        // 저장
-        saveBtn.onclick = async ()=>{
+        saveBtn.onclick = async () => {
           try {
             const updated = {
-              name: formEl.querySelector('input[name="name"]').value.trim(),
-              insta: formEl.querySelector('input[name="insta"]').value.trim(),
-              desc: formEl.querySelector('textarea[name="desc"]').value.trim(),
-              phone: formEl.querySelector('input[name="phone"]').value.trim(),
-              hashtags: formEl.querySelector('input[name="hashtags"]').value.split(',').map(t=>t.trim()).filter(Boolean),
-              vimeo: formEl.querySelector('input[name="vimeo"]').value.trim(),
-              openTime: formEl.querySelector('input[name="openTime"]').value,
-              closeTime: formEl.querySelector('input[name="closeTime"]').value,
-              lat: parseFloat(document.getElementById(`lat-${id}`).value),
-              lng: parseFloat(document.getElementById(`lng-${id}`).value)
+              name:formEl.querySelector('input[name="name"]').value.trim(),
+              insta:formEl.querySelector('input[name="insta"]').value.trim(),
+              desc:formEl.querySelector('textarea[name="desc"]').value.trim(),
+              phone:formEl.querySelector('input[name="phone"]').value.trim(),
+              hashtags:formEl.querySelector('input[name="hashtags"]').value.split(',').map(t=>t.trim()).filter(Boolean),
+              vimeo:formEl.querySelector('input[name="vimeo"]').value.trim(),
+              openTime:formEl.querySelector('input[name="openTime"]').value,
+              closeTime:formEl.querySelector('input[name="closeTime"]').value,
+              lat:pos.lat(), lng:pos.lng()
             };
             if (fileInput.files.length) {
               const blob = await compressImage(fileInput.files[0]);
@@ -141,11 +120,9 @@
               updated.photo = await ref.getDownloadURL();
             }
             await db.collection('stores').doc(id).update(updated);
-            alert('저장되었습니다!');
+            alert('저장되었습니다');
             infoWindow.close();
-          } catch(e) {
-            alert('저장 실패: ' + e);
-          }
+          } catch(e) { alert('저장 실패: '+e); }
         };
       },0);
     }
