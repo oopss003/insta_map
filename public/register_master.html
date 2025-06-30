@@ -752,6 +752,8 @@
     const storage = firebase.storage();
     // ─ 로그인 없이 이 계정 문서를 바로 읽고 씁니다
     const USER_EMAIL = 'jhpark8271@gmail.com';
+    const saveBtn    = document.getElementById('saveBtn');
+    const overlay = document.getElementById('overlay');
 
     // currentUser 선언을 전역 스코프에서 한 번만 합니다.
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
