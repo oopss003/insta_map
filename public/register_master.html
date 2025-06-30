@@ -732,41 +732,37 @@
     // currentUser 선언을 전역 스코프에서 한 번만 합니다.
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
 
-    // onAuthStateChanged 리스너를 하나만 유지합니다.
-    auth.onAuthStateChanged(async user => {
-      if (!user) {
-        alert("로그인이 필요합니다.");
-        window.location.href = "/login.html";
-        return;
-      }
-
-      currentUser = user;
-      const email = user.email.toLowerCase();
-      localStorage.setItem("userEmail", email);
-
-      try {
-        const userDoc = await db.collection("users").doc(email).get();
-        if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
-          alert("약관 동의가 필요합니다.");
-          window.location.href = "/terms.html";
-          return;
-        }
-
-        const storeDoc = await db.collection("stores").doc(email).get(); // user.email 대신 email 변수 사용
-        if (storeDoc.exists) {
-          loadStoreToForm({ id: email, data: () => storeDoc.data() }); // user.email 대신 email 변수 사용
-        }
-      } catch (err) {
-        console.error("\u2757 Firestore 오류:", err);
-        alert("데이터 불러오는 중 오류 발생.");
-      }
-    });
-
+    // 1) 전역 변수 선언
+    let editingId = "";       // 클릭된 문서 ID 저장용
+    let marker = null;  
+    
     const map = new naver.maps.Map('map', {
       center: new naver.maps.LatLng(37.5665, 126.9780),
       zoom: 15
     });
-    let marker = null;
+
+    // 3) 모든 가게 데이터 불러와 마커 표시
+    db.collection('stores').get()
+      .then(snapshot => {
+        snapshot.forEach(doc => {
+          const data = doc.data();
+          const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
+          if (isNaN(lat) || isNaN(lng)) return;
+  
+          const storeMarker = new naver.maps.Marker({
+            position: new naver.maps.LatLng(lat, lng),
+            map: map
+          });
+  
+          storeMarker.setCursor('pointer');
+          storeMarker.addListener('click', () => {
+            // 클릭된 문서 ID와 데이터를 loadStoreToForm에 넘겨줌
+            editingId = doc.id;
+            loadStoreToForm({ id: doc.id, data: () => data });
+          });
+        });
+      })
+      .catch(err => console.error('가게 불러오기 실패:', err));
 
     function setLatLng(lat, lng) {
       document.getElementById('lat').value = lat;
