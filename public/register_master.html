@@ -727,7 +727,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
-    const auth = firebase.auth();
 
     // currentUser 선언을 전역 스코프에서 한 번만 합니다.
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
