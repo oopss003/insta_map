@@ -382,6 +382,12 @@
       return h * 60 + m;
     }
 
+    function verticalOffset(idx, groupSize) {
+      const gapM = 15;
+      const half = (groupSize - 1) / 2;
+      return (idx - half) * gapM;   // 0-, ±gap, ±2·gap … 으로 배치
+    }
+        
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
     function createMarkerIconWithText(text) {
       return {
@@ -528,15 +534,24 @@
 
         let newLat = Number(lat);
         let newLng = Number(lng);
-        if (useOffset && groupSize > 1) {
-          const angleDeg = (360 / groupSize) * idx;
-          const angleRad = angleDeg * Math.PI / 180;
-          const offsetLat = baseRadius * Math.cos(angleRad);
-          const offsetLng = baseRadius * Math.sin(angleRad);
-          newLat += offsetLat;
-          newLng += offsetLng;
-        }
 
+        if (groupSize > 1) {
+          /* ① 줌아웃(12 이하) ⇒ 기존 ‘원형 퍼뜨리기’ 유지 */
+          if (useOffset) {
+            const angleDeg = (360 / groupSize) * idx;
+            const angleRad = angleDeg * Math.PI / 180;
+            const offsetLat = baseRadius * Math.cos(angleRad);
+            const offsetLng = baseRadius * Math.sin(angleRad);
+            newLat += offsetLat;
+            newLng += offsetLng;
+          /* ② 줌인(13 이상) ⇒ 세로 쌓기 (Y축만 이동) */
+          } else {
+            // gap(미터)을 위도에 환산  (1° ≒ 111 000 m)
+            const dLat = verticalOffset(idx, groupSize) / 111000;
+            newLat += dLat;
+          }
+        }
+            
         const position = new naver.maps.LatLng(newLat, newLng);
         if (!bounds.hasLatLng(position)) return;
         visibleCount++;
