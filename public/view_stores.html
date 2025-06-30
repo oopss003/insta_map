@@ -517,7 +517,7 @@
           // 새벽 보정: close가 24시 이상이면 now도 맞춰 줌
           if (nowMinutes < s) nowMinutes += 1440;
           if (nowMinutes < s || nowMinutes >= e) return;
-
+        }
         if (breakStart && breakEnd) {
           let bs = toMinutes(breakStart);
           let be = toMinutes(breakEnd);
