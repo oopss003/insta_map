@@ -966,12 +966,6 @@
           return;
         }
 
-        const openTime = document.querySelector('[name=openTime]').value;
-        const closeTime = document.querySelector('[name=closeTime]').value;
-        const breakStart = document.querySelector('[name=breakStart]').value;
-        const breakEnd = document.querySelector('[name=breakEnd]').value;
-        const offDays = Array.from(document.querySelectorAll('[name="offDays[]"]:checked')).map(cb => cb.value);
-
         const dayOff = Array.from(
           document.querySelectorAll('[name="offDays[]"]:checked')
         ).map(cb => {
@@ -1017,11 +1011,13 @@
           created: firebase.firestore.FieldValue.serverTimestamp()
         };
 
-        if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng) || !openTime || !closeTime) {
+        const mondayOpen = document.querySelector('[name="월_open"]').value;
+        const mondayClose = document.querySelector('[name="월_close"]').value;
+        
+        if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)) {
           alert('필수 항목을 모두 입력해주세요.');
           return;
         }
-
         const file = document.getElementById('photo').files[0];
         if (file) {
           const blob = await compressImage(file);
