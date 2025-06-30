@@ -1016,44 +1016,41 @@
           };
         });
         
-        const store = {
-          name: document.querySelector('[name=name]').value.trim(),
-          insta: document.querySelector('[name=insta_id]').value.trim(),
-          desc: document.querySelector('[name=desc]').value.trim(),
-          phone: document.querySelector('[name=phone]').value.trim(),
-          lat: parseFloat(document.getElementById('lat').value),
-          lng: parseFloat(document.getElementById('lng').value),
-          photo: "",
-          vimeo: vimeoUrl,
-          hashtags: tags,
-          hours,         // ✅ 새 구조 반영
-          dayOff,        // ✅ 쉬는 날 구조
-          userEmail: USER_EMAIL,
-          created: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        const mondayOpen = document.querySelector('[name="월_open"]').value;
-        const mondayClose = document.querySelector('[name="월_close"]').value;
-        
-        if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng)) {
-          alert('필수 항목을 모두 입력해주세요.');
-          return;
-        }
+        /* ───── 1) 사진 업로드 (선택 사항) ───── */
+        let photoURL = null;                                  // 새 사진 URL 저장용
         const file = document.getElementById('photo').files[0];
         if (file) {
-          const blob = await compressImage(file);
-          const filename = `store_photos/${Date.now()}_${file.name.replace(/\s+/g, '')}`;
-          const ref = storage.ref().child(filename);
+          const blob      = await compressImage(file);
+          const filename  = `store_photos/${Date.now()}_${file.name.replace(/\s+/g, '')}`;
+          const ref       = storage.ref().child(filename);
           await ref.put(blob);
-          store.photo = await ref.getDownloadURL();
+          photoURL = await ref.getDownloadURL();              // ← 업로드 성공 시 URL 확보
         }
-
-        const storeRef = editingId
-          ? db.collection('stores').doc(editingId)   // 선택된 문서 수정
-          : db.collection('stores').doc();           // 없으면 새 문서 생성
-          await storeRef.set(store, { merge: true });   // ← 반드시 추가
-          editingId = storeRef.id;                      // ← 초기화 대신 유지
         
+        /* ───── 2) store 객체 생성 ───── */
+        const store = {
+          name   : document.querySelector('[name=name]').value.trim(),
+          insta  : document.querySelector('[name=insta_id]').value.trim(),
+          desc   : document.querySelector('[name=desc]').value.trim(),
+          phone  : document.querySelector('[name=phone]').value.trim(),
+          lat    : parseFloat(document.getElementById('lat').value),
+          lng    : parseFloat(document.getElementById('lng').value),
+          vimeo  : vimeoUrl,
+          hashtags,
+          hours,
+          dayOff,
+          userEmail: USER_EMAIL,
+          created  : firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (photoURL) store.photo = photoURL;                 // 새 사진이 있을 때만 덮어쓰기
+        
+        /* ───── 3) Firestore 저장 (merge:true) ───── */
+        const storeRef = editingId
+          ? db.collection('stores').doc(editingId)            // 기존 문서 수정
+          : db.collection('stores').doc();                    // 새 문서 생성
+        await storeRef.set(store, { merge: true });           // 기존 필드 유지
+        editingId = storeRef.id;                              // 이후에도 이 문서 계속 편집
+
         alert('저장되었습니다!');
 
         // 폼 초기화 및 지도 마커 제거
