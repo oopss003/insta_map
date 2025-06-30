@@ -423,12 +423,13 @@
   }
   
   .dayoff-box {
+    width: 344px;
     padding: 16px;
     background: white;
     border-radius: 12px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    width: 344px;
     margin-top: 20px;
+    margin-bottom: 24px; /* ✅ 추가 */
   }
   
   .dayoff-controls {
@@ -460,16 +461,33 @@
   }
   
   .dayoff-list li {
+    list-style: none;
     padding: 6px 10px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     margin-bottom: 6px;
+    font-size: 14px;
     display: flex;
     align-items: center;
-    font-size: 14px;
     justify-content: space-between;
   }
+    
+  .fixed-344 {
+    width: 344px;
+    max-width: 100%;
+    margin: 0 auto;
+  }
   
+  .input-344 {
+    width: 344px;
+    max-width: 100%;
+    padding: 10px;
+    margin-bottom: 16px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
   .remove-btn {
     color: red;
     font-weight: bold;
@@ -654,33 +672,34 @@
       </div>
 
       <!-- 쉬는날 설정 영역 -->
-      <div class="dayoff-box">
-        <div class="dayoff-controls">
-          <select id="daySelect">
-            <option value="">요일</option>
-            <option value="월">월</option>
-            <option value="화">화</option>
-            <option value="수">수</option>
-            <option value="목">목</option>
-            <option value="금">금</option>
-            <option value="토">토</option>
-            <option value="일">일</option>
-          </select>
+      <div class="dayoff-box fixed-344">
+        <select id="daySelect">
+          <option value="">요일</option>
+          <option value="월">월</option>
+          <option value="화">화</option>
+          <option value="수">수</option>
+          <option value="목">목</option>
+          <option value="금">금</option>
+          <option value="토">토</option>
+          <option value="일">일</option>
+        </select>
       
-          <select id="repeatSelect">
-            <option value="">선택 안함</option>
-            <option value="매주">매주</option>
-            <option value="1주차">1주차</option>
-            <option value="2주차">2주차</option>
-            <option value="3주차">3주차</option>
-            <option value="4주차">4주차</option>
-            <option value="1,3주차">1,3주차</option>
-            <option value="2,4주차">2,4주차</option>
-            <option value="마지막주">마지막주</option>
-          </select>
+        <select id="repeatSelect">
+          <option value="">선택 안함</option>
+          <option value="매주">매주</option>
+          <option value="1주차">1주차</option>
+          <option value="2주차">2주차</option>
+          <option value="3주차">3주차</option>
+          <option value="4주차">4주차</option>
+          <option value="1,3주차">1,3주차</option>
+          <option value="2,4주차">2,4주차</option>
+          <option value="마지막주">마지막주</option>
+        </select>
       
-          <button id="addDayOff">저장</button>
-        </div>
+        <button type="button" id="addDayOff">저장</button>
+      
+        <ul id="dayoffList" class="dayoff-list"></ul>
+      </div>
       
         <ul id="dayoffList" class="dayoff-list"></ul>
       </div>
