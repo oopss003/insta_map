@@ -781,26 +781,29 @@
     // ────────── 추가 끝 ──────────
     
     // 3) 모든 가게 데이터 불러와 마커 표시
+    // 3) 모든 가게 데이터 불러와 마커 표시
     db.collection('stores').get()
       .then(snapshot => {
         snapshot.forEach(doc => {
-          const data = doc.data();
+          /* ★ doc.id를 data에 포함 */
+          const data = { ...doc.data(), id: doc.id };
+    
           const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
           if (isNaN(lat) || isNaN(lng)) return;
-  
-          // 기존 new naver.maps.Marker 대신 icon에 helper 사용
+    
           const storeMarker = new naver.maps.Marker({
             position: new naver.maps.LatLng(lat, lng),
             map: map,
-            icon: createMarkerIconWithText(data.name)  // 여기에 매장 이름(text)을 넣어줍니다
+            icon: createMarkerIconWithText(data.name)
           });
-  
+    
           storeMarker.setCursor('pointer');
           storeMarker.addListener('click', () => {
-            // 클릭된 문서 ID와 데이터를 loadStoreToForm에 넘겨줌
+            /* ★ 클릭하면 docId 보관 */
             editingId = doc.id;
             loadStoreToForm({ id: doc.id, data: () => data });
           });
+
           // ─ 이 페이지는 나만 쓰는 편집 페이지이므로, USER_EMAIL 문서 하나만 로드
           db.collection('stores').doc(USER_EMAIL).get()
             .then(doc => { if (doc.exists) loadStoreToForm({ id: doc.id, data: () => doc.data() }); })
