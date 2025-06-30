@@ -13,6 +13,18 @@
   <style>
     body { font-family: 'Pretendard', sans-serif; margin:0; padding:0; }
     #map { width:100vw; height:100vh; }
+    /* 커스텀 마커 스타일 */
+    .custom-marker {
+      display: inline-block;
+      background: #2d8cff;
+      color: #fff;
+      padding: 4px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 12px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
     .info-form { display:flex; flex-direction:column; gap:8px; width:260px; }
     .info-form input, .info-form textarea { width:100%; padding:6px; box-sizing:border-box; border:1px solid #ddd; border-radius:4px; }
     .info-form button { padding:8px; background:#2d8cff; color:#fff; border:none; border-radius:4px; cursor:pointer; }
@@ -24,7 +36,7 @@
   <script>
     // Firebase 초기화
     const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprg9iic",
       authDomain: "instamap-9b595.firebaseapp.com",
       projectId: "instamap-9b595",
       storageBucket: "instamap-9b595.firebasestorage.app",
@@ -52,12 +64,8 @@
             let quality = 0.8;
             function exportBlob() {
               canvas.toBlob(blob => {
-                if (blob.size <= maxBytes || quality < 0.4) {
-                  resolve(blob);
-                } else {
-                  quality -= 0.1;
-                  exportBlob();
-                }
+                if (blob.size <= maxBytes || quality < 0.4) resolve(blob);
+                else { quality -= 0.1; exportBlob(); }
               }, 'image/jpeg', quality);
             }
             exportBlob();
@@ -77,12 +85,20 @@
     // InfoWindow 인스턴스
     const infoWindow = new naver.maps.InfoWindow({ content: '', borderWidth: 0, anchorSkew: true });
 
-    // 모든 매장 불러와 마커 생성
+    // 모든 매장 불러와 커스텀 마커 생성
     db.collection('stores').get().then(snapshot => {
       snapshot.forEach(doc => {
         const data = doc.data();
         const pos = new naver.maps.LatLng(data.lat, data.lng);
-        const marker = new naver.maps.Marker({ position: pos, map: map, title: data.name });
+        // 이름이 길어도 전체 보이도록 커스텀 마커 사용
+        const marker = new naver.maps.Marker({
+          position: pos,
+          map: map,
+          icon: {
+            content: `<div class="custom-marker">${data.name}</div>`,
+            anchor: new naver.maps.Point(0, 30)
+          }
+        });
 
         // 마커 클릭 이벤트
         naver.maps.Event.addListener(marker, 'click', () => {
@@ -102,7 +118,7 @@
           infoWindow.setContent(content);
           infoWindow.open(map, marker);
 
-          // 저장 버튼
+          // 저장 버튼 연결
           setTimeout(() => {
             const form = document.getElementById(`form-${id}`);
             form.querySelector('button').onclick = async () => {
