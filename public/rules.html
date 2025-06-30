@@ -1,1 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 🔓 누구나 stores 문서 읽기/쓰기 허용
+    match /stores/{storeId} {
+      allow read, write: if true;
+    }
+
+    // ✅ 로그인된 유저는 자신의 users 문서만 접근 가능
+    match /users/{userEmail} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.email == userEmail;
+    }
+  }
+}
+-----------------------------------------------
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 🟢 stores 문서: 읽기는 누구나, 수정은 userEmail이 본인일 때만
+    match /stores/{storeId} {
+      allow read: if true;
+
+      // 문서 새로 만들거나 업데이트할 때 조건
+      allow write: if request.auth != null
+                   && (
+                        // ① 문서 생성 시 → 입력값에 userEmail이 본인 것인지 검사
+                        !(resource.data.userEmail is string)
+                        && request.resource.data.userEmail == request.auth.token.email
+
+                        // ② 문서 수정 시 → 기존 userEmail이 본인 것인지 검사
+                        || resource.data.userEmail == request.auth.token.email
+                   );
+    }
+
+    // 🟢 users 문서: 로그인된 유저 본인만 접근 가능
+    match /users/{userEmail} {
+      allow read, write: if request.auth != null
+                         && request.auth.token.email == userEmail;
+    }
+  }
+}
 
