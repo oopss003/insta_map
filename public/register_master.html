@@ -1174,7 +1174,19 @@ addBtn.addEventListener("click", () => {
   list.appendChild(li);
 });
 
-</script>
-
+    const timeOptions = [];
+    for (let h = 0; h <= 27; h++) {
+      const hour = h < 10 ? `0${h}` : `${h}`;
+      ["00","30"].forEach(min => {
+        timeOptions.push(`<option value="${hour}:${min}">${hour}:${min}</option>`);
+      });
+    }
+    ['월','화','수','목','금','토','일'].forEach(day => {
+      ['open','close','break_start','break_end','last_order'].forEach(type => {
+        const sel = document.querySelector(`select[name="${day}_${type}"]`);
+        if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
+      });
+    });
+  </script>
 </body>
 </html>
