@@ -2,107 +2,83 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>개인정보처리방침</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>사용자 정보</title>
   <style>
     body {
+      margin: 0;
       font-family: 'Pretendard', sans-serif;
-      line-height: 1.8;
-      padding: 30px;
-      max-width: 800px;
-      margin: auto;
-      background-color: #ffffff;
-      color: #333333;
-    }
-    h1, h2 {
-      color: #222;
-    }
-    header {
-      position: relative;
+      background: #f5f6fb;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      height: 72px;
-      padding: 0 16px;
-    }
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #0F9ED5;
-      line-height: 74px;
-      font-family: 'Pretendard', sans-serif;
-    }
-
-    .menu-toggle {
-      display: none;
-      position: relative;
-      top: 16px;
-      width: 40px; height: 40px;
-      background: none; border: none;
-      cursor: pointer;
-      align-self: center;
-    }
-
-    .menu-toggle span {
-      position: absolute;
-      left: 50%;
-      width: 24px; height: 2px;
-      background: #222;
-      transform-origin: center center;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-    .menu-toggle span:nth-child(1) { transform: translate(-50%,-8px); }
-    .menu-toggle span:nth-child(2) { transform: translate(-50%, 0); }
-    .menu-toggle span:nth-child(3) { transform: translate(-50%, 8px); }
-
-    .menu-toggle.open span:nth-child(1) { transform: translate(-50%,0) rotate(45deg); }
-    .menu-toggle.open span:nth-child(2) { opacity: 0; }
-    .menu-toggle.open span:nth-child(3) { transform: translate(-50%,0) rotate(-45deg); }
-
-    nav.dropdown {
-      display: flex;
-      position: absolute;
-      top: 64px; right: 16px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       flex-direction: column;
-      overflow: hidden;
-      z-index: 1000;
-    }
-    nav.dropdown a {
-      margin: 0; padding: 12px 16px;
-      border-bottom: 1px solid #eee;
-      text-decoration: none;    
-      color: #0F9ED5;
-      font-weight: 500;
-    }
-    nav.dropdown a:last-child {
-      border-bottom: none;
+      align-items: center;
     }
 
-    @media (max-width: 768px) {
-      .menu-toggle { display: flex; }
-      nav.dropdown { display: none; }
-      nav.dropdown.active { display: flex; }
+    .header {
+      width: 344px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .icon-button {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+    }
+
+    .icon-button img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .custom-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .info-card {
+      width: 344px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin-top: 20px;
+      box-sizing: border-box;
+    }
+
+    .info-card strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-size: 14px;
+      color: #222;
+      margin: 0;
     }
   </style>
 </head>
 <body>
-  <!-- ─── 헤더 영역 ─────────────────────────────────────── -->
-  <header>
-    <div class="logo">INWAVE</div>
-    <button class="menu-toggle" aria-label="메뉴 열기">
-      <span></span><span></span><span></span>
-    </button>
-    <nav class="dropdown">
-      <a href="adwave1.html">애드웨이브 1.0</a>
-      <a href="waveshare.html">웨이브쉐어</a>
-      <a href="invest.html">투자라운지</a>
-      <a href="view_stores.html">2차어디가?</a>
-    </nav>
-  </header>
+
+  <!-- 상단 버튼 영역 -->
+  <div class="header">
+    <div class="icon-button custom-button" onclick="history.back()">
+      <img src="/images/arrow-left-1.svg" alt="뒤로가기">
+    </div>
+    <div class="icon-button custom-button" onclick="location.href='https://inwave.ai.kr/profile.html'">
+      <img src="/images/guide.svg" alt="개인정보보">
+    </div>
+  </div>
 
   <h1>개인정보처리방침</h1>
   <p>
