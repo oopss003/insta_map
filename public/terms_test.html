@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>약관 동의</title>
+  <style>
+    html, body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 80px;
+      box-sizing: border-box;
+    }
+    .container {
+      padding: 24px;
+      max-width: 480px;
+      margin: 0 auto;
+      padding-bottom: 100px;
+    }
+    h2 {
+      font-size: 20px;
+      text-align: center;
+      margin: 16px 0;
+    }
+    .desc {
+      text-align: center;
+      color: #444;
+      margin-bottom: 24px;
+    }
+    .checkbox-group {
+      margin-bottom: 24px;
+    }
+    label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 12px;
+      border-bottom: 1px solid #eee;
+      font-size: 15px;
+      cursor: pointer;
+    }
+    label input {
+      margin-right: 12px;
+    }
+    .view-link {
+      color: #999;
+      font-size: 14px;
+    }
+    .style-desc {
+      text-align: center;
+      font-size: 15px;
+      color: #444;
+      margin: 0 auto 16px auto;
+      line-height: 1.5;
+      max-width: 360px;
+    }
+    .image-selector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+    .select-image {
+      width: 344px;
+      height: 150px;
+      border: 3px solid transparent;
+      border-radius: 12px;
+      cursor: pointer;
+      object-fit: cover;
+      transition: border 0.2s ease-in-out;
+    }
+    .select-image.selected {
+      border: 3px solid #0F9ED5;
+    }
+    .footer {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: #fff;
+      padding: 12px;
+      box-shadow: 0 -1px 6px rgba(0, 0, 0, 0.05);
+      z-index: 100;
+    }
+    .footer-inner {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .footer button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 24px;
+      font-size: 16px;
+      background: #0F9ED5;
+      color: #fff;
+      cursor: pointer;
+      opacity: 0.4;
+    }
+    .footer button.active {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>약관동의</h2>
+    <p class="desc">
+      인웨이브의 원활한 서비스 제공을 위해<br>
+      다음 약관에 동의가 필요합니다.
+    </p>
+
+    <div class="checkbox-group">
+      <label><input type="checkbox" id="allAgree" /> 전체동의</label>
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          서비스 이용약관 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          개인정보 수집 및 이용 동의 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+      <label>
+        <span>
+          <input type="checkbox" class="required" />
+          위치기반서비스 이용약관 (필수)
+        </span>
+        <a href="https://inwave.ai.kr/privacy_policy.html" target="_blank" class="view-link">보기 &gt;</a>
+      </label>
+      <label><input type="checkbox" class="required" /> 만 14세 이상입니다 (필수)</label>
+      <label><input type="checkbox" /> 마케팅정보 수신 동의 (선택)</label>
+    </div>
+    
+    <p class="style-desc">
+      당신의 취향에 딱 맞는 2차,<br>
+      먼저 추천해드릴게요. 스타일을 골라주세요!<br>
+      나중에 수정도 가능해요.
+    </p>
+    
+    <div class="image-selector">
+      <img src="images/001.png" class="select-image" data-value="001" />
+      <img src="images/002.png" class="select-image" data-value="002" />
+      <img src="images/003.png" class="select-image" data-value="003" />
+      <img src="images/004.png" class="select-image" data-value="004" />
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-inner">
+      <button id="nextBtn" disabled>다음</button>
+    </div>
+  </div>
+
+  <!-- Firebase SDK 로드 순서 중요 -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <script>
+    // 1) Firebase 초기화
+    const firebaseConfig = {
+      apiKey: "AIzaSyCV1XUfsREQYnah3tbEKBTprg9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+
+    // 2) Auth, Firestore 참조
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // 3) Apple 로그인 토큰 세션에서 꺼내어 Firebase 인증 (Apple flow)
+    const appleIdToken = sessionStorage.getItem('apple_id_token');
+    if (appleIdToken && !auth.currentUser) {
+      const providerApple = new firebase.auth.OAuthProvider('apple.com');
+      const credentialApple = providerApple.credential({ idToken: appleIdToken });
+      auth.signInWithCredential(credentialApple)
+        .then(() => {
+          // 세션 정리
+          sessionStorage.removeItem('apple_id_token');
+          sessionStorage.removeItem('apple_auth_code');
+          sessionStorage.removeItem('apple_state');
+          // onAuthStateChanged로 계속 진행
+        })
+        .catch(err => {
+          console.error('Apple 인증 실패:', err);
+          alert('Apple 로그인 인증 중 오류가 발생했습니다.');
+          window.location.href = '/login.html';
+        });
+    }
+
+    // 4) UI 요소
+    const allAgree           = document.getElementById('allAgree');
+    const requiredCheckboxes = document.querySelectorAll('.required');
+    const nextBtn            = document.getElementById('nextBtn');
+    let selectedImageValue   = null;
+
+    allAgree.addEventListener('change', () => {
+      requiredCheckboxes.forEach(cb => cb.checked = allAgree.checked);
+      updateButtonState();
+    });
+    requiredCheckboxes.forEach(cb => cb.addEventListener('change', updateButtonState));
+    function updateButtonState() {
+      const ok = [...requiredCheckboxes].every(cb => cb.checked);
+      nextBtn.disabled = !ok;
+      nextBtn.classList.toggle('active', ok);
+    }
+    document.querySelectorAll('.select-image').forEach(img => {
+      img.addEventListener('click', () => {
+        document.querySelectorAll('.select-image').forEach(i => i.classList.remove('selected'));
+        img.classList.add('selected');
+        selectedImageValue = img.dataset.value;
+      });
+    });
+
+    // 5) 로그인 상태 확인 후 동의 처리 핸들러 초기화
+    auth.onAuthStateChanged(user => {
+      if (!user) {
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        return window.location.href = "/login.html";
+      }
+      initAgreementHandler(user);
+    });
+
+    function initAgreementHandler(user) {
+      nextBtn.addEventListener('click', () => {
+        if (nextBtn.disabled) return;
+        if (!selectedImageValue) {
+          return alert("스타일을 하나 선택해주세요.");
+        }
+        const normalizedEmail = user.email.toLowerCase();
+        db.collection("users").doc(normalizedEmail).set({
+          agreedToTerms: true,
+          selectedStyle: selectedImageValue
+        }, { merge: true })
+        .then(() => {
+          window.location.href = '/view_stores_test.html';
+        })
+        .catch(err => {
+          console.error("🔥 약관 동의 저장 실패:", err.code, err);
+          alert("약관 동의 처리 중 오류가 발생했습니다: " + err.message);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
