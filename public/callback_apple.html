@@ -4,68 +4,59 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로그인 처리 중...</title>
-  <style>
-    body {
-      font-family: Pretendard, sans-serif;
-      background-color: #f5f6fb;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-  </style>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 </head>
-<body>
+<body style="font-family: Pretendard, sans-serif; background:#f5f6fb; display:flex; justify-content:center; align-items:center; height:100vh;">
   <div>
-    <h3>Apple 로그인 처리 중입니다...</h3>
+    <h3>로그인 처리 중입니다...</h3>
   </div>
 
   <script>
-    async function handleAppleCallback() {
-      const queryParams = new URLSearchParams(window.location.search);
-      const code = queryParams.get("code");
-      const state = queryParams.get("state");
-      const error = queryParams.get("error");
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.appspot.com",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
 
-      if (error) {
-        alert("로그인 실패: " + error);
-        window.location.href = "/login.html";
-        return;
-      }
+    // Apple에서 전달한 정보 URL에서 추출
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+    const id_token = params.get("id_token");
 
-      if (!code) {
-        alert("로그인 코드가 전달되지 않았습니다.");
-        window.location.href = "/login.html";
-        return;
-      }
-
-      try {
-        const response = await fetch("/api/callback_apple", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ code, state })
-        });
-
-        const result = await response.json();
-
-        if (result.success) {
-          // 성공 시 약관 동의 페이지로 이동
-          window.location.href = "/terms.html";
-        } else {
-          console.error("서버 오류:", result);
-          alert("로그인 처리에 실패했습니다.");
-          window.location.href = "/login.html";
-        }
-      } catch (err) {
-        console.error("예외 오류:", err);
-        alert("서버와 통신 중 오류가 발생했습니다.");
-        window.location.href = "/login.html";
-      }
+    if (!code && !id_token) {
+      alert("Apple 로그인 정보가 없습니다.");
+      location.href = "/login.html";
     }
 
-    handleAppleCallback();
+    // 서버에 POST 요청
+    fetch("/api/callback_apple", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ code, id_token })
+    })
+    .then(res => res.json())
+    .then(result => {
+      if (result.success) {
+        console.log("서버 인증 성공:", result);
+        location.href = "/terms.html";
+      } else {
+        console.error("서버 인증 실패:", result);
+        location.href = "/login.html";
+      }
+    })
+    .catch(err => {
+      console.error("인증 처리 오류:", err);
+      alert("로그인 처리 중 오류가 발생했습니다.");
+      location.href = "/login.html";
+    });
   </script>
 </body>
 </html>
+
