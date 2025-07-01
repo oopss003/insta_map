@@ -305,17 +305,23 @@
   </div>
 
   <!-- ② 마커 클릭 시 하단 카드 -->
-  <div id="infoCard">
-    <img id="infoImg" src="" alt="">
-    <div class="meta">
-     <div id="infoTopRow" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-        <span id="infoTag" class="tag"></span>
-        <a id="infoInsta" href="#" target="_blank" style="color: var(--primary); text-decoration: none;"></a>
-      </div>
-      <span id="infoHash" style="color: var(--muted); font-size: 13px; margin-bottom: 4px; display: block;"></span>
-      <b id="infoName"></b>
-      <span id="infoDesc"></span>
-    </div>
+  <img id="infoImg" src="" alt="" style="width:96px; height:96px; border-radius:14px; object-fit:cover; flex-shrink:0;">
+  
+  <!-- 중앙 텍스트 -->
+  <div class="meta" style="flex: 1; min-width: 0; font-size: 14px; line-height: 1.4">
+    <b id="infoName" style="font-size: 16px;">매장명</b>
+    <div id="infoHash" style="color: var(--muted); font-size: 13px;">#해시태그</div>
+    <div id="infoTel" style="font-size: 13px;">전화번호</div>
+    <div id="infoAddr" style="font-size: 13px;">주소</div>
+  </div>
+  
+  <!-- 우측 마감 정보 -->
+  <div class="meta" style="text-align: right; min-width: 100px;">
+    <div style="font-size: 13px; color: var(--muted);">영업 마감</div>
+    <div id="infoClose" style="font-size: 14px;">22:00</div>
+    <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">라스트오더</div>
+    <div id="infoLastOrder" style="font-size: 14px;">21:30</div>
+  </div>
 
   <!-- ───────── JS ───────── -->
   <script>
@@ -590,20 +596,30 @@
       tag.classList.add('no-video');
       tag.classList.remove('video');
     }
-
-    // 2. 인스타그램 ID
+  }
+    // 2. 매장 정보
+    document.getElementById('infoName').textContent = d.name || '';
+    document.getElementById('infoHash').textContent =
+      (Array.isArray(d.hashtags) && d.hashtags.length > 0) ? `#${d.hashtags[0]}` : '';
+    document.getElementById('infoTel').textContent = d.tel || '';
+    document.getElementById('infoAddr').textContent = d.address || '';
+  
+    // 3. 인스타그램 링크
     const instaLink = document.getElementById('infoInsta');
-    instaLink.textContent = `@${d.insta}`;
-    instaLink.href = `https://instagram.com/${d.insta}`;
-
-    // 3. 해시태그 (첫 번째)
-    const hash = Array.isArray(d.hashtags) && d.hashtags.length > 0 ? d.hashtags[0] : '';
-    document.getElementById('infoHash').textContent = hash;
-
-    // 4. 이름과 설명
-    infoName.textContent = d.name;
-    infoDesc.textContent = d.desc || '';
-
+    if (instaLink && d.insta) {
+      instaLink.textContent = `@${d.insta}`;
+      instaLink.href = `https://instagram.com/${d.insta}`;
+    }
+  
+    // 4. 오늘 요일 기준 영업시간
+    const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+    const todayStr = dayMap[new Date().getDay()];
+    const todayHours = d.hours?.[todayStr];
+  
+    document.getElementById('infoClose').textContent = todayHours?.time?.end || '';
+    document.getElementById('infoLastOrder').textContent = todayHours?.lastOrder?.time || '';
+  
+    // 5. 카드 보여주기
     infoCard.classList.add('show');
     updateInfoCardPosition();
   }
