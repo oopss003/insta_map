@@ -1,1 +1,59 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Header Only</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      justify-content: center;
+    }
+
+    .header {
+      width: 344px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 0;
+    }
+
+    .icon-button {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      cursor: pointer;
+    }
+
+    .icon-button img {
+      width: 24px;
+      height: 24px;
+    }
+
+    .custom-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="icon-button custom-button" onclick="history.back()">
+      <img src="/images/arrow-left-1.svg" alt="뒤로가기">
+    </div>
+    <div class="icon-button custom-button" onclick="location.href='https://inwave.ai.kr/profile.html'">
+      <img src="/images/news-subscribe.svg" alt="구독정보">
+    </div>
+  </div>
+</body>
+</html>
+
 구독서비스는 향후 진행예정입니다.
