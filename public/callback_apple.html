@@ -49,22 +49,29 @@
       alert("로그인 실패: id_token 없음");
     } else {
       const decoded = jwt_decode(id_token);
-      const { email, sub, name } = decoded;
+      const { email: decodedEmail, sub, name } = decoded;
 
       // Firebase 로그인
       const credential = firebase.auth.OAuthProvider('apple.com').credential({
         idToken: id_token,
-        rawNonce: "" // usePopup: true이면 rawNonce 생략 가능
+        rawNonce: "" // usePopup: true일 경우 생략 가능
       });
 
       firebase.auth().signInWithCredential(credential)
         .then(result => {
-          const user = result.user;
-          const userRef = db.collection("users").doc(user.email);
+          console.log("✅ Firebase 인증 성공");
 
-          // Firestore 사용자 정보 저장 또는 업데이트
+          const user = result.user;
+          const userEmail = user.email || decodedEmail || (sub + "@privaterelay.appleid.com");
+
+          if (!userEmail) {
+            alert("Apple 계정에서 이메일 정보를 받을 수 없습니다.");
+            throw new Error("이메일 정보 없음");
+          }
+
+          const userRef = db.collection("users").doc(userEmail);
           return userRef.set({
-            email: user.email,
+            email: userEmail,
             name: name || "Apple 사용자",
             uid: user.uid,
             provider: "apple",
@@ -73,11 +80,11 @@
           }, { merge: true });
         })
         .then(() => {
-          // 약관 동의 페이지로 이동
+          console.log("✅ Firestore 저장 완료 → 약관 페이지로 이동");
           window.location.href = "/terms.html";
         })
         .catch(error => {
-          console.error("Apple 로그인 오류:", error);
+          console.error("❌ Apple 로그인 오류:", error);
           alert("로그인 실패: " + error.message);
         });
     }
