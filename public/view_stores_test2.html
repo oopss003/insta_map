@@ -518,7 +518,7 @@
 
         let newLat = Number(lat);
         let newLng = Number(lng);
-        const verticalSpacing = 0.00008; // 약 8~10m 간격, 필요 시 조정
+        const verticalSpacing = 0.00005; // 약 8~10m 간격, 필요 시 조정
         if (groupSize > 1) {
           const offset = (idx - (groupSize - 1) / 2) * verticalSpacing;
           newLat += offset;
