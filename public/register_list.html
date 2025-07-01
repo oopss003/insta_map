@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8">
-  <title>매장 리스트 보기</title>
+  <meta charset="utf-8" />
+  <title>전체 매장 리스트</title>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
   <style>
@@ -23,7 +23,7 @@
         <th>해시태그</th>
         <th>전화번호</th>
         <th>담당이메일</th>
-        <th>주소(Lat, Lng)</th>
+        <th>위치(Lat, Lng)</th>
         <th>사진링크</th>
         <th>비디오링크</th>
         <th>지도노출</th>
@@ -42,51 +42,75 @@
       messagingSenderId: "280950399393",
       appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
     };
-    
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    // 🔐 마스터 관리자 이메일
+    const USER_EMAIL = "jhpark8271@gmail.com";
+
     const days = ['월','화','수','목','금','토','일'];
 
-    db.collection("stores").get().then(snapshot => {
-      const tbody = document.querySelector("#storeTable tbody");
-      snapshot.forEach(doc => {
-        const d = doc.data();
+    function renderStore(doc) {
+      const d = doc.data();
+      const tr = document.createElement("tr");
 
-        const tr = document.createElement("tr");
-        
-        const hashtags = (d.hashtags || []).join(", ");
-        const photo = d.photo ? `<a href="${d.photo}" target="_blank">사진보기</a>` : "-";
-        const video = d.vimeo ? `<a href="${d.vimeo}" target="_blank">링크</a>` : "-";
-        const display = (typeof d.lat === "number" && typeof d.lng === "number") ? "O" : "X";
+      const hashtags = (d.hashtags || []).join(", ");
+      const photo = d.photo ? `<a href="${d.photo}" target="_blank">사진</a>` : "-";
+      const video = d.vimeo ? `<a href="${d.vimeo}" target="_blank">링크</a>` : "-";
+      const display = (typeof d.lat === "number" && typeof d.lng === "number") ? "O" : "X";
 
-        const hoursHtml = days.map(day => {
-          const h = d.hours?.[day] || {};
-          return `
-            <div class="nowrap"><strong>${day}</strong><br>
-              ⏰ ${h.time?.start || "-"} ~ ${h.time?.end || "-"}<br>
-              ☕ ${h.break?.start || "-"} ~ ${h.break?.end || "-"}<br>
-              🕘 ${h.lastOrder?.time || "-"}
-            </div>
-          `;
-        }).join("");
-
-        tr.innerHTML = `
-          <td>${d.name || "-"}</td>
-          <td>${hashtags}</td>
-          <td>${d.phone || "-"}</td>
-          <td>${d.userEmail || "-"}</td>
-          <td>${d.lat}, ${d.lng}</td>
-          <td>${photo}</td>
-          <td>${video}</td>
-          <td style="text-align:center">${display}</td>
-          <td>${hoursHtml}</td>
+      const hoursHtml = days.map(day => {
+        const h = d.hours?.[day] || {};
+        return `
+          <div class="nowrap"><strong>${day}</strong><br>
+            ⏰ ${h.time?.start || "-"} ~ ${h.time?.end || "-"}<br>
+            ☕ ${h.break?.start || "-"} ~ ${h.break?.end || "-"}<br>
+            🕘 ${h.lastOrder?.time || "-"}
+          </div>
         `;
+      }).join("");
 
-        tbody.appendChild(tr);
-      });
+      tr.innerHTML = `
+        <td>${d.name || "-"}</td>
+        <td>${hashtags}</td>
+        <td>${d.phone || "-"}</td>
+        <td>${d.userEmail || "-"}</td>
+        <td>${d.lat || "-"}, ${d.lng || "-"}</td>
+        <td>${photo}</td>
+        <td>${video}</td>
+        <td style="text-align:center">${display}</td>
+        <td>${hoursHtml}</td>
+      `;
+
+      return tr;
+    }
+
+    async function loadStores() {
+      try {
+        const snapshot = await db.collection("stores").get();
+        const tbody = document.querySelector("#storeTable tbody");
+
+        snapshot.forEach(doc => {
+          const row = renderStore(doc);
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        alert("매장 데이터를 불러오지 못했습니다.");
+        console.error(err);
+      }
+    }
+
+    // 🔓 마스터 이메일만 접근 허용
+    window.addEventListener('DOMContentLoaded', () => {
+      if (USER_EMAIL === "jhpark8271@gmail.com") {
+        loadStores();
+      } else {
+        document.body.innerHTML = "<h3>접근 권한이 없습니다.</h3>";
+      }
     });
   </script>
 </body>
 </html>
+
 
