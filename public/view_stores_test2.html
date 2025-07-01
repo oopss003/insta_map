@@ -531,7 +531,7 @@
         visibleCount++;
   
         let tagText = Array.isArray(hashtags) && hashtags.length > 0 ? hashtags[0] : "";
-        const customIcon = createMarkerIconWithText(tagText);
+        const customIcon = createMarkerIconWithText(name);
   
         const marker = new naver.maps.Marker({
           position,
