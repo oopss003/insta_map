@@ -12,10 +12,12 @@
     th { background: #eee; position: sticky; top: 0; z-index: 1; }
     tr:hover { background: #f0f0f0; }
     select.time-select { width: 80px; font-size: 12px; }
+    #storeCount { margin-top: 10px; font-weight: bold; }
   </style>
 </head>
 <body>
   <h2>전체 매장 리스트 (관리자용)</h2>
+  <div id="storeCount">등록된 매장 수: 0</div>
   <table id="storeTable">
     <thead>
       <tr>
@@ -81,6 +83,8 @@
     async function loadStores() {
       const snapshot = await db.collection("stores").get();
       const tbody = document.querySelector("#storeTable tbody");
+      const storeCount = document.getElementById("storeCount");
+      storeCount.textContent = `등록된 매장 수: ${snapshot.size}`;
 
       let index = 1;
       snapshot.forEach(doc => {
