@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>로그인</title>
+  <link rel="stylesheet" href="js/css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Pretendard", sans-serif;
+      background-color: #f5f6fb;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      max-width: 100%;
+      background: none;
+      box-shadow: none;
+    }
+
+    .logo-img {
+      width: 80%;
+      max-width: 300px;
+      margin-bottom: 40px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+      border-radius: 20px; /* 그림자가 부드럽게 보이게 */
+    }
+
+    .login-box {
+      /* 배경/그림자 제거 */
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .login-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: white;
+      font-weight: 500;
+      cursor: pointer;
+      gap: 8px;
+      transition: background 0.2s;
+      /* 버튼 자체의 그림자도 제거 */
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2); /* 그림자 추가 */
+    }
+
+    .login-button:hover {
+      background-color: #f1f1f1;
+    }
+
+    .login-button img {
+      width: 20px;
+      height: 20px;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- 상단 로고 이미지 -->
+    <img src="images/1024.png" alt="2차어디가 로고" class="logo-img" />
+
+    <!-- 로그인 버튼 영역 -->
+    <div class="login-box">
+      <button id="googleLoginBtn" class="login-button">
+        <img src="images/google.svg" alt="Google 아이콘" />
+        구글로 로그인
+      </button>
+      <button class="login-button">
+        <img src="images/apple.svg" alt="Apple 아이콘" />
+        Apple로 로그인
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
+    const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
+    const scope = "email profile openid";
+    const response_type = "id_token token";
+
+    const state = new Date().getTime();
+    const nonce = Math.random().toString(36).substring(2);
+
+    document.getElementById("googleLoginBtn").addEventListener("click", () => {
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
+      window.location.href = url;
+    });
+  </script>
+</body>
+</html>

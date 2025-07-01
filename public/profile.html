@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>내정보</title>
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 344px;
+      padding: 16px 0 32px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .back-btn,
+    .profile-icon {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .image-card {
+      width: 100%;
+      background: #fff0e5;
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+     .image-card img {
+      width: 100%;       /* 부모 너비에 맞춤 (344px) */
+      height: auto;      /* 비율 유지 */
+      border-radius: 16px;
+      background: #eee;
+      object-fit: cover; /* 이미지 잘리는 경우 커버로 유지 */
+    }
+
+    .desc {
+      margin-top: 8px;
+      font-size: 14px;
+      color: #333;
+      line-height: 1.4;
+    }
+
+    .image-card button {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 10px;
+      cursor: pointer;
+      font-size: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .info-box,
+    .event-box,
+    .action-btn {
+      width: 100%;
+      background: #fff;
+      border-radius: 16px;
+      padding: 16px;
+      box-sizing: border-box;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #222;
+    }
+
+    .info-box strong,
+    .event-box strong {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .action-btn {
+      height: 77px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .action-btn:active {
+      transform: scale(0.97);
+      background: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- 헤더 -->
+    <div class="header">
+      <div class="back-btn" onclick="history.back()">
+        <img src="/images/arrow-left-1.svg" width="24" />
+      </div>
+      <div class="profile-icon">
+        <img src="/images/user-profile.svg" width="32" />
+      </div>
+    </div>
+
+    <!-- 프로필 이미지 카드 -->
+    <div class="image-card" onclick="openStyleModal()">
+      <img id="profileImage" src="" alt="프로필 이미지" />
+      <div class="desc">
+        사진 잘 나오는 감성 술집, 여기 다 있어요.<br />
+        분위기와 감성까지 챙기는 당신을 위한 추천 리스트!
+      </div>
+    </div>
+
+    <!-- 스타일 선택 모달 -->
+    <div id="styleModal" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index:999;">
+      <div style="background:#fff; border-radius:16px; padding:20px; display:flex; flex-direction:column; align-items:center;">
+        <h3 style="margin-bottom:20px;">프로필 스타일을 선택하세요</h3>
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <img src="https://oopss003.github.io/insta_map/public/images/001.png" width="344" height="150" onclick="selectStyle('001')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/002.png" width="344" height="150" onclick="selectStyle('002')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/003.png" width="344" height="150" onclick="selectStyle('003')" style="cursor:pointer; border-radius:16px;" />
+          <img src="https://oopss003.github.io/insta_map/public/images/004.png" width="344" height="150" onclick="selectStyle('004')" style="cursor:pointer; border-radius:16px;" />
+        </div>
+        <button onclick="closeStyleModal()" style="margin-top:24px; padding:10px 24px; border:1px solid #888; border-radius:8px; background:#fff;">닫기</button>
+      </div>
+    </div>
+
+    <!-- 이메일 -->
+    <div class="info-box" id="emailBox">
+      <strong>E-mail</strong>
+      로딩 중...
+    </div>
+
+    <!-- 닉네임 -->
+    <div class="info-box" id="nicknameBox">
+      <strong>닉네임</strong>
+      로딩 중...
+    </div>
+
+    <!-- 이벤트 내역 -->
+    <div class="event-box">
+      <strong>이벤트 내역</strong>
+      <!-- 비어 있음 -->
+    </div>
+
+    <!-- 로그아웃 -->
+    <div class="action-btn" onclick="logout()">로그아웃</div>
+
+    <!-- 탈퇴하기 -->
+    <div class="action-btn" onclick="withdraw()">탈퇴하기</div>
+
+  </div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+    authDomain: "instamap-9b595.firebaseapp.com",
+    projectId: "instamap-9b595",
+    storageBucket: "instamap-9b595.appspot.com",
+    messagingSenderId: "280950399393",
+    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  firebase.auth().onAuthStateChanged(user => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      location.href = "/login.html";
+      return;
+    }
+
+    const email = user.email.toLowerCase();
+    localStorage.setItem("userEmail", email);  // 추후 사용을 위한 저장
+
+    db.collection("users").doc(email).get().then(doc => {
+      const data = doc.data();
+      if (!data) {
+        alert("사용자 정보를 찾을 수 없습니다.");
+        return;
+      }
+
+      // 이메일
+      document.getElementById("emailBox").innerHTML = `
+        <strong>E-mail</strong><br />
+        ${email}
+      `;
+
+      // 닉네임
+      document.getElementById("nicknameBox").innerHTML = `
+        <strong>닉네임</strong><br />
+        ${data.nickname || '닉네임 없음'}
+      `;
+
+      // 프로필 이미지
+      const selectedStyle = data.selectedStyle || "001";
+      const imagePath = `https://oopss003.github.io/insta_map/public/images/${selectedStyle}.png`;
+      document.getElementById("profileImage").src = imagePath;
+    }).catch(err => {
+      console.error("🔥 Firestore 오류", err);
+      alert("사용자 정보를 불러오는 데 실패했습니다.");
+    });
+  });
+
+  function logout() {
+    firebase.auth().signOut().then(() => {
+      alert("로그아웃 되었습니다.");
+      location.href = "/login.html";
+    });
+  }
+
+  function withdraw() {
+    const confirmed = confirm("정말 탈퇴하시겠습니까?");
+    if (confirmed) {
+      const user = firebase.auth().currentUser;
+      if (user) {
+        user.delete().then(() => {
+          alert("탈퇴 완료되었습니다.");
+          location.href = "/login.html";
+        }).catch(error => {
+          alert("재로그인 후 다시 시도해 주세요.");
+        });
+      }
+    }
+  }
+  function openStyleModal() {
+    document.getElementById('styleModal').style.display = 'flex';
+  }
+
+  function closeStyleModal() {
+    document.getElementById('styleModal').style.display = 'none';
+  }
+
+  function selectStyle(styleCode) {
+    const email = localStorage.getItem("userEmail");
+    if (!email) {
+      alert("로그인이 필요합니다.");
+      return;
+    }
+
+    db.collection("users").doc(email.toLowerCase()).update({
+      selectedStyle: styleCode
+    }).then(() => {
+      // 이미지 갱신
+      const imagePath = `https://oopss003.github.io/insta_map/public/images/${styleCode}.png`;
+      document.getElementById("profileImage").src = imagePath;
+      closeStyleModal();
+    }).catch(error => {
+      alert("이미지 변경 실패: " + error.message);
+    });
+  }
+
+
+</script>
+
+</body>
+</html>

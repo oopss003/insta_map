@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>카카오 로그인 처리 중...</title>
+
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+
+  <script>
+    // ✅ Firebase 초기화
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399933",
+      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+  </script>
+</head>
+<body>
+  <p>카카오 로그인 처리 중입니다...</p>
+
+  <script>
+    const KAKAO_CLIENT_ID = '4e1dd9cccad37f9748bb3a3254b88491';
+    const REDIRECT_URI = 'https://inwave.ai.kr/callback_kakao.html';
+
+    const code = new URLSearchParams(window.location.search).get('code');
+
+    if (!code) {
+      alert('카카오 인가 코드가 없습니다.');
+    } else {
+      // 1. 토큰 요청
+      fetch('https://kauth.kakao.com/oauth/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          grant_type: 'authorization_code',
+          client_id: KAKAO_CLIENT_ID,
+          redirect_uri: REDIRECT_URI,
+          code: code
+        })
+      })
+      .then(res => res.json())
+      .then(tokenData => {
+        if (tokenData.error) throw new Error(tokenData.error_description);
+
+        const accessToken = tokenData.access_token;
+
+        // 2. 사용자 정보 요청
+        return fetch('https://kapi.kakao.com/v2/user/me', {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`
+          }
+        });
+      })
+      .then(res => res.json())
+      .then(userInfo => {
+        const email = userInfo.kakao_account.email;
+        const name = userInfo.kakao_account.profile.nickname;
+
+        // ✅ 로컬 스토리지에 저장
+        localStorage.setItem('userEmail', email);
+
+        // ✅ Firebase 익명 로그인 후 이동
+        return firebase.auth().signInAnonymously();
+      })
+      .then(() => {
+        // 로그인 성공 후 약관 페이지로 이동
+        window.location.href = '/terms.html';
+      })
+      .catch(err => {
+        console.error('카카오 로그인 처리 오류:', err);
+        alert('카카오 로그인 처리 중 오류가 발생했습니다.');
+      });
+    }
+  </script>
+</body>
+</html>
+

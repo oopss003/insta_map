@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>MY</title>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Pretendard', sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .mypage-header {
+      width: 344px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 16px;
+      margin-bottom: 12px;
+      gap: 12px;
+    }
+
+    .back-btn {
+      background: #fff;
+      border-radius: 16px;
+      width: 77px;
+      height: 77px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      flex-shrink: 0;
+    }
+
+    .user-info-box {
+      width: 255px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0 12px;
+      box-sizing: border-box;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+
+    .user-info-box strong {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .user-subtext {
+      font-size: 13px;
+      color: #888;
+    }
+
+    .grid-menu {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 344px;
+      margin: 12px 0;
+      flex-wrap: wrap;
+    }
+
+    .grid-item {
+      width: 77px;
+      height: 77px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .grid-menu img {
+      width: 32px;
+      height: 32px;
+      margin-bottom: 6px;
+    }
+
+    .ad-area {
+      width: 100%;
+      max-width: 344px;
+      height: 150px;
+      margin: 0 auto;
+      border-radius: 16px;
+      overflow: hidden;
+      background: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    #ad-area img,
+    #ad-area #randomBanner {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .section-2x2 {
+      display: grid;
+      grid-template-columns: repeat(2, 166px);
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 12px;
+    }
+
+    .section-2x2 .section {
+      width: 166px;
+      height: 166px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
+      text-align: center;
+    }
+
+    .footer {
+      display: none;
+    }
+
+    .footer div {
+      text-align: center;
+      font-size: 12px;
+      color: #333;
+    }
+
+    .footer div.active {
+      color: #0F9ED5;
+    }
+
+    .tab-icon {
+      width: 24px;
+      height: 24px;
+      margin-bottom: 4px;
+    }
+    .custom-button:active {
+      transform: scale(0.96);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+  </style>
+</head>
+<body>
+  <div class="mypage-header">
+    <div class="back-btn custom-button" onclick="location.href='https://inwave.ai.kr/view_stores_test.html'">
+      <img src="/images/arrow-left-1.svg" alt="뒤로가기" onclick="history.back()" style="width:24px;height:24px;">
+    </div>
+    <div class="user-info-box">
+      <strong id="userNickname">사용자</strong>
+      <div class="user-subtext">안녕하세요. 반가워요!</div>
+    </div>
+  </div>
+
+  <div class="grid-menu">
+    <div class="grid-item custom-button" id="storeMenu">
+      <img src="/images/store.svg" alt="매장정보">
+      <div>로딩중...</div>
+    </div>
+    <div class="grid-item custom-button" onclick="location.href='https://inwave.ai.kr/subscribe.html'">
+      <img src="/images/news-subscribe.svg" alt="구독정보">
+      <div>구독정보</div>
+    </div>
+    <div class="grid-item custom-button" onclick="location.href='https://inwave.ai.kr/privacy_policy.html'">
+      <img src="/images/guide.svg" alt="개인정보보호">
+      <div>개인정보보호</div>
+    </div>
+    <div class="grid-item custom-button" onclick="location.href='https://inwave.ai.kr/profile.html'">
+      <img src="/images/user-profile.svg" alt="내정보">
+      <div>내정보</div>
+    </div>
+
+  <div class="ad-area">
+  <!-- 광고 이미지 표시 -->
+  <img id="randomBanner" src="" alt="광고 배너" style="width: 344px; height: 150px; object-fit: cover; border-radius: 16px;" />
+</div>
+
+  <div class="section-2x2">
+    <div class="section custom-button" onclick="location.href='https://inwave.ai.kr'">인웨이브</div>
+    <div class="section custom-button" onclick="location.href='https://inwave.ai.kr/adwave1.html'">애드웨이브 1.0</div>
+    <div class="section custom-button" onclick="location.href='https://inwave.ai.kr/waveshare.html'">웨이브쉐어</div>
+    <div class="section custom-button" onclick="location.href='https://inwave.ai.kr/invest.html'">투자라운지</div>
+  </div>
+
+  <div class="footer">
+    <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
+      <div><img src="/images/home-simple-door.svg" class="tab-icon" /><br>홈</div>
+    </a>
+    <a href="https://inwave.ai.kr/view_stores.html" style="text-decoration: none;">
+      <div><img src="/images/search.svg" class="tab-icon" /><br>검색</div>
+    </a>
+    <a href="https://inwave.ai.kr/profile.html" style="text-decoration: none;">
+      <div class="active"><img src="/images/user-profile.svg" class="tab-icon" /><br>MY</div>
+    </a>
+  </div>
+
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+    authDomain: "instamap-9b595.firebaseapp.com",
+    projectId: "instamap-9b595",
+    storageBucket: "instamap-9b595.firebasestorage.app",
+    messagingSenderId: "280950399393",
+    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+
+  firebase.auth().onAuthStateChanged(async user => {
+    if (!user) {
+      alert("로그인이 필요합니다.");
+      window.location.href = "/login.html";
+      return;
+    }
+
+    // ✅ 이메일 처리 (쿼리스트링이 우선)
+    const urlParams = new URLSearchParams(window.location.search);
+    const emailFromQuery = urlParams.get("email");
+    const finalEmail = (emailFromQuery || user.email).toLowerCase();
+
+    localStorage.setItem("userEmail", finalEmail);
+
+    try {
+      // ✅ 사용자 정보 불러오기
+      const userDoc = await db.collection("users").doc(finalEmail).get();
+      if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
+        alert("약관 동의가 필요합니다.");
+        window.location.href = "/terms.html";
+        return;
+      }
+
+      const nickname = userDoc.data().nickname || "사용자";
+      document.getElementById("userNickname").textContent = nickname;
+
+      // ✅ 매장 등록 여부 확인
+      const storeDoc = await db.collection("stores").doc(finalEmail).get();
+      const storeMenu = document.getElementById("storeMenu");
+      storeMenu.innerHTML = `
+        <img src="/images/store.svg" alt="매장정보">
+        <div>매장정보</div>`;
+      storeMenu.onclick = () => {
+        const targetUrl = storeDoc.exists 
+          ? 'https://inwave.ai.kr/register.html?mode=view'
+          : 'https://inwave.ai.kr/register.html?mode=new';
+        location.href = targetUrl;
+      };
+
+      // ✅ 광고 배너 이미지 랜덤 설정
+      const bannerImages = [
+        "test0001.png"
+      ];
+      const randomImage = bannerImages[Math.floor(Math.random() * bannerImages.length)];
+      document.getElementById("randomBanner").src = `/imagesbanner/${randomImage}`;
+
+    } catch (error) {
+      console.error("❌ 사용자 또는 매장 정보 로딩 실패:", error);
+      alert("정보를 불러오는 데 문제가 발생했습니다.");
+    }
+  });
+</script>
+
+</body>
+</html>
