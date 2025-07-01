@@ -512,6 +512,7 @@
       items.forEach((data, idx) => {
         const {
           lat, lng, name, insta, desc, photo, vimeo, hashtags, hours
+          tel, address 
         } = data;
 
         const hourInfo = hours?.[todayStr] || {};
@@ -557,7 +558,18 @@
         function openStore() {
           map.setCenter(new naver.maps.LatLng(Number(lat), Number(lng)));
           map.setZoom(20);
-          showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo, hashtags });
+          
+          showInfoCard({
+            name,
+            insta,
+            desc,
+            thumbnail: photo,
+            videoUrl: vimeo,
+            hashtags,
+            tel,
+            address,
+            hours
+          });
         }
         naver.maps.Event.addListener(marker, 'click', openStore);
   
