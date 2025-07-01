@@ -13,6 +13,8 @@
     tr:hover { background: #f0f0f0; }
     select.time-select { width: 80px; font-size: 12px; }
     #storeCount { margin-top: 10px; font-weight: bold; }
+    .pagination { margin-top: 20px; text-align: center; }
+    .pagination button { margin: 0 4px; padding: 4px 10px; }
   </style>
 </head>
 <body>
@@ -32,6 +34,7 @@
     </thead>
     <tbody></tbody>
   </table>
+  <div class="pagination" id="pagination"></div>
 
   <script>
     const firebaseConfig = {
@@ -48,6 +51,9 @@
 
     const days = ['월','화','수','목','금','토','일'];
     const USER_EMAIL = "jhpark8271@gmail.com";
+    const PAGE_SIZE = 30;
+    let storeDocs = [];
+    let currentPage = 1;
 
     function generateTimeOptions(selected) {
       let options = '<option value="">-</option>';
@@ -80,14 +86,14 @@
       `;
     }
 
-    async function loadStores() {
-      const snapshot = await db.collection("stores").get();
+    function renderTable(page) {
       const tbody = document.querySelector("#storeTable tbody");
-      const storeCount = document.getElementById("storeCount");
-      storeCount.textContent = `등록된 매장 수: ${snapshot.size}`;
+      tbody.innerHTML = "";
+      const start = (page - 1) * PAGE_SIZE;
+      const end = start + PAGE_SIZE;
+      const items = storeDocs.slice(start, end);
 
-      let index = 1;
-      snapshot.forEach(doc => {
+      items.forEach((doc, index) => {
         const d = doc.data();
         const tr = document.createElement("tr");
 
@@ -99,7 +105,7 @@
         }).join("");
 
         tr.innerHTML = `
-          <td>${index++}</td>
+          <td>${start + index + 1}</td>
           <td>${d.name || ''}</td>
           <td>${d.phone || ''}</td>
           <td>${d.lat || ''}</td>
@@ -109,6 +115,32 @@
         `;
         tbody.appendChild(tr);
       });
+
+      renderPagination();
+    }
+
+    function renderPagination() {
+      const totalPages = Math.ceil(storeDocs.length / PAGE_SIZE);
+      const container = document.getElementById("pagination");
+      container.innerHTML = "";
+
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = i;
+        if (i === currentPage) btn.disabled = true;
+        btn.addEventListener("click", () => {
+          currentPage = i;
+          renderTable(currentPage);
+        });
+        container.appendChild(btn);
+      }
+    }
+
+    async function loadStores() {
+      const snapshot = await db.collection("stores").get();
+      storeDocs = snapshot.docs;
+      document.getElementById("storeCount").textContent = `등록된 매장 수: ${storeDocs.length}`;
+      renderTable(currentPage);
     }
 
     document.addEventListener("DOMContentLoaded", () => {
@@ -121,4 +153,3 @@
   </script>
 </body>
 </html>
-
