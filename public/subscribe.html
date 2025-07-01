@@ -3,14 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Header Only</title>
+  <title>사용자 정보</title>
   <style>
     body {
       margin: 0;
       font-family: 'Pretendard', sans-serif;
       background: #f5f6fb;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
+      align-items: center;
     }
 
     .header {
@@ -42,9 +43,34 @@
       transform: scale(0.96);
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
+
+    .info-card {
+      width: 344px;
+      background: #fff;
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+      padding: 20px;
+      margin-top: 20px;
+      box-sizing: border-box;
+    }
+
+    .info-card strong {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .info-card p {
+      font-size: 14px;
+      color: #222;
+      margin: 0;
+    }
   </style>
 </head>
 <body>
+
+  <!-- 상단 버튼 영역 -->
   <div class="header">
     <div class="icon-button custom-button" onclick="history.back()">
       <img src="/images/arrow-left-1.svg" alt="뒤로가기">
@@ -53,7 +79,15 @@
       <img src="/images/news-subscribe.svg" alt="구독정보">
     </div>
   </div>
+
+  <!-- 이메일 카드 -->
+  <div class="info-card">
+    <strong>구독정보</strong>
+    <p>구독서비스는 차후 진행예정입니다.</p> <!-- 이 부분은 JS로 자동 삽입 가능 -->
+  </div>
+
 </body>
 </html>
 
-구독서비스는 향후 진행예정입니다.
+
+
