@@ -4,5 +4,6 @@
       "source": "/api/geocode",
       "destination": "/api/geocode.js"
     }
-  ]
+  ],
+  "public": true // 또는 false
 }
