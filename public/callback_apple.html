@@ -81,7 +81,12 @@
         })
         .then(() => {
           console.log("✅ Firestore 저장 완료 → 약관 페이지로 이동");
-          window.location.href = "/terms.html";
+          if (window.opener && !window.opener.closed) {
+            window.opener.location.href = "/terms.html";
+            window.close();
+          } else {
+            window.location.href = "/terms.html";
+          }
         })
         .catch(error => {
           console.error("❌ Apple 로그인 오류:", error);
