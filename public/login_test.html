@@ -109,12 +109,27 @@
     });
 
     // Apple 로그인 초기화
+    // Apple 로그인 초기화 (팝업)
     AppleID.auth.init({
-      clientId: "ai.kr.inwave.login",  // Apple Developer의 App ID
+      clientId: "ai.kr.inwave.login",
       scope: "name email",
-      redirectURI: "https://inwave.ai.kr/callback_apple.html", // 서버에서 처리할 콜백 주소
       state: state.toString(),
-      usePopup: false
+      usePopup: true
+    });
+   
+    // 팝업 방식으로 로그인 실행
+    document.getElementById('appleid-signin').addEventListener('click', async () => {
+      try {
+        const response = await AppleID.auth.signIn();
+        // 인증 코드·토큰 세션에 저장
+        sessionStorage.setItem('apple_auth_code', response.authorization.code);
+        sessionStorage.setItem('apple_id_token', response.authorization.id_token);
+        sessionStorage.setItem('apple_state', response.authorization.state);
+        // 약관 동의 페이지로 이동
+        window.location.href = '/terms_test.html';
+      } catch (err) {
+        console.error('🍎 Apple 로그인 실패 또는 취소', err);
+      }
     });
   </script>
 </body>
