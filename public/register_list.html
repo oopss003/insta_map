@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <title>전체 매장 리스트</title>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
@@ -11,23 +11,21 @@
     th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; vertical-align: top; }
     th { background: #eee; position: sticky; top: 0; z-index: 1; }
     tr:hover { background: #f0f0f0; }
-    .nowrap { white-space: nowrap; }
+    input[type="time"] { width: 80px; }
   </style>
 </head>
 <body>
-  <h2>전체 매장 리스트 (관리자 전용)</h2>
+  <h2>전체 매장 리스트 (관리자용)</h2>
   <table id="storeTable">
     <thead>
       <tr>
+        <th>#</th>
         <th>매장이름</th>
-        <th>해시태그</th>
-        <th>전화번호</th>
-        <th>담당이메일</th>
-        <th>위치(Lat, Lng)</th>
-        <th>사진링크</th>
-        <th>비디오링크</th>
+        <th>전화</th>
+        <th>위도</th>
+        <th>경도</th>
         <th>지도노출</th>
-        <th>요일별 정보</th>
+        <th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th><th>일</th>
       </tr>
     </thead>
     <tbody></tbody>
@@ -46,71 +44,62 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    // 🔐 마스터 관리자 이메일
+    const days = ['월','화','수','목','금','토','일'];
     const USER_EMAIL = "jhpark8271@gmail.com";
 
-    const days = ['월','화','수','목','금','토','일'];
-
-    function renderStore(doc) {
-      const d = doc.data();
-      const tr = document.createElement("tr");
-
-      const hashtags = (d.hashtags || []).join(", ");
-      const photo = d.photo ? `<a href="${d.photo}" target="_blank">사진</a>` : "-";
-      const video = d.vimeo ? `<a href="${d.vimeo}" target="_blank">링크</a>` : "-";
-      const display = (typeof d.lat === "number" && typeof d.lng === "number") ? "O" : "X";
-
-      const hoursHtml = days.map(day => {
-        const h = d.hours?.[day] || {};
-        return `
-          <div class="nowrap"><strong>${day}</strong><br>
-            ⏰ ${h.time?.start || "-"} ~ ${h.time?.end || "-"}<br>
-            ☕ ${h.break?.start || "-"} ~ ${h.break?.end || "-"}<br>
-            🕘 ${h.lastOrder?.time || "-"}
-          </div>
-        `;
-      }).join("");
-
-      tr.innerHTML = `
-        <td>${d.name || "-"}</td>
-        <td>${hashtags}</td>
-        <td>${d.phone || "-"}</td>
-        <td>${d.userEmail || "-"}</td>
-        <td>${d.lat || "-"}, ${d.lng || "-"}</td>
-        <td>${photo}</td>
-        <td>${video}</td>
-        <td style="text-align:center">${display}</td>
-        <td>${hoursHtml}</td>
+    function createTimeCell(day, h, docId) {
+      return `
+        <div>
+          ⏰ <input type="time" value="${h.time?.start || ''}" data-doc="${docId}" data-day="${day}" data-field="start"> ~
+              <input type="time" value="${h.time?.end || ''}" data-doc="${docId}" data-day="${day}" data-field="end">
+        </div>
+        <div>
+          ☕ <input type="time" value="${h.break?.start || ''}" data-doc="${docId}" data-day="${day}" data-field="break_start"> ~
+              <input type="time" value="${h.break?.end || ''}" data-doc="${docId}" data-day="${day}" data-field="break_end">
+        </div>
+        <div>
+          🕘 <input type="time" value="${h.lastOrder?.time || ''}" data-doc="${docId}" data-day="${day}" data-field="lastOrder">
+        </div>
       `;
-
-      return tr;
     }
 
     async function loadStores() {
-      try {
-        const snapshot = await db.collection("stores").get();
-        const tbody = document.querySelector("#storeTable tbody");
+      const snapshot = await db.collection("stores").get();
+      const tbody = document.querySelector("#storeTable tbody");
 
-        snapshot.forEach(doc => {
-          const row = renderStore(doc);
-          tbody.appendChild(row);
-        });
-      } catch (err) {
-        alert("매장 데이터를 불러오지 못했습니다.");
-        console.error(err);
-      }
+      let index = 1;
+      snapshot.forEach(doc => {
+        const d = doc.data();
+        const tr = document.createElement("tr");
+
+        const display = (d.lat && d.lng) ? "O" : "X";
+
+        const hoursCells = days.map(day => {
+          const h = d.hours?.[day] || { time:{}, break:{}, lastOrder:{} };
+          return `<td>${createTimeCell(day, h, doc.id)}</td>`;
+        }).join("");
+
+        tr.innerHTML = `
+          <td>${index++}</td>
+          <td>${d.name || ''}</td>
+          <td>${d.phone || ''}</td>
+          <td>${d.lat || ''}</td>
+          <td>${d.lng || ''}</td>
+          <td>${display}</td>
+          ${hoursCells}
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
-    // 🔓 마스터 이메일만 접근 허용
-    window.addEventListener('DOMContentLoaded', () => {
+    document.addEventListener("DOMContentLoaded", () => {
       if (USER_EMAIL === "jhpark8271@gmail.com") {
         loadStores();
       } else {
-        document.body.innerHTML = "<h3>접근 권한이 없습니다.</h3>";
+        document.body.innerHTML = '<h3>접근 권한이 없습니다.</h3>';
       }
     });
   </script>
 </body>
 </html>
-
 
