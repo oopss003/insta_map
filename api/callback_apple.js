@@ -3,7 +3,7 @@ const jwt = require("jsonwebtoken");
 
 // Apple OAuth 설정
 const APPLE_TEAM_ID = "GT3RZR297K";               // Apple Developer → Membership
-const APPLE_CLIENT_ID = "ai.kr.inwave.login";       // 서비스 ID (App ID)
+const APPLE_CLIENT_ID = "ai.kr.inwave.auth";       // 서비스 ID (App ID)
 const APPLE_KEY_ID = "L79WLQXHN8";                 // 키 ID
 const APPLE_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
 MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgy5LMFV7YVCOrTgjY
