@@ -277,6 +277,36 @@
     transform: rotate(90deg);
   }
 
+  /* [추가/교체] 마이페이지 버튼 스타일 */
+  #myPageBtn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 3100; /* 메뉴 버튼과 동일한 레벨로 설정 */
+    padding: 0;
+    transition: transform 0.15s;
+  }
+
+  #myPageBtn:active {
+    transform: scale(0.96);
+  }
+  
+  /* 버튼 안의 이미지 크기를 지정하는 것이 좋습니다. */
+  #myPageBtn img {
+    width: 24px;
+    height: 24px;
+  }
+
 /* ──────────────────────────────────────────────────────────────────── */
 
 </style>
@@ -681,6 +711,12 @@
       },()=>alert('위치 권한 필요'));
     });
 
+    /* [추가] 마이페이지 버튼 클릭 이벤트 */
+    document.getElementById('myPageBtn').addEventListener('click', function() {
+      // 마이페이지(프로필) URL로 이동합니다.
+      window.location.href = 'https://inwave.ai.kr/profile.html';
+    });
+    
     /* drawer ↔ 패널 토글 --------------------- */
     const panel    = document.getElementById('panel');
     const drawer   = document.getElementById('drawer');
@@ -786,6 +822,9 @@
       <li><a href="#" id="linkSupport">고객지원</a></li>
     </ul>
   </nav>
+  <button id="myPageBtn" aria-label="마이페이지 이동">
+    <img src="https://inwave.ai.kr/images/user-profile.svg" alt="마이페이지 아이콘" style="width: 24px; height: 24px;">
+  </button>
   <!-- ✅ 여기에 추가하세요 -->
   <script>
     window.addEventListener('message', async (event) => {
