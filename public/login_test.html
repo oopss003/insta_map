@@ -4,64 +4,139 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로그인</title>
-  <style> /* ...생략... */ </style>
+  <link rel="stylesheet" href="js/css/style.css" />
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: "Pretendard", sans-serif;
+      background-color: #f5f6fb;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+      max-width: 100%;
+      background: none;
+      box-shadow: none;
+    }
+
+    .logo-img {
+      width: 80%;
+      max-width: 300px;
+      margin-bottom: 40px;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+      border-radius: 20px;
+    }
+
+    .login-box {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      box-shadow: none;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      width: 100%;
+      max-width: 320px;
+    }
+
+    .login-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background-color: white;
+      font-weight: 500;
+      cursor: pointer;
+      gap: 8px;
+      transition: background 0.2s;
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-button:hover {
+      background-color: #f1f1f1;
+    }
+
+    .login-button img {
+      width: 20px;
+      height: 20px;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <img src="images/1024.png" alt="로고" class="logo-img" />
+    <!-- 상단 로고 이미지 -->
+    <img src="images/1024.png" alt="2차어디가 로고" class="logo-img" />
+
+    <!-- 로그인 버튼 영역 -->
     <div class="login-box">
+      <!-- Google 로그인 (기존 유지) -->
       <button id="googleLoginBtn" class="login-button">
-        <img src="images/google.svg" alt="Google" /> 구글로 로그인
+        <img src="images/google.svg" alt="Google 아이콘" />
+        구글로 로그인
       </button>
+
+      <!-- Apple 로그인 (커스텀 버튼) -->
       <button id="appleLoginBtn" class="login-button">
-        <img src="images/apple.svg" alt="Apple" /> Apple로 로그인
+        <img src="images/apple.svg" alt="Apple 아이콘" />
+        Apple로 로그인
       </button>
     </div>
   </div>
 
   <script>
-    // 1) Google 로그인
+    // 1) Google 로그인 설정 (수정 금지)
     const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
     const GOOGLE_REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
     const googleScope = "email profile openid";
+    const googleResponseType = "id_token token";
 
     document.getElementById("googleLoginBtn").addEventListener("click", () => {
       const url = [
         "https://accounts.google.com/o/oauth2/v2/auth?",
         `client_id=${encodeURIComponent(GOOGLE_CLIENT_ID)}`,
         `redirect_uri=${encodeURIComponent(GOOGLE_REDIRECT_URI)}`,
-        `response_type=id_token%20token`,
+        `response_type=${encodeURIComponent(googleResponseType)}`,
         `scope=${encodeURIComponent(googleScope)}`,
-        `state=${Date.now()}`,
+        `state=${new Date().getTime()}`,
         `nonce=${Math.random().toString(36).substring(2)}`
       ].join("&");
       window.location.href = url;
     });
 
-    // 2) Apple 로그인 (fragment 방식)
-    const APPLE_CLIENT_ID = "ai.kr.inwave.login";
-    const APPLE_REDIRECT_URI = "https://inwave.ai.kr/callback_apple.html";
+   // 2) Apple 로그인 (fragment 방식)
+      const APPLE_CLIENT_ID = "ai.kr.inwave.login";
+      const APPLE_REDIRECT_URI = "https://inwave.ai.kr/callback_apple.html";
+  
+      document.getElementById("appleLoginBtn").addEventListener("click", () => {
+        const state = Date.now();
+        const nonce = Math.random().toString(36).substring(2);
+  
+        const appleUrl = [
+          "https://appleid.apple.com/auth/authorize?",
+          `response_type=${encodeURIComponent("code id_token")}`,
+          `response_mode=fragment`,
+          `client_id=${encodeURIComponent(APPLE_CLIENT_ID)}`,
+          `redirect_uri=${encodeURIComponent(APPLE_REDIRECT_URI)}`,
+          `scope=${encodeURIComponent("name email")}`,
+          `state=${state}`,
+          `nonce=${nonce}`
+        ].join("&");
+  
+        window.location.href = appleUrl;
+      });
+    </script>
+  </body>
+  </html>
 
-    document.getElementById("appleLoginBtn").addEventListener("click", () => {
-      const state = Date.now();
-      const nonce = Math.random().toString(36).substring(2);
-
-      const appleUrl = [
-        "https://appleid.apple.com/auth/authorize?",
-        `response_type=${encodeURIComponent("code id_token")}`,
-        `response_mode=fragment`,
-        `client_id=${encodeURIComponent(APPLE_CLIENT_ID)}`,
-        `redirect_uri=${encodeURIComponent(APPLE_REDIRECT_URI)}`,
-        `scope=${encodeURIComponent("name email")}`,
-        `state=${state}`,
-        `nonce=${nonce}`
-      ].join("&");
-
-      window.location.href = appleUrl;
-    });
-  </script>
-</body>
-</html>
 
 
 
