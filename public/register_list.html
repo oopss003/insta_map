@@ -11,7 +11,7 @@
     th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; vertical-align: top; }
     th { background: #eee; position: sticky; top: 0; z-index: 1; }
     tr:hover { background: #f0f0f0; }
-    input[type="time"] { width: 80px; }
+    select.time-select { width: 80px; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -47,18 +47,33 @@
     const days = ['월','화','수','목','금','토','일'];
     const USER_EMAIL = "jhpark8271@gmail.com";
 
+    function generateTimeOptions(selected) {
+      let options = '<option value="">-</option>';
+      for (let h = 0; h <= 30; h++) {
+        for (let m of ["00", "30"]) {
+          const hour = h.toString().padStart(2, '0');
+          const value = `${hour}:${m}`;
+          const label = `${hour}:${m}`;
+          options += `<option value="${value}" ${selected === value ? 'selected' : ''}>${label}</option>`;
+        }
+      }
+      return options;
+    }
+
     function createTimeCell(day, h, docId) {
       return `
         <div>
-          ⏰ <input type="time" value="${h.time?.start || ''}" data-doc="${docId}" data-day="${day}" data-field="start"> ~
-              <input type="time" value="${h.time?.end || ''}" data-doc="${docId}" data-day="${day}" data-field="end">
+          ⏰ <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="start">${generateTimeOptions(h.time?.start)}</select>
+              ~
+              <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="end">${generateTimeOptions(h.time?.end)}</select>
         </div>
         <div>
-          ☕ <input type="time" value="${h.break?.start || ''}" data-doc="${docId}" data-day="${day}" data-field="break_start"> ~
-              <input type="time" value="${h.break?.end || ''}" data-doc="${docId}" data-day="${day}" data-field="break_end">
+          ☕ <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="break_start">${generateTimeOptions(h.break?.start)}</select>
+              ~
+              <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="break_end">${generateTimeOptions(h.break?.end)}</select>
         </div>
         <div>
-          🕘 <input type="time" value="${h.lastOrder?.time || ''}" data-doc="${docId}" data-day="${day}" data-field="lastOrder">
+          🕘 <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="lastOrder">${generateTimeOptions(h.lastOrder?.time)}</select>
         </div>
       `;
     }
