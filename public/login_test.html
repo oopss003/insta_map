@@ -110,7 +110,7 @@
 
     // Apple 로그인 초기화
     AppleID.auth.init({
-      clientId: "ai.kr.inwave.login",  // Apple Developer의 App ID
+      clientId: "ai.kr.inwave.auth",  // Apple Developer의 App ID
       scope: "name email",
       redirectURI: "https://inwave.ai.kr/callback_apple.html", // 서버에서 처리할 콜백 주소
       state: state.toString(),
