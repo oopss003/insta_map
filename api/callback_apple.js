@@ -2,11 +2,14 @@ const fetch = require("node-fetch");
 const jwt = require("jsonwebtoken");
 
 // Apple OAuth 설정
-const APPLE_TEAM_ID = "YOUR_TEAM_ID";               // Apple Developer → Membership
+const APPLE_TEAM_ID = "GT3RZR297K";               // Apple Developer → Membership
 const APPLE_CLIENT_ID = "ai.kr.inwave.login";       // 서비스 ID (App ID)
-const APPLE_KEY_ID = "YOUR_KEY_ID";                 // 키 ID
+const APPLE_KEY_ID = "L79WLQXHN8";                 // 키 ID
 const APPLE_PRIVATE_KEY = `-----BEGIN PRIVATE KEY-----
-YOUR_PRIVATE_KEY_HERE
+MIGTAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBHkwdwIBAQQgy5LMFV7YVCOrTgjY
+sdzVms5UMXKTbi1TqwQqQ7EGpm6gCgYIKoZIzj0DAQehRANCAAQCGAKedQ/fW3vn
+RDPr8yXSH9zQJ4aQDmINqWuryXYH7MPI8/XVFY+rlYM6phDMwwmPEK8yoC4WoZNJ
+aGhBJ4pr
 -----END PRIVATE KEY-----`;                         // Apple에서 다운로드한 p8 키
 
 // Apple 서버에 토큰 요청
