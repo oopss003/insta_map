@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <title>매장 리스트 보기</title>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <style>
+    body { font-family: 'Pretendard', sans-serif; padding: 20px; background: #f5f5f5; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 6px; font-size: 12px; vertical-align: top; }
+    th { background: #eee; position: sticky; top: 0; z-index: 1; }
+    tr:hover { background: #f0f0f0; }
+    .nowrap { white-space: nowrap; }
+  </style>
+</head>
+<body>
+  <h2>전체 매장 리스트 (관리자 전용)</h2>
+  <table id="storeTable">
+    <thead>
+      <tr>
+        <th>매장이름</th>
+        <th>해시태그</th>
+        <th>전화번호</th>
+        <th>담당이메일</th>
+        <th>주소(Lat, Lng)</th>
+        <th>사진링크</th>
+        <th>비디오링크</th>
+        <th>지도노출</th>
+        <th>요일별 정보</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    const days = ['월','화','수','목','금','토','일'];
+
+    db.collection("stores").get().then(snapshot => {
+      const tbody = document.querySelector("#storeTable tbody");
+      snapshot.forEach(doc => {
+        const d = doc.data();
+
+        const tr = document.createElement("tr");
+        
+        const hashtags = (d.hashtags || []).join(", ");
+        const photo = d.photo ? `<a href="${d.photo}" target="_blank">사진보기</a>` : "-";
+        const video = d.vimeo ? `<a href="${d.vimeo}" target="_blank">링크</a>` : "-";
+        const display = (typeof d.lat === "number" && typeof d.lng === "number") ? "O" : "X";
+
+        const hoursHtml = days.map(day => {
+          const h = d.hours?.[day] || {};
+          return `
+            <div class="nowrap"><strong>${day}</strong><br>
+              ⏰ ${h.time?.start || "-"} ~ ${h.time?.end || "-"}<br>
+              ☕ ${h.break?.start || "-"} ~ ${h.break?.end || "-"}<br>
+              🕘 ${h.lastOrder?.time || "-"}
+            </div>
+          `;
+        }).join("");
+
+        tr.innerHTML = `
+          <td>${d.name || "-"}</td>
+          <td>${hashtags}</td>
+          <td>${d.phone || "-"}</td>
+          <td>${d.userEmail || "-"}</td>
+          <td>${d.lat}, ${d.lng}</td>
+          <td>${photo}</td>
+          <td>${video}</td>
+          <td style="text-align:center">${display}</td>
+          <td>${hoursHtml}</td>
+        `;
+
+        tbody.appendChild(tr);
+      });
+    });
+  </script>
+</body>
+</html>
 
