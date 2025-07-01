@@ -4,42 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>로그인 처리 중...</title>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background-color: #f5f6fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+  </style>
 </head>
-<body style="font-family: Pretendard, sans-serif; background:#f5f6fb; display:flex; justify-content:center; align-items:center; height:100vh;">
+<body>
   <div>
-    <h3>로그인 처리 중입니다...</h3>
+    <h3>로그인 정보를 처리 중입니다...</h3>
+    <p>잠시만 기다려 주세요.</p>
   </div>
-
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.appspot.com",
-      messagingSenderId: "280950399393",
-      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-    };
-    firebase.initializeApp(firebaseConfig);
-
-    firebase.auth().getRedirectResult()
-      .then((result) => {
-        if (result.user) {
-          console.log("Apple 로그인 성공:", result.user);
-          // 약관 동의 여부 확인 로직 (선택사항)
-          window.location.href = "/terms.html";
-        } else {
-          console.log("로그인 결과 없음");
-        }
-      })
-      .catch((error) => {
-        console.error("로그인 처리 중 오류:", error);
-        alert("Apple 로그인에 실패했습니다. 다시 시도해 주세요.");
-        window.location.href = "/login.html";
-      });
-  </script>
 </body>
 </html>
+
 
 
