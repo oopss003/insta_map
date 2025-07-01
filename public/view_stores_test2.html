@@ -518,14 +518,13 @@
 
         let newLat = Number(lat);
         let newLng = Number(lng);
-        if (useOffset && groupSize > 1) {
-          const angleDeg = (360 / groupSize) * idx;
-          const angleRad = angleDeg * Math.PI / 180;
-          const offsetLat = baseRadius * Math.cos(angleRad);
-          const offsetLng = baseRadius * Math.sin(angleRad);
-          newLat += offsetLat;
-          newLng += offsetLng;
+        const verticalSpacing = 0.00008; // 약 8~10m 간격, 필요 시 조정
+        if (groupSize > 1) {
+          const offset = (idx - (groupSize - 1) / 2) * verticalSpacing;
+          newLat += offset;
+          // newLng 그대로 (중앙 정렬된 상태)
         }
+
 
         const position = new naver.maps.LatLng(newLat, newLng);
         if (!bounds.hasLatLng(position)) return;
