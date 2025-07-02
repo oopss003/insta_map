@@ -479,6 +479,14 @@
     listEl.innerHTML = '';
 
     const now = new Date();
+    // ─── 휴무일 필터 ───
+    const korDays = ['일','월','화','수','목','금','토'];
+    const todayKor = korDays[now.getDay()];
+    if (Array.isArray(dayOff) && dayOff.includes(todayKor)) {
+      // 오늘 휴무인 매장은 건너뜁니다
+      return;
+    }
+    
     const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; 
     const todayStr   = dayMap[now.getDay()];
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
@@ -513,8 +521,8 @@
 
       items.forEach((data, idx) => {
         const {
-          lat, lng, name, insta, desc, photo, vimeo, hashtags, hours,
-          tel, address 
+          lat, lng, name, insta, desc, photo, vimeo, hashtags,
+          hours, dayOff, phone, address
         } = data;
 
         const hourInfo = hours?.[todayStr] || {};
@@ -623,7 +631,7 @@
     document.getElementById('infoName').textContent = d.name || '';
     document.getElementById('infoHash').textContent =
       (Array.isArray(d.hashtags) && d.hashtags.length > 0) ? `#${d.hashtags[0]}` : '';
-    document.getElementById('infoTel').textContent = d.tel || '';
+    document.getElementById('infoTel').textContent = d.phone || '';
     document.getElementById('infoAddr').textContent = d.address || '';
   
     // 3. 인스타그램 링크
