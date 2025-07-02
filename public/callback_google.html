@@ -14,15 +14,22 @@
 
   <!-- 디자인용 CSS (변경 금지) -->
   <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background-color: #f5f6fb;
-      height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
+    html, body {
+      /* body가 화면 전체 높이를 차지하도록 설정 */
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+          
+    body {
+       background-color: #f5f6fb;
+       /* 1. body를 flex 컨테이너로 만듭니다. */
+       display: flex;
+       /* 2. 가로 방향 중앙 정렬 */
+       justify-content: center;
+       /* 3. 세로 방향 중앙 정렬 */
+       align-items: center;
+    }
 
     .loading-gif {
       width: 100px;
