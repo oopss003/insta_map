@@ -479,7 +479,7 @@
     listEl.innerHTML = '';
 
     const now = new Date();
-    const dayMap = ['일','월','화','수','목','금','토'];
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; 
     const todayStr   = dayMap[now.getDay()];
     const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
@@ -634,7 +634,7 @@
     }
   
     // 4. 오늘 요일 기준 영업시간
-    const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+    const dayMap = ['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat']; 
     const todayStr = dayMap[new Date().getDay()];
     const todayHours = d.hours?.[todayStr];
   
