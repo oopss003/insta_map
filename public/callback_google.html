@@ -4,13 +4,16 @@
   <meta charset="UTF-8" />
   <title>구글 로그인 처리 중...</title>
 
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+  <!-- JWT 디코더 -->
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
 
-    <style>
+  <!-- 디자인용 CSS (변경 금지) -->
+  <style>
     body {
       margin: 0;
       padding: 0;
@@ -29,7 +32,7 @@
   </style>
 </head>
 <body>
-    <img src="images/duck.gif" alt="로딩 중..." class="loading-gif" />
+  <img src="images/duck.gif" alt="로딩 중..." class="loading-gif" />
 
   <script>
     console.log("🧭 User Agent:", navigator.userAgent);
@@ -47,7 +50,7 @@
     const db = firebase.firestore();
     const auth = firebase.auth();
 
-    // URL 해시에서 id_token 추출
+    // URL 해시에서 id_token 추출 (변경 금지)
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
     const id_token = params.get("id_token");
@@ -57,7 +60,7 @@
       location.href = "/login.html";
     }
 
-    // JWT 디코딩 후 사용자 정보 추출
+    // JWT 디코딩 후 사용자 정보 추출 (변경 금지)
     const decoded = jwt_decode(id_token);
     const email = decoded.email;
     const nickname = decoded.name;
@@ -67,15 +70,15 @@
       location.href = "/login.html";
     }
 
-    // Firebase 자격 증명 생성 및 로그인
+    // Firebase 자격 증명 생성 및 로그인 (변경 금지)
     const credential = firebase.auth.GoogleAuthProvider.credential(id_token);
     auth.signInWithCredential(credential)
       .then(() => {
-        // 로그인 성공 시 로컬 스토리지에 이메일 저장
+        // 로그인 성공 시 로컬 스토리지에 이메일 저장 (변경 금지)
         localStorage.setItem("userEmail", email);
         const normalizedEmail = email.toLowerCase();
 
-        // 사용자 정보 Firestore에 저장 (merge: 업데이트 적용)
+        // 사용자 정보 Firestore에 저장 (merge: 업데이트 적용, 변경 금지)
         return db.collection("users").doc(normalizedEmail).set({
           email,
           nickname,
@@ -88,19 +91,18 @@
         return db.collection("users").doc(normalizedEmail).get();
       })
       .then(doc => {
-        // 약관 동의 여부 확인
+        // 약관 동의 여부 확인 (변경 금지)
         const agreed = doc.exists && doc.data().agreedToTerms === true;
-        
-        // --- ✅ 수정된 부분 ---
-        // 앱(웹뷰) 환경이 아닐 경우에만, 기존처럼 페이지를 이동시킵니다.
+
+        // --- ✅ 수정된 부분: 앱(웹뷰) 환경이 아닐 경우에만 페이지 이동 ---
         if (!window.ReactNativeWebView) {
           if (agreed) {
             location.href = "/view_stores_test.html";
           } else {
             location.href = "/terms.html";
           }
-        }
-        // 앱 안에서는 페이지 이동을 하지 않고, 아래 리스너가 메시지를 보낼 때까지 기다립니다.
+        }
+        // 앱 안에서는 페이지 이동을 하지 않고, 아래 리스너가 메시지를 보낼 때까지 기다립니다.
       })
       .catch(err => {
         console.error("❌ 로그인 처리 중 오류:", err.message);
@@ -110,26 +112,29 @@
       });
 
     // ==============================================
-    // React Native 웹뷰로 로그인 상태 전달용 코드 (이 부분은 수정 없음)
-    // Firebase Auth 상태 변경 리스너
+    // React Native 웹뷰로 로그인 상태 전달용 코드 (변경 금지)
     firebase.auth().onAuthStateChanged(function(user) {
-      if (user) {
-        // 사용자가 로그인된 상태 → ID 토큰 발급
-        user.getIdToken().then(function(idToken) {
-          const message = {
-            type: 'USER_LOGGED_IN',      // 메시지 타입
-            token: idToken               // React Native 측에 전달할 토큰
-          };
+      if (user) {
+        // 사용자가 로그인된 상태 → ID 토큰 발급
+        user.getIdToken().then(function(idToken) {
+          const message = {
+            type: 'USER_LOGGED_IN',      // 메시지 타입
+            token: idToken               // React Native 측에 전달할 토큰
+          };
 
-          // WebView 환경인지 확인 후 메시지 전송
-          if (window.ReactNativeWebView) {
-            window.ReactNativeWebView.postMessage(JSON.stringify(message));
-          }
-        });
-      }
-    });
-    // ==============================================
-
-  </script>
+          // --- 💡 수정된 부분 시작 💡 ---
+          console.log("✅ [웹] 앱으로 메시지를 보낼 준비 완료");
+          if (window.ReactNativeWebView) {
+            window.ReactNativeWebView.postMessage(JSON.stringify(message));
+            console.log("✅ [웹] 메시지 전송 성공!");
+          } else {
+            console.log("❌ [웹] ReactNativeWebView 환경이 아니라서 메시지를 보내지 않습니다.");
+          }
+          // --- 💡 수정된 부분 끝 💡 ---
+        });
+      }
+    });
+    // ==============================================
+  </script>
 </body>
 </html>
