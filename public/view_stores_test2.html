@@ -769,18 +769,32 @@
   </button>
   <!-- ✅ 여기에 추가하세요 -->
   <script>
+    // ✅ 하나의 이벤트 리스너로 통합
     window.addEventListener('message', async (event) => {
       try {
-        const { type, token, email } = JSON.parse(event.data);
-        if (type === 'LOGIN' && token) {
-          const credential = firebase.auth.GoogleAuthProvider.credential(token);
+        // 메시지 데이터를 한번만 파싱합니다.
+        const messageData = JSON.parse(event.data);
+        const type = messageData.type;
+  
+        // 1. 로그인 메시지 처리
+        if (type === 'LOGIN' && messageData.token) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(messageData.token);
           await firebase.auth().signInWithCredential(credential);
-          console.log("✅ Firebase 로그인 성공:", email);
+          console.log("✅ Firebase 로그인 성공:", messageData.email);
+        
+        // 2. 푸시 토큰 메시지 처리
+        } else if (type === 'expoPushToken' && messageData.token) {
+          console.log("앱에서 받은 푸시 토큰:", messageData.token);
+          
+          // TODO: 이 토큰을 서버로 전송하여 DB에 저장하는 로직
+          // 예: sendTokenToServer(messageData.token);
         }
+  
       } catch (err) {
-        console.error("❌ WebView 로그인 실패:", err);
+        console.error("❌ WebView 메시지 처리 실패:", err);
       }
     });
   </script>
+
 </body>
 </html>
