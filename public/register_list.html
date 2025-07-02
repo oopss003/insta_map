@@ -50,14 +50,61 @@
     const db = firebase.firestore();
 
     const days = ['월','화','수','목','금','토','일'];
+    // Firestore의 영문 요일 약어와 매핑
+    const dayMap = { '월': 'mon', '화': 'tue', '수': 'wed', '목': 'thu', '금': 'fri', '토': 'sat', '일': 'sun' };
     const USER_EMAIL = "jhpark8271@gmail.com";
     const PAGE_SIZE = 30;
     let storeDocs = [];
     let currentPage = 1;
 
+    // Firestore 데이터 업데이트 함수
+    async function updateStoreHours(event) {
+      const select = event.target;
+      const docId = select.dataset.doc;
+      const dayKorean = select.dataset.day;
+      const field = select.dataset.field;
+      const value = select.value;
+
+      // 한글 요일을 영문 약어로 변환
+      const dayEnglish = dayMap[dayKorean];
+      if (!dayEnglish) {
+        console.error("Invalid day:", dayKorean);
+        return;
+      }
+
+      // Firestore 업데이트를 위한 필드 경로 생성
+      let fieldPath;
+      if (field === 'start' || field === 'end') {
+        fieldPath = `hours.${dayEnglish}.time.${field}`;
+      } else if (field === 'break_start' || field === 'break_end') {
+        const breakField = field.split('_')[1]; // "start" or "end"
+        fieldPath = `hours.${dayEnglish}.break.${breakField}`;
+      } else if (field === 'lastOrder') {
+        fieldPath = `hours.${dayEnglish}.lastOrder.time`;
+      }
+
+      if (!fieldPath) {
+        console.error("Invalid field:", field);
+        return;
+      }
+
+      try {
+        await db.collection("stores").doc(docId).update({
+          [fieldPath]: value
+        });
+        console.log(`Successfully updated ${docId} - ${fieldPath}: ${value}`);
+        select.style.backgroundColor = '#d4edda'; // 성공 시 초록색으로 표시
+        setTimeout(() => { select.style.backgroundColor = ''; }, 1000);
+      } catch (error) {
+        console.error("Error updating document: ", error);
+        select.style.backgroundColor = '#f8d7da'; // 실패 시 빨간색으로 표시
+        setTimeout(() => { select.style.backgroundColor = ''; }, 2000);
+      }
+    }
+
     function generateTimeOptions(selected) {
       let options = '<option value="">-</option>';
-      for (let h = 0; h <= 30; h++) {
+      for (let h = 0; h < 24; h++) { // 24시까지만 생성
         for (let m of ["00", "30"]) {
           const hour = h.toString().padStart(2, '0');
           const value = `${hour}:${m}`;
@@ -72,13 +119,13 @@
       return `
         <div>
           ⏰ <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="start">${generateTimeOptions(h.time?.start)}</select>
-              ~
-              <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="end">${generateTimeOptions(h.time?.end)}</select>
+             ~
+             <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="end">${generateTimeOptions(h.time?.end)}</select>
         </div>
         <div>
           ☕ <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="break_start">${generateTimeOptions(h.break?.start)}</select>
-              ~
-              <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="break_end">${generateTimeOptions(h.break?.end)}</select>
+             ~
+             <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="break_end">${generateTimeOptions(h.break?.end)}</select>
         </div>
         <div>
           🕘 <select class="time-select" data-doc="${docId}" data-day="${day}" data-field="lastOrder">${generateTimeOptions(h.lastOrder?.time)}</select>
@@ -96,11 +143,12 @@
       items.forEach((doc, index) => {
         const d = doc.data();
         const tr = document.createElement("tr");
-
         const display = (d.lat && d.lng) ? "O" : "X";
-
+        
+        // Firestore의 영문 약어 키로 데이터 접근
         const hoursCells = days.map(day => {
-          const h = d.hours?.[day] || { time:{}, break:{}, lastOrder:{} };
+          const dayKey = dayMap[day]; // '월' -> 'mon'
+          const h = d.hours?.[dayKey] || { time:{}, break:{}, lastOrder:{} };
           return `<td>${createTimeCell(day, h, doc.id)}</td>`;
         }).join("");
 
@@ -115,7 +163,6 @@
         `;
         tbody.appendChild(tr);
       });
-
       renderPagination();
     }
 
@@ -146,6 +193,14 @@
     document.addEventListener("DOMContentLoaded", () => {
       if (USER_EMAIL === "jhpark8271@gmail.com") {
         loadStores();
+        
+        // 이벤트 위임을 사용하여 테이블에 이벤트 리스너 추가
+        document.getElementById('storeTable').addEventListener('change', (event) => {
+          if (event.target.classList.contains('time-select')) {
+            updateStoreHours(event);
+          }
+        });
+
       } else {
         document.body.innerHTML = '<h3>접근 권한이 없습니다.</h3>';
       }
