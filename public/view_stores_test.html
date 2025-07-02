@@ -89,7 +89,7 @@
   .meta span{color:var(--muted);font-size:13px;white-space:normal;overflow:visible;text-overflow:clip}
 
 
-  /* ② 마커 클릭 시 표시되는 하단 카드 */
+  /* ② 마커 클릭 시 표시되는 */
 /* 카드 전체 (하단 오버레이)  ───────── */
   #infoCard{
     position:fixed;left:12px;right:12px;bottom:-320px;z-index:1002;
@@ -202,8 +202,8 @@
     border: 1px solid var(--muted);
     color: var(--muted);
   }
-  /* ──────────────────────────────────────────────────────────────────── */
-  /* ③: 사이드 메뉴 스타일 ------------------------------------------------ */
+  /* ────────────────────────────────────────────────── */
+  /* ③: 사이드 메뉴 스타일 -------------------- */
   /* 사이드 메뉴 패널 초기 상태: 화면 왼쪽 밖으로 숨김 */
   #sideMenu {
     position: fixed;
@@ -249,36 +249,7 @@
     background: rgba(0,0,0,0.04);
   }
 
-  /* ④: 메뉴 열기/닫기 버튼 (×) */
-  #menuBtn {
-    position: fixed;
-    top: 12px;
-    left: 12px;
-    z-index: 3100;            /* sideMenu보다 더 위에 띄우기 */
-    width: 32px;
-    height: 32px;
-    background: var(--bg);
-    border: 1px solid var(--muted);
-    border-radius: 50%; 
-    font-size: 20px;
-    line-height: 1;
-    color: var(--text);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: background 0.15s, transform 0.15s;
-  }
-  #menuBtn:hover {
-    background: #f5f5f5;
-  }
-  #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
-    transform: rotate(90deg);
-  }
-  #panel {
-  touch-action: none;
-  }
+  /* [추가/교체] 마이페이지 버튼 스타일 */
   #myPageBtn {
     position: fixed;
     top: 12px;
@@ -297,9 +268,12 @@
     padding: 0;
     transition: transform 0.15s;
   }
+
   #myPageBtn:active {
     transform: scale(0.96);
   }
+  
+  /* 버튼 안의 이미지 크기를 지정하는 것이 좋습니다. */
   #myPageBtn img {
     width: 24px;
     height: 24px;
@@ -319,10 +293,6 @@
     <span>탭하면 내 주변으로 이동</span>
   </div>
   <!-- ① FAB 버튼 블록 삭제  (기존 <button id="fab">…</button>) -->
-  <!-- 마이페이지 버튼 -->
-  <button id="myPageBtn" aria-label="마이페이지 이동">
-    <img src="/images/store.svg" alt="마이페이지" />
-  </button>
 
   <!-- 매장 리스트 패널 -->
   <div id="panel" aria-label="매장 리스트">
@@ -338,84 +308,87 @@
 
   <!-- ② 마커 클릭 시 하단 카드 -->
   <div id="infoCard">
-    <img id="infoImg" src="" alt="">
-    <div class="meta">
-     <div id="infoTopRow" style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
-        <span id="infoTag" class="tag"></span>
-        <a id="infoInsta" href="#" target="_blank" style="color: var(--primary); text-decoration: none;"></a>
+    <img id="infoImg" src="" alt="" style="width:96px; height:96px; border-radius:14px; object-fit:cover; flex-shrink:0;">
+    
+    <!-- 중앙 텍스트 -->
+      <div class="meta" style="flex: 1; min-width: 0; font-size: 14px; line-height: 1.4">
+        <b id="infoName" style="font-size: 16px;">매장명</b>
+        <div id="infoHash" style="color: var(--muted); font-size: 13px;">#해시태그</div>
+        <div id="infoTel" style="font-size: 13px;">전화번호</div>
+        <div id="infoAddr" style="font-size: 13px;">주소</div>
+        <a id="infoInsta" href="#" target="_blank" style="color: var(--primary); font-size: 13px;">@insta</a>
       </div>
-      <span id="infoHash" style="color: var(--muted); font-size: 13px; margin-bottom: 4px; display: block;"></span>
-      <b id="infoName"></b>
-      <span id="infoDesc"></span>
+    
+      <!-- 우측 마감 정보 -->
+      <div class="meta" style="text-align: right; min-width: 100px;">
+        <div style="font-size: 13px; color: var(--muted);">영업 마감</div>
+        <div id="infoClose" style="font-size: 14px;">22:00</div>
+        <div style="font-size: 13px; color: var(--muted); margin-top: 4px;">라스트오더</div>
+        <div id="infoLastOrder" style="font-size: 14px;">21:30</div>
+      </div>
+    
+      <!-- VIDEO 마크용 (선택적 위치) -->
+      <span id="infoTag" class="tag" style="display: none;"></span>
+    
     </div>
+  </div>
 
   <!-- ───────── JS ───────── -->
   <script>
-document.addEventListener('DOMContentLoaded', () => {
-  /* Firebase 초기화 */
-  firebase.initializeApp({
-    apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-    authDomain: "instamap-9b595.firebaseapp.com",
-    projectId: "instamap-9b595",
-    storageBucket: "instamap-9b595.firebasestorage.app",
-    messagingSenderId: "280950399393",
-    appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
-  });
-  const db = firebase.firestore();
+  document.addEventListener('DOMContentLoaded', ()=>{
 
-  // 메뉴 링크 이벤트 설정
-  document.getElementById('linkHome')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = 'https://inwave.ai.kr/';
-  });
-  document.getElementById('linkAdwave')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = 'https://inwave.ai.kr/adwave1.html';
-  });
-  document.getElementById('linkWaveshare')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = 'https://inwave.ai.kr/waveshare.html';
-  });
-  document.getElementById('linkInvest')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = 'https://inwave.ai.kr/invest.html';
-  });
-  document.getElementById('linkSupport')?.addEventListener('click', e => {
-    e.preventDefault();
-    window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
-  });
-
-  // ✅ 마이페이지 버튼 이벤트는 여기에서 단 1번만 등록
-  const myPageBtn = document.getElementById('myPageBtn');
-  if (myPageBtn) {
-    myPageBtn.addEventListener('click', () => {
-      window.location.href = 'https://inwave.ai.kr/mypage.html';
+    /* Firebase 초기화 */
+    firebase.initializeApp({
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.firebasestorage.app",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0",
     });
-  }
+    const db = firebase.firestore();
+    document.getElementById('linkHome')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/';
+    });
+    document.getElementById('linkAdwave')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/adwave1.html';
+    });
+    document.getElementById('linkWaveshare')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/waveshare.html';
+    });
+    document.getElementById('linkInvest')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/invest.html';
+    });
+    document.getElementById('linkSupport')?.addEventListener('click', e => {
+      e.preventDefault();
+      window.location.href = 'https://inwave.ai.kr/privacy_policy.html';
+    });
 
-  /* 지도 생성 */
-  const map = new naver.maps.Map('map', {
-    center: new naver.maps.LatLng(37.4880158, 126.8119221),
-    zoom: 12
+    /* 지도 */
+    const map = new naver.maps.Map('map',{
+      center:new naver.maps.LatLng(37.4880158, 126.8119221),zoom:12
+    });
+    // ─── 현재 줌 저장 & 변경 감지 ───
+    let currentZoom = map.getZoom();
+    naver.maps.Event.addListener(map, 'zoom_changed', () => {
+      const newZoom = map.getZoom();
+      // 12↔13 구간에서만 다시 렌더
+      if ((currentZoom < 13 && newZoom >= 13) ||
+          (currentZoom >= 13 && newZoom < 13)) {
+        renderStores();
+      }
+      currentZoom = newZoom;
   });
 
-  // 줌 변경 시 처리 (중복 이벤트 등록 없이 깔끔하게)
-  let currentZoom = map.getZoom();
-  naver.maps.Event.addListener(map, 'zoom_changed', () => {
-    const newZoom = map.getZoom();
-    if ((currentZoom < 13 && newZoom >= 13) ||
-        (currentZoom >= 13 && newZoom < 13)) {
-      renderStores();
-    }
-    currentZoom = newZoom;
-  });
-
-  /* 커스텀 마커 */
-  const markerIcon = {
-    content: '<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
-    size: new naver.maps.Size(24, 24),
-    anchor: new naver.maps.Point(12, 12)
-  };
+    /* 커스텀 마커 */
+    const markerIcon={
+      content:'<div style="width:18px;height:18px;background:var(--primary);border:3px solid #fff;border-radius:50%;box-shadow:0 0 0 2px rgba(0,0,0,.15)"></div>',
+      size:new naver.maps.Size(24,24),anchor:new naver.maps.Point(12,12)
+    };
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
 
     // "HH:mm" 문자열 → 총 분(0~1439) 반환
@@ -493,154 +466,138 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let isRendering = false; // 🔹 [추가] 중복 실행 방지용 플래그
 
-async function renderStores() {
-  if (isRendering) return;
-  isRendering = true;
+  async function renderStores() {
+    if (isRendering) return;
+    isRendering = true;
 
-  console.log('▶︎ renderStores 호출됨');
+    console.log('▶︎ renderStores 호출됨');
 
-  const zoom = map.getZoom();
-  const useOffset = zoom < 13;
-  markers.forEach(m => m.setMap(null));
-  markers.length = 0;
-  listEl.innerHTML = '';
+    const zoom = map.getZoom();
+    const useOffset = zoom < 13;
+    markers.forEach(m => m.setMap(null));
+    markers.length = 0;
+    listEl.innerHTML = '';
 
-  const now = new Date();
-  const dayMap = ['일','월','화','수','목','금','토'];
-  const todayStr   = dayMap[now.getDay()];
-  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const now = new Date();
+    const dayMap = ['일','월','화','수','목','금','토'];
+    const todayStr   = dayMap[now.getDay()];
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
 
-  const bounds = map.getBounds();
+    const bounds = map.getBounds();
+  
+    const snap = await db.collection('stores')
+                         .orderBy('created','desc')
+                         .get();
 
-  const snap = await db.collection('stores')
-                       .orderBy('created','desc')
-                       .get();
+    const bucket = new Map();
+    snap.forEach(doc => {
+      const d = doc.data();
+      const lat = Number(d.lat);
+      const lng = Number(d.lng);
+      if (isNaN(lat) || isNaN(lng)) return;
 
-  const bucket = new Map();
-  snap.forEach(doc => {
-    const d = doc.data();
-    const { lat, lng } = d;
-    if (typeof lat !== 'number' || typeof lng !== 'number') return;
-    const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
-    if (!bucket.has(key)) bucket.set(key, []);
-    bucket.get(key).push(d);
-  });
-
-  let visibleCount = 0;
-
-  bucket.forEach((items, key) => {
-    const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
-    const centerPos = new naver.maps.LatLng(someLat, someLng);
-    if (!bounds.hasLatLng(centerPos)) return;
-
-    const groupSize = items.length;
-    const baseRadius = 0.001;
-
-    items.forEach((data, idx) => {
-      const {
-        lat, lng, name, insta, desc, photo, vimeo, hashtags,
-        offDays, hours, break: breakTimes
-      } = data;
-
-      if (Array.isArray(offDays) && offDays.includes(todayStr)) return;
-
-      // ✅ 요일별 영업시간 가져오기
-      const todayHours = (hours && hours[todayStr] && hours[todayStr].time) || {};
-      const openTime = todayHours.start;
-      const closeTime = todayHours.end;
-      
-      if (!openTime || !closeTime) return;
-      
-      const openMin  = toMinutes(openTime);
-      const closeMin = toMinutes(closeTime);
-      
-      let isOpen;
-      
-      // 1) 마감시간이 자정(1440분) 넘어가면 익일 마감으로 처리
-      if (closeMin > 1440) {
-        const adjClose = closeMin - 1440;  // 예: 27:00 → 1620분, 1620−1440 = 180분(익일 03:00)
-        isOpen = nowMinutes >= openMin   // 오늘 오픈 이후
-              || nowMinutes <  adjClose;  // 익일 마감 전
-      }
-      // 2) 정상적인 당일 마감
-      else if (closeMin > openMin) {
-        isOpen = nowMinutes >= openMin && nowMinutes < closeMin;
-      // 3) (경우가 희박하지만) closeMin ≤ openMin 인 경우
-      } else {
-        isOpen = nowMinutes >= openMin || nowMinutes < closeMin;
-      }
-      
-      if (!isOpen) return;
-
-      
-      // 브레이크 타임
-      const breakStart = breakTimes?.[todayStr]?.start;
-      const breakEnd   = breakTimes?.[todayStr]?.end;
-      if (breakStart && breakEnd) {
-        const bs = toMinutes(breakStart);
-        const be = toMinutes(breakEnd);
-        if (nowMinutes >= bs && nowMinutes < be) return;
-      }
-
-
-      let newLat = lat;
-      let newLng = lng;
-      if (useOffset && groupSize > 1) {
-        const angleDeg = (360 / groupSize) * idx;
-        const angleRad = angleDeg * Math.PI / 180;
-        const offsetLat = baseRadius * Math.cos(angleRad);
-        const offsetLng = baseRadius * Math.sin(angleRad);
-        newLat = lat + offsetLat;
-        newLng = lng + offsetLng;
-      }
-
-      const position = new naver.maps.LatLng(newLat, newLng);
-      if (!bounds.hasLatLng(position)) return;
-      visibleCount++;
-
-      let tagText = "";
-      if (Array.isArray(hashtags) && hashtags.length > 0) {
-        tagText = hashtags[0];
-      }
-      const customIcon = createMarkerIconWithText(tagText);
-
-      const marker = new naver.maps.Marker({
-        position,
-        map,
-        icon: customIcon
-      });
-      markers.push(marker);
-
-      function openStore() {
-        map.setCenter(new naver.maps.LatLng(lat, lng));
-        map.setZoom(20);
-        showInfoCard({ name, insta, desc, thumbnail: photo, videoUrl: vimeo, hashtags });
-      }
-
-      naver.maps.Event.addListener(marker, 'click', openStore);
-
-      const li = document.createElement('li');
-      li.className = 'card';
-      li.innerHTML = `
-        <img src="${photo||''}" alt="">
-        <div class="meta">
-          <b>${name}</b>
-          <span>@${insta}</span><br>
-          <span>${desc||''}</span>
-        </div>`;
-      li.addEventListener('click', openStore);
-      listEl.appendChild(li);
+      const key = `${lat.toFixed(6)}_${lng.toFixed(6)}`;
+      if (!bucket.has(key)) bucket.set(key, []);
+      bucket.get(key).push(d);
     });
-  });
 
-  storeCnt.textContent = `매장 ${visibleCount}개`;
-  storeCnt.innerText   = `매장 ${visibleCount}개`;
-  setTimeout(() => {
-    storeCnt.style.display = 'block';
-  }, 50);
+    let visibleCount = 0;
 
-  isRendering = false;
-}
+    bucket.forEach((items, key) => {
+      const [someLat, someLng] = key.split('_').map(v => parseFloat(v));
+      const centerPos = new naver.maps.LatLng(someLat, someLng);
+      if (!bounds.hasLatLng(centerPos)) return;
+
+      const groupSize = items.length;
+      const baseRadius = 0.001;
+
+      items.forEach((data, idx) => {
+        const {
+          lat, lng, name, insta, desc, photo, vimeo, hashtags, hours,
+          tel, address 
+        } = data;
+
+        const hourInfo = hours?.[todayStr] || {};
+        const openTime = hourInfo.time?.start || "";
+        const closeTime = hourInfo.time?.end || "";
+        const breakStart = hourInfo.break?.start || "";
+        const breakEnd = hourInfo.break?.end || "";
+
+        const openMin  = toMinutes(openTime);
+        const closeMin = toMinutes(closeTime);
+        if (openMin && closeMin && (nowMinutes < openMin || nowMinutes >= closeMin)) return;
+
+        if (breakStart && breakEnd) {
+          const bs = toMinutes(breakStart);
+          const be = toMinutes(breakEnd);
+          if (nowMinutes >= bs && nowMinutes < be) return;
+        }
+
+        let newLat = Number(lat);
+        let newLng = Number(lng);
+        const verticalSpacing = 0.00005; // 약 8~10m 간격, 필요 시 조정
+        if (groupSize > 1) {
+          const offset = (idx - (groupSize - 1) / 2) * verticalSpacing;
+          newLat += offset;
+          // newLng 그대로 (중앙 정렬된 상태)
+        }
+
+
+        const position = new naver.maps.LatLng(newLat, newLng);
+        if (!bounds.hasLatLng(position)) return;
+        visibleCount++;
+  
+        let tagText = Array.isArray(hashtags) && hashtags.length > 0 ? hashtags[0] : "";
+        const customIcon = createMarkerIconWithText(name);
+  
+        const marker = new naver.maps.Marker({
+          position,
+          map,
+          icon: customIcon
+        });
+        markers.push(marker);
+  
+        function openStore() {
+          map.setCenter(new naver.maps.LatLng(Number(lat), Number(lng)));
+          map.setZoom(20);
+          
+          showInfoCard({
+            name,
+            insta,
+            desc,
+            thumbnail: photo,
+            videoUrl: vimeo,
+            hashtags,
+            tel,
+            address,
+            hours
+          });
+        }
+        naver.maps.Event.addListener(marker, 'click', openStore);
+  
+        const li = document.createElement('li');
+        li.className = 'card';
+        li.innerHTML = `
+          <img src="${photo || ''}" alt="">
+          <div class="meta">
+            <b>${name}</b>
+            <span>@${insta}</span><br>
+            <span>${desc || ''}</span>
+          </div>`;
+        li.addEventListener('click', openStore);
+        listEl.appendChild(li);
+      });
+    });
+  
+    storeCnt.textContent = `매장 ${visibleCount}개`;
+    storeCnt.innerText   = `매장 ${visibleCount}개`;
+  
+    setTimeout(() => {
+      storeCnt.style.display = 'block';
+    }, 50);
+  
+    isRendering = false;
+  }
 
     // 맵이 움직일 때마다 리스트 갱신
     naver.maps.Event.addListener(map, 'idle', renderStores);
@@ -662,19 +619,29 @@ async function renderStores() {
       tag.classList.remove('video');
     }
 
-    // 2. 인스타그램 ID
+    // 2. 매장 정보
+    document.getElementById('infoName').textContent = d.name || '';
+    document.getElementById('infoHash').textContent =
+      (Array.isArray(d.hashtags) && d.hashtags.length > 0) ? `#${d.hashtags[0]}` : '';
+    document.getElementById('infoTel').textContent = d.tel || '';
+    document.getElementById('infoAddr').textContent = d.address || '';
+  
+    // 3. 인스타그램 링크
     const instaLink = document.getElementById('infoInsta');
-    instaLink.textContent = `@${d.insta}`;
-    instaLink.href = `https://instagram.com/${d.insta}`;
-
-    // 3. 해시태그 (첫 번째)
-    const hash = Array.isArray(d.hashtags) && d.hashtags.length > 0 ? d.hashtags[0] : '';
-    document.getElementById('infoHash').textContent = hash;
-
-    // 4. 이름과 설명
-    infoName.textContent = d.name;
-    infoDesc.textContent = d.desc || '';
-
+    if (instaLink && d.insta) {
+      instaLink.textContent = `@${d.insta}`;
+      instaLink.href = `https://instagram.com/${d.insta}`;
+    }
+  
+    // 4. 오늘 요일 기준 영업시간
+    const dayMap = ['일', '월', '화', '수', '목', '금', '토'];
+    const todayStr = dayMap[new Date().getDay()];
+    const todayHours = d.hours?.[todayStr];
+  
+    document.getElementById('infoClose').textContent = todayHours?.time?.end || '';
+    document.getElementById('infoLastOrder').textContent = todayHours?.lastOrder?.time || '';
+  
+    // 5. 카드 보여주기
     infoCard.classList.add('show');
     updateInfoCardPosition();
   }
@@ -721,7 +688,7 @@ async function renderStores() {
       // 마이페이지(프로필) URL로 이동합니다.
       window.location.href = 'https://inwave.ai.kr/profile.html';
     });
-  
+    
     /* drawer ↔ 패널 토글 --------------------- */
     const panel    = document.getElementById('panel');
     const drawer   = document.getElementById('drawer');
@@ -769,89 +736,6 @@ async function renderStores() {
 
     });
   </script>
-  <!-- ↓ 여기가 사이드 메뉴 토글 로직을 넣을 위치입니다. ↓ -->
-   
-  <script>
-  document.addEventListener('DOMContentLoaded', () => {
-    /* ─── 사이드 메뉴 열기/닫기 ─── */
-    const menuBtn = document.getElementById('menuBtn');
-    const sideMenu = document.getElementById('sideMenu');
-    let menuOpen = false;
-  
-    function toggleSideMenu() {
-      menuOpen = !menuOpen;
-      sideMenu.classList.toggle('open', menuOpen);
-      menuBtn.classList.toggle('open', menuOpen);
-      sideMenu.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
-    }
-
-    menuBtn?.addEventListener('click', toggleSideMenu);
-
-    document.addEventListener('click', e => {
-      if (menuOpen && !sideMenu.contains(e.target) && e.target !== menuBtn) {
-        toggleSideMenu();
-      }
-    });
-
-    /* ─── 드래그로 패널 열고 닫기 ─── */
-    let startY = 0;
-    let currentY = 0;
-    let dragging = false;
-    let threshold = 50;
-    let initialPanelOpen = false;
-
-    const panel = document.getElementById('panel');
-    const drawer = document.getElementById('drawer');
-
-    panel.addEventListener('touchstart', (e) => {
-      if (e.touches.length > 1) return;
-      startY = e.touches[0].clientY;
-      currentY = startY;
-      dragging = true;
-      initialPanelOpen = panel.classList.contains('open');
-      panel.style.transition = 'none';
-    }, { passive: true });
-
-    panel.addEventListener('touchmove', (e) => {
-      if (!dragging || e.touches.length > 1) return;
-      currentY = e.touches[0].clientY;
-      const deltaY = currentY - startY;
-
-      if (deltaY > 0 && initialPanelOpen) {
-        panel.style.transform = `translateY(${deltaY}px)`;
-      }
-      if (deltaY < 0 && !initialPanelOpen) {
-        panel.style.transform = `translateY(${deltaY}px)`;
-      }
-
-      e.preventDefault();
-    }, { passive: false });
-
-    panel.addEventListener('touchend', () => {
-      if (!dragging) return;
-      const deltaY = currentY - startY;
-      panel.style.transition = '';
-      panel.style.transform = '';
-  
-      if (Math.abs(deltaY) > threshold) {
-        if (deltaY < 0 && !initialPanelOpen) {
-          panelOpen = true;
-          panel.classList.add('open');
-          drawer.classList.add('hide');
-        } else if (deltaY > 0 && initialPanelOpen) {
-          panelOpen = false;
-          panel.classList.remove('open');
-          drawer.classList.remove('hide');
-        }
-        updateInfoCardPosition();
-      }
-
-      dragging = false;
-    });
-  });
-
-  </script>
-  <!-- ↑ 사이드 메뉴 토글 로직 끝 ↑ -->
 
   <div id="videoModal" aria-hidden="true">
   <div class="modal-content">
@@ -868,12 +752,7 @@ async function renderStores() {
   </div>
 </div>
 
-  <!-- ───────── 여기부터 사이드 메뉴 요소 시작 ───────── -->
-
-  <!-- ① 메뉴 열기/닫기 버튼 (×) -->
-  <!--
-  <button id="menuBtn" aria-label="메뉴 열기/닫기">✚</button>
-  -->
+  <!-- ───────── 여기부터 시작 ───────── -->
 
   <!-- ② 사이드 메뉴 내용 -->
   <nav id="sideMenu" aria-hidden="true">
@@ -888,19 +767,34 @@ async function renderStores() {
   <button id="myPageBtn" aria-label="마이페이지 이동">
     <img src="https://inwave.ai.kr/images/user-profile.svg" alt="마이페이지 아이콘" style="width: 24px; height: 24px;">
   </button>
-<!-- ✅ 이 아래에 추가해주세요 -->
+  <!-- ✅ 여기에 추가하세요 -->
   <script>
+    // ✅ 하나의 이벤트 리스너로 통합
     window.addEventListener('message', async (event) => {
       try {
-        const { type, token, email } = JSON.parse(event.data);
-        if (type === 'LOGIN' && token) {
-          const credential = firebase.auth.GoogleAuthProvider.credential(token);
+        // 메시지 데이터를 한번만 파싱합니다.
+        const messageData = JSON.parse(event.data);
+        const type = messageData.type;
+  
+        // 1. 로그인 메시지 처리
+        if (type === 'LOGIN' && messageData.token) {
+          const credential = firebase.auth.GoogleAuthProvider.credential(messageData.token);
           await firebase.auth().signInWithCredential(credential);
-          console.log("✅ Firebase 로그인 성공:", email);
+          console.log("✅ Firebase 로그인 성공:", messageData.email);
+        
+        // 2. 푸시 토큰 메시지 처리
+        } else if (type === 'expoPushToken' && messageData.token) {
+          console.log("앱에서 받은 푸시 토큰:", messageData.token);
+          
+          // TODO: 이 토큰을 서버로 전송하여 DB에 저장하는 로직
+          // 예: sendTokenToServer(messageData.token);
         }
+  
       } catch (err) {
-        console.error("❌ WebView 로그인 실패:", err);
+        console.error("❌ WebView 메시지 처리 실패:", err);
       }
     });
   </script>
+
 </body>
+</html>
