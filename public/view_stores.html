@@ -249,32 +249,34 @@
     background: rgba(0,0,0,0.04);
   }
 
-  /* ④: 메뉴 열기/닫기 버튼 (×) */
-  #menuBtn {
+  /* [추가/교체] 마이페이지 버튼 스타일 */
+  #myPageBtn {
     position: fixed;
     top: 12px;
-    left: 12px;
-    z-index: 3100;            /* sideMenu보다 더 위에 띄우기 */
-    width: 32px;
-    height: 32px;
-    background: var(--bg);
-    border: 1px solid var(--muted);
-    border-radius: 50%; 
-    font-size: 20px;
-    line-height: 1;
-    color: var(--text);
-    cursor: pointer;
+    right: 12px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: none;
+    background-color: #ffffff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    transition: background 0.15s, transform 0.15s;
+    cursor: pointer;
+    z-index: 3100; /* 메뉴 버튼과 동일한 레벨로 설정 */
+    padding: 0;
+    transition: transform 0.15s;
   }
-  #menuBtn:hover {
-    background: #f5f5f5;
+
+  #myPageBtn:active {
+    transform: scale(0.96);
   }
-  #menuBtn.open {               /* 메뉴 열려 있을 때 버튼 회전 효과 (선택사항) */
-    transform: rotate(90deg);
+  
+  /* 버튼 안의 이미지 크기를 지정하는 것이 좋습니다. */
+  #myPageBtn img {
+    width: 24px;
+    height: 24px;
   }
 
 /* ──────────────────────────────────────────────────────────────────── */
@@ -368,7 +370,7 @@
 
     /* 지도 */
     const map = new naver.maps.Map('map',{
-      center:new naver.maps.LatLng(37.5665,126.9780),zoom:12
+      center:new naver.maps.LatLng(37.4880158, 126.8119221),zoom:12
     });
     // ─── 현재 줌 저장 & 변경 감지 ───
     let currentZoom = map.getZoom();
@@ -681,6 +683,12 @@
       },()=>alert('위치 권한 필요'));
     });
 
+    /* [추가] 마이페이지 버튼 클릭 이벤트 */
+    document.getElementById('myPageBtn').addEventListener('click', function() {
+      // 마이페이지(프로필) URL로 이동합니다.
+      window.location.href = 'https://inwave.ai.kr/profile.html';
+    });
+    
     /* drawer ↔ 패널 토글 --------------------- */
     const panel    = document.getElementById('panel');
     const drawer   = document.getElementById('drawer');
@@ -728,33 +736,6 @@
 
     });
   </script>
-  <!-- ↓ 여기가 사이드     메뉴 토글 로직을 넣을 위치입니다. ↓ -->
-   
-  <script>
-  document.addEventListener('DOMContentLoaded', ()=> {
-    /* ─── 사이드 메뉴 열기/닫기 토글 ─── */
-    const menuBtn  = document.getElementById('menuBtn');
-    const sideMenu = document.getElementById('sideMenu');
-    let menuOpen = false;
-
-    function toggleSideMenu(){
-      menuOpen = !menuOpen;
-      sideMenu.classList.toggle('open', menuOpen);
-      menuBtn.classList.toggle('open', menuOpen);
-      sideMenu.setAttribute('aria-hidden', menuOpen ? 'false' : 'true');
-    }
-
-    menuBtn.addEventListener('click', toggleSideMenu);
-
-    /*  (선택) 메뉴 외부 클릭 시 닫기 */
-    document.addEventListener('click', e => {
-      if (menuOpen && !sideMenu.contains(e.target) && e.target !== menuBtn) {
-        toggleSideMenu();
-      }
-    });
-  });
-  </script>
-  <!-- ↑ 사이드 메뉴 토글 로직 끝 ↑ -->
 
   <div id="videoModal" aria-hidden="true">
   <div class="modal-content">
@@ -773,9 +754,6 @@
 
   <!-- ───────── 여기부터 시작 ───────── -->
 
-  <!-- ① 메뉴 열기/닫기 버튼 (×) -->
-  <button id="menuBtn" aria-label="메뉴 열기/닫기">✚</button>
-
   <!-- ② 사이드 메뉴 내용 -->
   <nav id="sideMenu" aria-hidden="true">
     <ul>
@@ -786,6 +764,9 @@
       <li><a href="#" id="linkSupport">고객지원</a></li>
     </ul>
   </nav>
+  <button id="myPageBtn" aria-label="마이페이지 이동">
+    <img src="https://inwave.ai.kr/images/user-profile.svg" alt="마이페이지 아이콘" style="width: 24px; height: 24px;">
+  </button>
   <!-- ✅ 여기에 추가하세요 -->
   <script>
     window.addEventListener('message', async (event) => {
