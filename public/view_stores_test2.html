@@ -517,9 +517,12 @@
           tel, address 
         } = data;
 
-        const hourInfo = hours?.[todayStr] || {};
-        const openTime = hourInfo.time?.start || "";
-        const closeTime = hourInfo.time?.end || "";
+        // ── 오늘 영업시간 정보가 없으면 스킵 ──
+        const todayInfo = hours?.[todayStr];
+        if (!todayInfo?.time?.start || !todayInfo?.time?.end) {
+           // console.log(`스킵: 시간 정보 없음 (문서ID=${data.id || "unknown"})`);
+          return;
+        }
         const breakStart = hourInfo.break?.start || "";
         const breakEnd = hourInfo.break?.end || "";
 
