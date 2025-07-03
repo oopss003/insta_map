@@ -550,10 +550,6 @@
         newLat += offset;
       }
       const position = new naver.maps.LatLng(newLat, newLng);
-    
-      // …이하 기존 마커 생성/리스트 렌더링 로직…
-    });
-
         if (!bounds.hasLatLng(position)) return;
         visibleCount++;
   
