@@ -492,9 +492,7 @@
     const bucket = new Map();
     snap.forEach(doc => {
       const d = doc.data();
-      // ─── 등록 시간(created) 필터링: 없거나 유효하지 않으면 스킵
-      if (!d.created || typeof d.created.toDate !== 'function' || isNaN(d.created.toDate().getTime())) {
-        console.warn(`스킵: 잘못된 created 값 문서ID=${doc.id}`, d.created);
+      console.log('▶ doc.id=', doc.id, 'created raw=', d.created);
         return;
       }
 
