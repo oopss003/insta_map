@@ -85,11 +85,30 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <script>
-      // ✅ 네이티브 RN으로 메시지를 보내는 Google 로그인 버튼 처리
-      document.getElementById("googleLoginBtn").addEventListener("click", () => {
-        window.ReactNativeWebView.postMessage(
-          JSON.stringify({ type: "SIGN_IN_WITH_GOOGLE" })
-        );
+  // ✅ 네이티브 RN으로 메시지를 보내는 Google 로그인 버튼 처리
+  // Google 버튼
+  document.getElementById("googleLoginBtn").addEventListener("click", () => {
+    // ① React-Native WebView 안일 때
+    if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === "function") {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: "SIGN_IN_WITH_GOOGLE" })
+      );
+      return;           // ← 더 이상 진행하지 않고 종료
+    }
+
+    // ② 일반 웹브라우저일 때 → 예전 방식으로 OAuth 페이지 열기
+    const state = Date.now();
+    const nonce = Math.random().toString(36).substring(2);
+    const url =
+      `https://accounts.google.com/o/oauth2/v2/auth` +
+      `?client_id=${GOOGLE_CLIENT_ID}` +
+      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+      `&response_type=${response_type}` +
+      `&scope=${scope}` +
+      `&state=${state}` +
+      `&nonce=${nonce}`;
+
+    window.location.href = url;
       });
 
       // ✅ Apple 로그인 팝업 방식 (기존 로직 그대로)
