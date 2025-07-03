@@ -492,8 +492,6 @@
     const bucket = new Map();
     snap.forEach(doc => {
       const d = doc.data();
-      }
-
       const lat = Number(d.lat);
       const lng = Number(d.lng);
       if (isNaN(lat) || isNaN(lng)) return;
