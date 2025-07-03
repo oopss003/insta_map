@@ -511,42 +511,49 @@
       const groupSize = items.length;
       const baseRadius = 0.001;
 
-      items.forEach((data, idx) => {
-        const {
-          lat, lng, name, insta, desc, photo, vimeo, hashtags, hours,
-          tel, address 
-        } = data;
+    items.forEach((data, idx) => {
+      const {
+        lat, lng, name, insta, desc, photo, vimeo,
+        hashtags, hours, tel, address
+      } = data;
+    
+      // 1) 오늘 요일의 시간 정보
+      const todayInfo = hours?.[todayStr];
+      // ── 오늘 영업시간 정보가 없으면 스킵 ──
+      if (!todayInfo?.time?.start || !todayInfo?.time?.end) {
+        console.warn(`${name} 스킵: 오늘 시간 정보 없음`);
+        return;
+      }
+    
+      // 2) 분 단위로 변환
+      const openMin  = toMinutes(todayInfo.time.start);
+      const closeMin = toMinutes(todayInfo.time.end);
+      // ── 변환 실패 시(빈 문자열 등) 스킵 ──
+      if (openMin == null || closeMin == null) {
+        console.warn(`${name} 스킵: 시간 문자열 파싱 실패`);
+        return;
+      }
+    
+      // 3) 현재 영업 여부 체크
+      if (nowMinutes < openMin || nowMinutes >= closeMin) {
+        console.warn(`${name} 스킵: 현재 영업 중 아님`);
+        return;
+      }
+    
+      // ── 여기까지 통과한 매장만 실제로 그립니다 ──
+      
+      // (기존) 그룹화된 위치 보정
+      let newLat = Number(lat);
+      let newLng = Number(lng);
+      if (groupSize > 1) {
+        const offset = (idx - (groupSize - 1) / 2) * 0.00005;
+        newLat += offset;
+      }
+      const position = new naver.maps.LatLng(newLat, newLng);
+    
+      // …이하 기존 마커 생성/리스트 렌더링 로직…
+    });
 
-        // ── 오늘 영업시간 정보가 없으면 스킵 ──
-        const todayInfo = hours?.[todayStr];
-        if (!todayInfo?.time?.start || !todayInfo?.time?.end) {
-           // console.log(`스킵: 시간 정보 없음 (문서ID=${data.id || "unknown"})`);
-          return;
-        }
-        const breakStart = hourInfo.break?.start || "";
-        const breakEnd = hourInfo.break?.end || "";
-
-        const openMin  = toMinutes(openTime);
-        const closeMin = toMinutes(closeTime);
-        if (openMin && closeMin && (nowMinutes < openMin || nowMinutes >= closeMin)) return;
-
-        if (breakStart && breakEnd) {
-          const bs = toMinutes(breakStart);
-          const be = toMinutes(breakEnd);
-          if (nowMinutes >= bs && nowMinutes < be) return;
-        }
-
-        let newLat = Number(lat);
-        let newLng = Number(lng);
-        const verticalSpacing = 0.00005; // 약 8~10m 간격, 필요 시 조정
-        if (groupSize > 1) {
-          const offset = (idx - (groupSize - 1) / 2) * verticalSpacing;
-          newLat += offset;
-          // newLng 그대로 (중앙 정렬된 상태)
-        }
-
-
-        const position = new naver.maps.LatLng(newLat, newLng);
         if (!bounds.hasLatLng(position)) return;
         visibleCount++;
   
