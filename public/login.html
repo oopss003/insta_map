@@ -85,23 +85,14 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <script>
-      // --- ⬇️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬇️ ---
-      const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
-      const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
-      const scope = "email profile openid";
-      const response_type = "id_token token";
-      const state = new Date().getTime();
-      const nonce = Math.random().toString(36).substring(2);
+      // ✅ 네이티브 RN으로 메시지를 보내는 Google 로그인 버튼 처리
       document.getElementById("googleLoginBtn").addEventListener("click", () => {
-          const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
-          window.location.href = url;
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ type: "SIGN_IN_WITH_GOOGLE" })
+        );
       });
-      // --- ⬆️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬆️ ---
-  
-  
-      // ✅ --- ⬇️ signInWithPopup 방식으로 변경된 최종 코드 ⬇️ ---
-  
-      // 1. Firebase 초기화 설정
+
+      // ✅ Apple 로그인 팝업 방식 (기존 로직 그대로)
       const firebaseConfig = {
           apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
           authDomain: "instamap-9b595.firebaseapp.com",
@@ -113,22 +104,23 @@
       firebase.initializeApp(firebaseConfig);
       const auth = firebase.auth();
       const db = firebase.firestore();
-  
-      // 2. Apple 로그인 버튼 클릭 이벤트 (팝업 방식)
+
       document.getElementById("appleLoginBtn").addEventListener("click", () => {
           console.log("🍎 Apple 로그인 시작 (팝업 방식)...");
           const provider = new firebase.auth.OAuthProvider('apple.com');
           provider.addScope('email');
           provider.addScope('name');
-  
+
           auth.signInWithPopup(provider)
               .then((result) => {
                   console.log("✅ 팝업 로그인 성공! 사용자 정보:", result.user);
                   const user = result.user;
                   const email = user.email;
                   let nickname = user.displayName;
-  
-                  if (result.additionalUserInfo && result.additionalUserInfo.profile && result.additionalUserInfo.profile.name) {
+
+                  if (result.additionalUserInfo &&
+                      result.additionalUserInfo.profile &&
+                      result.additionalUserInfo.profile.name) {
                       const appleName = result.additionalUserInfo.profile.name;
                       const fullName = `${appleName.lastName || ''}${appleName.firstName || ''}`;
                       if (fullName) nickname = fullName;
@@ -137,11 +129,11 @@
                   if (!nickname && email) {
                       nickname = email.split('@')[0];
                   }
-  
+
                   console.log(`Firestore에 저장할 정보: Email=${email}, Nickname=${nickname}`);
                   localStorage.setItem("userEmail", email);
                   const normalizedEmail = email.toLowerCase();
-  
+
                   return db.collection("users").doc(normalizedEmail).set({
                       email: email,
                       nickname: nickname,
@@ -156,10 +148,9 @@
               })
               .then(doc => {
                   if (!doc) return;
-  
                   const agreed = doc.exists && doc.data().agreedToTerms === true;
                   console.log(`약관 동의 여부: ${agreed}`);
-  
+
                   if (agreed) {
                       console.log("🗺️ 약관 동의 확인. 지도 페이지로 이동합니다.");
                       location.href = "/view_stores_test.html";
@@ -169,7 +160,6 @@
                   }
               })
               .catch((error) => {
-                  // 사용자가 팝업을 닫는 등 일반적인 오류는 무시할 수 있습니다.
                   if (error.code === 'auth/popup-closed-by-user') {
                       console.log("팝업이 사용자에 의해 닫혔습니다.");
                       return;
@@ -177,10 +167,10 @@
                   console.error("❌ 팝업 로그인 처리 중 오류 발생:", error);
                   alert(`로그인 처리에 실패했습니다: ${error.message}`);
               });
-      });
   </script>
 </body>
 </html>
+
 
 
 
