@@ -84,113 +84,123 @@
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
-  <script>
-  // ✅ 네이티브 RN으로 메시지를 보내는 Google 로그인 버튼 처리
-  // Google 버튼
-  document.getElementById("googleLoginBtn").addEventListener("click", () => {
-    // ① React-Native WebView 안일 때
-    if (window.ReactNativeWebView && typeof window.ReactNativeWebView.postMessage === "function") {
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({ type: "SIGN_IN_WITH_GOOGLE" })
-      );
-      return;           // ← 더 이상 진행하지 않고 종료
-    }
+   <script>
+  // ▼ ① Google 로그인에 필요한 상수들 선언 (반드시 스크립트 최상단에!)
+  const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
+  const REDIRECT_URI       = "https://inwave.ai.kr/callback_google.html";
+  const scope              = "email profile openid";
+  const response_type      = "id_token token";
 
-    // ② 일반 웹브라우저일 때 → 예전 방식으로 OAuth 페이지 열기
-    const state = Date.now();
-    const nonce = Math.random().toString(36).substring(2);
-    const url =
-      `https://accounts.google.com/o/oauth2/v2/auth` +
-      `?client_id=${GOOGLE_CLIENT_ID}` +
-      `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-      `&response_type=${response_type}` +
-      `&scope=${scope}` +
-      `&state=${state}` +
-      `&nonce=${nonce}`;
+  // ▼ ② Google 버튼 클릭 처리
+  document.getElementById("googleLoginBtn")
+    .addEventListener("click", () => {
+      // 네이티브 WebView 내부라면 RN 쪽으로 메시지 전송
+      if (window.ReactNativeWebView &&
+          typeof window.ReactNativeWebView.postMessage === "function") {
+        window.ReactNativeWebView.postMessage(
+          JSON.stringify({ type: "SIGN_IN_WITH_GOOGLE" })
+        );
+        return; // 여기서 종료!
+      }
 
-    window.location.href = url;
-  });
+      // 일반 웹 브라우저라면 OAuth 페이지로 리다이렉트
+      const state = Date.now();
+      const nonce = Math.random().toString(36).substring(2);
+      const url =
+        `https://accounts.google.com/o/oauth2/v2/auth` +
+        `?client_id=${GOOGLE_CLIENT_ID}` +
+        `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+        `&response_type=${response_type}` +
+        `&scope=${scope}` +
+        `&state=${state}` +
+        `&nonce=${nonce}`;
 
-      // ✅ Apple 로그인 팝업 방식 (기존 로직 그대로)
-      const firebaseConfig = {
-          apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-          authDomain: "instamap-9b595.firebaseapp.com",
-          projectId: "instamap-9b595",
-          storageBucket: "instamap-9b595.appspot.com",
-          messagingSenderId: "280950399393",
-          appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
+      window.location.href = url;
+    });
 
-      document.getElementById("appleLoginBtn").addEventListener("click", () => {
-          console.log("🍎 Apple 로그인 시작 (팝업 방식)...");
-          const provider = new firebase.auth.OAuthProvider('apple.com');
-          provider.addScope('email');
-          provider.addScope('name');
+  // ▼ ③ Apple 로그인 팝업 처리 (기존 로직 그대로)
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCVV1XUfsREQYnah3tbEKBTprg9wRgiic",
+    authDomain:        "instamap-9b595.firebaseapp.com",
+    projectId:         "instamap-9b595",
+    storageBucket:     "instamap-9b595.appspot.com",
+    messagingSenderId: "280950399393",
+    appId:             "1:280950399393:web:8282e0d352e50c8bcd2be0"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db   = firebase.firestore();
 
-          auth.signInWithPopup(provider)
-              .then((result) => {
-                  console.log("✅ 팝업 로그인 성공! 사용자 정보:", result.user);
-                  const user = result.user;
-                  const email = user.email;
-                  let nickname = user.displayName;
+  document.getElementById("appleLoginBtn")
+    .addEventListener("click", () => {
+      console.log("🍎 Apple 로그인 시작 (팝업 방식)...");
+      const provider = new firebase.auth.OAuthProvider("apple.com");
+      provider.addScope("email");
+      provider.addScope("name");
 
-                  if (result.additionalUserInfo &&
-                      result.additionalUserInfo.profile &&
-                      result.additionalUserInfo.profile.name) {
-                      const appleName = result.additionalUserInfo.profile.name;
-                      const fullName = `${appleName.lastName || ''}${appleName.firstName || ''}`;
-                      if (fullName) nickname = fullName;
-                  }
-                  
-                  if (!nickname && email) {
-                      nickname = email.split('@')[0];
-                  }
+      auth.signInWithPopup(provider)
+        .then((result) => {
+          console.log("✅ 팝업 로그인 성공! 사용자 정보:", result.user);
+          const user = result.user;
+          const email = user.email;
+          let nickname = user.displayName;
 
-                  console.log(`Firestore에 저장할 정보: Email=${email}, Nickname=${nickname}`);
-                  localStorage.setItem("userEmail", email);
-                  const normalizedEmail = email.toLowerCase();
+          if (
+            result.additionalUserInfo &&
+            result.additionalUserInfo.profile &&
+            result.additionalUserInfo.profile.name
+          ) {
+            const appleName = result.additionalUserInfo.profile.name;
+            const fullName = `${appleName.lastName || ""}${appleName.firstName || ""}`;
+            if (fullName) nickname = fullName;
+          }
 
-                  return db.collection("users").doc(normalizedEmail).set({
-                      email: email,
-                      nickname: nickname,
-                      provider: "apple",
-                      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                  }, { merge: true });
-              })
-              .then(() => {
-                  console.log("💾 Firestore 저장 성공. 약관 동의 여부 확인.");
-                  const email = localStorage.getItem("userEmail");
-                  return db.collection("users").doc(email.toLowerCase()).get();
-              })
-              .then(doc => {
-                  if (!doc) return;
-                  const agreed = doc.exists && doc.data().agreedToTerms === true;
-                  console.log(`약관 동의 여부: ${agreed}`);
+          if (!nickname && email) {
+            nickname = email.split("@")[0];
+          }
 
-                  if (agreed) {
-                      console.log("🗺️ 약관 동의 확인. 지도 페이지로 이동합니다.");
-                      location.href = "/view_stores_test.html";
-                  } else {
-                      console.log("📝 약관 미동의 확인. 약관 동의 페이지로 이동합니다.");
-                      location.href = "/terms.html";
-                  }
-              })
-              .catch((error) => {
-                  if (error.code === 'auth/popup-closed-by-user') {
-                      console.log("팝업이 사용자에 의해 닫혔습니다.");
-                      return;
-                  }
-                  console.error("❌ 팝업 로그인 처리 중 오류 발생:", error);
-                  alert(`로그인 처리에 실패했습니다: ${error.message}`);
-              });
-          }); 
+          console.log(`Firestore에 저장할 정보: Email=${email}, Nickname=${nickname}`);
+          localStorage.setItem("userEmail", email);
+          const normalizedEmail = email.toLowerCase();
+
+          return db.collection("users").doc(normalizedEmail).set(
+            {
+              email,
+              nickname,
+              provider: "apple",
+              createdAt: firebase.firestore.FieldValue.serverTimestamp()
+            },
+            { merge: true }
+          );
+        })
+        .then(() => {
+          console.log("💾 Firestore 저장 성공. 약관 동의 여부 확인.");
+          const email = localStorage.getItem("userEmail");
+          return db.collection("users").doc(email.toLowerCase()).get();
+        })
+        .then((doc) => {
+          if (!doc) return;
+          const agreed = doc.exists && doc.data().agreedToTerms === true;
+          console.log(`약관 동의 여부: ${agreed}`);
+
+          if (agreed) {
+            console.log("🗺️ 약관 동의 확인. 지도 페이지로 이동합니다.");
+            location.href = "/view_stores_test.html";
+          } else {
+            console.log("📝 약관 미동의 확인. 약관 동의 페이지로 이동합니다.");
+            location.href = "/terms.html";
+          }
+        })
+        .catch((error) => {
+          if (error.code === "auth/popup-closed-by-user") return;
+          console.error("❌ 팝업 로그인 처리 중 오류 발생:", error);
+          alert(`로그인 처리에 실패했습니다: ${error.message}`);
+        });
+    });
   </script>
-</body>
-</html>
 
+  </body>
+</html>
 
 
 
