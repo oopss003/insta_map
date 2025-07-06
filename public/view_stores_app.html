@@ -1,0 +1,9 @@
+if (window.webkit?.messageHandlers?.bridge) {
+  const msg = JSON.stringify({
+    type: "storeClick",
+    storeName: data.name,
+    storeId: data.docId,
+    clickedAt: Date.now()
+  });
+  window.webkit.messageHandlers.bridge.postMessage(msg);
+}
