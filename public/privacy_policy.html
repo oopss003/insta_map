@@ -13,37 +13,6 @@
       flex-direction: column;
       align-items: center;
     }
-
-    .header {
-      width: 344px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 0;
-    }
-
-    .icon-button {
-      width: 77px;
-      height: 77px;
-      background: #fff;
-      border-radius: 16px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
-      cursor: pointer;
-    }
-
-    .icon-button img {
-      width: 24px;
-      height: 24px;
-    }
-
-    .custom-button:active {
-      transform: scale(0.96);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    }
-
     .content {
       width: 344px;
       background: #fff;
@@ -53,59 +22,49 @@
       box-sizing: border-box;
       margin: 20px 0;
     }
-
     h1, h2 {
       font-size: 18px;
       margin-top: 24px;
       margin-bottom: 12px;
     }
-
     p, li {
       font-size: 14px;
       color: #222;
       line-height: 1.6;
     }
-
     ul {
       padding-left: 20px;
       margin-bottom: 16px;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
       margin-bottom: 16px;
     }
-
     th, td {
       border: 1px solid #ddd;
       padding: 8px;
       text-align: left;
     }
-
     th {
       background: #f0f0f0;
     }
   </style>
 </head>
 <body>
-
-    <!-- ✅ 상단 버튼 영역 -->
-
-  
   <div class="content">
     <h1>개인정보처리방침</h1>
     <p>inwave(이하 '회사')는 회사가 운영하는 애플리케이션과 웹사이트를 통해 수집되는 개인정보 보호에 관한 법령을 준수하며, 관련 규정에 따라 다음과 같은 개인정보처리방침을 수립하고 있습니다.</p>
   
     <h2>1. 개인정보 수집 · 이용</h2>
-    <p>회사는 회원관리, 서비스 제공 · 개선, 신규 서비스 개발 등을 위해 아래와 같이 최소한의 개인정보를 수집 · 이용하고 있습니다.</p>
+    <p>회사는 회원관리, 서비스 제공·개선, 신규 서비스 개발 등을 위해 아래와 같이 최소한의 개인정보를 수집·이용하고 있습니다.</p>
     <table>
       <tr><th>구분</th><th>수집항목</th><th>이용목적</th><th>보유기간</th></tr>
       <tr>
         <td>회원가입</td>
-        <td>휴대전화번호, 생년월일, 성별, 닉네임</td>
-        <td>서비스 제공 및 본인 확인 등</td>
+        <td>휴대전화번호, 생년월일, 성별, MBTI, 닉네임</td>
+        <td>본인 확인 및 성향 기반 매장 추천 등 핵심 서비스 제공</td>
         <td>회원 탈퇴 후 90일까지</td>
       </tr>
       <tr>
@@ -115,15 +74,21 @@
         <td>전자상거래법 등 관련 법령에 따라 최대 5년</td>
       </tr>
       <tr>
+        <td>위치기반 서비스</td>
+        <td>현재 위치 정보(위·경도)</td>
+        <td>인근 매장 안내 및 개인화된 매장 추천 제공 (예: 내 주변 1km 매장 리스트)</td>
+        <td>서비스 제공 목적 달성 시까지(세션 종료 시 삭제)</td>
+      </tr>
+      <tr>
         <td>자동생성정보</td>
-        <td>기기정보, IP주소, 쿠키</td>
-        <td>이용자 맞춤형 서비스 제공 등</td>
-        <td>회원 탈퇴 시까지</td>
+        <td>기기정보, IP주소, 쿠키, 이용 로그, 광고식별자(ADID/IDFA), Firebase Analytics/Crash 데이터 등</td>
+        <td>서비스 최적화, 통계 분석, 부정 사용 방지</td>
+        <td>회원 탈퇴 시 또는 법령에 따른 기간까지</td>
       </tr>
     </table>
   
     <h2>2. 개인정보 제3자 제공</h2>
-    <p>회사는 이용자의 사전 동의 없이 개인정보를 제3자에게 제공하지 않습니다.</p>
+    <p>회사는 이용자의 사전 동의 없이 개인정보를 제3자에게 제공하지 않습니다. 단, 법령에 따라 요구되는 경우는 예외로 합니다.</p>
     <table>
       <tr><th>제공 대상</th><th>제공 항목</th><th>이용 목적</th><th>보유 기간</th></tr>
       <tr><td colspan="4" style="text-align:center;">해당 없음</td></tr>
@@ -135,28 +100,28 @@
       <tr>
         <td>클라우드 서버 운영</td>
         <td>Google Firebase, Amazon Web Services</td>
-        <td>이메일 주소, 휴대전화번호</td>
+        <td>이메일 주소, 휴대전화번호 등 서비스 이용에 필요한 정보</td>
         <td>위탁 계약 종료 시까지</td>
       </tr>
     </table>
   
     <h2>4. 개인정보의 파기절차 및 방법</h2>
     <ul>
-      <li>개인정보 보유기간 경과 시 즉시 파기</li>
-      <li>전자적 파일은 복구 불가능한 방식으로, 출력물은 분쇄 또는 소각</li>
+      <li>개인정보 보유기간 경과 시 지체 없이 파기합니다.</li>
+      <li>전자적 파일은 복구 불가능한 방식으로, 출력물은 분쇄 또는 소각합니다.</li>
     </ul>
   
     <h2>5. 이용자의 권리 및 행사방법</h2>
-    <p>이용자는 본인의 개인정보에 대해 언제든지 열람, 정정, 삭제, 처리정지를 요청할 수 있습니다.</p>
+    <p>이용자는 본인의 개인정보에 대해 언제든지 열람, 정정, 삭제, 처리정지를 요청할 수 있습니다. 앱 내 경로: <strong>프로필 &gt; 설정 &gt; 로그아웃 &gt; 계정 삭제</strong>를 통해 직접 계정을 삭제할 수 있으며, 아래 연락처를 통해서도 요청 가능합니다.</p>
   
     <h2>6. 개인정보 자동수집장치 운영</h2>
-    <p>쿠키 등 자동 수집 정보를 통해 개인 맞춤형 서비스를 제공하며, 쿠키는 이용자가 직접 설정 변경을 통해 거부할 수 있습니다.</p>
+    <p>쿠키 등 자동 수집 정보를 통해 개인 맞춤형 서비스를 제공하며, 이용자는 브라우저 설정을 통해 쿠키 저장을 거부할 수 있습니다.</p>
   
     <h2>7. 개인정보의 보호조치</h2>
     <ul>
-      <li>관리적 조치: 정기 교육, 내부관리계획 수립 등</li>
-      <li>기술적 조치: 접근통제, 암호화</li>
-      <li>물리적 조치: 자료보관실 접근 통제</li>
+      <li>관리적 조치: 내부관리계획 수립, 정기 교육 등</li>
+      <li>기술적 조치: 접근통제, 암호화, 보안 프로그램 설치 등</li>
+      <li>물리적 조치: 자료보관실 접근 통제 등</li>
     </ul>
   
     <h2>8. 만 14세 미만 아동의 개인정보</h2>
@@ -164,7 +129,7 @@
   
     <h2>9. 앱 접근 권한 안내</h2>
     <ul>
-      <li>위치정보: 사용자의 현재 위치를 기준으로 인근 매장을 안내하고, 위치 기반 광고 콘텐츠를 제공하기 위해 사용됩니다.</li>
+      <li><strong>위치정보</strong>: 사용자의 현재 위치를 기준으로 인근 매장을 안내하기 위해 사용됩니다. (예: 내 주변 1km 매장 리스트 제공)</li>
       <li>해당 권한은 기기 설정을 통해 사용자가 직접 거부하거나 변경할 수 있습니다.</li>
     </ul>
   
