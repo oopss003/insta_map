@@ -1,11 +1,136 @@
-<h2>🍽 쿠폰 생성하기</h2>
+<!-- 파일명: create_coupon.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>쿠폰 생성</title>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    label {
+      display: block;
+      margin-top: 15px;
+    }
+    input, select {
+      width: 300px;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h2>🎁 쿠폰 생성</h2>
 
-<select name="store">...</select>  
-<input type="text" placeholder="쿠폰 제목" />
-<input type="text" placeholder="쿠폰 부제목" />
-<input type="text" placeholder="이모티콘 입력 🍲" />
-<input type="number" placeholder="총 발급 수" />
-<input type="number" placeholder="하루 발급 수" />
-<input type="time" name="start" />
-<input type="time" name="end" />
-<button>쿠폰 저장</button>
+  <label>매장 선택</label>
+  <select id="storeSelect">
+    <option value="">매장을 선택하세요</option>
+  </select>
+
+  <label>쿠폰 제목</label>
+  <input type="text" id="title" placeholder="예: 하루 30잔 맥주 쿠폰">
+
+  <label>쿠폰 설명</label>
+  <input type="text" id="subtitle" placeholder="예: 시원한 맥주 1잔 무료!">
+
+  <label>이모지</label>
+  <input type="text" id="emoji" placeholder="예: 🍻">
+
+  <label>쿠폰 총 발행 수량</label>
+  <input type="number" id="totalCount" value="100">
+
+  <label>하루 최대 수량</label>
+  <input type="number" id="dailyCount" value="10">
+
+  <label>배포 시작 시간 (예: 17:00)</label>
+  <input type="time" id="startTime">
+
+  <label>배포 종료 시간 (예: 23:00)</label>
+  <input type="time" id="endTime">
+
+  <button onclick="saveCoupon()">✅ 쿠폰 저장</button>
+
+  <script>
+    // Firebase 설정
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_BUCKET",
+      messagingSenderId: "YOUR_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    // 매장 목록 불러오기
+    async function loadStores() {
+      const storeSelect = document.getElementById("storeSelect");
+      const snapshot = await db.collection("stores").get();
+      snapshot.forEach(doc => {
+        const option = document.createElement("option");
+        option.value = doc.id;
+        option.text = doc.data().name || doc.id;
+        storeSelect.appendChild(option);
+      });
+    }
+
+    // 쿠폰 저장
+    async function saveCoupon() {
+      const storeId = document.getElementById("storeSelect").value;
+      const storeName = document.getElementById("storeSelect").selectedOptions[0].text;
+      const title = document.getElementById("title").value;
+      const subtitle = document.getElementById("subtitle").value;
+      const emoji = document.getElementById("emoji").value;
+      const totalCount = parseInt(document.getElementById("totalCount").value);
+      const dailyCount = parseInt(document.getElementById("dailyCount").value);
+      const start = document.getElementById("startTime").value;
+      const end = document.getElementById("endTime").value;
+
+      if (!storeId || !title || !subtitle) {
+        alert("필수 항목을 모두 입력해주세요.");
+        return;
+      }
+
+      await db.collection("coupons").add({
+        storeId,
+        storeName,
+        title,
+        subtitle,
+        emoji,
+        totalCount,
+        dailyCount,
+        distribute: {
+          start,
+          end
+        },
+        created: new Date(),
+        createdBy: "admin@inwave.ai.kr" // 로그인 사용자 정보로 변경 가능
+      });
+
+      alert("쿠폰이 저장되었습니다!");
+      window.location.reload();
+    }
+
+    // 초기 매장 목록 로딩
+    loadStores();
+  </script>
+</body>
+</html>
