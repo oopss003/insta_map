@@ -1,136 +1,123 @@
-<!-- 파일명: create_coupon.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>쿠폰 생성</title>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>쿠폰 생성하기</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      background: #f9f9f9;
+      margin: 0;
       padding: 20px;
+      background: #f5f6fb;
     }
-    h2 {
-      margin-bottom: 10px;
+
+    h1 {
+      text-align: center;
     }
+
+    .container {
+      max-width: 400px;
+      margin: auto;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
     label {
       display: block;
-      margin-top: 15px;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
-    input, select {
-      width: 300px;
-      padding: 8px;
-      margin-top: 5px;
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 16px;
+      box-sizing: border-box;
     }
-    button {
-      margin-top: 20px;
-      padding: 10px 20px;
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+
+    #previewCard {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    #previewEmoji {
+      font-size: 48px;
+    }
+
+    #previewTitle {
+      font-size: 20px;
+      font-weight: bold;
+      margin-top: 8px;
+    }
+
+    #previewSubtitle {
+      font-size: 14px;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .note {
+      font-size: 12px;
+      color: gray;
+      margin-top: 10px;
     }
   </style>
 </head>
 <body>
-  <h2>🎁 쿠폰 생성</h2>
 
-  <label>매장 선택</label>
-  <select id="storeSelect">
-    <option value="">매장을 선택하세요</option>
-  </select>
+  <div class="container">
+    <h1>쿠폰 생성</h1>
 
-  <label>쿠폰 제목</label>
-  <input type="text" id="title" placeholder="예: 하루 30잔 맥주 쿠폰">
+    <div class="input-group">
+      <label for="emoji">이모지</label>
+      <input type="text" id="emoji" placeholder="예: 🍕, 🍻, 🎁 등" />
+    </div>
 
-  <label>쿠폰 설명</label>
-  <input type="text" id="subtitle" placeholder="예: 시원한 맥주 1잔 무료!">
+    <div class="input-group">
+      <label for="title">쿠폰 제목</label>
+      <input type="text" id="title" placeholder="예: 피자 1조각 무료 쿠폰" />
+    </div>
 
-  <label>이모지</label>
-  <input type="text" id="emoji" placeholder="예: 🍻">
+    <div class="input-group">
+      <label for="subtitle">쿠폰 설명</label>
+      <textarea id="subtitle" rows="3" placeholder="예: 매장 방문 시 피자 1조각 무료 제공"></textarea>
+    </div>
 
-  <label>쿠폰 총 발행 수량</label>
-  <input type="number" id="totalCount" value="100">
+    <p class="note">※ 아래에 미리보기가 실시간으로 반영됩니다.</p>
 
-  <label>하루 최대 수량</label>
-  <input type="number" id="dailyCount" value="10">
-
-  <label>배포 시작 시간 (예: 17:00)</label>
-  <input type="time" id="startTime">
-
-  <label>배포 종료 시간 (예: 23:00)</label>
-  <input type="time" id="endTime">
-
-  <button onclick="saveCoupon()">✅ 쿠폰 저장</button>
+    <!-- 미리보기 카드 -->
+    <div id="previewCard">
+      <div id="previewEmoji">🎁</div>
+      <div id="previewTitle">쿠폰 제목</div>
+      <div id="previewSubtitle">쿠폰 설명</div>
+    </div>
+  </div>
 
   <script>
-    // Firebase 설정
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "YOUR_AUTH_DOMAIN",
-      projectId: "YOUR_PROJECT_ID",
-      storageBucket: "YOUR_BUCKET",
-      messagingSenderId: "YOUR_SENDER_ID",
-      appId: "YOUR_APP_ID"
-    };
+    // 입력 변경 시 미리보기 반영
+    ["emoji", "title", "subtitle"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updatePreview);
+    });
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
+    function updatePreview() {
+      const emoji = document.getElementById("emoji").value || "🎁";
+      const title = document.getElementById("title").value || "쿠폰 제목";
+      const subtitle = document.getElementById("subtitle").value || "쿠폰 설명";
 
-    // 매장 목록 불러오기
-    async function loadStores() {
-      const storeSelect = document.getElementById("storeSelect");
-      const snapshot = await db.collection("stores").get();
-      snapshot.forEach(doc => {
-        const option = document.createElement("option");
-        option.value = doc.id;
-        option.text = doc.data().name || doc.id;
-        storeSelect.appendChild(option);
-      });
+      document.getElementById("previewEmoji").innerText = emoji;
+      document.getElementById("previewTitle").innerText = title;
+      document.getElementById("previewSubtitle").innerText = subtitle;
     }
-
-    // 쿠폰 저장
-    async function saveCoupon() {
-      const storeId = document.getElementById("storeSelect").value;
-      const storeName = document.getElementById("storeSelect").selectedOptions[0].text;
-      const title = document.getElementById("title").value;
-      const subtitle = document.getElementById("subtitle").value;
-      const emoji = document.getElementById("emoji").value;
-      const totalCount = parseInt(document.getElementById("totalCount").value);
-      const dailyCount = parseInt(document.getElementById("dailyCount").value);
-      const start = document.getElementById("startTime").value;
-      const end = document.getElementById("endTime").value;
-
-      if (!storeId || !title || !subtitle) {
-        alert("필수 항목을 모두 입력해주세요.");
-        return;
-      }
-
-      await db.collection("coupons").add({
-        storeId,
-        storeName,
-        title,
-        subtitle,
-        emoji,
-        totalCount,
-        dailyCount,
-        distribute: {
-          start,
-          end
-        },
-        created: new Date(),
-        createdBy: "admin@inwave.ai.kr" // 로그인 사용자 정보로 변경 가능
-      });
-
-      alert("쿠폰이 저장되었습니다!");
-      window.location.reload();
-    }
-
-    // 초기 매장 목록 로딩
-    loadStores();
   </script>
 </body>
 </html>
+
