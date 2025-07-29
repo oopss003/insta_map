@@ -136,14 +136,17 @@
     <label>서브 카피</label>
     <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요.">
 
-    <div class="preview-box">
-      <h3>소재 미리보기 및 편집</h3>
-      <div class="preview-inner">
-        <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
-        <div id="subCopyPreview" style="font-weight: normal; font-size: 14px; margin-top: 4px; color: #666;"></div>
-      </div>
+<!-- 소재 미리보기 -->
+<div class="preview-box">
+  <h3>소재 미리보기 및 편집</h3>
+  <div class="preview-inner" style="width: 340px; height: 120px; flex-direction: row; justify-content: space-between; align-items: center;">
+    <div style="flex: 1; padding-left: 12px;">
+      <div id="mainCopyPreview" style="font-weight: bold; font-size: 16px;">메인 카피를 입력하세요.</div>
+      <div id="subCopyPreview" style="font-weight: normal; font-size: 14px; margin-top: 4px; color: #666;"></div>
     </div>
+    <div style="width: 90px; height: 90px; border: 2px dashed #ccc; margin-right: 12px;"></div>
   </div>
+</div>
 
   <!-- 오른쪽 입력 영역 -->
   <div class="panel">
