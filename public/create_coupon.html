@@ -2,162 +2,233 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <title>소재 입력</title>
+  <title>소재 등록</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Pretendard', sans-serif;
-      background-color: #f5f6fb;
       margin: 0;
+      background-color: #f8f9fc;
       padding: 40px;
-      color: #222;
+    }
+
+    .container {
+      display: flex;
+      gap: 24px;
+    }
+
+    .section {
+      background-color: #fff;
+      padding: 32px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      flex: 1;
+    }
+
+    .section h3 {
+      margin-top: 0;
+      font-size: 18px;
+      font-weight: 600;
     }
 
     label {
       display: block;
-      margin: 20px 0 6px;
+      font-size: 14px;
+      margin-bottom: 6px;
       font-weight: 600;
     }
 
     .required::after {
-      content: " *";
+      content: "*";
       color: red;
+      margin-left: 4px;
     }
 
-    input[type="text"] {
+    input[type="text"], input[type="number"], input[type="date"], select {
       width: 100%;
-      max-width: 600px;
-      padding: 10px;
-      font-size: 16px;
+      padding: 10px 12px;
+      font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 8px;
-    }
-
-    select {
-      width: 100%;
-      max-width: 600px;
-      padding: 10px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      margin-bottom: 20px;
     }
 
     .upload-btn {
-      display: inline-block;
-      padding: 8px 16px;
-      font-size: 14px;
       background-color: #eee;
       border: 1px solid #ccc;
+      padding: 8px 12px;
+      font-size: 14px;
       border-radius: 8px;
       cursor: pointer;
+      margin-bottom: 20px;
     }
 
     .preview-box {
-      margin-top: 32px;
-      background: #fff;
-      padding: 20px;
+      background: #f3f3f3;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      width: 100%;
-      max-width: 600px;
-    }
-
-    .preview-box h3 {
-      margin-top: 0;
+      padding: 20px;
+      margin-top: 20px;
     }
 
     .preview-inner {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      border: 1px dashed #ccc;
+      padding: 16px;
       height: 120px;
-      border: 1px dashed #ddd;
-      padding: 12px;
-      background: #fdfdfd;
     }
 
     .text-box {
       flex: 1;
-      padding-right: 12px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
     }
 
     #mainCopyPreview {
       font-weight: bold;
       font-size: 16px;
-      color: #333;
+      color: #000;
     }
 
     #subCopyPreview {
-      font-weight: normal;
       font-size: 14px;
-      margin-top: 4px;
       color: #666;
+      margin-top: 6px;
     }
 
     .image-box {
       width: 90px;
       height: 90px;
-      border: 2px dashed #ccc;
-      flex-shrink: 0;
+      background: #fff;
+      border: 2px dashed #999;
+      margin-left: 20px;
+    }
+
+    .footer {
+      margin-top: 40px;
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+    }
+
+    .footer button {
+      padding: 10px 20px;
+      font-size: 14px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+
+    .footer .cancel {
+      background: #e0e0e0;
+    }
+
+    .footer .save {
+      background: #007bff;
+      color: #fff;
+    }
+
+    .footer .continue {
+      background: #0056b3;
+      color: #fff;
+    }
+
+    .radio-group {
+      margin-bottom: 20px;
+    }
+
+    .radio-group label {
+      margin-right: 20px;
+      font-size: 14px;
     }
   </style>
 </head>
 <body>
 
-  <h2>구성 요소</h2>
+  <div class="container">
 
-  <label><input type="radio" name="type" checked /> 단일 이미지</label>
-  <label><input type="radio" name="type" /> 멀티 이미지</label>
+    <!-- 왼쪽 영역 -->
+    <div class="section">
+      <h3>구성 요소</h3>
 
-  <label class="required">이미지</label>
-  <button class="upload-btn">+ 이미지 추가</button>
-
-  <label class="required">메인 카피</label>
-  <input type="text" id="mainCopy" placeholder="메인 카피를 입력하세요.">
-
-  <label>서브 카피</label>
-  <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요.">
-
-  <div class="preview-box">
-    <h3>소재 미리보기 및 편집</h3>
-    <div class="preview-inner">
-      <div class="text-box">
-        <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
-        <div id="subCopyPreview"></div>
+      <div class="radio-group">
+        <label><input type="radio" name="imageType" checked /> 단일 이미지</label>
+        <label><input type="radio" name="imageType" /> 멀티 이미지</label>
       </div>
-      <div class="image-box"></div>
+
+      <label class="required">이미지</label>
+      <button class="upload-btn">+ 이미지 추가</button>
+
+      <label class="required">메인 카피</label>
+      <input type="text" id="mainCopy" placeholder="메인 카피를 입력하세요." maxlength="30" />
+
+      <label>서브 카피</label>
+      <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요." maxlength="30" />
+
+      <div class="preview-box">
+        <strong>소재 미리보기 및 편집</strong>
+        <div class="preview-inner">
+          <div class="text-box">
+            <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
+            <div id="subCopyPreview"></div>
+          </div>
+          <div class="image-box"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 오른쪽 영역 -->
+    <div class="section">
+      <label>매장 선택</label>
+      <select>
+        <option>매장을 선택하세요</option>
+        <option>홍대점</option>
+        <option>강남점</option>
+      </select>
+
+      <label>배포 시작일</label>
+      <input type="date" />
+
+      <label>배포 종료일</label>
+      <input type="date" />
+
+      <label>시작 시간</label>
+      <input type="time" />
+
+      <label>종료 시간</label>
+      <input type="time" />
+
+      <label>총 발급 수량</label>
+      <input type="number" placeholder="예: 1000" />
+
+      <label>일일 발급 수량</label>
+      <input type="number" placeholder="예: 50" />
     </div>
   </div>
 
-  <label>매장 선택</label>
-  <select>
-    <option>매장을 선택하세요</option>
-    <option>홍대 매장</option>
-    <option>강남 매장</option>
-  </select>
-
-  <label>배포 시작일</label>
-  <input type="date" />
+  <div class="footer">
+    <button class="cancel">취소</button>
+    <button class="save">저장</button>
+    <button class="continue">저장하고 계속 만들기</button>
+  </div>
 
   <script>
-    const mainInput = document.getElementById('mainCopy');
-    const subInput = document.getElementById('subCopy');
-    const mainPreview = document.getElementById('mainCopyPreview');
-    const subPreview = document.getElementById('subCopyPreview');
+    const mainCopyInput = document.getElementById("mainCopy");
+    const subCopyInput = document.getElementById("subCopy");
+    const mainCopyPreview = document.getElementById("mainCopyPreview");
+    const subCopyPreview = document.getElementById("subCopyPreview");
 
-    mainInput.addEventListener('input', () => {
-      mainPreview.textContent = mainInput.value || '메인 카피를 입력하세요.';
+    mainCopyInput.addEventListener("input", () => {
+      mainCopyPreview.textContent = mainCopyInput.value || "메인 카피를 입력하세요.";
     });
 
-    subInput.addEventListener('input', () => {
-      subPreview.textContent = subInput.value;
+    subCopyInput.addEventListener("input", () => {
+      subCopyPreview.textContent = subCopyInput.value;
     });
   </script>
-
 </body>
 </html>
-
 
 
