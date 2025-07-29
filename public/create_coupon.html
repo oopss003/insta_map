@@ -1,66 +1,86 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>카피 미리보기</title>
+  <meta charset="UTF-8" />
+  <title>소재 입력</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      background: #f9f9fb;
-      padding: 24px;
+      background-color: #f5f6fb;
+      margin: 0;
+      padding: 40px;
+      color: #222;
     }
 
     label {
       display: block;
-      margin-top: 16px;
-      margin-bottom: 8px;
-      font-weight: bold;
+      margin: 20px 0 6px;
+      font-weight: 600;
     }
 
     .required::after {
-      content: '*';
+      content: " *";
       color: red;
-      margin-left: 4px;
     }
 
     input[type="text"] {
-      width: 340px;
-      height: 36px;
-      padding: 8px;
-      font-size: 14px;
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 16px;
       border: 1px solid #ccc;
-      border-radius: 6px;
+      border-radius: 8px;
+    }
+
+    select {
+      width: 100%;
+      max-width: 600px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
 
     .upload-btn {
       display: inline-block;
-      margin-bottom: 12px;
-      padding: 8px 12px;
-      background: #eee;
+      padding: 8px 16px;
+      font-size: 14px;
+      background-color: #eee;
       border: 1px solid #ccc;
-      border-radius: 4px;
+      border-radius: 8px;
       cursor: pointer;
     }
 
     .preview-box {
-      margin-top: 24px;
+      margin-top: 32px;
       background: #fff;
       padding: 20px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-      width: 380px;
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .preview-box h3 {
+      margin-top: 0;
     }
 
     .preview-inner {
-      width: 340px;
-      height: 120px;
       display: flex;
-      flex-direction: row;
       justify-content: space-between;
       align-items: center;
+      height: 120px;
       border: 1px dashed #ddd;
+      padding: 12px;
       background: #fdfdfd;
-      padding: 0;
+    }
+
+    .text-box {
+      flex: 1;
+      padding-right: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     #mainCopyPreview {
@@ -80,22 +100,16 @@
       width: 90px;
       height: 90px;
       border: 2px dashed #ccc;
-      margin-right: 12px;
       flex-shrink: 0;
-    }
-
-    select {
-      width: 340px;
-      height: 36px;
-      padding: 6px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-top: 8px;
     }
   </style>
 </head>
 <body>
+
+  <h2>구성 요소</h2>
+
+  <label><input type="radio" name="type" checked /> 단일 이미지</label>
+  <label><input type="radio" name="type" /> 멀티 이미지</label>
 
   <label class="required">이미지</label>
   <button class="upload-btn">+ 이미지 추가</button>
@@ -109,7 +123,7 @@
   <div class="preview-box">
     <h3>소재 미리보기 및 편집</h3>
     <div class="preview-inner">
-      <div style="flex: 1; padding-left: 12px;">
+      <div class="text-box">
         <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
         <div id="subCopyPreview"></div>
       </div>
@@ -120,7 +134,12 @@
   <label>매장 선택</label>
   <select>
     <option>매장을 선택하세요</option>
+    <option>홍대 매장</option>
+    <option>강남 매장</option>
   </select>
+
+  <label>배포 시작일</label>
+  <input type="date" />
 
   <script>
     const mainInput = document.getElementById('mainCopy');
@@ -139,5 +158,6 @@
 
 </body>
 </html>
+
 
 
