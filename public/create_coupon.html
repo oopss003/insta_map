@@ -74,10 +74,14 @@
       background: #fafafa;
       height: 100px;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #aaa;
+      color: #333;
       font-weight: bold;
+      font-size: 16px;
+      padding: 10px;
+      text-align: center;
     }
 
     .footer-buttons {
@@ -105,11 +109,6 @@
       color: white;
     }
 
-    .time-row {
-      display: flex;
-      gap: 12px;
-    }
-
     .required::after {
       content: "*";
       color: red;
@@ -132,15 +131,16 @@
     <button class="upload-btn">+ 이미지 추가</button>
 
     <label class="required">메인 카피</label>
-    <input type="text" placeholder="메인 카피를 입력하세요.">
+    <input type="text" id="mainCopy" placeholder="메인 카피를 입력하세요.">
 
     <label>서브 카피</label>
-    <input type="text" placeholder="서브 카피를 입력하세요.">
+    <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요.">
 
     <div class="preview-box">
       <h3>소재 미리보기 및 편집</h3>
       <div class="preview-inner">
-        메인 카피를 입력하세요.
+        <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
+        <div id="subCopyPreview" style="font-weight: normal; font-size: 14px; margin-top: 4px; color: #666;"></div>
       </div>
     </div>
   </div>
@@ -179,6 +179,22 @@
   <button class="save">저장</button>
   <button class="save-continue">저장하고 계속 만들기</button>
 </div>
+
+<!-- JavaScript: 실시간 반영 -->
+<script>
+  const mainCopyInput = document.getElementById("mainCopy");
+  const subCopyInput = document.getElementById("subCopy");
+  const mainPreview = document.getElementById("mainCopyPreview");
+  const subPreview = document.getElementById("subCopyPreview");
+
+  mainCopyInput.addEventListener("input", () => {
+    mainPreview.textContent = mainCopyInput.value || "메인 카피를 입력하세요.";
+  });
+
+  subCopyInput.addEventListener("input", () => {
+    subPreview.textContent = subCopyInput.value;
+  });
+</script>
 
 </body>
 </html>
