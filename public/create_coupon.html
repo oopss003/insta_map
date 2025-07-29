@@ -81,31 +81,44 @@
       font-weight: bold;
       font-size: 16px;
       padding: 12px;
+      text-align: left;
+      border-radius: 12px;
       position: relative;
       overflow: hidden;
     }
 
-    .cropped-image {
+    .preview-inner img {
       width: 90px;
       height: 90px;
-      border-radius: 8px;
       object-fit: cover;
-      flex-shrink: 0;
+      border-radius: 12px;
     }
 
     .text-overlay {
-      flex-grow: 1;
-      margin-right: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      z-index: 1;
     }
 
     #mainCopyPreview {
       font-weight: bold;
+      font-size: 16px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
     }
 
     #subCopyPreview {
+      font-weight: normal;
       font-size: 14px;
       margin-top: 4px;
       color: #666;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 220px;
     }
 
     .footer-buttons {
@@ -147,6 +160,7 @@
 <body>
 
 <div class="container">
+  <!-- 왼쪽 구성 요소 -->
   <div class="panel">
     <h2>구성 요소</h2>
     <div class="radio-group">
@@ -170,11 +184,12 @@
           <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
           <div id="subCopyPreview"></div>
         </div>
-        <img id="previewImage" class="cropped-image" src="" alt="미리보기 이미지" style="display: none;" />
+        <img id="previewImage" src="" alt="Preview" style="display: none;" />
       </div>
     </div>
   </div>
 
+  <!-- 오른쪽 입력 영역 -->
   <div class="panel">
     <label>매장 선택</label>
     <select>
@@ -203,11 +218,13 @@
   </div>
 </div>
 
+<!-- 하단 버튼 -->
 <div class="footer-buttons">
   <button class="save">저장</button>
   <button class="save-continue">저장하고 계속 만들기</button>
 </div>
 
+<!-- JavaScript -->
 <script>
   window.addEventListener('DOMContentLoaded', () => {
     const mainCopyInput = document.getElementById("mainCopy");
@@ -218,12 +235,12 @@
     const previewImage = document.getElementById("previewImage");
 
     function updateMainPreview() {
-      const value = mainCopyInput.value.trim();
+      const value = mainCopyInput.value.trim().slice(0, 16);
       mainPreview.textContent = value === "" ? "메인 카피를 입력하세요." : value;
     }
 
     function updateSubPreview() {
-      const value = subCopyInput.value.trim();
+      const value = subCopyInput.value.trim().slice(0, 19);
       subPreview.textContent = value;
     }
 
@@ -235,22 +252,8 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = (e) => {
-          const img = new Image();
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const size = Math.min(img.width, img.height);
-            const sx = (img.width - size) / 2;
-            const sy = (img.height - size) / 2;
-
-            canvas.width = 90;
-            canvas.height = 90;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, sx, sy, size, size, 0, 0, 90, 90);
-
-            previewImage.src = canvas.toDataURL();
-            previewImage.style.display = "block";
-          };
-          img.src = e.target.result;
+          previewImage.src = e.target.result;
+          previewImage.style.display = "block";
         };
         reader.readAsDataURL(file);
       }
@@ -260,7 +263,6 @@
 
 </body>
 </html>
-
 
 
 
