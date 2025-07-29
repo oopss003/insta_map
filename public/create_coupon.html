@@ -1,204 +1,143 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>쿠폰 배너 등록</title>
+  <meta charset="UTF-8">
+  <title>카피 미리보기</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      margin: 0;
-      padding: 40px;
-      background: #f4f5fb;
-    }
-
-    .container {
-      display: flex;
-      gap: 24px;
-    }
-
-    .panel {
-      background: white;
-      border-radius: 12px;
+      background: #f9f9fb;
       padding: 24px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      flex: 1;
-    }
-
-    h2 {
-      font-size: 18px;
-      margin-bottom: 16px;
     }
 
     label {
-      font-weight: bold;
       display: block;
       margin-top: 16px;
+      margin-bottom: 8px;
+      font-weight: bold;
     }
 
-    input[type="text"],
-    input[type="number"],
-    input[type="date"],
-    input[type="time"],
-    select {
-      width: 100%;
-      padding: 10px;
-      margin-top: 6px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+    .required::after {
+      content: '*';
+      color: red;
+      margin-left: 4px;
+    }
+
+    input[type="text"] {
+      width: 340px;
+      height: 36px;
+      padding: 8px;
       font-size: 14px;
-    }
-
-    .radio-group {
-      display: flex;
-      gap: 20px;
-      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     .upload-btn {
-      padding: 10px 16px;
-      background-color: #eee;
+      display: inline-block;
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: #eee;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      margin-top: 6px;
+      border-radius: 4px;
       cursor: pointer;
     }
 
     .preview-box {
       margin-top: 24px;
-      border-top: 1px solid #eee;
-      padding-top: 16px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      width: 380px;
     }
 
     .preview-inner {
-      border: 2px dashed #ddd;
-      background: #fafafa;
-      height: 100px;
+      width: 340px;
+      height: 120px;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
+      justify-content: space-between;
       align-items: center;
-      justify-content: center;
-      color: #333;
+      border: 1px dashed #ddd;
+      background: #fdfdfd;
+      padding: 0;
+    }
+
+    #mainCopyPreview {
       font-weight: bold;
       font-size: 16px;
-      padding: 10px;
-      text-align: center;
+      color: #333;
     }
 
-    .footer-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 12px;
-      margin-top: 32px;
+    #subCopyPreview {
+      font-weight: normal;
+      font-size: 14px;
+      margin-top: 4px;
+      color: #666;
     }
 
-    .footer-buttons button {
-      padding: 10px 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+    .image-box {
+      width: 90px;
+      height: 90px;
+      border: 2px dashed #ccc;
+      margin-right: 12px;
+      flex-shrink: 0;
     }
 
-    .footer-buttons .save {
-      background: #ddd;
-      color: black;
-    }
-
-    .footer-buttons .save-continue {
-      background: #1677ff;
-      color: white;
-    }
-
-    .required::after {
-      content: "*";
-      color: red;
-      margin-left: 4px;
+    select {
+      width: 340px;
+      height: 36px;
+      padding: 6px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-top: 8px;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <!-- 왼쪽 구성 요소 -->
-  <div class="panel">
-    <h2>구성 요소</h2>
-    <div class="radio-group">
-      <label><input type="radio" name="imageType" checked> 단일 이미지</label>
-      <label><input type="radio" name="imageType"> 멀티 이미지</label>
+  <label class="required">이미지</label>
+  <button class="upload-btn">+ 이미지 추가</button>
+
+  <label class="required">메인 카피</label>
+  <input type="text" id="mainCopy" placeholder="메인 카피를 입력하세요.">
+
+  <label>서브 카피</label>
+  <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요.">
+
+  <div class="preview-box">
+    <h3>소재 미리보기 및 편집</h3>
+    <div class="preview-inner">
+      <div style="flex: 1; padding-left: 12px;">
+        <div id="mainCopyPreview">메인 카피를 입력하세요.</div>
+        <div id="subCopyPreview"></div>
+      </div>
+      <div class="image-box"></div>
     </div>
-
-    <label class="required">이미지</label>
-    <button class="upload-btn">+ 이미지 추가</button>
-
-    <label class="required">메인 카피</label>
-    <input type="text" id="mainCopy" placeholder="메인 카피를 입력하세요.">
-
-    <label>서브 카피</label>
-    <input type="text" id="subCopy" placeholder="서브 카피를 입력하세요.">
-
-<!-- 소재 미리보기 -->
-<div class="preview-box">
-  <h3>소재 미리보기 및 편집</h3>
-  <div class="preview-inner" style="width: 340px; height: 120px; flex-direction: row; justify-content: space-between; align-items: center;">
-    <div style="flex: 1; padding-left: 12px;">
-      <div id="mainCopyPreview" style="font-weight: bold; font-size: 16px;">메인 카피를 입력하세요.</div>
-      <div id="subCopyPreview" style="font-weight: normal; font-size: 14px; margin-top: 4px; color: #666;"></div>
-    </div>
-    <div style="width: 90px; height: 90px; border: 2px dashed #ccc; margin-right: 12px;"></div>
   </div>
-</div>
 
-  <!-- 오른쪽 입력 영역 -->
-  <div class="panel">
-    <label>매장 선택</label>
-    <select>
-      <option>매장을 선택하세요</option>
-      <option>강남점</option>
-      <option>홍대점</option>
-    </select>
+  <label>매장 선택</label>
+  <select>
+    <option>매장을 선택하세요</option>
+  </select>
 
-    <label>배포 시작일</label>
-    <input type="date" />
+  <script>
+    const mainInput = document.getElementById('mainCopy');
+    const subInput = document.getElementById('subCopy');
+    const mainPreview = document.getElementById('mainCopyPreview');
+    const subPreview = document.getElementById('subCopyPreview');
 
-    <label>배포 종료일</label>
-    <input type="date" />
+    mainInput.addEventListener('input', () => {
+      mainPreview.textContent = mainInput.value || '메인 카피를 입력하세요.';
+    });
 
-    <label>시작 시간</label>
-    <input type="time" />
-
-    <label>종료 시간</label>
-    <input type="time" />
-
-    <label>총 발급 수량</label>
-    <input type="number" placeholder="예: 1000" />
-
-    <label>일일 발급 수량</label>
-    <input type="number" placeholder="예: 50" />
-  </div>
-</div>
-
-<!-- 하단 버튼 -->
-<div class="footer-buttons">
-  <button class="save">저장</button>
-  <button class="save-continue">저장하고 계속 만들기</button>
-</div>
-
-<!-- JavaScript: 실시간 반영 -->
-<script>
-  const mainCopyInput = document.getElementById("mainCopy");
-  const subCopyInput = document.getElementById("subCopy");
-  const mainPreview = document.getElementById("mainCopyPreview");
-  const subPreview = document.getElementById("subCopyPreview");
-
-  mainCopyInput.addEventListener("input", () => {
-    mainPreview.textContent = mainCopyInput.value || "메인 카피를 입력하세요.";
-  });
-
-  subCopyInput.addEventListener("input", () => {
-    subPreview.textContent = subCopyInput.value;
-  });
-</script>
+    subInput.addEventListener('input', () => {
+      subPreview.textContent = subInput.value;
+    });
+  </script>
 
 </body>
 </html>
+
 
