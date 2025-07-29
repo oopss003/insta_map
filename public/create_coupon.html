@@ -2,195 +2,184 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>쿠폰 생성 페이지</title>
+  <title>쿠폰 배너 등록</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
       margin: 0;
-      padding: 20px;
-      background: #f5f6fb;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
+      padding: 40px;
+      background: #f4f5fb;
     }
 
     .container {
-      max-width: 400px;
-      margin: auto;
+      display: flex;
+      gap: 24px;
     }
 
-    .input-group {
+    .panel {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      flex: 1;
+    }
+
+    h2 {
+      font-size: 18px;
       margin-bottom: 16px;
     }
 
     label {
-      display: block;
       font-weight: bold;
-      margin-bottom: 6px;
+      display: block;
+      margin-top: 16px;
     }
 
-    input, select, textarea {
+    input[type="text"],
+    input[type="number"],
+    input[type="date"],
+    input[type="time"],
+    select {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      box-sizing: border-box;
-    }
-
-    #previewCard {
-      margin-top: 30px;
-      width: 340px;
-      height: 150px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      display: flex;
-      align-items: center;
-      padding: 16px;
-      gap: 12px;
-    }
-
-    #previewEmoji {
-      font-size: 48px;
-      width: 60px;
-      text-align: center;
-    }
-
-    .preview-text {
-      display: flex;
-      flex-direction: column;
-    }
-
-    #previewTitle {
-      font-size: 18px;
-      font-weight: bold;
-    }
-
-    #previewSubtitle {
+      margin-top: 6px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
       font-size: 14px;
-      color: gray;
-      margin-top: 4px;
     }
 
-    button {
-      margin-top: 30px;
-      width: 100%;
-      padding: 14px;
-      background-color: #4CAF50;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .upload-btn {
+      padding: 10px 16px;
+      background-color: #eee;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-top: 6px;
       cursor: pointer;
     }
 
-    .note {
-      font-size: 13px;
-      color: gray;
-      margin-top: 6px;
+    .preview-box {
+      margin-top: 24px;
+      border-top: 1px solid #eee;
+      padding-top: 16px;
+    }
+
+    .preview-inner {
+      border: 2px dashed #ddd;
+      background: #fafafa;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      font-weight: bold;
+    }
+
+    .footer-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-top: 32px;
+    }
+
+    .footer-buttons button {
+      padding: 10px 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .footer-buttons .save {
+      background: #ddd;
+      color: black;
+    }
+
+    .footer-buttons .save-continue {
+      background: #1677ff;
+      color: white;
+    }
+
+    .time-row {
+      display: flex;
+      gap: 12px;
+    }
+
+    .required::after {
+      content: "*";
+      color: red;
+      margin-left: 4px;
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>쿠폰 생성</h1>
-
-    <!-- 이모지 -->
-    <div class="input-group">
-      <label for="emoji">이모지</label>
-      <input type="text" id="emoji" placeholder="예: 🎉, 🍕, 🧋" />
+<div class="container">
+  <!-- 왼쪽 구성 요소 -->
+  <div class="panel">
+    <h2>구성 요소</h2>
+    <div class="radio-group">
+      <label><input type="radio" name="imageType" checked> 단일 이미지</label>
+      <label><input type="radio" name="imageType"> 멀티 이미지</label>
     </div>
 
-    <!-- 제목 -->
-    <div class="input-group">
-      <label for="title">쿠폰 제목</label>
-      <input type="text" id="title" placeholder="예: 버블티 1잔 무료!" />
-    </div>
+    <label class="required">이미지</label>
+    <button class="upload-btn">+ 이미지 추가</button>
 
-    <!-- 설명 -->
-    <div class="input-group">
-      <label for="subtitle">쿠폰 설명</label>
-      <textarea id="subtitle" rows="2" placeholder="예: 매장 방문 시 버블티 1잔 무료 제공"></textarea>
-    </div>
+    <label class="required">메인 카피</label>
+    <input type="text" placeholder="메인 카피를 입력하세요.">
 
-    <!-- 매장 선택 -->
-    <div class="input-group">
-      <label for="store">매장 선택</label>
-      <select id="store">
-        <option value="">매장을 선택하세요</option>
-        <option value="store_1">홍대 버블티점</option>
-        <option value="store_2">신촌 야시장점</option>
-        <option value="store_3">강남 타코야끼점</option>
-      </select>
-    </div>
+    <label>서브 카피</label>
+    <input type="text" placeholder="서브 카피를 입력하세요.">
 
-    <!-- 배포 시작일과 종료일 -->
-    <div class="input-group">
-      <label for="startDate">배포 시작일</label>
-      <input type="date" id="startDate" />
-    </div>
-
-    <div class="input-group">
-      <label for="endDate">배포 종료일</label>
-      <input type="date" id="endDate" />
-    </div>
-
-    <!-- 시간대 설정 -->
-    <div class="input-group">
-      <label for="startTime">시작 시간</label>
-      <input type="time" id="startTime" />
-    </div>
-
-    <div class="input-group">
-      <label for="endTime">종료 시간</label>
-      <input type="time" id="endTime" />
-    </div>
-
-    <!-- 발급 수량 -->
-    <div class="input-group">
-      <label for="totalCount">총 발급 수량</label>
-      <input type="number" id="totalCount" placeholder="예: 1000" />
-    </div>
-
-    <div class="input-group">
-      <label for="dailyCount">일일 발급 수량</label>
-      <input type="number" id="dailyCount" placeholder="예: 50" />
-    </div>
-
-    <!-- 미리보기 카드 -->
-    <div id="previewCard">
-      <div id="previewEmoji">🎁</div>
-      <div class="preview-text">
-        <div id="previewTitle">쿠폰 제목</div>
-        <div id="previewSubtitle">쿠폰 설명</div>
+    <div class="preview-box">
+      <h3>소재 미리보기 및 편집</h3>
+      <div class="preview-inner">
+        메인 카피를 입력하세요.
       </div>
     </div>
-
-    <!-- 저장 버튼 -->
-    <button onclick="submitCoupon()">쿠폰 저장</button>
-    <p class="note">※ 저장 기능은 Firebase 연동 후 작동합니다.</p>
   </div>
 
-  <script>
-    function updatePreview() {
-      document.getElementById("previewEmoji").innerText = document.getElementById("emoji").value || "🎁";
-      document.getElementById("previewTitle").innerText = document.getElementById("title").value || "쿠폰 제목";
-      document.getElementById("previewSubtitle").innerText = document.getElementById("subtitle").value || "쿠폰 설명";
-    }
+  <!-- 오른쪽 입력 영역 -->
+  <div class="panel">
+    <label>매장 선택</label>
+    <select>
+      <option>매장을 선택하세요</option>
+      <option>강남점</option>
+      <option>홍대점</option>
+    </select>
 
-    ["emoji", "title", "subtitle"].forEach(id => {
-      document.getElementById(id).addEventListener("input", updatePreview);
-    });
+    <label>배포 시작일</label>
+    <input type="date" />
 
-    function submitCoupon() {
-      alert("🚧 현재는 미리보기만 가능하며, 저장은 Firebase 연결 후 활성화됩니다.");
-    }
-  </script>
+    <label>배포 종료일</label>
+    <input type="date" />
+
+    <label>시작 시간</label>
+    <input type="time" />
+
+    <label>종료 시간</label>
+    <input type="time" />
+
+    <label>총 발급 수량</label>
+    <input type="number" placeholder="예: 1000" />
+
+    <label>일일 발급 수량</label>
+    <input type="number" placeholder="예: 50" />
+  </div>
+</div>
+
+<!-- 하단 버튼 -->
+<div class="footer-buttons">
+  <button class="save">저장</button>
+  <button class="save-continue">저장하고 계속 만들기</button>
+</div>
+
 </body>
 </html>
 
