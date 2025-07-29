@@ -1,228 +1,196 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>쿠폰 생성</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>쿠폰 생성 페이지</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      background: #f5f6fb;
       margin: 0;
-      padding: 40px;
+      padding: 20px;
+      background: #f5f6fb;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
     }
 
     .container {
-      display: flex;
-      max-width: 1200px;
-      margin: 0 auto;
-      gap: 40px;
+      max-width: 400px;
+      margin: auto;
     }
 
-    /* 왼쪽 설정 영역 */
-    .settings {
-      width: 50%;
-      background: white;
-      border-radius: 12px;
-      padding: 24px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
-    }
-
-    .settings h2 {
-      font-size: 18px;
-      margin-bottom: 20px;
-    }
-
-    .form-group {
-      margin-bottom: 18px;
+    .input-group {
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
+      font-weight: bold;
       margin-bottom: 6px;
-      font-weight: 600;
     }
 
-    input[type="text"],
-    input[type="file"] {
+    input, select, textarea {
       width: 100%;
       padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
       box-sizing: border-box;
     }
 
-    .checkbox-group {
+    #previewCard {
+      margin-top: 30px;
+      width: 340px;
+      height: 150px;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       display: flex;
-      flex-wrap: wrap;
+      align-items: center;
+      padding: 16px;
       gap: 12px;
-      margin-top: 10px;
     }
 
-    .checkbox-group label {
-      font-weight: normal;
+    #previewEmoji {
+      font-size: 48px;
+      width: 60px;
+      text-align: center;
     }
 
-    textarea {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      resize: none;
+    .preview-text {
+      display: flex;
+      flex-direction: column;
     }
 
-    .actions {
-      margin-top: 24px;
-      text-align: right;
-    }
-
-    .actions button {
-      padding: 10px 20px;
-      border-radius: 8px;
-      border: none;
-      background: #3478f6;
-      color: white;
+    #previewTitle {
+      font-size: 18px;
       font-weight: bold;
+    }
+
+    #previewSubtitle {
+      font-size: 14px;
+      color: gray;
+      margin-top: 4px;
+    }
+
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 14px;
+      background-color: #4CAF50;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
       cursor: pointer;
     }
 
-    /* 우측 미리보기 */
-    .preview {
-      width: 50%;
-    }
-
-    .preview-title {
-      font-size: 18px;
-      margin-bottom: 16px;
-    }
-
-    .coupon-card {
-      width: 340px;
-      height: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      padding: 16px;
-      box-sizing: border-box;
-    }
-
-    .coupon-text {
-      flex: 1;
-      padding-right: 12px;
-      overflow: hidden;
-    }
-
-    .coupon-title {
-      font-size: 16px;
-      font-weight: bold;
-      color: #222;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .coupon-subtitle {
-      font-size: 14px;
-      color: #666;
+    .note {
+      font-size: 13px;
+      color: gray;
       margin-top: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .coupon-image {
-      width: 100px;
-      height: 100px;
-      border-radius: 8px;
-      object-fit: cover;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <!-- 좌측 설정 패널 -->
-    <div class="settings">
-      <h2>구성 요소</h2>
+    <h1>쿠폰 생성</h1>
 
-      <div class="form-group">
-        <label>이미지</label>
-        <input type="file" accept="image/*" onchange="previewImage(event)" />
-      </div>
+    <!-- 이모지 -->
+    <div class="input-group">
+      <label for="emoji">이모지</label>
+      <input type="text" id="emoji" placeholder="예: 🎉, 🍕, 🧋" />
+    </div>
 
-      <div class="form-group">
-        <label>메인 카피</label>
-        <input type="text" id="mainText" maxlength="30" oninput="updateText()" placeholder="메인 카피 입력" />
-      </div>
+    <!-- 제목 -->
+    <div class="input-group">
+      <label for="title">쿠폰 제목</label>
+      <input type="text" id="title" placeholder="예: 버블티 1잔 무료!" />
+    </div>
 
-      <div class="form-group">
-        <label>서브 카피</label>
-        <input type="text" id="subText" maxlength="30" oninput="updateText()" placeholder="서브 카피 입력" />
-      </div>
+    <!-- 설명 -->
+    <div class="input-group">
+      <label for="subtitle">쿠폰 설명</label>
+      <textarea id="subtitle" rows="2" placeholder="예: 매장 방문 시 버블티 1잔 무료 제공"></textarea>
+    </div>
 
-      <div class="form-group">
-        <label>배지 설정</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" /> 플래그형</label>
-          <label><input type="checkbox" /> 띠형</label>
-        </div>
-      </div>
+    <!-- 매장 선택 -->
+    <div class="input-group">
+      <label for="store">매장 선택</label>
+      <select id="store">
+        <option value="">매장을 선택하세요</option>
+        <option value="store_1">홍대 버블티점</option>
+        <option value="store_2">신촌 야시장점</option>
+        <option value="store_3">강남 타코야끼점</option>
+      </select>
+    </div>
 
-      <div class="form-group">
-        <label>행동 유도</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" /> 앱 아이콘 설정</label>
-        </div>
-      </div>
+    <!-- 배포 시작일과 종료일 -->
+    <div class="input-group">
+      <label for="startDate">배포 시작일</label>
+      <input type="date" id="startDate" />
+    </div>
 
-      <div class="form-group">
-        <label>안내 문구</label>
-        <div class="checkbox-group">
-          <label><input type="checkbox" /> 법적 고지문</label>
-          <label><input type="checkbox" /> 채팅방 랜딩 고지문</label>
-        </div>
-        <textarea rows="3" placeholder="고지가 필요한 내용을 입력하세요."></textarea>
-      </div>
+    <div class="input-group">
+      <label for="endDate">배포 종료일</label>
+      <input type="date" id="endDate" />
+    </div>
 
-      <div class="actions">
-        <button>저장하고 계속 만들기</button>
+    <!-- 시간대 설정 -->
+    <div class="input-group">
+      <label for="startTime">시작 시간</label>
+      <input type="time" id="startTime" />
+    </div>
+
+    <div class="input-group">
+      <label for="endTime">종료 시간</label>
+      <input type="time" id="endTime" />
+    </div>
+
+    <!-- 발급 수량 -->
+    <div class="input-group">
+      <label for="totalCount">총 발급 수량</label>
+      <input type="number" id="totalCount" placeholder="예: 1000" />
+    </div>
+
+    <div class="input-group">
+      <label for="dailyCount">일일 발급 수량</label>
+      <input type="number" id="dailyCount" placeholder="예: 50" />
+    </div>
+
+    <!-- 미리보기 카드 -->
+    <div id="previewCard">
+      <div id="previewEmoji">🎁</div>
+      <div class="preview-text">
+        <div id="previewTitle">쿠폰 제목</div>
+        <div id="previewSubtitle">쿠폰 설명</div>
       </div>
     </div>
 
-    <!-- 우측 미리보기 패널 -->
-    <div class="preview">
-      <div class="preview-title">소재 미리보기</div>
-      <div class="coupon-card">
-        <div class="coupon-text">
-          <div id="previewMain" class="coupon-title">메인 카피를 입력하세요.</div>
-          <div id="previewSub" class="coupon-subtitle">서브 카피를 입력하세요.</div>
-        </div>
-        <img id="previewImage" class="coupon-image" src="https://via.placeholder.com/100x100.png?text=+" alt="미리보기" />
-      </div>
-    </div>
+    <!-- 저장 버튼 -->
+    <button onclick="submitCoupon()">쿠폰 저장</button>
+    <p class="note">※ 저장 기능은 Firebase 연동 후 작동합니다.</p>
   </div>
 
   <script>
-    function updateText() {
-      document.getElementById("previewMain").innerText = document.getElementById("mainText").value || "메인 카피를 입력하세요.";
-      document.getElementById("previewSub").innerText = document.getElementById("subText").value || "서브 카피를 입력하세요.";
+    function updatePreview() {
+      document.getElementById("previewEmoji").innerText = document.getElementById("emoji").value || "🎁";
+      document.getElementById("previewTitle").innerText = document.getElementById("title").value || "쿠폰 제목";
+      document.getElementById("previewSubtitle").innerText = document.getElementById("subtitle").value || "쿠폰 설명";
     }
 
-    function previewImage(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function (e) {
-          document.getElementById("previewImage").src = e.target.result;
-        };
-        reader.readAsDataURL(file);
-      }
+    ["emoji", "title", "subtitle"].forEach(id => {
+      document.getElementById(id).addEventListener("input", updatePreview);
+    });
+
+    function submitCoupon() {
+      alert("🚧 현재는 미리보기만 가능하며, 저장은 Firebase 연결 후 활성화됩니다.");
     }
   </script>
-
 </body>
 </html>
+
