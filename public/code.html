@@ -89,8 +89,6 @@
     <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
     <button onclick="compareCode()">🔍 분석</button>
     <button onclick="saveCode()">💾 저장</button>
-    <button onclick="loadSavedCodes()">📂 저장된 코드 목록 불러오기</button>
-    <select id="codeSelect"></select>
     <button onclick="exportCodeToFile()">📥 파일로 저장</button>
     <label>
       📤 코드 파일 불러오기:
@@ -184,26 +182,6 @@
       history[codeName] = newCode;
       localStorage.setItem("codeHistory", JSON.stringify(history));
       alert(`'${codeName}' 코드가 저장되었습니다.`);
-    }
-
-    function loadSavedCodes() {
-      const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
-      const select = document.getElementById("codeSelect");
-      select.innerHTML = "";
-
-      Object.keys(history).forEach((name) => {
-        const option = document.createElement("option");
-        option.value = name;
-        option.textContent = name;
-        select.appendChild(option);
-      });
-
-      select.onchange = () => {
-        const selectedCode = select.value;
-        document.getElementById("newCode").value = history[selectedCode];
-        updateLineNumbers('newCode', 'newLineNumbers');
-        alert(`'${selectedCode}' 코드가 불러와졌습니다.`);
-      };
     }
 
     function exportCodeToFile() {
