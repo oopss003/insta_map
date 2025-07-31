@@ -1,109 +1,248 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <title>코드 비교 도구</title>
+  <meta charset="UTF-8">
+  <title>코드 비교 및 저장 도구</title>
   <style>
     body {
-      font-family: 'Pretendard', sans-serif;
-      background: #f5f6fb;
-      margin: 0;
+      font-family: 'Pretendard', monospace;
       padding: 20px;
+      background: #f4f4f4;
     }
-
-    textarea {
-      width: 100%;
-      height: 200px;
-      margin-bottom: 10px;
-      font-family: monospace;
+    .top-bar {
+      margin-bottom: 12px;
     }
-
-    .diff-result {
-      border: 1px solid #ccc;
-      padding: 10px;
-      background: #fff;
-      font-family: monospace;
-      white-space: pre-wrap;
-      margin-top: 20px;
-      border-radius: 6px;
+    .top-bar input, .top-bar button, .top-bar select {
+      padding: 8px;
+      margin-right: 6px;
+      font-weight: bold;
     }
-
-    mark.del {
-      background-color: #ffecec;
-      color: #f00;
-      text-decoration: line-through;
-    }
-
-    mark.add {
-      background-color: #eaffea;
-      color: #080;
-    }
-
-    .button-row {
+    .container {
       display: flex;
       gap: 10px;
-      margin-bottom: 20px;
     }
+    .editor-wrapper {
+      display: flex;
+      width: 48%;
+      height: 250px;
+      border: 1px solid #ccc;
+      background: white;
+      font-family: monospace;
+    }
+    .line-numbers {
+      width: 40px;
+      background: #eee;
+      text-align: right;
+      padding: 10px 4px;
+      color: #888;
+      user-select: none;
+      overflow: hidden;
+      line-height: 1.4em;
+      white-space: pre-wrap;
+    }
+    textarea {
+      flex: 1;
+      border: none;
+      resize: none;
+      font-size: 14px;
+      padding: 10px;
+      line-height: 1.4em;
+      outline: none;
+      overflow: auto;
+    }
+    .diff-result {
+      margin-top: 20px;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .added { background-color: #ddffdd; }
+    .removed { background-color: #ffdddd; }
+    .line-number {
+      color: gray;
+      display: inline-block;
+      width: 40px;
+      text-align: right;
+      margin-right: 8px;
+      user-select: none;
+    }
+    .copy-button-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .copy-button-wrapper button {
+      font-size: 20px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    mark.add { background-color: #aaffaa; color: #060; }
+    mark.del { background-color: #ffcccc; color: #900; }
   </style>
 </head>
 <body>
-  <h2>코드 비교 도구</h2>
 
-  <input id="fileName" type="text" placeholder="파일명 입력" style="padding: 6px; width: 200px;" />
-
-  <div class="button-row">
-    <button onclick="analyze()">🔍 분석</button>
-    <button onclick="saveToLocal()">💾 저장</button>
-    <button onclick="downloadFile()">📥 파일로 저장</button>
+  <div class="top-bar">
+    <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
+    <button onclick="compareCode()">🔍 분석</button>
+    <button onclick="saveCode()">💾 저장</button>
+    <button onclick="loadSavedCodes()">📂 저장된 코드 목록 불러오기</button>
+    <select id="codeSelect"></select>
+    <button onclick="exportCodeToFile()">📥 파일로 저장</button>
+    <label>
+      📤 코드 파일 불러오기:
+      <input type="file" id="fileInput" onchange="loadCodeFile(event)">
+    </label>
   </div>
 
-  <textarea id="oldCode" placeholder="이전 코드 입력"></textarea>
-  <textarea id="newCode" placeholder="신규 코드 입력"></textarea>
+  <div class="container">
+    <div class="editor-wrapper">
+      <pre class="line-numbers" id="oldLineNumbers">1</pre>
+      <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" onscroll="syncScroll('oldCode','oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
+    </div>
 
-  <div id="result" class="diff-result"></div>
+    <div class="copy-button-wrapper">
+      <button onclick="copyNewToOld()">←</button>
+    </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/diff_match_patch/20121119/diff_match_patch.js"></script>
+    <div class="editor-wrapper">
+      <pre class="line-numbers" id="newLineNumbers">1</pre>
+      <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" onscroll="syncScroll('newCode','newLineNumbers')" placeholder="신규 코드 입력"></textarea>
+    </div>
+  </div>
+
+  <div id="diffOutput" class="diff-result"></div>
+
+  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
   <script>
-    function analyze() {
-      const dmp = new diff_match_patch();
-      const oldCode = document.getElementById('oldCode').value;
-      const newCode = document.getElementById('newCode').value;
-      const diff = dmp.diff_main(oldCode, newCode);
-      dmp.diff_cleanupSemantic(diff);
-
-      const resultHTML = diff.map(([op, data]) => {
-        if (op === -1) return `<mark class="del">${data}</mark>`;
-        if (op === 1) return `<mark class="add">${data}</mark>`;
-        return data;
-      }).join('');
-
-      document.getElementById('result').innerHTML = resultHTML;
+    function escapeHtml(text) {
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
-    function saveToLocal() {
-      const fileName = document.getElementById("fileName").value || "untitled";
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const fullName = `${fileName}_${timestamp}`;
-      const code = document.getElementById("newCode").value;
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
+    function updateLineNumbers(textareaId, lineNumberId) {
+      const textarea = document.getElementById(textareaId);
+      const lineNumberDiv = document.getElementById(lineNumberId);
+      const lines = textarea.value.split('\n').map((_, i) => i + 1).join('\n');
+      lineNumberDiv.textContent = lines;
+    }
+
+    function syncScroll(textareaId, lineNumberId) {
+      const textarea = document.getElementById(textareaId);
+      const lineNumberDiv = document.getElementById(lineNumberId);
+      lineNumberDiv.scrollTop = textarea.scrollTop;
+    }
+
+    function compareCode() {
+      const oldCode = document.getElementById("oldCode").value.trim().split('\n');
+      const newCode = document.getElementById("newCode").value.trim().split('\n');
+      const maxLines = Math.max(oldCode.length, newCode.length);
+      const dmp = new diff_match_patch();
+      let resultHTML = "";
+
+      for (let i = 0; i < maxLines; i++) {
+        const oldLine = oldCode[i] || "";
+        const newLine = newCode[i] || "";
+        const lineNum = `<span class="line-number">${i + 1}</span>`;
+
+        if (oldLine === newLine) {
+          resultHTML += `${lineNum}${escapeHtml(newLine)}\n`;
+        } else if (!oldLine && newLine) {
+          resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
+        } else if (oldLine && !newLine) {
+          resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
+        } else {
+          const diffs = dmp.diff_main(oldLine, newLine);
+          dmp.diff_cleanupSemantic(diffs);
+          let oldHtml = "", newHtml = "";
+          for (const [op, data] of diffs) {
+            const esc = escapeHtml(data);
+            if (op === 0) oldHtml += esc, newHtml += esc;
+            else if (op === -1) oldHtml += `<mark class="del">${esc}</mark>`;
+            else if (op === 1) newHtml += `<mark class="add">${esc}</mark>`;
+          }
+          resultHTML += `<span class="removed">${lineNum}${oldHtml}</span>\n`;
+          resultHTML += `<span class="added">${lineNum}${newHtml}</span>\n`;
+        }
+      }
+
+      document.getElementById("diffOutput").innerHTML = `<pre>${resultHTML}</pre>`;
+    }
+
+    function saveCode() {
+      const codeName = document.getElementById("codeName").value.trim();
+      const newCode = document.getElementById("newCode").value;
+      if (!codeName) return alert("코드 이름을 입력해주세요!");
 
       const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
-      history[fullName] = code;
+      history[codeName] = newCode;
       localStorage.setItem("codeHistory", JSON.stringify(history));
-      alert(`"${fullName}" 저장 완료`);
+      alert(`'${codeName}' 코드가 저장되었습니다.`);
     }
 
-    function downloadFile() {
-      const fileName = document.getElementById("fileName").value || "untitled";
-      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-      const fullName = `${fileName}_${timestamp}.txt`;
-      const text = document.getElementById("newCode").value;
-      const blob = new Blob([text], { type: "text/plain" });
+    function loadSavedCodes() {
+      const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
+      const select = document.getElementById("codeSelect");
+      select.innerHTML = "";
 
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = fullName;
-      a.click();
+      Object.keys(history).forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+
+      select.onchange = () => {
+        const selectedCode = select.value;
+        document.getElementById("newCode").value = history[selectedCode];
+        updateLineNumbers('newCode', 'newLineNumbers');
+        alert(`'${selectedCode}' 코드가 불러와졌습니다.`);
+      };
     }
+
+    function exportCodeToFile() {
+      const codeName = document.getElementById("codeName").value.trim();
+      const codeText = document.getElementById("newCode").value;
+      if (!codeName) return alert("코드 이름을 입력해주세요!");
+
+      const blob = new Blob([codeText], { type: "text/plain;charset=utf-8" });
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      const filename = `${codeName}_${dateStr}.txt`;
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function copyNewToOld() {
+      document.getElementById('oldCode').value = document.getElementById('newCode').value;
+      updateLineNumbers('oldCode', 'oldLineNumbers');
+    }
+
+    function loadCodeFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("newCode").value = e.target.result;
+        updateLineNumbers('newCode', 'newLineNumbers');
+      };
+      reader.readAsText(file);
+    }
+
+    window.onload = () => {
+      updateLineNumbers('oldCode', 'oldLineNumbers');
+      updateLineNumbers('newCode', 'newLineNumbers');
+    };
   </script>
 </body>
 </html>
