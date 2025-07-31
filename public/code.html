@@ -19,7 +19,7 @@
       width: 200px;
     }
 
-    .top-bar button {
+    .top-bar button, select {
       padding: 8px 14px;
       margin-left: 5px;
       font-weight: bold;
@@ -72,6 +72,9 @@
     <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
     <button onclick="compareCode()">🔍 분석</button>
     <button onclick="saveCode()">💾 저장</button>
+    <button onclick="loadSavedCodes()">📂 저장된 코드 불러오기</button>
+    <select id="codeSelect"></select>
+    <button onclick="exportCodeToFile()">📥 파일로 저장</button>
   </div>
 
   <div class="container">
@@ -89,6 +92,10 @@
         .replace(/>/g, "&gt;");
     }
 
+    function pad(n) {
+      return n.toString().padStart(2, '0');
+    }
+
     function compareCode() {
       const oldCode = document.getElementById("oldCode").value.trim().split('\n');
       const newCode = document.getElementById("newCode").value.trim().split('\n');
@@ -99,7 +106,6 @@
       for (let i = 0; i < maxLines; i++) {
         const oldLine = oldCode[i] || "";
         const newLine = newCode[i] || "";
-
         const lineNum = `<span class="line-number">${i + 1}</span>`;
 
         if (oldLine === newLine) {
@@ -131,6 +137,47 @@
       localStorage.setItem("codeHistory", JSON.stringify(history));
 
       alert(`'${codeName}' 코드가 저장되었습니다.`);
+    }
+
+    function loadSavedCodes() {
+      const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
+      const select = document.getElementById("codeSelect");
+      select.innerHTML = "";
+
+      Object.keys(history).forEach((name) => {
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+
+      select.onchange = function () {
+        const selectedCode = select.value;
+        document.getElementById("newCode").value = history[selectedCode];
+        alert(`'${selectedCode}' 코드가 불러와졌습니다.`);
+      };
+    }
+
+    function exportCodeToFile() {
+      const codeName = document.getElementById("codeName").value.trim();
+      const codeText = document.getElementById("newCode").value;
+
+      if (!codeName) {
+        alert("코드 이름을 입력해주세요!");
+        return;
+      }
+
+      const blob = new Blob([codeText], { type: "text/plain;charset=utf-8" });
+
+      const now = new Date();
+      const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
+      const filename = `${codeName}_${dateStr}.txt`;
+
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+      URL.revokeObjectURL(link.href);
     }
   </script>
 
