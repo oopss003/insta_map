@@ -27,7 +27,7 @@
 
     .container {
       display: flex;
-      gap: 20px;
+      gap: 10px;
     }
 
     .editor-wrapper {
@@ -86,6 +86,18 @@
       margin-right: 8px;
       user-select: none;
     }
+
+    .copy-button-wrapper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .copy-button-wrapper button {
+      font-size: 20px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
@@ -100,10 +112,18 @@
   </div>
 
   <div class="container">
+    <!-- 이전 코드 -->
     <div class="editor-wrapper">
       <div class="line-numbers" id="oldLineNumbers">1</div>
       <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
     </div>
+
+    <!-- ← 버튼 추가 -->
+    <div class="copy-button-wrapper">
+      <button onclick="copyNewToOld()">←</button>
+    </div>
+
+    <!-- 신규 코드 -->
     <div class="editor-wrapper">
       <div class="line-numbers" id="newLineNumbers">1</div>
       <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" placeholder="신규 코드 입력"></textarea>
@@ -220,6 +240,12 @@
       URL.revokeObjectURL(link.href);
     }
 
+    function copyNewToOld() {
+      const newCode = document.getElementById('newCode').value;
+      document.getElementById('oldCode').value = newCode;
+      updateLineNumbers('oldCode', 'oldLineNumbers');
+    }
+
     // 초기 줄 번호 표시
     window.onload = () => {
       updateLineNumbers('oldCode', 'oldLineNumbers');
@@ -229,4 +255,3 @@
 
 </body>
 </html>
-
