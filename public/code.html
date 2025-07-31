@@ -45,9 +45,10 @@
       text-align: right;
       padding: 10px 4px;
       color: #888;
-      overflow: hidden;
       user-select: none;
+      overflow: hidden;
       line-height: 1.4em;
+      white-space: pre-wrap;
     }
 
     textarea {
@@ -58,6 +59,7 @@
       padding: 10px;
       line-height: 1.4em;
       outline: none;
+      overflow: auto;
     }
 
     .diff-result {
@@ -114,19 +116,19 @@
   <div class="container">
     <!-- 이전 코드 -->
     <div class="editor-wrapper">
-      <div class="line-numbers" id="oldLineNumbers">1</div>
-      <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
+      <pre class="line-numbers" id="oldLineNumbers">1</pre>
+      <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" onscroll="syncScroll('oldCode','oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
     </div>
 
-    <!-- ← 버튼 추가 -->
+    <!-- ← 버튼 -->
     <div class="copy-button-wrapper">
       <button onclick="copyNewToOld()">←</button>
     </div>
 
     <!-- 신규 코드 -->
     <div class="editor-wrapper">
-      <div class="line-numbers" id="newLineNumbers">1</div>
-      <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" placeholder="신규 코드 입력"></textarea>
+      <pre class="line-numbers" id="newLineNumbers">1</pre>
+      <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" onscroll="syncScroll('newCode','newLineNumbers')" placeholder="신규 코드 입력"></textarea>
     </div>
   </div>
 
@@ -147,12 +149,18 @@
     function updateLineNumbers(textareaId, lineNumberId) {
       const textarea = document.getElementById(textareaId);
       const lineNumberDiv = document.getElementById(lineNumberId);
-      const lines = textarea.value.split('\n').length;
-      let html = '';
-      for (let i = 1; i <= lines; i++) {
-        html += i + '\n';
+      const lineCount = textarea.value.split('\n').length;
+      let lines = '';
+      for (let i = 1; i <= lineCount; i++) {
+        lines += i + '\n';
       }
-      lineNumberDiv.textContent = html;
+      lineNumberDiv.textContent = lines;
+    }
+
+    function syncScroll(textareaId, lineNumberId) {
+      const textarea = document.getElementById(textareaId);
+      const lineNumberDiv = document.getElementById(lineNumberId);
+      lineNumberDiv.scrollTop = textarea.scrollTop;
     }
 
     function compareCode() {
@@ -246,7 +254,7 @@
       updateLineNumbers('oldCode', 'oldLineNumbers');
     }
 
-    // 초기 줄 번호 표시
+    // 초기 줄 번호 반영
     window.onload = () => {
       updateLineNumbers('oldCode', 'oldLineNumbers');
       updateLineNumbers('newCode', 'newLineNumbers');
