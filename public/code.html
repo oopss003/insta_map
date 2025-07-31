@@ -2,28 +2,24 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>코드 비교 및 저장 도구</title>
+  <title>코드 비교 도구</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
-      margin: 0;
       padding: 20px;
-      background: #f4f4f4;
+      background: #f9f9f9;
     }
     .top-bar {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-      gap: 10px;
+      margin-bottom: 16px;
     }
-    input[type="text"] {
+    .top-bar input {
       padding: 8px;
       width: 200px;
     }
-    button {
-      padding: 8px 16px;
+    .top-bar button {
+      padding: 8px 14px;
+      margin-left: 5px;
       font-weight: bold;
-      cursor: pointer;
     }
     .container {
       display: flex;
@@ -31,18 +27,19 @@
     }
     textarea {
       width: 48%;
-      height: 300px;
-      padding: 10px;
+      height: 250px;
       font-family: monospace;
       font-size: 14px;
+      padding: 10px;
     }
     .diff-result {
       margin-top: 20px;
-      background: white;
-      padding: 10px;
-      border-radius: 6px;
       white-space: pre-wrap;
       font-family: monospace;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 6px;
     }
     .added {
       background-color: #ddffdd;
@@ -67,8 +64,8 @@
 
   <div id="diffOutput" class="diff-result"></div>
 
-  <!-- Diff Match Patch CDN -->
-  <script src="https://unpkg.com/diff-match-patch"></script>
+  <!-- Google diff-match-patch 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
 
   <script>
     function compareCode() {
@@ -79,14 +76,18 @@
       const diffs = dmp.diff_main(oldCode, newCode);
       dmp.diff_cleanupSemantic(diffs);
 
-      let html = '';
+      let resultHTML = "";
       for (const [op, data] of diffs) {
-        if (op === 1) html += `<span class="added">${data}</span>`;
-        else if (op === -1) html += `<span class="removed">${data}</span>`;
-        else html += `<span>${data}</span>`;
+        if (op === diff_match_patch.DIFF_INSERT) {
+          resultHTML += `<span class="added">${data}</span>`;
+        } else if (op === diff_match_patch.DIFF_DELETE) {
+          resultHTML += `<span class="removed">${data}</span>`;
+        } else {
+          resultHTML += data;
+        }
       }
 
-      document.getElementById("diffOutput").innerHTML = html;
+      document.getElementById("diffOutput").innerHTML = resultHTML;
     }
 
     function saveCode() {
