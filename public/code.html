@@ -100,6 +100,16 @@
       padding: 8px 12px;
       cursor: pointer;
     }
+
+    mark.add {
+      background-color: #aaffaa;
+      color: #060;
+    }
+
+    mark.del {
+      background-color: #ffcccc;
+      color: #900;
+    }
   </style>
 </head>
 <body>
@@ -133,6 +143,9 @@
   </div>
 
   <div id="diffOutput" class="diff-result"></div>
+
+  <!-- diff-match-patch 라이브러리 -->
+  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
 
   <script>
     function escapeHtml(text) {
@@ -169,6 +182,7 @@
 
       const maxLines = Math.max(oldCode.length, newCode.length);
       let resultHTML = "";
+      const dmp = new diff_match_patch();
 
       for (let i = 0; i < maxLines; i++) {
         const oldLine = oldCode[i] || "";
@@ -177,13 +191,31 @@
 
         if (oldLine === newLine) {
           resultHTML += `${lineNum}${escapeHtml(newLine)}\n`;
-        } else if (oldLine && !newLine) {
-          resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
         } else if (!oldLine && newLine) {
           resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
-        } else {
+        } else if (oldLine && !newLine) {
           resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
-          resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
+        } else {
+          const diffs = dmp.diff_main(oldLine, newLine);
+          dmp.diff_cleanupSemantic(diffs);
+
+          let oldLineHtml = "";
+          let newLineHtml = "";
+
+          for (const [op, data] of diffs) {
+            const escaped = escapeHtml(data);
+            if (op === 0) {
+              oldLineHtml += escaped;
+              newLineHtml += escaped;
+            } else if (op === -1) {
+              oldLineHtml += `<mark class="del">${escaped}</mark>`;
+            } else if (op === 1) {
+              newLineHtml += `<mark class="add">${escaped}</mark>`;
+            }
+          }
+
+          resultHTML += `<span class="removed">${lineNum}${oldLineHtml}</span>\n`;
+          resultHTML += `<span class="added">${lineNum}${newLineHtml}</span>\n`;
         }
       }
 
