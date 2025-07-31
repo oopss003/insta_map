@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>코드 비교 및 저장 도구</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+    }
+    .top-bar {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+    input[type="text"] {
+      padding: 8px;
+      width: 200px;
+    }
+    button {
+      padding: 8px 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+    textarea {
+      width: 48%;
+      height: 300px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    .diff-result {
+      margin-top: 20px;
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+      font-family: monospace;
+    }
+    .added {
+      background-color: #ddffdd;
+    }
+    .removed {
+      background-color: #ffdddd;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar">
+    <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
+    <button onclick="compareCode()">🔍 분석</button>
+    <button onclick="saveCode()">💾 저장</button>
+  </div>
+
+  <div class="container">
+    <textarea id="oldCode" placeholder="이전 코드 입력"></textarea>
+    <textarea id="newCode" placeholder="신규 코드 입력"></textarea>
+  </div>
+
+  <div id="diffOutput" class="diff-result"></div>
+
+  <!-- Diff Match Patch CDN -->
+  <script src="https://unpkg.com/diff-match-patch"></script>
+
+  <script>
+    function compareCode() {
+      const dmp = new diff_match_patch();
+      const oldCode = document.getElementById("oldCode").value;
+      const newCode = document.getElementById("newCode").value;
+
+      const diffs = dmp.diff_main(oldCode, newCode);
+      dmp.diff_cleanupSemantic(diffs);
+
+      let html = '';
+      for (const [op, data] of diffs) {
+        if (op === 1) html += `<span class="added">${data}</span>`;
+        else if (op === -1) html += `<span class="removed">${data}</span>`;
+        else html += `<span>${data}</span>`;
+      }
+
+      document.getElementById("diffOutput").innerHTML = html;
+    }
+
+    function saveCode() {
+      const codeName = document.getElementById("codeName").value.trim();
+      const newCode = document.getElementById("newCode").value;
+
+      if (!codeName) {
+        alert("코드 이름을 입력해주세요!");
+        return;
+      }
+
+      let history = JSON.parse(localStorage.getItem('codeHistory') || '{}');
+      history[codeName] = newCode;
+      localStorage.setItem('codeHistory', JSON.stringify(history));
+
+      alert(`'${codeName}' 코드가 저장되었습니다.`);
+    }
+  </script>
+
+</body>
+</html>
