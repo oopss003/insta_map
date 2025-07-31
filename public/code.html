@@ -5,7 +5,7 @@
   <title>코드 비교 및 저장 도구</title>
   <style>
     body {
-      font-family: 'Pretendard', sans-serif;
+      font-family: 'Pretendard', monospace;
       padding: 20px;
       background: #f4f4f4;
     }
@@ -30,12 +30,34 @@
       gap: 20px;
     }
 
-    textarea {
+    .editor-wrapper {
+      display: flex;
       width: 48%;
       height: 250px;
+      border: 1px solid #ccc;
+      background: white;
       font-family: monospace;
+    }
+
+    .line-numbers {
+      width: 40px;
+      background: #eee;
+      text-align: right;
+      padding: 10px 4px;
+      color: #888;
+      overflow: hidden;
+      user-select: none;
+      line-height: 1.4em;
+    }
+
+    textarea {
+      flex: 1;
+      border: none;
+      resize: none;
       font-size: 14px;
       padding: 10px;
+      line-height: 1.4em;
+      outline: none;
     }
 
     .diff-result {
@@ -78,8 +100,14 @@
   </div>
 
   <div class="container">
-    <textarea id="oldCode" placeholder="이전 코드 입력"></textarea>
-    <textarea id="newCode" placeholder="신규 코드 입력"></textarea>
+    <div class="editor-wrapper">
+      <div class="line-numbers" id="oldLineNumbers">1</div>
+      <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
+    </div>
+    <div class="editor-wrapper">
+      <div class="line-numbers" id="newLineNumbers">1</div>
+      <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" placeholder="신규 코드 입력"></textarea>
+    </div>
   </div>
 
   <div id="diffOutput" class="diff-result"></div>
@@ -94,6 +122,17 @@
 
     function pad(n) {
       return n.toString().padStart(2, '0');
+    }
+
+    function updateLineNumbers(textareaId, lineNumberId) {
+      const textarea = document.getElementById(textareaId);
+      const lineNumberDiv = document.getElementById(lineNumberId);
+      const lines = textarea.value.split('\n').length;
+      let html = '';
+      for (let i = 1; i <= lines; i++) {
+        html += i + '\n';
+      }
+      lineNumberDiv.textContent = html;
     }
 
     function compareCode() {
@@ -154,6 +193,7 @@
       select.onchange = function () {
         const selectedCode = select.value;
         document.getElementById("newCode").value = history[selectedCode];
+        updateLineNumbers('newCode', 'newLineNumbers');
         alert(`'${selectedCode}' 코드가 불러와졌습니다.`);
       };
     }
@@ -179,6 +219,12 @@
       link.click();
       URL.revokeObjectURL(link.href);
     }
+
+    // 초기 줄 번호 표시
+    window.onload = () => {
+      updateLineNumbers('oldCode', 'oldLineNumbers');
+      updateLineNumbers('newCode', 'newLineNumbers');
+    };
   </script>
 
 </body>
