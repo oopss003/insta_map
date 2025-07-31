@@ -2,29 +2,34 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>코드 비교 도구</title>
+  <title>코드 비교 및 저장 도구</title>
   <style>
     body {
       font-family: 'Pretendard', sans-serif;
       padding: 20px;
-      background: #f9f9f9;
+      background: #f4f4f4;
     }
+
     .top-bar {
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
+
     .top-bar input {
       padding: 8px;
       width: 200px;
     }
+
     .top-bar button {
       padding: 8px 14px;
       margin-left: 5px;
       font-weight: bold;
     }
+
     .container {
       display: flex;
       gap: 20px;
     }
+
     textarea {
       width: 48%;
       height: 250px;
@@ -32,20 +37,32 @@
       font-size: 14px;
       padding: 10px;
     }
+
     .diff-result {
       margin-top: 20px;
-      white-space: pre-wrap;
-      font-family: monospace;
       background: #fff;
       border: 1px solid #ccc;
-      padding: 10px;
       border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      white-space: pre-wrap;
     }
+
     .added {
       background-color: #ddffdd;
     }
+
     .removed {
       background-color: #ffdddd;
+    }
+
+    .line-number {
+      color: gray;
+      display: inline-block;
+      width: 40px;
+      text-align: right;
+      margin-right: 8px;
+      user-select: none;
     }
   </style>
 </head>
@@ -64,30 +81,40 @@
 
   <div id="diffOutput" class="diff-result"></div>
 
-  <!-- Google diff-match-patch 라이브러리 -->
-  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
-
   <script>
+    function escapeHtml(text) {
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
     function compareCode() {
-      const dmp = new diff_match_patch();
-      const oldCode = document.getElementById("oldCode").value;
-      const newCode = document.getElementById("newCode").value;
+      const oldCode = document.getElementById("oldCode").value.trim().split('\n');
+      const newCode = document.getElementById("newCode").value.trim().split('\n');
 
-      const diffs = dmp.diff_main(oldCode, newCode);
-      dmp.diff_cleanupSemantic(diffs);
-
+      const maxLines = Math.max(oldCode.length, newCode.length);
       let resultHTML = "";
-      for (const [op, data] of diffs) {
-        if (op === diff_match_patch.DIFF_INSERT) {
-          resultHTML += `<span class="added">${data}</span>`;
-        } else if (op === diff_match_patch.DIFF_DELETE) {
-          resultHTML += `<span class="removed">${data}</span>`;
+
+      for (let i = 0; i < maxLines; i++) {
+        const oldLine = oldCode[i] || "";
+        const newLine = newCode[i] || "";
+
+        const lineNum = `<span class="line-number">${i + 1}</span>`;
+
+        if (oldLine === newLine) {
+          resultHTML += `${lineNum}${escapeHtml(newLine)}\n`;
+        } else if (oldLine && !newLine) {
+          resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
+        } else if (!oldLine && newLine) {
+          resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
         } else {
-          resultHTML += data;
+          resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
+          resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
         }
       }
 
-      document.getElementById("diffOutput").innerHTML = resultHTML;
+      document.getElementById("diffOutput").innerHTML = `<pre>${resultHTML}</pre>`;
     }
 
     function saveCode() {
@@ -99,9 +126,9 @@
         return;
       }
 
-      let history = JSON.parse(localStorage.getItem('codeHistory') || '{}');
+      let history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
       history[codeName] = newCode;
-      localStorage.setItem('codeHistory', JSON.stringify(history));
+      localStorage.setItem("codeHistory", JSON.stringify(history));
 
       alert(`'${codeName}' 코드가 저장되었습니다.`);
     }
@@ -109,3 +136,4 @@
 
 </body>
 </html>
+
