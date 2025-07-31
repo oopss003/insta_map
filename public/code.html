@@ -9,27 +9,18 @@
       padding: 20px;
       background: #f4f4f4;
     }
-
     .top-bar {
       margin-bottom: 12px;
     }
-
-    .top-bar input {
+    .top-bar input, .top-bar button, .top-bar select {
       padding: 8px;
-      width: 200px;
-    }
-
-    .top-bar button, select {
-      padding: 8px 14px;
-      margin-left: 5px;
+      margin-right: 6px;
       font-weight: bold;
     }
-
     .container {
       display: flex;
       gap: 10px;
     }
-
     .editor-wrapper {
       display: flex;
       width: 48%;
@@ -38,7 +29,6 @@
       background: white;
       font-family: monospace;
     }
-
     .line-numbers {
       width: 40px;
       background: #eee;
@@ -50,7 +40,6 @@
       line-height: 1.4em;
       white-space: pre-wrap;
     }
-
     textarea {
       flex: 1;
       border: none;
@@ -61,7 +50,6 @@
       outline: none;
       overflow: auto;
     }
-
     .diff-result {
       margin-top: 20px;
       background: #fff;
@@ -71,15 +59,8 @@
       font-family: monospace;
       white-space: pre-wrap;
     }
-
-    .added {
-      background-color: #ddffdd;
-    }
-
-    .removed {
-      background-color: #ffdddd;
-    }
-
+    .added { background-color: #ddffdd; }
+    .removed { background-color: #ffdddd; }
     .line-number {
       color: gray;
       display: inline-block;
@@ -88,28 +69,18 @@
       margin-right: 8px;
       user-select: none;
     }
-
     .copy-button-wrapper {
       display: flex;
       align-items: center;
       justify-content: center;
     }
-
     .copy-button-wrapper button {
       font-size: 20px;
       padding: 8px 12px;
       cursor: pointer;
     }
-
-    mark.add {
-      background-color: #aaffaa;
-      color: #060;
-    }
-
-    mark.del {
-      background-color: #ffcccc;
-      color: #900;
-    }
+    mark.add { background-color: #aaffaa; color: #060; }
+    mark.del { background-color: #ffcccc; color: #900; }
   </style>
 </head>
 <body>
@@ -118,24 +89,25 @@
     <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
     <button onclick="compareCode()">🔍 분석</button>
     <button onclick="saveCode()">💾 저장</button>
-    <button onclick="loadSavedCodes()">📂 저장된 코드 불러오기</button>
+    <button onclick="loadSavedCodes()">📂 저장된 코드 목록 불러오기</button>
     <select id="codeSelect"></select>
     <button onclick="exportCodeToFile()">📥 파일로 저장</button>
+    <label>
+      📤 코드 파일 불러오기:
+      <input type="file" id="fileInput" onchange="loadCodeFile(event)">
+    </label>
   </div>
 
   <div class="container">
-    <!-- 이전 코드 -->
     <div class="editor-wrapper">
       <pre class="line-numbers" id="oldLineNumbers">1</pre>
       <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" onscroll="syncScroll('oldCode','oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
     </div>
 
-    <!-- ← 버튼 -->
     <div class="copy-button-wrapper">
       <button onclick="copyNewToOld()">←</button>
     </div>
 
-    <!-- 신규 코드 -->
     <div class="editor-wrapper">
       <pre class="line-numbers" id="newLineNumbers">1</pre>
       <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" onscroll="syncScroll('newCode','newLineNumbers')" placeholder="신규 코드 입력"></textarea>
@@ -144,15 +116,10 @@
 
   <div id="diffOutput" class="diff-result"></div>
 
-  <!-- diff-match-patch 라이브러리 -->
   <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
-
   <script>
     function escapeHtml(text) {
-      return text
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
+      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     }
 
     function pad(n) {
@@ -162,11 +129,7 @@
     function updateLineNumbers(textareaId, lineNumberId) {
       const textarea = document.getElementById(textareaId);
       const lineNumberDiv = document.getElementById(lineNumberId);
-      const lineCount = textarea.value.split('\n').length;
-      let lines = '';
-      for (let i = 1; i <= lineCount; i++) {
-        lines += i + '\n';
-      }
+      const lines = textarea.value.split('\n').map((_, i) => i + 1).join('\n');
       lineNumberDiv.textContent = lines;
     }
 
@@ -179,10 +142,9 @@
     function compareCode() {
       const oldCode = document.getElementById("oldCode").value.trim().split('\n');
       const newCode = document.getElementById("newCode").value.trim().split('\n');
-
       const maxLines = Math.max(oldCode.length, newCode.length);
-      let resultHTML = "";
       const dmp = new diff_match_patch();
+      let resultHTML = "";
 
       for (let i = 0; i < maxLines; i++) {
         const oldLine = oldCode[i] || "";
@@ -198,24 +160,15 @@
         } else {
           const diffs = dmp.diff_main(oldLine, newLine);
           dmp.diff_cleanupSemantic(diffs);
-
-          let oldLineHtml = "";
-          let newLineHtml = "";
-
+          let oldHtml = "", newHtml = "";
           for (const [op, data] of diffs) {
-            const escaped = escapeHtml(data);
-            if (op === 0) {
-              oldLineHtml += escaped;
-              newLineHtml += escaped;
-            } else if (op === -1) {
-              oldLineHtml += `<mark class="del">${escaped}</mark>`;
-            } else if (op === 1) {
-              newLineHtml += `<mark class="add">${escaped}</mark>`;
-            }
+            const esc = escapeHtml(data);
+            if (op === 0) oldHtml += esc, newHtml += esc;
+            else if (op === -1) oldHtml += `<mark class="del">${esc}</mark>`;
+            else if (op === 1) newHtml += `<mark class="add">${esc}</mark>`;
           }
-
-          resultHTML += `<span class="removed">${lineNum}${oldLineHtml}</span>\n`;
-          resultHTML += `<span class="added">${lineNum}${newLineHtml}</span>\n`;
+          resultHTML += `<span class="removed">${lineNum}${oldHtml}</span>\n`;
+          resultHTML += `<span class="added">${lineNum}${newHtml}</span>\n`;
         }
       }
 
@@ -225,16 +178,11 @@
     function saveCode() {
       const codeName = document.getElementById("codeName").value.trim();
       const newCode = document.getElementById("newCode").value;
+      if (!codeName) return alert("코드 이름을 입력해주세요!");
 
-      if (!codeName) {
-        alert("코드 이름을 입력해주세요!");
-        return;
-      }
-
-      let history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
+      const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
       history[codeName] = newCode;
       localStorage.setItem("codeHistory", JSON.stringify(history));
-
       alert(`'${codeName}' 코드가 저장되었습니다.`);
     }
 
@@ -250,7 +198,7 @@
         select.appendChild(option);
       });
 
-      select.onchange = function () {
+      select.onchange = () => {
         const selectedCode = select.value;
         document.getElementById("newCode").value = history[selectedCode];
         updateLineNumbers('newCode', 'newLineNumbers');
@@ -261,14 +209,9 @@
     function exportCodeToFile() {
       const codeName = document.getElementById("codeName").value.trim();
       const codeText = document.getElementById("newCode").value;
-
-      if (!codeName) {
-        alert("코드 이름을 입력해주세요!");
-        return;
-      }
+      if (!codeName) return alert("코드 이름을 입력해주세요!");
 
       const blob = new Blob([codeText], { type: "text/plain;charset=utf-8" });
-
       const now = new Date();
       const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
       const filename = `${codeName}_${dateStr}.txt`;
@@ -281,17 +224,25 @@
     }
 
     function copyNewToOld() {
-      const newCode = document.getElementById('newCode').value;
-      document.getElementById('oldCode').value = newCode;
+      document.getElementById('oldCode').value = document.getElementById('newCode').value;
       updateLineNumbers('oldCode', 'oldLineNumbers');
     }
 
-    // 초기 줄 번호 반영
+    function loadCodeFile(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        document.getElementById("newCode").value = e.target.result;
+        updateLineNumbers('newCode', 'newLineNumbers');
+      };
+      reader.readAsText(file);
+    }
+
     window.onload = () => {
       updateLineNumbers('oldCode', 'oldLineNumbers');
       updateLineNumbers('newCode', 'newLineNumbers');
     };
   </script>
-
 </body>
 </html>
