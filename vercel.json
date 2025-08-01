@@ -1,25 +1,14 @@
 {
 
   "rewrites": [
-
     {
-
       "source": "/api/geocode",
-
       "destination": "/api/geocode.js"
-
     },
-
     {
-
       "source": "/callback_apple.html",
-
       "destination": "/api/callback_apple"
-
     }
-
   ],
-
   "public": true
-
 }
