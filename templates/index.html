@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>데이터 시각화</title>
+</head>
+<body>
+    <h1>데이터 시각화 리포트 생성기</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <h2>1. 데이터 파일 업로드 (CSV)</h2>
+        <input type="file" name="files" multiple required>
+        
+        <h2>2. 분석 기간 설정</h2>
+        <label for="start_date">시작일:</label>
+        <input type="date" id="start_date" name="start_date">
+        <br>
+        <label for="end_date">종료일:</label>
+        <input type="date" id="end_date" name="end_date">
+        
+        <button type="submit">분석 시작</button>
+    </form>
+</body>
+</html>
