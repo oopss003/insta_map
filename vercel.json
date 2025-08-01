@@ -15,7 +15,7 @@
       "dest": "/api/callback_apple"
     },
     {
-      "src": "/(.*)",
+      "src": "/visualizer/(.*)",
       "dest": "api/index.py"
     }
   ]
