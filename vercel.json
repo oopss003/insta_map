@@ -1,22 +1,13 @@
-{
-  "builds": [
+@@ -3,7 +3,11 @@
     {
-      "src": "api/index.py",
-      "use": "@vercel/python"
+      "source": "/api/geocode",
+      "destination": "/api/geocode.js"
+    },
+    {
+      "source": "/callback_apple.html",
+      "destination": "/api/callback_apple"
     }
   ],
-  "routes": [
-    {
-      "src": "/api/geocode",
-      "dest": "/api/geocode.js"
-    },
-    {
-      "src": "/callback_apple.html",
-      "dest": "/api/callback_apple"
-    },
-    {
-      "src": "/visualizer/(.*)",
-      "dest": "api/index.py"
-    }
-  ]
+  "public": true 
+  "public": true
 }
