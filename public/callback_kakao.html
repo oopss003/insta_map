@@ -7,6 +7,7 @@
 
   <!-- ✅ Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script> <!-- ⭐ 추가: Auth -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
   <style>
@@ -49,11 +50,12 @@
   </div>
 
   <script>
-    const db = firebase.firestore();
+    const db   = firebase.firestore();
+    const auth = firebase.auth();           // ⭐ 추가: Auth 인스턴스
 
     // ⚠️ 여기 두 값은 카카오 개발자센터에서 복사해서 넣어야 함
-    const KAKAO_REST_API_KEY   = "46fe2ac8f94d764d745ba8a0bfdf265e";   // 예: "46fe2ac8..."
-    const KAKAO_CLIENT_SECRET  = ""; // 클라이언트 시크릿을 사용중이면 값 입력, 아니면 빈 문자열 유지
+    const KAKAO_REST_API_KEY  = "46fe2ac8f94d764d745ba8a0bfdf265e";
+    const KAKAO_CLIENT_SECRET = ""; // 사용 안 하면 빈 문자열
 
     const statusEl = document.getElementById("status");
 
@@ -140,9 +142,15 @@
         const normalizedEmail = email.toLowerCase();
         localStorage.setItem("userEmail", normalizedEmail);
 
+        statusEl.textContent = "Firebase 로그인 중...";
+
+        // ⭐ 3-1) Firebase에 '익명 로그인' 해서 Auth 상태 만들기
+        //      (terms.html 에서 firebase.auth().currentUser 가 null 이 아니게)
+        await auth.signInAnonymously();
+
         statusEl.textContent = "데이터 저장 중...";
 
-        // 3) Firestore에 사용자 정보 저장/업데이트
+        // ⭐ 3-2) Firestore에 사용자 정보 저장/업데이트
         await db.collection("users").doc(normalizedEmail).set(
           {
             email: email,
