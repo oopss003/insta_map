@@ -7,81 +7,173 @@
 
   <!-- ✅ Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+
+  <style>
+    body {
+      font-family: "Pretendard", sans-serif;
+      background: #f5f6fb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .box {
+      background: #fff;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      max-width: 360px;
+      text-align: center;
+    }
+  </style>
 
   <script>
-    // ✅ Firebase 초기화
+    // ✅ Firebase 초기화 (같은 twopage 프로젝트)
     const firebaseConfig = {
-      apiKey: "AIzaSyCVYV1UxfSREQYnah3tBEKBTprgq9wRgii",
-      authDomain: "instamap-9b595.firebaseapp.com",
-      projectId: "instamap-9b595",
-      storageBucket: "instamap-9b595.firebasestorage.app",
-      messagingSenderId: "280950399933",
-      appId: "1:280950399933:web:8282e0d352e50c8bcd2be0"
+      apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
+      authDomain: "twopage-ea909.firebaseapp.com",
+      projectId: "twopage-ea909",
+      storageBucket: "twopage-ea909.firebasestorage.app",
+      messagingSenderId: "398686352913",
+      appId: "1:398686352913:web:0bb872aa1e71c62ad863b0",
+      measurementId: "G-3F5QFJ0D2H"
     };
     firebase.initializeApp(firebaseConfig);
   </script>
 </head>
 <body>
-  <p>카카오 로그인 처리 중입니다...</p>
+  <div class="box">
+    <h2>카카오 로그인 처리 중...</h2>
+    <p id="status">잠시만 기다려 주세요.</p>
+  </div>
 
   <script>
-    const KAKAO_CLIENT_ID = '4e1dd9cccad37f9748bb3a3254b88491';
-    const REDIRECT_URI = 'https://inwave.ai.kr/callback_kakao.html';
+    const db = firebase.firestore();
 
-    const code = new URLSearchParams(window.location.search).get('code');
+    // ⚠️ 여기 두 값은 카카오 개발자센터에서 복사해서 넣어야 함
+    const KAKAO_REST_API_KEY   = "46fe2ac8f94d764d745ba8a0bfdf265e";   // 예: "46fe2ac8..."
+    const KAKAO_CLIENT_SECRET  = ""; // 클라이언트 시크릿을 사용중이면 값 입력, 아니면 빈 문자열 유지
 
-    if (!code) {
-      alert('카카오 인가 코드가 없습니다.');
-    } else {
-      // 1. 토큰 요청
-      fetch('https://kauth.kakao.com/oauth/token', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          grant_type: 'authorization_code',
-          client_id: KAKAO_CLIENT_ID,
-          redirect_uri: REDIRECT_URI,
-          code: code
-        })
-      })
-      .then(res => res.json())
-      .then(tokenData => {
-        if (tokenData.error) throw new Error(tokenData.error_description);
+    const statusEl = document.getElementById("status");
+
+    async function handleKakaoCallback() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+
+        // 사용자가 동의를 거부한 경우
+        if (params.get("error")) {
+          const err = params.get("error_description") || "카카오 로그인 중 오류가 발생했습니다.";
+          statusEl.textContent = err;
+          console.error("Kakao error:", err);
+          return;
+        }
+
+        const code = params.get("code");
+        if (!code) {
+          statusEl.textContent = "카카오 인가 코드가 없습니다.";
+          console.error("No code in callback URL");
+          return;
+        }
+
+        statusEl.textContent = "토큰 발급 중...";
+
+        // 1) 인가코드로 액세스 토큰 요청
+        const tokenRes = await fetch("https://kauth.kakao.com/oauth/token", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
+          },
+          body: new URLSearchParams({
+            grant_type: "authorization_code",
+            client_id: KAKAO_REST_API_KEY, // ✅ REST API 키 사용
+            redirect_uri: "https://inwave.ai.kr/callback_kakao.html",
+            code: code,
+            client_secret: KAKAO_CLIENT_SECRET
+          })
+        });
+
+        const tokenData = await tokenRes.json();
+        console.log("tokenData:", tokenData);
+
+        if (!tokenRes.ok || !tokenData.access_token) {
+          statusEl.textContent = "카카오 토큰 발급에 실패했습니다.";
+          console.error("Token error:", tokenData);
+          return;
+        }
 
         const accessToken = tokenData.access_token;
 
-        // 2. 사용자 정보 요청
-        return fetch('https://kapi.kakao.com/v2/user/me', {
-          method: 'GET',
+        statusEl.textContent = "사용자 정보 불러오는 중...";
+
+        // 2) 액세스 토큰으로 유저 정보 조회
+        const userRes = await fetch("https://kapi.kakao.com/v2/user/me", {
+          method: "GET",
           headers: {
-            Authorization: `Bearer ${accessToken}`
+            "Authorization": "Bearer " + accessToken,
+            "Content-Type": "application/x-www-form-urlencoded;charset=utf-8"
           }
         });
-      })
-      .then(res => res.json())
-      .then(userInfo => {
-        const email = userInfo.kakao_account.email;
-        const name = userInfo.kakao_account.profile.nickname;
 
-        // ✅ 로컬 스토리지에 저장
-        localStorage.setItem('userEmail', email);
+        const userData = await userRes.json();
+        console.log("userData:", userData);
 
-        // ✅ Firebase 익명 로그인 후 이동
-        return firebase.auth().signInAnonymously();
-      })
-      .then(() => {
-        // 로그인 성공 후 약관 페이지로 이동
-        window.location.href = '/terms.html';
-      })
-      .catch(err => {
-        console.error('카카오 로그인 처리 오류:', err);
-        alert('카카오 로그인 처리 중 오류가 발생했습니다.');
-      });
+        if (!userRes.ok) {
+          statusEl.textContent = "카카오 사용자 정보를 가져오지 못했습니다.";
+          console.error("User info error:", userData);
+          return;
+        }
+
+        const kakaoAccount = userData.kakao_account || {};
+        const email = kakaoAccount.email;
+        let nickname =
+          (kakaoAccount.profile && kakaoAccount.profile.nickname) ||
+          (email ? email.split("@")[0] : "카카오사용자");
+
+        if (!email) {
+          statusEl.textContent =
+            "카카오 계정 이메일 제공에 동의하지 않아 로그인할 수 없습니다.";
+          console.error("No email in kakao_account");
+          return;
+        }
+
+        const normalizedEmail = email.toLowerCase();
+        localStorage.setItem("userEmail", normalizedEmail);
+
+        statusEl.textContent = "데이터 저장 중...";
+
+        // 3) Firestore에 사용자 정보 저장/업데이트
+        await db.collection("users").doc(normalizedEmail).set(
+          {
+            email: email,
+            nickname: nickname,
+            provider: "kakao",
+            kakaoId: userData.id,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          },
+          { merge: true }
+        );
+
+        // 4) 약관 동의 여부 확인 후 페이지 이동
+        const doc = await db.collection("users").doc(normalizedEmail).get();
+        const agreed = doc.exists && doc.data().agreedToTerms === true;
+
+        if (agreed) {
+          statusEl.textContent = "로그인 성공! 매장 지도로 이동합니다.";
+          location.href = "/view_stores_test.html";
+        } else {
+          statusEl.textContent = "약관 동의 페이지로 이동합니다.";
+          location.href = "/terms.html";
+        }
+      } catch (err) {
+        console.error("Callback 처리 중 오류:", err);
+        statusEl.textContent = "카카오 로그인 처리 중 오류가 발생했습니다.";
+      }
     }
+
+    handleKakaoCallback();
   </script>
 </body>
 </html>
+
 
