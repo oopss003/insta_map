@@ -159,7 +159,7 @@
     </div>
   </div>
 
-  <!-- Firebase SDK 로드 순서 중요 -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
@@ -211,23 +211,50 @@
       });
     });
 
-    // 4) 로그인 상태 확인 후 동의 처리 핸들러 초기화
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
-        return window.location.href = "/login.html";
+    // ============================
+    // 🔥 여기부터 변경된 로그인 처리 부분
+    // ============================
+
+    /**
+     * 현재 사용자 이메일 가져오기
+     * - 1순위: Firebase Auth의 user.email (구글/애플)
+     * - 2순위: localStorage.userEmail (카카오)
+     */
+    function getCurrentUserEmail(userFromAuth) {
+      if (userFromAuth && userFromAuth.email) {
+        return userFromAuth.email.toLowerCase();
       }
-      initAgreementHandler(user);
+      const stored = localStorage.getItem("userEmail");
+      if (stored) {
+        return stored.toLowerCase();
+      }
+      return null;
+    }
+
+    // 로그인 상태 + localStorage 둘 다 체크
+    auth.onAuthStateChanged(user => {
+      const email = getCurrentUserEmail(user);
+
+      if (!email) {
+        alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+        // 실제 로그인 파일 이름에 맞게 수정
+        window.location.href = "/login.html";   // 테스트면 /login_test.html 로 바꿔도 됨
+        return;
+      }
+
+      initAgreementHandler(email);
     });
 
-    function initAgreementHandler(user) {
+    // 약관 동의 저장 처리
+    function initAgreementHandler(normalizedEmail) {
       nextBtn.addEventListener('click', () => {
         if (nextBtn.disabled) return;
+
         if (!selectedImageValue) {
-          return alert("스타일을 하나 선택해주세요.");
+          alert("스타일을 하나 선택해주세요.");
+          return;
         }
 
-        const normalizedEmail = user.email.toLowerCase();
         db.collection("users").doc(normalizedEmail).set({
           agreedToTerms: true,
           selectedStyle: selectedImageValue
@@ -244,3 +271,4 @@
   </script>
 </body>
 </html>
+
