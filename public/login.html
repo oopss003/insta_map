@@ -69,122 +69,162 @@
     <img src="images/1024.png" alt="2차어디가 로고" class="logo-img" />
 
     <div class="login-box">
+      <!-- ✅ 기존 구글 로그인 버튼 (변경 없음) -->
       <button id="googleLoginBtn" class="login-button">
         <img src="images/google.svg" alt="Google 아이콘" />
         구글로 로그인
       </button>
+
+      <!-- ✅ 기존 애플 로그인 버튼 (변경 없음) -->
       <button id="appleLoginBtn" class="login-button">
         <img src="images/apple.svg" alt="Apple 아이콘" />
         Apple로 로그인
       </button>
+
+      <!-- ✅ 카카오 로그인 버튼 추가 -->
+      <button
+        id="kakaoLoginBtn"
+        class="login-button"
+        style="background-color:#FEE500;"
+      >
+        <img src="images/kakao.svg" alt="Kakao 아이콘" />
+        카카오로 로그인
+      </button>
     </div>
   </div>
 
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
 
+  <!-- Kakao JS SDK (v2) -->
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js" crossorigin="anonymous"></script>
+
   <script>
-      // --- ⬇️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬇️ ---
-      const GOOGLE_CLIENT_ID = "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
-      const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
-      const scope = "email profile openid";
-      const response_type = "id_token token";
-      const state = new Date().getTime();
-      const nonce = Math.random().toString(36).substring(2);
-      document.getElementById("googleLoginBtn").addEventListener("click", () => {
-          const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
-          window.location.href = url;
+    // --- ⬇️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬇️ ---
+    const GOOGLE_CLIENT_ID =
+      "280950399393-pivd8mg1mob4iqmm24btihupa2qbof16.apps.googleusercontent.com";
+    const REDIRECT_URI = "https://inwave.ai.kr/callback_google.html";
+    const scope = "email profile openid";
+    const response_type = "id_token token";
+    const state = new Date().getTime();
+    const nonce = Math.random().toString(36).substring(2);
+    document.getElementById("googleLoginBtn").addEventListener("click", () => {
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+        REDIRECT_URI
+      )}&response_type=${response_type}&scope=${scope}&state=${state}&nonce=${nonce}`;
+      window.location.href = url;
+    });
+    // --- ⬆️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬆️ ---
+
+    // ✅ Firebase 초기화 (기존 그대로 사용)
+    const firebaseConfig = {
+      apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
+      authDomain: "instamap-9b595.firebaseapp.com",
+      projectId: "instamap-9b595",
+      storageBucket: "instamap-9b595.appspot.com",
+      messagingSenderId: "280950399393",
+      appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db   = firebase.firestore();
+
+    // ✅ 애플 로그인 (기존 코드 유지)
+    document.getElementById("appleLoginBtn").addEventListener("click", () => {
+      console.log("🍎 Apple 로그인 시작 (팝업 방식)...");
+      const provider = new firebase.auth.OAuthProvider("apple.com");
+      provider.addScope("email");
+      provider.addScope("name");
+
+      auth
+        .signInWithPopup(provider)
+        .then((result) => {
+          console.log("✅ 팝업 로그인 성공! 사용자 정보:", result.user);
+          const user = result.user;
+          const email = user.email;
+          let nickname = user.displayName;
+
+          if (
+            result.additionalUserInfo &&
+            result.additionalUserInfo.profile &&
+            result.additionalUserInfo.profile.name
+          ) {
+            const appleName = result.additionalUserInfo.profile.name;
+            const fullName = `${appleName.lastName || ""}${appleName.firstName || ""}`;
+            if (fullName) nickname = fullName;
+          }
+
+          if (!nickname && email) {
+            nickname = email.split("@")[0];
+          }
+
+          console.log(
+            `Firestore에 저장할 정보: Email=${email}, Nickname=${nickname}`
+          );
+          localStorage.setItem("userEmail", email);
+          const normalizedEmail = email.toLowerCase();
+
+          return db
+            .collection("users")
+            .doc(normalizedEmail)
+            .set(
+              {
+                email: email,
+                nickname: nickname,
+                provider: "apple",
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              },
+              { merge: true }
+            );
+        })
+        .then(() => {
+          console.log("💾 Firestore 저장 성공. 약관 동의 여부 확인.");
+          const email = localStorage.getItem("userEmail");
+          return db.collection("users").doc(email.toLowerCase()).get();
+        })
+        .then((doc) => {
+          if (!doc) return;
+
+          const agreed = doc.exists && doc.data().agreedToTerms === true;
+          console.log(`약관 동의 여부: ${agreed}`);
+
+          if (agreed) {
+            console.log("🗺️ 약관 동의 확인. 지도 페이지로 이동합니다.");
+            location.href = "/view_stores_test.html";
+          } else {
+            console.log("📝 약관 미동의 확인. 약관 동의 페이지로 이동합니다.");
+            location.href = "/terms.html";
+          }
+        })
+        .catch((error) => {
+          if (error.code === "auth/popup-closed-by-user") {
+            console.log("팝업이 사용자에 의해 닫혔습니다.");
+            return;
+          }
+          console.error("❌ 팝업 로그인 처리 중 오류 발생:", error);
+          alert(`로그인 처리에 실패했습니다: ${error.message}`);
+        });
+    });
+
+    // ✅ Kakao SDK 초기화 (자바스크립트 키 입력)
+    Kakao.init("4e1dd9cccad37f9748bb3a3254b88491"); // 예: "4e1dd9cc..."
+    console.log("Kakao SDK initialized:", Kakao.isInitialized());
+
+    // ✅ 카카오 로그인: authorize 방식 (callback_kakao.html로 리다이렉트)
+    document.getElementById("kakaoLoginBtn").addEventListener("click", () => {
+      console.log("🟡 Kakao 로그인 시작...");
+
+      Kakao.Auth.authorize({
+        redirectUri: "https://inwave.ai.kr/callback_kakao.html",
+        scope: "profile_nickname,account_email"
+        // state: "옵션값"  // 필요하면 나중에 상태값 넣기
       });
-      // --- ⬆️ 기존 구글 로그인 코드 (절대 수정하지 않음) ⬆️ ---
-  
-  
-      // ✅ --- ⬇️ signInWithPopup 방식으로 변경된 최종 코드 ⬇️ ---
-  
-      // 1. Firebase 초기화 설정
-      const firebaseConfig = {
-          apiKey: "AIzaSyCVV1XUfsREQYnah3tbEKBTprgq9wRgiic",
-          authDomain: "instamap-9b595.firebaseapp.com",
-          projectId: "instamap-9b595",
-          storageBucket: "instamap-9b595.appspot.com",
-          messagingSenderId: "280950399393",
-          appId: "1:280950399393:web:8282e0d352e50c8bcd2be0"
-      };
-      firebase.initializeApp(firebaseConfig);
-      const auth = firebase.auth();
-      const db = firebase.firestore();
-  
-      // 2. Apple 로그인 버튼 클릭 이벤트 (팝업 방식)
-      document.getElementById("appleLoginBtn").addEventListener("click", () => {
-          console.log("🍎 Apple 로그인 시작 (팝업 방식)...");
-          const provider = new firebase.auth.OAuthProvider('apple.com');
-          provider.addScope('email');
-          provider.addScope('name');
-  
-          auth.signInWithPopup(provider)
-              .then((result) => {
-                  console.log("✅ 팝업 로그인 성공! 사용자 정보:", result.user);
-                  const user = result.user;
-                  const email = user.email;
-                  let nickname = user.displayName;
-  
-                  if (result.additionalUserInfo && result.additionalUserInfo.profile && result.additionalUserInfo.profile.name) {
-                      const appleName = result.additionalUserInfo.profile.name;
-                      const fullName = `${appleName.lastName || ''}${appleName.firstName || ''}`;
-                      if (fullName) nickname = fullName;
-                  }
-                  
-                  if (!nickname && email) {
-                      nickname = email.split('@')[0];
-                  }
-  
-                  console.log(`Firestore에 저장할 정보: Email=${email}, Nickname=${nickname}`);
-                  localStorage.setItem("userEmail", email);
-                  const normalizedEmail = email.toLowerCase();
-  
-                  return db.collection("users").doc(normalizedEmail).set({
-                      email: email,
-                      nickname: nickname,
-                      provider: "apple",
-                      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                  }, { merge: true });
-              })
-              .then(() => {
-                  console.log("💾 Firestore 저장 성공. 약관 동의 여부 확인.");
-                  const email = localStorage.getItem("userEmail");
-                  return db.collection("users").doc(email.toLowerCase()).get();
-              })
-              .then(doc => {
-                  if (!doc) return;
-  
-                  const agreed = doc.exists && doc.data().agreedToTerms === true;
-                  console.log(`약관 동의 여부: ${agreed}`);
-  
-                  if (agreed) {
-                      console.log("🗺️ 약관 동의 확인. 지도 페이지로 이동합니다.");
-                      location.href = "/view_stores_test.html";
-                  } else {
-                      console.log("📝 약관 미동의 확인. 약관 동의 페이지로 이동합니다.");
-                      location.href = "/terms.html";
-                  }
-              })
-              .catch((error) => {
-                  // 사용자가 팝업을 닫는 등 일반적인 오류는 무시할 수 있습니다.
-                  if (error.code === 'auth/popup-closed-by-user') {
-                      console.log("팝업이 사용자에 의해 닫혔습니다.");
-                      return;
-                  }
-                  console.error("❌ 팝업 로그인 처리 중 오류 발생:", error);
-                  alert(`로그인 처리에 실패했습니다: ${error.message}`);
-              });
-      });
+    });
   </script>
 </body>
 </html>
-
-
-
-
 
 
 
