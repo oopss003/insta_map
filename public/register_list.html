@@ -153,7 +153,6 @@
 
     /************************************************************
      * 2. Firestore 에서 매장 리스트 불러오기
-     *    (여기 부분은 기존 코드와 최대한 비슷하게 구성)
      ************************************************************/
     function createTimeCell(hoursForDay) {
       // 예시: "06:00 ~ 26:00" 형식으로만 간단히 표시
@@ -227,26 +226,37 @@
       storeCountEl.textContent = visibleRows.length;
     }
 
+    // 🔍 부분일치 + 전화번호 숫자 포함 검색
     function applySearch() {
-      const qRaw = searchInput.value.trim();
-      const q    = qRaw.toLowerCase();
+      const keywordRaw = searchInput.value.trim();
       const rows = storeTableBody.querySelectorAll('tr');
 
-      // 검색어 없으면 전체 표시
-      if (!q) {
+      // 검색어가 없으면 전체 표시
+      if (!keywordRaw) {
         rows.forEach(tr => { tr.style.display = ''; });
         updateVisibleCount();
         return;
       }
 
+      const keywordLower  = keywordRaw.toLowerCase();           // 이름 검색용
+      const keywordDigits = keywordRaw.replace(/[^0-9]/g, '');  // 숫자만 추출 (전화번호 검색용)
+
       rows.forEach(tr => {
-        const name  = (tr.querySelector('.col-name')?.textContent || '').toLowerCase();
-        const phone = (tr.querySelector('.col-phone')?.textContent || '').toLowerCase();
+        const nameText  = (tr.querySelector('.col-name')?.textContent  || '');
+        const phoneText = (tr.querySelector('.col-phone')?.textContent || '');
 
-        const normPhone = phone.replace(/-/g, '');
-        const normQ     = q.replace(/-/g, '');
+        const nameLower  = nameText.toLowerCase();
+        const phoneDigits = phoneText.replace(/[^0-9]/g, '');
 
-        if (name.includes(q) || normPhone.includes(normQ)) {
+        // ✅ 가게 이름에 '테스트'가 들어가면 전부 매칭
+        const nameMatch  = nameLower.includes(keywordLower);
+
+        // ✅ 전화번호도 숫자 기준으로 부분 검색 가능(예: 8613, 010 등)
+        const phoneMatch = keywordDigits
+          ? phoneDigits.includes(keywordDigits)
+          : false;
+
+        if (nameMatch || phoneMatch) {
           tr.style.display = '';
         } else {
           tr.style.display = 'none';
@@ -273,9 +283,9 @@
       Array.from(storeTableBody.querySelectorAll('tr')).forEach(tr => {
         tr.style.display = '';
       });
-      // 다시 전체 개수로 돌리기 위해 Firestore에서 불러온 원본 개수 사용
       updateVisibleCount();
     });
   </script>
 </body>
 </html>
+
