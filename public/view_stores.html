@@ -524,15 +524,33 @@
         const breakStart = hourInfo.break?.start || "";
         const breakEnd = hourInfo.break?.end || "";
 
-        const openMin  = toMinutes(openTime);
-        const closeMin = toMinutes(closeTime);
-        if (openMin && closeMin && (nowMinutes < openMin || nowMinutes >= closeMin)) return;
+        // ★ 24시 이후(25:00, 26:00...)까지 처리하는 로직
+        const openObj  = parseTime24Plus(openTime);
+        const closeObj = parseTime24Plus(closeTime);
 
-        if (breakStart && breakEnd) {
-          const bs = toMinutes(breakStart);
-          const be = toMinutes(breakEnd);
-          if (nowMinutes >= bs && nowMinutes < be) return;
+        if (openObj && closeObj) {
+          const openMin  = openObj.minutes;
+          let   closeMin = closeObj.minutes;
+          const isOvernight = closeObj.over24 || closeMin <= openMin;
+          // over24 이거나, 단순히 "18:00~02:00"처럼 end < start 인 경우를 모두 야간영업으로 처리
+
+          if (!isOvernight) {
+            // 일반 케이스: 같은 날 안에서만 영업 (예: 10:00~22:00)
+            if (nowMinutes < openMin || nowMinutes >= closeMin) return;
+          } else {
+            // 야간 영업: 예) 18:00~26:00 → 18:00~24:00 + 00:00~02:00
+            // 지금 시간이 open 이상이거나, 다음날 close 전이면 "영업 중"
+            if (!(nowMinutes >= openMin || nowMinutes < closeMin)) return;
+          }
         }
+
+// 브레이크타임 로직은 기존 그대로 사용
+if (breakStart && breakEnd) {
+  const bs = toMinutes(breakStart);
+  const be = toMinutes(breakEnd);
+  if (nowMinutes >= bs && nowMinutes < be) return;
+}
+
 
         let newLat = Number(lat);
         let newLng = Number(lng);
