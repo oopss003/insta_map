@@ -995,6 +995,52 @@
       saveBtn.disabled = true;
 
       try {
+                // 🔐 1) 비밀번호 입력값 가져오기
+        const passwordInput = document.getElementById('editPassword');
+        const password = (passwordInput?.value || '').trim();
+        const pwdRegex = /^\d{6}$/;
+
+        // 🔐 2) 새로 저장하는 경우( editingId 없음 ) → 비밀번호 필수
+        //     기존 문서 수정인 경우( editingId 있음 ) → 아래에서 기존값과 비교
+        let existingPwd = null;
+        let finalPassword = null;
+
+        if (!editingId) {
+          // 새 매장 등록
+          if (!pwdRegex.test(password)) {
+            alert('새 매장을 등록하려면 6자리 숫자 비밀번호를 입력해 주세요.');
+            return;
+          }
+          finalPassword = password;   // 새로 입력한 비밀번호 그대로 사용
+        } else {
+          // 기존 매장 수정
+          const docRef = db.collection('stores').doc(editingId);
+          const snap = await docRef.get();
+          if (snap.exists) {
+            existingPwd = snap.data().editPassword || null;
+          }
+
+          if (existingPwd) {
+            // 기존에 설정된 비밀번호가 있는 경우 → 동일 비번 필수
+            if (!pwdRegex.test(password)) {
+              alert('기존 매장을 수정하려면 6자리 숫자 비밀번호를 입력해 주세요.');
+              return;
+            }
+            if (password !== existingPwd) {
+              alert('비밀번호가 일치하지 않습니다.');
+              return;
+            }
+            // 비밀번호는 그대로 유지
+            finalPassword = existingPwd;
+          } else {
+            // 예전 데이터처럼 아직 비밀번호가 없는 매장 → 이번에 새로 설정하도록 강제
+            if (!pwdRegex.test(password)) {
+              alert('이번 저장부터 사용할 6자리 숫자 비밀번호를 입력해 주세요.');
+              return;
+            }
+            finalPassword = password;
+          }
+        }
         const raw = document.querySelector('[name=hashtags]').value;
         const tags = raw.split(',').map(t => t.trim()).filter(Boolean);
         const invalid = tags.filter(t => Array.from(t).length > 6);
