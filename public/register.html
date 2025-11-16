@@ -736,7 +736,7 @@
     // onAuthStateChanged 리스너를 하나만 유지합니다.
     auth.onAuthStateChanged(async user => {
       if (!user) {
-        alert("로그인이 필요합니다.");
+        alert("로그인이 필요합니다. 매장 등록 및 수정에 사용됩니다.");
         window.location.href = "/login.html";
         return;
       }
