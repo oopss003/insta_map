@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
@@ -1054,16 +1054,12 @@
           return;
         }
 
-        const dayOff = Array.from(
-          document.querySelectorAll('[name="offDays[]"]:checked')
-        ).map(cb => {
-          const day = cb.value;
-          const repeatSel = document.querySelector(`select[name="repeat_${day}"]`);
-          return {
-            day,
-            repeat: repeatSel ? repeatSel.value : ''
-          };
-        });
+        // 🔥 쉬는 날(dayOff) 저장용 데이터 생성
+        const dayOff = Array.from(document.querySelectorAll('#dayoffList li')).map(li => ({
+          day: li.dataset.day || '',
+          repeat: li.dataset.repeat || ''
+        }));
+
         
         const days = ['월', '화', '수', '목', '금', '토', '일'];
         const hours = {};
