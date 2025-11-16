@@ -916,8 +916,6 @@
       const pwdInput = document.getElementById('editPassword');
       if (pwdInput) pwdInput.value = '';
 
-      const rawHours = data.hours || {};
-
       // ★ 여기에 추가 ★
       const rawHours = data.hours || {};
       
@@ -1110,6 +1108,7 @@
           dayOff,
           userEmail: USER_EMAIL,
           created  : firebase.firestore.FieldValue.serverTimestamp()
+          editPassword: finalPassword      // 🔐 ✅ 이 줄 추가
         };
         if (photoURL) store.photo = photoURL;                 // 새 사진이 있을 때만 덮어쓰기
         
@@ -1126,6 +1125,7 @@
         document.getElementById('storeForm').reset();
         if (marker) marker.setMap(null);
         saveBtn.textContent = "저장";
+        if (passwordInput) passwordInput.value = "";   // 🔐 비밀번호 입력도 초기화
 
       } catch (err) {
         console.error(err);
