@@ -51,8 +51,9 @@
     const db = firebase.firestore();
 
     const days = ['월','화','수','목','금','토','일'];
-    // Firestore의 영문 요일 약어와 매핑
+    // Firestore의 영문 요일 약어와 매핑 (이전 데이터 fallback 용으로만 사용)
     const dayMap = { '월': 'mon', '화': 'tue', '수': 'wed', '목': 'thu', '금': 'fri', '토': 'sat', '일': 'sun' };
+
     const USER_EMAIL = "jhpark8271@gmail.com";
     const PAGE_SIZE = 30;
     let storeDocs = [];
@@ -62,26 +63,22 @@
     async function updateStoreHours(event) {
       const select = event.target;
       const docId = select.dataset.doc;
-      const dayKorean = select.dataset.day;
+      const dayKorean = select.dataset.day;   // '월', '화' 등
       const field = select.dataset.field;
       const value = select.value;
 
-      // 한글 요일을 영문 약어로 변환
-      const dayEnglish = dayMap[dayKorean];
-      if (!dayEnglish) {
-        console.error("Invalid day:", dayKorean);
-        return;
-      }
+      // ✅ 한글 요일 키 그대로 사용 (저장도 '월', '화' 형태로 통일)
+      const dayKey = dayKorean;
 
       // Firestore 업데이트를 위한 필드 경로 생성
       let fieldPath;
       if (field === 'start' || field === 'end') {
-        fieldPath = `hours.${dayEnglish}.time.${field}`;
+        fieldPath = `hours.${dayKey}.time.${field}`;
       } else if (field === 'break_start' || field === 'break_end') {
         const breakField = field.split('_')[1]; // "start" or "end"
-        fieldPath = `hours.${dayEnglish}.break.${breakField}`;
+        fieldPath = `hours.${dayKey}.break.${breakField}`;
       } else if (field === 'lastOrder') {
-        fieldPath = `hours.${dayEnglish}.lastOrder.time`;
+        fieldPath = `hours.${dayKey}.lastOrder.time`;
       }
 
       if (!fieldPath) {
@@ -103,9 +100,10 @@
       }
     }
 
+    // ✅ 0:00 ~ 32:30 까지 옵션 생성 (등록 페이지와 동일하게 24시 이후도 지원)
     function generateTimeOptions(selected) {
       let options = '<option value="">-</option>';
-      for (let h = 0; h < 24; h++) { // 24시까지만 생성
+      for (let h = 0; h <= 32; h++) {
         for (let m of ["00", "30"]) {
           const hour = h.toString().padStart(2, '0');
           const value = `${hour}:${m}`;
@@ -145,11 +143,15 @@
         const d = doc.data();
         const tr = document.createElement("tr");
         const display = (d.lat && d.lng) ? "O" : "X";
-        
-        // Firestore의 영문 약어 키로 데이터 접근
+
+        // ✅ hours는 기본적으로 한글 요일 키를 사용
+        //    + 예전에 저장된 영문(mon, tue...) 키도 fallback 으로 한 번 더 확인
         const hoursCells = days.map(day => {
-          const dayKey = dayMap[day]; // '월' -> 'mon'
-          const h = d.hours?.[dayKey] || { time:{}, break:{}, lastOrder:{} };
+          const h =
+            (d.hours?.[day]) ||                           // 새 구조: '월', '화' ...
+            (d.hours?.[dayMap[day]]) ||                   // 예전 구조: 'mon', 'tue' ...
+            { time: {}, break: {}, lastOrder: {} };       // 둘 다 없으면 빈 객체
+
           return `<td>${createTimeCell(day, h, doc.id)}</td>`;
         }).join("");
 
