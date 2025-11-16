@@ -731,7 +731,23 @@
     <input id="lat" readonly required />
     <label>경도</label>
     <input id="lng" readonly required />
-
+    
+    <!-- 🔐 저장 / 수정 비밀번호 입력 칸 (추가 부분) -->
+    <div class="custom-field-box">
+      <label for="editPassword">저장용 비밀번호 (6자리 숫자)</label>
+      <input
+        id="editPassword"
+        type="password"
+        inputmode="numeric"
+        pattern="\d{6}"
+        maxlength="6"
+        placeholder="예: 123456"
+      />
+      <small style="font-size:12px;color:#888;">
+        매장을 수정할 때 필요한 비밀번호입니다. 꼭 기억해주세요.
+      </small>
+    </div>
+    
     <button id="saveBtn" type="button">저장</button>
 
   </form>
