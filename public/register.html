@@ -912,6 +912,12 @@
       editingId = docObj.id;          // ★ 폼이 열리면 다시 docId 유지
       const data = docObj.data();
 
+        // 🔐 비밀번호 입력 칸은 항상 비우기 (저장된 비번은 화면에 안 보이게)
+      const pwdInput = document.getElementById('editPassword');
+      if (pwdInput) pwdInput.value = '';
+
+      const rawHours = data.hours || {};
+
       // ★ 여기에 추가 ★
       const rawHours = data.hours || {};
       
