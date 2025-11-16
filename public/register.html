@@ -1203,23 +1203,38 @@ videoModal.addEventListener('click', e => {
     alert("월요일 시간이 복사되었습니다.");
   });
 
+  // 3) 쉬는 날 리스트에 li 하나 추가하는 공용 함수
+  const dayoffListEl = document.getElementById("dayoffList");
+
+  function addDayOffItem(day, repeat) {
+    const key = `${day}-${repeat}`;
+    // 중복 방지
+    if ([...dayoffListEl.children].some(li => li.dataset.key === key)) {
+      alert("이미 추가된 항목입니다.");
+      return;
+    }
+
+    const li = document.createElement("li");
+    li.dataset.key = key;
+    li.dataset.day = day;        // 🔥 저장용
+    li.dataset.repeat = repeat;  // 🔥 저장용
+    li.innerHTML = `<span class="remove-btn">−</span> ${day}요일 ${repeat}`;
+    li.querySelector(".remove-btn").addEventListener("click", () => li.remove());
+    dayoffListEl.appendChild(li);
+  }
+
   // 3) 쉬는 날 추가 버튼
   const addBtn = document.getElementById("addDayOff");
-  const list   = document.getElementById("dayoffList");
   addBtn.addEventListener("click", () => {
     const day = document.getElementById("daySelect").value;
     const repeat = document.getElementById("repeatSelect").value;
-    if (!day || !repeat) return alert("요일과 반복조건을 선택하세요.");
-    const key = `${day}-${repeat}`;
-    if ([...list.children].some(li => li.dataset.key===key)) {
-      return alert("이미 추가된 항목입니다.");
+    if (!day || !repeat) {
+      alert("요일과 반복조건을 선택하세요.");
+      return;
     }
-    const li = document.createElement("li");
-    li.dataset.key = key;
-    li.innerHTML = `<span class="remove-btn">−</span> ${day}요일 ${repeat}`;
-    li.querySelector(".remove-btn").addEventListener("click", ()=>li.remove());
-    list.appendChild(li);
+    addDayOffItem(day, repeat);
   });
+
 </script>
 </body>
 </html>
