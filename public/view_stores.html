@@ -392,11 +392,32 @@
     };
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
 
-    // "HH:mm" 문자열 → 총 분(0~1439) 반환
+    // "HH:mm" 문자열 → 총 분(0~1439) 반환 (브레이크타임용)
     function toMinutes(hhmm) {
       if (!hhmm) return null;
       const [h, m] = hhmm.split(':').map(Number);
       return h * 60 + m;
+    }
+
+    // ★ 24시 이후(25:00, 26:00...)까지 처리하는 함수
+    //    예: "26:00" → { minutes: 120, over24: true }  (다음날 새벽 2시)
+    function parseTime24Plus(hhmm) {
+      if (!hhmm) return null;
+
+      const [hStr, mStr] = hhmm.split(':');
+      let h = Number(hStr);
+      const m = Number(mStr);
+
+      let over24 = false;
+
+      // 24시 이후면 다음날 시간으로 환산
+      if (h >= 24) {
+        h -= 24;    // 26:00 → 2:00
+        over24 = true;
+      }
+
+      const minutes = h * 60 + m;
+      return { minutes, over24 };
     }
 
     // ─── 1번: markerIcon 선언 바로 다음에 추가 ───
@@ -422,6 +443,7 @@
         anchor: new naver.maps.Point(0, 0)
       };
     }
+
   // ────────────────────────────────────────────────
     /* DOM 캐시 */
     const listEl   = document.getElementById('list');
