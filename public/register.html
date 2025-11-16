@@ -493,6 +493,19 @@
     margin-right: 8px;
     cursor: pointer;
   }
+  .custom-marker {
+    position: relative;
+    transform: translate(-50%, -100%);
+    background: #fff;
+    color: #222;
+    padding: 4px 10px;
+    border: 2px solid #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    font-size: 12px;
+    white-space: nowrap;
+    cursor: pointer;
+  }
   </style>
 
 </head>
@@ -512,6 +525,20 @@
     </div>
 
   <div id="map"></div>
+
+    <!-- ─────────── 여기에 추가 ─────────── -->
+  <div id="overlay" style="
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.4);
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+  ">
+    <span style="color: #fff; font-size: 1.2rem;">저장 중…</span>
+  </div>
   
 <div class="btn-group">
   <button type="button" id="getLocBtn" class="main-btn">현재 위치 가져오기</button>
@@ -710,11 +737,8 @@
   </form>
 
   <script>
-    const overlay = document.getElementById('loadingOverlay');
-    const saveBtn = document.getElementById('saveBtn');
-    let editingId = "";
-
     // Firebase 초기화는 한 번만 수행합니다.
+
     const firebaseConfig = {
       apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
       authDomain: "twopage-ea909.firebaseapp.com",
@@ -728,67 +752,102 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
     const storage = firebase.storage();
-    const auth = firebase.auth();
+    // ─ 로그인 없이 이 계정 문서를 바로 읽고 씁니다
+    const USER_EMAIL = 'jhpark8271@gmail.com';
+    let editingId = "";
+    
+    const saveBtn    = document.getElementById('saveBtn');
+    const overlay = document.getElementById('overlay');
 
     // currentUser 선언을 전역 스코프에서 한 번만 합니다.
     let currentUser = null; // 이 줄을 기존의 중복 선언들을 제거하고 한 곳에만 남겨둡니다.
 
-    // onAuthStateChanged 리스너를 하나만 유지합니다.
-    auth.onAuthStateChanged(async user => {
-      if (!user) {
-        alert("로그인이 필요합니다. 매장 등록 및 수정에 사용됩니다.");
-        window.location.href = "/login.html";
-        return;
-      }
+    let marker = null;  
 
-      currentUser = user;
-      const email = user.email.toLowerCase();
-      localStorage.setItem("userEmail", email);
-
-      try {
-        const userDoc = await db.collection("users").doc(email).get();
-        if (!userDoc.exists || userDoc.data().agreedToTerms !== true) {
-          alert("약관 동의가 필요합니다.");
-          window.location.href = "/terms.html";
-          return;
-        }
-
-        const storeDoc = await db.collection("stores").doc(email).get(); // user.email 대신 email 변수 사용
-        if (storeDoc.exists) {
-          loadStoreToForm({ id: email, data: () => storeDoc.data() }); // user.email 대신 email 변수 사용
-        }
-      } catch (err) {
-        console.error("\u2757 Firestore 오류:", err);
-        alert("데이터 불러오는 중 오류 발생.");
-      }
-    });
-
-    const map = new naver.maps.Map('map', {
-      center: new naver.maps.LatLng(37.5665, 126.9780),
-      zoom: 15
-    });
-    let marker = null;
-
-    function setLatLng(lat, lng) {
-      document.getElementById('lat').value = lat;
-      document.getElementById('lng').value = lng;
-      if (marker) marker.setMap(null);
-      marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
-        map: map
-      });
+    // ────────── 여기에 추가 ──────────
+    /**
+     * text: 마커에 표시할 문자열
+     */
+    function createMarkerIconWithText(text) {
+      return {
+        content: `<div class="custom-marker">${text}</div>`,
+        size: new naver.maps.Size(0, 0),
+        anchor: new naver.maps.Point(0, 0)
+      };
     }
-
-    naver.maps.Event.addListener(map, 'click', e => setLatLng(e.coord.lat(), e.coord.lng()));
-    document.getElementById('getLocBtn').onclick = () => {
-      navigator.geolocation?.getCurrentPosition(pos => {
-        const { latitude, longitude } = pos.coords;
-        setLatLng(latitude, longitude);
-        map.setCenter(new naver.maps.LatLng(latitude, longitude));
-        map.setZoom(18);
-      }, () => alert('위치 권한을 허용해주세요.'));
-    };
-
+    // ────────── 추가 끝 ──────────
+    
+      /* 0) 지도 객체를 딱 한 번만 만듭니다 */
+      const map = new naver.maps.Map('map', {
+        center: new naver.maps.LatLng(37.4986526, 126.7756436),
+        zoom: 15
+      });
+      
+      /* 1) 내 매장(USER_EMAIL) 문서를 한 번만 로드 (항상 서버 최신본) */
+      db.collection('stores')
+        .doc(USER_EMAIL)
+        .get({ source: 'server' })          // ← 서버에서 최신 스냅샷
+        .then(doc => {
+          if (!doc.exists) return;          // 문서 없으면 넘어감
+          editingId = doc.id;               // 편집 대상 docId 저장
+          loadStoreToForm(doc);             // 폼에 최신 데이터 채우기
+        })
+        .catch(err => console.error('내 매장 로드 실패:', err));
+      
+      /* 2) 모든 매장 → 마커 표시 (get 한 번) */
+      db.collection('stores').get()
+        .then(snapshot => {
+          snapshot.forEach(doc => {
+            const data = { ...doc.data(), id: doc.id };   // ★ docId 포함
+      
+            const lat = parseFloat(data.lat), lng = parseFloat(data.lng);
+            if (isNaN(lat) || isNaN(lng)) return;
+      
+            const storeMarker = new naver.maps.Marker({
+              position: new naver.maps.LatLng(lat, lng),
+              map: map,
+              icon: createMarkerIconWithText(data.name)
+            });
+      
+            storeMarker.setCursor('pointer');
+            storeMarker.addListener('click', () => {
+              editingId = doc.id;                         // 마커 클릭 → 현재 편집 문서
+              db.collection('stores').doc(doc.id).get().then(fresh => {
+                editingId = fresh.id;
+                loadStoreToForm(fresh);
+              });
+            });
+          }); 
+        })
+        .catch(err => console.error('가게 불러오기 실패:', err));
+      
+      /* 3) 위치 선택 등 보조 함수 */
+      function setLatLng(lat, lng) {
+        document.getElementById('lat').value = lat;
+        document.getElementById('lng').value = lng;
+        if (marker) marker.setMap(null);
+        marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(lat, lng),
+          map: map
+        });
+      }
+      
+      naver.maps.Event.addListener(map, 'click', e =>
+        setLatLng(e.coord.lat(), e.coord.lng())
+      );
+      
+      document.getElementById('getLocBtn').onclick = () => {
+        navigator.geolocation?.getCurrentPosition(
+          pos => {
+            const { latitude, longitude } = pos.coords;
+            setLatLng(latitude, longitude);
+            map.setCenter(new naver.maps.LatLng(latitude, longitude));
+            map.setZoom(18);
+          },
+          () => alert('위치 권한을 허용해주세요.')
+        );
+      };
+    
     function compressImage(file, maxBytes = 1000000) {
       return new Promise(resolve => {
         const img = new Image();
@@ -833,9 +892,13 @@
       return "";
       }
 
-    function loadStoreToForm(doc) {
-      const data = doc.data();
-      editingId = currentUser.email;
+    function loadStoreToForm(docObj) {
+      editingId = docObj.id;          // ★ 폼이 열리면 다시 docId 유지
+      const data = docObj.data();
+
+      // ★ 여기에 추가 ★
+      const rawHours = data.hours || {};
+      
       document.querySelector('[name=name]').value = data.name;
       document.querySelector('[name=insta_id]').value = data.insta;
       document.querySelector('[name=desc]').value = data.desc;
@@ -847,17 +910,59 @@
       document.querySelector('[name=hashtags]').value = (data.hashtags || []).join(', ');
 
       // 오픈/마감 시간, 브레이크 타임, 쉬는 날 로드
-      document.querySelector('[name=openTime]').value = data.openTime || '';
-      document.querySelector('[name=closeTime]').value = data.closeTime || '';
-      document.querySelector('[name=breakStart]').value = data.breakStart || '';
-      document.querySelector('[name=breakEnd]').value = data.breakEnd || '';
 
-      // 쉬는 날 체크박스 초기화 및 체크
-      document.querySelectorAll('[name="offDays[]"]').forEach(cb => cb.checked = false);
-      (data.offDays || []).forEach(day => {
-        const checkbox = document.querySelector(`[name="offDays[]"][value="${day}"]`);
-        if (checkbox) checkbox.checked = true;
+      // --- 요일별 셀렉트 박스에 값 채우기 ---
+      const days = ['월','화','수','목','금','토','일'];
+      days.forEach(day => {
+        // ① 요일별 없으면 "매일" 스케줄을 사용
+        const h = rawHours[day] || rawHours['매일'] || {time:{},break:{},lastOrder:{}};
+
+        // 오픈/마감
+        const selOpen  = document.querySelector(`select[name="${day}_open"]`);
+        const selClose = document.querySelector(`select[name="${day}_close"]`);
+        if (selOpen)  selOpen.value  = h.time.start || '';
+        if (selClose) selClose.value = h.time.end   || '';
+    
+        // 브레이크
+        const selBgn = document.querySelector(`select[name="${day}_break_start"]`);
+        const selEnd = document.querySelector(`select[name="${day}_break_end"]`);
+        if (selBgn) selBgn.value = h.break.start || '';
+        if (selEnd) selEnd.value = h.break.end   || '';
+    
+        // 라스트오더
+        const selLo = document.querySelector(`select[name="${day}_last_order"]`);
+        if (selLo) {
+          // ② 00:00 은 24:00 으로 치환
+          let lo = h.lastOrder.time || '';
+          if (lo === '00:00') lo = '24:00';
+          selLo.value = lo;
+        }
       });
+      
+      // 쉬는 날 체크박스 초기화
+      document.querySelectorAll('[name="offDays[]"]').forEach(cb => {
+        cb.checked = false;
+      });
+      
+      // 저장된 dayOff 배열을 순회하며 체크 & 반복 조건 세팅
+      ;(data.dayOff || []).forEach(entry => {
+        const checkbox = document.querySelector(
+          `[name="offDays[]"][value="${entry.day}"]`
+        );
+        if (checkbox) {
+          // 체크박스 체크
+          checkbox.checked = true;
+      
+          // 반복 조건(select) 설정
+          const repeatSel = document.querySelector(
+            `select[name="repeat_${entry.day}"]`
+          );
+          if (repeatSel) {
+            repeatSel.value = entry.repeat;
+          }
+        }
+      });
+
 
       setLatLng(data.lat, data.lng);
       document.getElementById('saveBtn').textContent = "수정 저장";
@@ -883,20 +988,17 @@
           return;
         }
 
-        const openTime = document.querySelector('[name=openTime]').value;
-        const closeTime = document.querySelector('[name=closeTime]').value;
-        const breakStart = document.querySelector('[name=breakStart]').value;
-        const breakEnd = document.querySelector('[name=breakEnd]').value;
-        const offDays = Array.from(document.querySelectorAll('[name="offDays[]"]:checked')).map(cb => cb.value);
-
-
-        // currentUser가 null일 경우 다시 로그인 경고 및 리턴
-        if (!currentUser) {
-          alert('로그인 후 등록이 가능합니다.');
-          window.location.href = "/login.html"; // 로그인 페이지로 리다이렉트 추가
-          return;
-        }
-
+        const dayOff = Array.from(
+          document.querySelectorAll('[name="offDays[]"]:checked')
+        ).map(cb => {
+          const day = cb.value;
+          const repeatSel = document.querySelector(`select[name="repeat_${day}"]`);
+          return {
+            day,
+            repeat: repeatSel ? repeatSel.value : ''
+          };
+        });
+        
         const days = ['월', '화', '수', '목', '금', '토', '일'];
         const hours = {};
         days.forEach(day => {
@@ -914,69 +1016,47 @@
             }
           };
         });
-        const dayOff = offDays.map(day => ({
-          day,
-          repeat: "매주"
-        }));
         
-        const store = {
-          name: document.querySelector('[name=name]').value.trim(),
-          insta: document.querySelector('[name=insta_id]').value.trim(),
-          desc: document.querySelector('[name=desc]').value.trim(),
-          phone: document.querySelector('[name=phone]').value.trim(),
-          lat: parseFloat(document.getElementById('lat').value),
-          lng: parseFloat(document.getElementById('lng').value),
-          photo: "",
-          vimeo: vimeoUrl,
-          hashtags: tags,
-          hours,         // ✅ 새 구조 반영
-          dayOff,        // ✅ 쉬는 날 구조
-          userEmail: currentUser.email,
-          created: firebase.firestore.FieldValue.serverTimestamp()
-        };
-
-        if (!store.name || !store.insta || isNaN(store.lat) || isNaN(store.lng) || !openTime || !closeTime) {
-          alert('필수 항목을 모두 입력해주세요.');
-          return;
-        }
-
+        /* ───── 1) 사진 업로드 (선택 사항) ───── */
+        let photoURL = null;                                  // 새 사진 URL 저장용
         const file = document.getElementById('photo').files[0];
         if (file) {
-          const blob = await compressImage(file);
-          const filename = `store_photos/${Date.now()}_${file.name.replace(/\s+/g, '')}`;
-          const ref = storage.ref().child(filename);
+          const blob      = await compressImage(file);
+          const filename  = `store_photos/${Date.now()}_${file.name.replace(/\s+/g, '')}`;
+          const ref       = storage.ref().child(filename);
           await ref.put(blob);
-          store.photo = await ref.getDownloadURL();
+          photoURL = await ref.getDownloadURL();              // ← 업로드 성공 시 URL 확보
         }
+        
+        /* ───── 2) store 객체 생성 ───── */
+        const store = {
+          name   : document.querySelector('[name=name]').value.trim(),
+          insta  : document.querySelector('[name=insta_id]').value.trim(),
+          desc   : document.querySelector('[name=desc]').value.trim(),
+          phone  : document.querySelector('[name=phone]').value.trim(),
+          lat    : parseFloat(document.getElementById('lat').value),
+          lng    : parseFloat(document.getElementById('lng').value),
+          vimeo  : vimeoUrl,
+          hashtags: tags,
+          hours,
+          dayOff,
+          userEmail: USER_EMAIL,
+          created  : firebase.firestore.FieldValue.serverTimestamp()
+        };
+        if (photoURL) store.photo = photoURL;                 // 새 사진이 있을 때만 덮어쓰기
+        
+        /* ───── 3) Firestore 저장 (merge:true) ───── */
+        const storeRef = editingId
+          ? db.collection('stores').doc(editingId)            // 기존 문서 수정
+          : db.collection('stores').doc();                    // 새 문서 생성
+        await storeRef.set(store, { merge: true });           // 기존 필드 유지
+        editingId = storeRef.id;                              // 이후에도 이 문서 계속 편집
 
-        const storeRef = db.collection('stores').doc(currentUser.email);
-        if (editingId) {
-          // 사진을 새로 업로드하지 않았다면 기존 photo 필드 유지
-          if (!file) {
-             const existingStore = await storeRef.get();
-             if (existingStore.exists) {
-               store.photo = existingStore.data().photo || "";
-             }
-          }
-          await storeRef.update(store);
-          alert('수정되었습니다!');
-          window.location.href = "/mypage.html";  // ✅ 수정 후 마이페이지로 이동
-        } else {
-          const exists = await storeRef.get();
-          if (exists.exists) {
-            alert("이미 등록된 가게입니다. 수정 모드로 전환됩니다.");
-            loadStoreToForm({ id: currentUser.email, data: () => exists.data() });
-            return;
-          }
-          await storeRef.set(store);
-          alert('등록되었습니다!');
-          window.location.href = "/mypage.html";  // ✅ 신규 등록 후 마이페이지로 이동
-        }
+        alert('저장되었습니다!');
 
         // 폼 초기화 및 지도 마커 제거
         document.getElementById('storeForm').reset();
         if (marker) marker.setMap(null);
-        editingId = "";
         saveBtn.textContent = "저장";
 
       } catch (err) {
@@ -1025,65 +1105,53 @@ videoModal.addEventListener('click', e => {
 </script>
 <!-- 기존 모달 및 기타 스크립트 아래에 추가 -->
 <script>
-// 👉 여기 붙여넣기
-const timeOptions = [];
-for (let h = 0; h <= 27; h++) {
-  const label = h < 10 ? `0${h}:00` : `${h}:00`;
-  timeOptions.push(`<option value="${label}">${label}</option>`);
-}
 
-['월', '화', '수', '목', '금', '토', '일'].forEach(day => {
-  ['open', 'close', 'break_start', 'break_end', 'last_order'].forEach(type => {
-    const sel = document.querySelector(`select[name="${day}_${type}"]`);
-    if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
-  });
-});
-document.getElementById("copyMonday").addEventListener("click", () => {
-  const fields = ["open", "close", "break_start", "break_end", "last_order"];
-  const days = ["화", "수", "목", "금", "토", "일"];
-
-  fields.forEach(field => {
-    const monVal = document.querySelector(`select[name="월_${field}"]`)?.value || "";
-    days.forEach(day => {
-      const target = document.querySelector(`select[name="${day}_${field}"]`);
-      if (target) target.value = monVal;
+  // 1) 시간 옵션 생성
+  const timeOptions = [];
+  for (let h = 0; h <= 32; h++) {
+    const hour = h < 10 ? `0${h}` : `${h}`;
+    ["00","30"].forEach(min => {
+      timeOptions.push(`<option value="${hour}:${min}">${hour}:${min}</option>`);
+    });
+  }
+  ['월','화','수','목','금','토','일'].forEach(day => {
+    ['open','close','break_start','break_end','last_order'].forEach(type => {
+      const sel = document.querySelector(`select[name="${day}_${type}"]`);
+      if (sel) sel.innerHTML = `<option value="">선택 안함</option>` + timeOptions.join('');
     });
   });
 
-  alert("월요일의 시간이 화~일요일에 복사되었습니다.");
-});
+  // 2) 월요일 복사 버튼
+  document.getElementById("copyMonday").addEventListener("click", () => {
+    const fields = ["open","close","break_start","break_end","last_order"];
+    const days = ["화","수","목","금","토","일"];
+    fields.forEach(field => {
+      const val = document.querySelector(`select[name="월_${field}"]`).value;
+      days.forEach(d => {
+        const target = document.querySelector(`select[name="${d}_${field}"]`);
+        if (target) target.value = val;
+      });
+    });
+    alert("월요일 시간이 복사되었습니다.");
+  });
 
-const daySelect = document.getElementById("daySelect");
-const repeatSelect = document.getElementById("repeatSelect");
-const addBtn = document.getElementById("addDayOff");
-const list = document.getElementById("dayoffList");
-
-addBtn.addEventListener("click", () => {
-  const day = daySelect.value;
-  const repeat = repeatSelect.value;
-
-  if (!day || !repeat) {
-    alert("요일과 반복 조건을 모두 선택해주세요.");
-    return;
-  }
-
-  const key = `${day}-${repeat}`;
-  if ([...list.children].some(li => li.dataset.key === key)) {
-    alert("이미 추가된 항목입니다.");
-    return;
-  }
-
-  const li = document.createElement("li");
-  li.dataset.key = key;
-  li.innerHTML = `
-    <span class="remove-btn">−</span> ${day}요일 ${repeat}
-  `;
-  li.querySelector(".remove-btn").addEventListener("click", () => li.remove());
-
-  list.appendChild(li);
-});
-
+  // 3) 쉬는 날 추가 버튼
+  const addBtn = document.getElementById("addDayOff");
+  const list   = document.getElementById("dayoffList");
+  addBtn.addEventListener("click", () => {
+    const day = document.getElementById("daySelect").value;
+    const repeat = document.getElementById("repeatSelect").value;
+    if (!day || !repeat) return alert("요일과 반복조건을 선택하세요.");
+    const key = `${day}-${repeat}`;
+    if ([...list.children].some(li => li.dataset.key===key)) {
+      return alert("이미 추가된 항목입니다.");
+    }
+    const li = document.createElement("li");
+    li.dataset.key = key;
+    li.innerHTML = `<span class="remove-btn">−</span> ${day}요일 ${repeat}`;
+    li.querySelector(".remove-btn").addEventListener("click", ()=>li.remove());
+    list.appendChild(li);
+  });
 </script>
-
 </body>
 </html>
