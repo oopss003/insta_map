@@ -1107,7 +1107,7 @@
           hours,
           dayOff,
           userEmail: USER_EMAIL,
-          created  : firebase.firestore.FieldValue.serverTimestamp()
+          created  : firebase.firestore.FieldValue.serverTimestamp(),
           editPassword: finalPassword      // 🔐 ✅ 이 줄 추가
         };
         if (photoURL) store.photo = photoURL;                 // 새 사진이 있을 때만 덮어쓰기
