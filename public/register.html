@@ -180,18 +180,20 @@
   }
   .custom-field-box {
     width: 344px;
-    height: 77px;
+    /* height: 77px;  ← 이 줄 삭제 */
+    min-height: 77px;           /* 기본은 77px, 내용 많으면 자동으로 커지게 */
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
     padding: 8px 12px;
     box-sizing: border-box;
-    margin-bottom: 12px; /
+    margin-bottom: 12px; /* ← 여기 뒤에 달린 / 도 같이 지워 주세요 */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 4px;
   }
+
   .custom-field-box day {
     width: 344px;
     height: 300px;
