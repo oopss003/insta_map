@@ -1239,6 +1239,14 @@ videoModal.addEventListener('click', e => {
     addDayOffItem(day, repeat);
   });
 
+  // ✅ 카카오톡 채팅 버튼 클릭 시 새 창(또는 새 탭)으로 열기
+  const kakaoBtn = document.getElementById('kakaoChatBtn');
+  if (kakaoBtn) {
+    kakaoBtn.addEventListener('click', () => {
+      window.open('https://pf.kakao.com/_xcfQan/chat', '_blank');
+    });
+  }
+  
 </script>
 </body>
 </html>
