@@ -577,11 +577,35 @@
       <input type="file" id="photo" accept="image/*" />
     </div>
 
-    <!-- Vimeo 동영상 -->
     <div class="custom-field-box">
       <label for="vimeo">Vimeo 동영상</label>
-      <input name="vimeo" id="vimeo" type="text" placeholder="동영상은 검수를 통해 업로드 됩니다." />
+      <input
+        name="vimeo"
+        id="vimeo"
+        type="text"
+        placeholder="동영상은 검수를 통해 업로드 됩니다."
+      />
+    
+      <!-- ✅ 카카오톡 채팅 바로가기 버튼 추가 -->
+      <button
+        type="button"
+        id="kakaoChatBtn"
+        style="
+          margin-top:8px;
+          width:100%;
+          height:36px;
+          border-radius:12px;
+          border:none;
+          background:#FEE500;
+          font-size:14px;
+          font-weight:600;
+          cursor:pointer;
+        "
+      >
+        카카오톡채널로 동영상 업로드해주세요
+      </button>
     </div>
+
   
     <div class="custom-field-box day">
       <label style="font-weight:700; margin-top: 24px;">요일별 영업시간(월요일시간을 다른날에 복사합니다.)</label>
