@@ -13,8 +13,8 @@
   <style>
     :root {
       --primary-color: #3B82F6;
-      --primary-light: #EFF6FF;
-      --bg-color: #F8FAFC;
+      --bg-color: #F1F5F9;
+      --card-bg: #FFFFFF;
       --text-main: #1E293B;
       --text-sub: #64748B;
       --border-color: #E2E8F0;
@@ -29,220 +29,159 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       height: 100vh;
+      overflow: hidden;
       display: flex;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
     }
 
+    /* === 전체 레이아웃 (좌4 : 우6 유지) === */
     .app-container {
       display: flex;
-      width: 96%; height: 95%;
-      gap: 24px;
+      width: 98%; height: 96%;
+      gap: 20px;
       max-width: 1800px;
     }
 
-    /* =========================================
-       [좌측] 컨트롤 패널 (달력 + 필터) - 35%
-       ========================================= */
-    .control-panel {
-      flex: 3.5;
+    /* [왼쪽] 컨트롤 패널 (기존 지도 자리를 캘린더+미니맵으로 변경) */
+    .control-card-section {
+      flex: 4;
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      border: 1px solid white;
       display: flex;
       flex-direction: column;
-      gap: 20px;
+      overflow: hidden; /* 내부 스크롤 */
     }
 
-    /* 1. 캘린더 카드 */
-    .calendar-card {
+    /* [오른쪽] 대시보드 패널 (동일 유지) */
+    .dashboard-card-section {
+      flex: 6;
       background: white;
       border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
       border: 1px solid white;
-      flex: 0 0 auto; /* 크기 고정 */
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
     }
 
-    .cal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 20px;
+    /* === [왼쪽] 내부 디자인 === */
+    .ctrl-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border-color);
     }
-    .cal-month { font-size: 18px; font-weight: 800; color: #1E3A8A; }
-    .cal-nav-btn {
-      background: none; border: 1px solid var(--border-color); border-radius: 8px;
-      width: 32px; height: 32px; cursor: pointer; color: var(--text-sub);
-      transition: all 0.2s;
-    }
-    .cal-nav-btn:hover { background: var(--bg-color); color: var(--primary-color); }
-
-    /* 달력 그리드 */
-    .cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 8px;
-      text-align: center;
-    }
-    .cal-day-name {
-      font-size: 12px; font-weight: 600; color: #94A3B8; margin-bottom: 8px;
+    .ctrl-title { font-size: 18px; font-weight: 800; color: #1E3A8A; }
+    
+    .ctrl-body {
+      padding: 28px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 24px;
     }
 
-    .cal-date {
-      height: 44px;
-      border-radius: 12px;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 600;
-      cursor: pointer;
-      position: relative;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-      color: #CBD5E1; /* 기본: 비활성 색상 */
+    /* 1. 달력 스타일 (업그레이드) */
+    .calendar-widget {
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 20px;
       background: #F8FAFC;
     }
-
-    /* 데이터가 있는 날 (활성 상태) */
-    .cal-date.has-data {
-      color: var(--text-main);
-      background: white;
-      border-color: var(--border-color);
-      cursor: pointer;
+    .cal-top {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
     }
-    .cal-date.has-data:hover {
-      border-color: var(--primary-color);
-      color: var(--primary-color);
+    .cal-month { font-weight: 700; font-size: 16px; }
+    .cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center;
     }
-
-    /* 데이터 있음 표시 (점) */
-    .data-dot {
-      width: 5px; height: 5px;
-      background-color: var(--success-dot);
-      border-radius: 50%;
-      margin-top: 4px;
-      display: none;
+    .cal-head { font-size: 11px; color: #94A3B8; margin-bottom: 8px; font-weight: 600; }
+    
+    .cal-cell {
+      aspect-ratio: 1/1;
+      display: flex; flex-direction: column; justify-content: center; align-items: center;
+      border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer;
+      position: relative; border: 1px solid transparent; color: #CBD5E1; background: white;
     }
-    .cal-date.has-data .data-dot { display: block; }
-
-    /* 선택된 날짜 (Selected) */
-    .cal-date.selected {
-      background: var(--primary-color);
-      color: white;
-      border-color: var(--primary-color);
-      box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
-    }
-    .cal-date.selected .data-dot { background-color: white; }
-
-    /* 2. 필터 옵션 카드 */
-    .filter-card {
-      background: white;
-      border-radius: 24px;
-      padding: 24px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.03);
-      flex: 1; /* 남은 공간 차지 */
-      display: flex; flex-direction: column; gap: 20px;
-    }
-
-    .section-title { font-size: 13px; font-weight: 700; color: var(--text-sub); margin-bottom: 12px; display:block; }
-
-    /* 광고 선택 */
-    .ad-selector {
-      width: 100%; padding: 14px;
-      border: 1px solid var(--border-color); border-radius: 12px;
-      font-size: 14px; font-weight: 600; color: var(--text-main);
-      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 14px center;
-      appearance: none; cursor: pointer;
-    }
-
-    /* 체크박스 칩 스타일 */
-    .options-grid { display: flex; flex-wrap: wrap; gap: 10px; }
-    .option-chip { display: none; }
-    .option-label {
-      padding: 10px 16px;
-      background: #F1F5F9; border-radius: 30px;
-      font-size: 13px; font-weight: 600; color: var(--text-sub);
-      cursor: pointer; transition: all 0.2s;
-      display: flex; align-items: center; gap: 6px;
-    }
-    .option-chip:checked + .option-label {
-      background: var(--primary-light); color: var(--primary-color);
-      box-shadow: 0 0 0 1px var(--primary-color) inset;
-    }
-
-    /* 하단 미니맵 (위치 확인용) */
-    .mini-map-box {
-      height: 150px;
-      border-radius: 16px;
-      overflow: hidden;
-      position: relative;
-    }
-    .mini-map-overlay {
-      position: absolute; bottom: 10px; left: 10px;
-      background: rgba(255,255,255,0.9); padding: 4px 10px;
-      border-radius: 8px; font-size: 11px; font-weight: 700;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 10;
-    }
+    /* 데이터 있는 날 */
+    .cal-cell.has-data { color: var(--text-main); border-color: #E2E8F0; }
+    .cal-cell.has-data:hover { border-color: var(--primary-color); color: var(--primary-color); }
+    /* 선택된 날 */
+    .cal-cell.selected { background: var(--primary-color); color: white; border-color: var(--primary-color); box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3); }
+    /* 점 표시 */
+    .dot { width: 4px; height: 4px; background: #10B981; border-radius: 50%; margin-top: 4px; display: none; }
+    .cal-cell.has-data .dot { display: block; }
+    .cal-cell.selected .dot { background: white; }
 
 
-    /* =========================================
-       [우측] 분석 대시보드 (그래프) - 65%
-       ========================================= */
-    .dashboard-panel {
-      flex: 6.5;
-      background: white;
-      border-radius: 24px;
-      box-shadow: 0 4px 30px rgba(0,0,0,0.05);
-      display: flex; flex-direction: column;
-      overflow: hidden;
+    /* 2. 필터 스타일 */
+    .filter-box { display: flex; flex-direction: column; gap: 12px; }
+    .label-title { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+    
+    .ad-select {
+      width: 100%; padding: 12px; border-radius: 12px; border: 1px solid var(--border-color);
+      font-size: 14px; font-weight: 600; background: white; cursor: pointer; outline: none;
     }
 
+    .chip-group { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip-input { display: none; }
+    .chip-label {
+      padding: 8px 14px; background: white; border: 1px solid var(--border-color); border-radius: 20px;
+      font-size: 12px; font-weight: 600; color: var(--text-sub); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .chip-input:checked + .chip-label {
+      background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color);
+    }
+
+    /* 3. 미니맵 (하단 고정) */
+    .minimap-wrapper {
+      margin-top: auto; /* 아래로 밀기 */
+      height: 180px;
+      border-radius: 16px; overflow: hidden; border: 1px solid var(--border-color); position: relative;
+    }
+    .minimap-badge {
+      position: absolute; bottom: 10px; left: 10px; background: rgba(255,255,255,0.9);
+      padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; z-index: 10;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* === [오른쪽] 대시보드 내부 디자인 (기존 유지) === */
     .dash-header {
       padding: 24px 32px; border-bottom: 1px solid var(--border-color);
       display: flex; justify-content: space-between; align-items: center;
     }
-    .selected-range-info { font-size: 14px; font-weight: 600; color: var(--text-main); }
-    .selected-count-badge {
-      background: var(--primary-color); color: white; padding: 4px 10px;
-      border-radius: 20px; font-size: 12px; margin-left: 8px;
-    }
+    .dash-title h2 { margin: 0; font-size: 20px; font-weight: 800; color: #1E3A8A; }
+    .dash-title span { font-size: 13px; color: var(--text-sub); }
 
-    .dash-body {
-      padding: 32px;
-      overflow-y: auto;
-      flex: 1;
-    }
+    .dash-body { padding: 32px; flex: 1; overflow-y: auto; }
 
-    /* KPI 카드 */
-    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
-    .kpi-box {
-      border: 1px solid var(--border-color); border-radius: 16px; padding: 20px;
-      display: flex; flex-direction: column; gap: 4px;
+    /* KPI Cards */
+    .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .kpi-card {
+      background: #F8FAFC; border-radius: 16px; padding: 20px;
+      display: flex; flex-direction: column; gap: 6px;
     }
-    .kpi-head { font-size: 12px; color: var(--text-sub); font-weight: 700; text-transform: uppercase; }
-    .kpi-val { font-size: 26px; font-weight: 800; color: #1E3A8A; }
-    .kpi-sub { font-size: 12px; font-weight: 600; color: #10B981; display: flex; align-items: center; gap: 4px; }
-
-    /* 그래프 영역 */
+    .kpi-label { font-size: 11px; font-weight: 700; color: var(--text-sub); text-transform: uppercase; }
+    .kpi-value { font-size: 24px; font-weight: 800; color: var(--text-main); }
+    
+    /* Heatmap Box */
     .chart-box {
       border: 1px solid var(--border-color); border-radius: 16px; padding: 24px;
-      margin-bottom: 24px;
     }
-    .chart-title { font-size: 16px; font-weight: 700; margin-bottom: 16px; display: flex; justify-content: space-between; }
+    .chart-head { display: flex; justify-content: space-between; margin-bottom: 16px; }
+    .hm-container { display: grid; grid-template-columns: 40px 1fr; gap: 8px; }
     
-    /* 히트맵 그리드 시각화 (CSS Grid) */
-    .heatmap-wrap { display: grid; grid-template-columns: 50px 1fr; gap: 10px; }
-    .hm-y-labels { display: grid; grid-template-rows: repeat(7, 30px); gap: 4px; text-align: right; padding-right: 10px; }
-    .hm-y-label { font-size: 12px; font-weight: 600; color: var(--text-sub); line-height: 30px; }
+    .hm-y { display: grid; grid-template-rows: repeat(7, 30px); gap: 4px; text-align: right; }
+    .hm-y span { font-size: 12px; font-weight: 600; color: var(--text-sub); line-height: 30px; margin-right: 8px; }
     
     .hm-grid { display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; }
-    .hm-cell { height: 30px; border-radius: 4px; background: #F1F5F9; transition: all 0.2s; }
-    .hm-cell:hover { transform: scale(1.1); box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .hm-block { height: 30px; border-radius: 4px; background: #F1F5F9; }
     
-    /* 농도 레벨 */
-    .l1 { background: #EFF6FF; } .l2 { background: #DBEAFE; } .l3 { background: #93C5FD; }
-    .l4 { background: #3B82F6; } .l5 { background: #1E40AF; }
+    .l1 { background: #EFF6FF; } .l2 { background: #DBEAFE; } 
+    .l3 { background: #93C5FD; } .l4 { background: #3B82F6; } .l5 { background: #1E40AF; }
 
-    .hm-x-labels { 
-      display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; 
-      margin-left: 60px; margin-top: 4px; 
-    }
-    .hm-x-label { font-size: 10px; color: #94A3B8; text-align: center; }
+    .hm-x { display: grid; grid-template-columns: repeat(18, 1fr); gap: 4px; margin-left: 48px; margin-top: 4px; }
+    .hm-x span { font-size: 10px; color: #94A3B8; text-align: center; }
 
   </style>
 </head>
@@ -250,248 +189,183 @@
 
   <div class="app-container">
     
-    <div class="control-panel">
-      
-      <div class="calendar-card">
-        <div class="cal-header">
-          <button class="cal-nav-btn"><i class="fa-solid fa-chevron-left"></i></button>
-          <div class="cal-month">October 2025</div>
-          <button class="cal-nav-btn"><i class="fa-solid fa-chevron-right"></i></button>
-        </div>
-
-        <div class="cal-grid" id="calendarGrid">
-          <div class="cal-day-name">Sun</div><div class="cal-day-name">Mon</div><div class="cal-day-name">Tue</div>
-          <div class="cal-day-name">Wed</div><div class="cal-day-name">Thu</div><div class="cal-day-name">Fri</div>
-          <div class="cal-day-name">Sat</div>
-
-          </div>
-
-        <div style="margin-top:16px; font-size:12px; color:#64748B; display:flex; gap:12px; justify-content:center;">
-          <div style="display:flex; align-items:center; gap:4px;">
-            <div style="width:8px; height:8px; background:#F8FAFC; border:1px solid #E2E8F0; border-radius:50%;"></div> 데이터 없음
-          </div>
-          <div style="display:flex; align-items:center; gap:4px;">
-            <div style="width:8px; height:8px; background:white; border:2px solid var(--border-color); border-radius:50%;"></div> 선택 가능
-          </div>
-          <div style="display:flex; align-items:center; gap:4px;">
-            <div style="width:8px; height:8px; background:var(--primary-color); border-radius:50%;"></div> 선택됨
-          </div>
-        </div>
+    <div class="control-card-section">
+      <div class="ctrl-header">
+        <div class="ctrl-title">Control Panel</div>
+        <div style="font-size:13px; color:#64748B;">강남역 1번 출구 메인</div>
       </div>
-
-      <div class="filter-card">
+      
+      <div class="ctrl-body">
+        
         <div>
-          <label class="section-title">ANALYSIS TARGET</label>
-          <select class="ad-selector">
-            <option value="all">전체 유동 인구 (All Traffic)</option>
-            <option value="ad1">[AD] 나이키 겨울 시즌</option>
-            <option value="ad2">[AD] 갤럭시 S25 런칭</option>
-          </select>
-        </div>
-
-        <div>
-          <label class="section-title">VIEW METRICS</label>
-          <div class="options-grid">
-            <input type="checkbox" id="opt_traffic" class="option-chip" checked>
-            <label for="opt_traffic" class="option-label"><i class="fa-solid fa-users"></i> Traffic</label>
-            
-            <input type="checkbox" id="opt_gender" class="option-chip" checked>
-            <label for="opt_gender" class="option-label"><i class="fa-solid fa-venus-mars"></i> Gender</label>
-            
-            <input type="checkbox" id="opt_age" class="option-chip">
-            <label for="opt_age" class="option-label"><i class="fa-solid fa-arrow-down-9-1"></i> Age</label>
-            
-            <input type="checkbox" id="opt_attn" class="option-chip">
-            <label for="opt_attn" class="option-label"><i class="fa-regular fa-eye"></i> Attention</label>
-          </div>
-        </div>
-
-        <div style="margin-top:auto;">
-          <div class="mini-map-box">
-            <div id="miniMap" style="width:100%; height:100%;"></div>
-            <div class="mini-map-overlay">
-              <i class="fa-solid fa-location-dot" style="color:#3B82F6;"></i> 강남역 1번 출구
+          <div class="label-title" style="margin-bottom:8px;">DATE SELECTION (Accumulate)</div>
+          <div class="calendar-widget">
+            <div class="cal-top">
+              <i class="fa-solid fa-chevron-left" style="color:#94A3B8; cursor:pointer;"></i>
+              <div class="cal-month">October 2025</div>
+              <i class="fa-solid fa-chevron-right" style="color:#94A3B8; cursor:pointer;"></i>
+            </div>
+            <div class="cal-grid" id="calGrid">
+              <div class="cal-head">S</div><div class="cal-head">M</div><div class="cal-head">T</div>
+              <div class="cal-head">W</div><div class="cal-head">T</div><div class="cal-head">F</div><div class="cal-head">S</div>
+            </div>
+            <div style="margin-top:12px; text-align:center; font-size:12px; color:var(--primary-color); font-weight:600;">
+              <span id="selectedCount">3</span> days selected
             </div>
           </div>
         </div>
-      </div>
 
+        <div class="filter-box">
+          <div class="label-title">TARGET AD</div>
+          <select class="ad-select">
+            <option>전체 유동 인구 (All Traffic)</option>
+            <option>[AD] 나이키 겨울 시즌</option>
+            <option>[AD] 갤럭시 S25 런칭</option>
+          </select>
+        </div>
+
+        <div class="filter-box">
+          <div class="label-title">METRICS</div>
+          <div class="chip-group">
+            <input type="checkbox" id="c1" class="chip-input" checked><label for="c1" class="chip-label">Traffic</label>
+            <input type="checkbox" id="c2" class="chip-input" checked><label for="c2" class="chip-label">Gender</label>
+            <input type="checkbox" id="c3" class="chip-input"><label for="c3" class="chip-label">Age</label>
+            <input type="checkbox" id="c4" class="chip-input"><label for="c4" class="chip-label">Attention</label>
+          </div>
+        </div>
+
+        <div class="minimap-wrapper">
+          <div id="miniMap" style="width:100%; height:100%;"></div>
+          <div class="minimap-badge">
+            <i class="fa-solid fa-location-dot" style="color:#3B82F6;"></i> Location Check
+          </div>
+        </div>
+
+      </div>
     </div>
 
 
-    <div class="dashboard-panel">
+    <div class="dashboard-card-section">
       <div class="dash-header">
-        <div>
-          <div style="font-size:12px; color:var(--text-sub); font-weight:700;">DASHBOARD</div>
-          <div style="font-size:20px; font-weight:800; color:#1E3A8A; margin-top:4px;">Traffic & Ad Analysis</div>
+        <div class="dash-title">
+          <span>ANALYTICS REPORT</span>
+          <h2>Traffic & Efficiency</h2>
         </div>
-        <div class="selected-range-info">
-          Selected: <span id="selectedRangeText" style="color:var(--primary-color);">Oct 26, 27, 28</span>
-          <span class="selected-count-badge" id="selectedCountBadge">3 Days</span>
-        </div>
+        <button style="background:#3B82F6; color:white; border:none; padding:10px 20px; border-radius:10px; font-weight:700; cursor:pointer;">
+          <i class="fa-solid fa-download"></i> Export
+        </button>
       </div>
 
       <div class="dash-body">
-        
         <div class="kpi-row">
-          <div class="kpi-box">
-            <span class="kpi-head">Total Viewers</span>
-            <span class="kpi-val">12,450</span>
-            <span class="kpi-sub"><i class="fa-solid fa-arrow-trend-up"></i> +5.2%</span>
+          <div class="kpi-card">
+            <span class="kpi-label">Total Impressions</span>
+            <span class="kpi-value">42,593</span>
           </div>
-          <div class="kpi-box">
-            <span class="kpi-head">Avg Attention</span>
-            <span class="kpi-val">3.8s</span>
-            <span class="kpi-sub" style="color:#64748B;">Avg 3.5s</span>
+          <div class="kpi-card">
+            <span class="kpi-label">Avg Attention</span>
+            <span class="kpi-value">4.8s</span>
           </div>
-          <div class="kpi-box">
-            <span class="kpi-head">Peak Time</span>
-            <span class="kpi-val">19:00</span>
-            <span class="kpi-sub" style="color:#64748B;">Wed, Fri</span>
+          <div class="kpi-card">
+            <span class="kpi-label">Peak Hour</span>
+            <span class="kpi-value">19:00</span>
           </div>
-          <div class="kpi-box">
-            <span class="kpi-head">Top Demographic</span>
-            <span class="kpi-val">F / 20s</span>
-            <span class="kpi-sub" style="color:#64748B;">35% of Total</span>
+          <div class="kpi-card">
+            <span class="kpi-label">Top Demographics</span>
+            <span class="kpi-value">F / 20s</span>
           </div>
         </div>
 
         <div class="chart-box">
-          <div class="chart-title">
-            <span>Weekly Traffic Heatmap (06:00 - 24:00)</span>
-            <div style="font-size:12px; font-weight:500; color:#64748B;">
-              <i class="fa-solid fa-square" style="color:#EFF6FF"></i> Low 
-              <i class="fa-solid fa-square" style="color:#1E40AF; margin-left:6px;"></i> High
-            </div>
+          <div class="chart-head">
+            <div style="font-weight:700;">Weekly Traffic Heatmap</div>
+            <div style="font-size:12px; color:#94A3B8;">Low ■ ■ ■ ■ ■ High</div>
           </div>
           
-          <div class="heatmap-wrap">
-            <div class="hm-y-labels">
-              <div class="hm-y-label">Mon</div><div class="hm-y-label">Tue</div><div class="hm-y-label">Wed</div>
-              <div class="hm-y-label">Thu</div><div class="hm-y-label">Fri</div><div class="hm-y-label">Sat</div>
-              <div class="hm-y-label">Sun</div>
+          <div class="hm-container">
+            <div class="hm-y">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
             </div>
-            
-            <div class="hm-grid" id="heatmapGrid">
+            <div class="hm-grid" id="heatGrid">
               </div>
           </div>
-          <div class="hm-x-labels">
-            <div class="hm-x-label">06</div><div class="hm-x-label">07</div><div class="hm-x-label">08</div>
-            <div class="hm-x-label">09</div><div class="hm-x-label">10</div><div class="hm-x-label">11</div>
-            <div class="hm-x-label">12</div><div class="hm-x-label">13</div><div class="hm-x-label">14</div>
-            <div class="hm-x-label">15</div><div class="hm-x-label">16</div><div class="hm-x-label">17</div>
-            <div class="hm-x-label">18</div><div class="hm-x-label">19</div><div class="hm-x-label">20</div>
-            <div class="hm-x-label">21</div><div class="hm-x-label">22</div><div class="hm-x-label">23</div>
+          <div class="hm-x">
+            <span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span>
+            <span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span>
+            <span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span>
           </div>
         </div>
 
       </div>
     </div>
+
   </div>
 
   <script>
-    /* -------------------------------------------
-       1. 캘린더 로직 (데이터 유무 & 멀티 선택)
-       ------------------------------------------- */
-    const calendarGrid = document.getElementById('calendarGrid');
-    const selectedRangeText = document.getElementById('selectedRangeText');
-    const selectedCountBadge = document.getElementById('selectedCountBadge');
+    // 1. 미니맵 로드
+    var mapOptions = { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15, disableDefaultUI: true };
+    var map = new naver.maps.Map('miniMap', mapOptions);
+
+    // 2. 캘린더 생성 로직
+    const calGrid = document.getElementById('calGrid');
+    const selectedCountSpan = document.getElementById('selectedCount');
     
-    // 시뮬레이션: 데이터가 있는 날짜들
-    const availableDates = [26, 27, 28, 29, 30]; 
-    let selectedDates = [26, 27, 28]; // 초기 선택값
+    // 더미 데이터: 데이터가 존재하는 날짜들
+    const availableDates = [25, 26, 27, 28, 29, 30];
+    let selectedDates = [26, 27, 28]; // 기본 선택
 
-    function renderCalendar() {
-      // 10월은 일요일 시작이라고 가정 (빈칸 3개)
-      let html = '';
-      for(let i=0; i<3; i++) {
-        html += `<div></div>`; 
-      }
-      
-      for(let day=1; day<=31; day++) {
-        const isAvailable = availableDates.includes(day);
-        const isSelected = selectedDates.includes(day);
-        
-        let classes = 'cal-date';
-        if(isAvailable) classes += ' has-data';
-        if(isSelected) classes += ' selected';
-        
-        // 클릭 이벤트 핸들러 연결을 위해 onclick 속성 사용
-        // 실제로는 addEventListener가 좋지만 예시용으로 인라인 처리
-        const clickAction = isAvailable ? `onclick="toggleDate(${day})"` : '';
+    function renderCal() {
+      // 빈칸 (10월 1일이 수요일이라 가정)
+      for(let i=0; i<3; i++) { calGrid.innerHTML += `<div></div>`; }
 
-        html += `
-          <div class="${classes}" ${clickAction}>
-            ${day}
-            <div class="data-dot"></div>
+      for(let d=1; d<=31; d++) {
+        const hasData = availableDates.includes(d);
+        const isSel = selectedDates.includes(d);
+        
+        let cls = 'cal-cell';
+        if(hasData) cls += ' has-data';
+        if(isSel) cls += ' selected';
+        
+        // 클릭 이벤트 (데이터 있는 날만)
+        const clickEvt = hasData ? `onclick="toggleDay(${d})"` : '';
+        
+        calGrid.innerHTML += `
+          <div class="${cls}" ${clickEvt}>
+            ${d}
+            <div class="dot"></div>
           </div>
         `;
       }
-      calendarGrid.innerHTML += html;
     }
-
-    // 날짜 클릭 시 (누적 선택)
-    window.toggleDate = function(day) {
-      if(selectedDates.includes(day)) {
-        selectedDates = selectedDates.filter(d => d !== day);
+    
+    // 날짜 토글 함수
+    window.toggleDay = function(d) {
+      if(selectedDates.includes(d)) {
+        selectedDates = selectedDates.filter(date => date !== d);
       } else {
-        selectedDates.push(day);
+        selectedDates.push(d);
       }
       
-      // UI 업데이트
-      updateCalendarUI();
-      updateInfoText();
+      // UI 갱신 (간단히 다시 그림)
+      calGrid.innerHTML = `
+        <div class="cal-head">S</div><div class="cal-head">M</div><div class="cal-head">T</div>
+        <div class="cal-head">W</div><div class="cal-head">T</div><div class="cal-head">F</div><div class="cal-head">S</div>
+      `;
+      renderCal();
+      selectedCountSpan.innerText = selectedDates.length;
     }
 
-    function updateCalendarUI() {
-      // 기존 그리드 초기화 후 다시 렌더링은 비효율적이므로 클래스만 토글하는게 좋으나
-      // 여기선 간단히 다시 그림 (실제 개발시엔 DOM 조작 최적화 필요)
-      // 간단히: 모든 cal-date를 순회하며 클래스 갱신
-      const cells = document.querySelectorAll('.cal-date');
-      cells.forEach(cell => {
-        const dayNum = parseInt(cell.innerText);
-        if(!isNaN(dayNum)) {
-          if(selectedDates.includes(dayNum)) cell.classList.add('selected');
-          else cell.classList.remove('selected');
-        }
-      });
-    }
+    renderCal();
 
-    function updateInfoText() {
-      selectedDates.sort((a,b) => a-b);
-      if(selectedDates.length > 0) {
-        selectedRangeText.innerText = `Oct ${selectedDates.join(', ')}`;
-        selectedCountBadge.innerText = `${selectedDates.length} Days`;
-      } else {
-        selectedRangeText.innerText = "None";
-        selectedCountBadge.innerText = "0 Days";
-      }
-    }
-
-    renderCalendar();
-
-
-    /* -------------------------------------------
-       2. 히트맵 그리드 생성 (더미 데이터)
-       ------------------------------------------- */
-    const heatmapGrid = document.getElementById('heatmapGrid');
-    for(let i=0; i < 7 * 18; i++) {
-      const level = Math.floor(Math.random() * 5) + 1; // 1~5 랜덤 농도
+    // 3. 히트맵 더미 생성
+    const heatGrid = document.getElementById('heatGrid');
+    for(let i=0; i<7*18; i++) {
+      const lv = Math.ceil(Math.random()*5);
       const div = document.createElement('div');
-      div.className = `hm-cell l${level}`;
-      heatmapGrid.appendChild(div);
+      div.className = `hm-block l${lv}`;
+      heatGrid.appendChild(div);
     }
 
-    /* -------------------------------------------
-       3. 미니맵 (네이버 지도)
-       ------------------------------------------- */
-    var mapOptions = {
-        center: new naver.maps.LatLng(37.498095, 127.027610),
-        zoom: 15,
-        disableDefaultUI: true, // 컨트롤 숨김
-        draggable: false // 미니맵이니까 드래그 방지
-    };
-    var map = new naver.maps.Map('miniMap', mapOptions);
   </script>
 </body>
 </html>
