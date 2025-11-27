@@ -9,11 +9,11 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
+    /* === GLOBAL VARIABLES === */
     :root {
       --primary-color: #3B82F6;
       --sidebar-bg: #1E293B;
@@ -21,200 +21,123 @@
       --bg-color: #F3F4F6;
       --card-bg: #FFFFFF;
       --text-main: #1F2937;
+      --text-sub: #6B7280;
       --border-color: #E5E7EB;
-      --success-dot: #10B981;
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
     }
 
     * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-    body {
-      margin: 0; padding: 0;
-      font-family: 'Pretendard', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      height: 100vh;
-      display: flex;
-      overflow: hidden;
-    }
-
-    /* === [LEFT SIDEBAR] === */
-    .sidebar {
-      width: 320px;
-      background-color: var(--sidebar-bg);
-      color: var(--sidebar-text);
-      display: flex; flex-direction: column;
-      padding: 24px;
-      flex-shrink: 0;
-    }
-
-    .logo-area {
-      margin-bottom: 40px; color: white; font-size: 20px; font-weight: 800;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .logo-icon {
-      width: 32px; height: 32px; background: var(--primary-color);
-      border-radius: 8px; display: flex; align-items: center; justify-content: center;
-    }
-
+    /* === SIDEBAR === */
+    .sidebar { width: 280px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; }
+    .logo-area { margin-bottom: 40px; color: white; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--primary-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    
     .nav-menu { list-style: none; padding: 0; margin: 0 0 40px 0; }
-    .nav-item {
-      padding: 12px 16px; border-radius: 12px; cursor: pointer;
-      display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600;
-      color: var(--sidebar-text); transition: all 0.2s; margin-bottom: 4px;
-    }
+    .nav-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--sidebar-text); transition: all 0.2s; margin-bottom: 4px; }
     .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
     .nav-item.active { background: var(--primary-color); color: white; }
 
     /* 사이드바 달력 */
-    .sidebar-cal {
-      background: rgba(255,255,255,0.05);
-      border-radius: 16px; padding: 20px;
-      margin-top: auto; 
-    }
-    .sb-cal-header {
-      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
-      color: white; font-weight: 700; font-size: 14px;
-    }
-    .sb-cal-grid {
-      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;
-    }
+    .sidebar-cal { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-top: auto; }
+    .sb-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; color: white; font-weight: 700; font-size: 14px; }
+    .sb-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
     .sb-day-name { font-size: 10px; color: #64748B; margin-bottom: 6px; }
-    
-    .sb-date-cell {
-      aspect-ratio: 1/1; border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; color: #CBD5E1; cursor: pointer; position: relative;
-    }
+    .sb-date-cell { aspect-ratio: 1/1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #CBD5E1; cursor: pointer; position: relative; }
     .sb-date-cell:hover { background: rgba(255,255,255,0.1); }
     .sb-date-cell.selected { background: var(--primary-color); color: white; font-weight: 700; }
-    .sb-dot {
-      width: 4px; height: 4px; background: var(--success-dot); border-radius: 50%;
-      position: absolute; bottom: 4px; display: none;
-    }
+    .sb-dot { width: 4px; height: 4px; background: var(--success); border-radius: 50%; position: absolute; bottom: 4px; display: none; }
     .sb-date-cell.has-data .sb-dot { display: block; }
 
-
-    /* === [RIGHT MAIN CONTENT] === */
-    .main-content {
-      flex: 1;
-      padding: 30px;
-      display: flex; flex-direction: column; gap: 24px;
-      overflow-y: auto;
-    }
-
-    /* 상단 헤더 */
-    .top-section {
-      display: flex; justify-content: space-between; align-items: flex-start;
-    }
+    /* === MAIN CONTENT === */
+    .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    
+    /* 공통 헤더 */
+    .top-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-shrink: 0; }
     .page-header h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
     .page-header p { margin: 0; font-size: 14px; color: #6B7280; }
-
-    /* 관리자 프로필 버튼 (커서 추가) */
-    .user-profile-btn {
-      display: flex; align-items: center; gap: 10px; 
-      cursor: pointer; padding: 8px 12px; border-radius: 12px; transition: background 0.2s;
-    }
-    .user-profile-btn:hover { background: #E5E7EB; }
-
-    .header-controls { display: flex; gap: 12px; }
-    .btn {
-      padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px;
-    }
-    .btn-white { background: white; border: 1px solid var(--border-color); color: #374151; }
-    .btn-primary { background: var(--primary-color); color: white; }
-
-    /* 지도 카드 */
-    .map-card {
-      height: 300px; /* 지도 높이 좀 더 확보 */
-      background: white; border-radius: 16px; overflow: hidden;
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-      position: relative;
-      border: 1px solid var(--border-color);
-    }
     
-    /* 지도 위 컨트롤 버튼들 */
-    .map-controls-overlay {
-      position: absolute; top: 16px; left: 16px; z-index: 100;
-      display: flex; gap: 8px;
-    }
-    .map-btn {
-      background: white; padding: 8px 12px; border-radius: 8px; 
-      font-size: 12px; font-weight: 700; color: #374151;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; cursor: pointer;
-      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
-    }
-    .map-btn:hover { background: #F9FAFB; transform: translateY(-1px); }
-    .map-btn.accent { background: var(--primary-color); color: white; border: none; }
+    .header-controls { display: flex; gap: 12px; }
+    .btn { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .btn-white { background: white; border: 1px solid var(--border-color); color: #374151; }
+    .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); }
+    .btn-primary:hover { background: #2563EB; transform: translateY(-1px); }
 
-    /* 모니터 입력 폼 (숨김/보임 처리용) */
-    #monitorFormOverlay {
-      position: absolute; top: 16px; right: 16px; bottom: 16px; width: 300px;
-      background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
-      border-radius: 16px; padding: 20px; z-index: 200;
-      box-shadow: -4px 0 10px rgba(0,0,0,0.05); border: 1px solid #E5E7EB;
-      display: none; flex-direction: column; gap: 12px;
-    }
-    .form-input {
-      width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 13px;
-    }
+    /* 페이지 전환용 (Display None Toggle) */
+    .page-view { display: none; flex-direction: column; gap: 24px; height: 100%; }
+    .page-view.active { display: flex; }
 
-    /* 필터 바 */
-    .filter-card {
-      background: white; padding: 16px 24px; border-radius: 16px;
-      border: 1px solid var(--border-color);
-      display: flex; align-items: center; gap: 24px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
+    /* --- [PAGE 1] DASHBOARD STYLES --- */
+    .map-card { height: 280px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; border: 1px solid var(--border-color); flex-shrink: 0; }
+    .map-badge { position: absolute; top: 16px; left: 16px; z-index: 10; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    
+    .filter-card { background: white; padding: 16px 24px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0; flex-wrap: wrap; }
     .filter-item { display: flex; align-items: center; gap: 12px; }
     .filter-label { font-size: 12px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; }
-    
-    .select-box {
-      padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #F9FAFB;
-    }
-    
+    .select-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #F9FAFB; }
     .toggle-chips { display: flex; gap: 6px; }
-    .chip {
-      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);
-      font-size: 12px; font-weight: 600; color: #6B7280; cursor: pointer; background: white;
-    }
+    .chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 12px; font-weight: 600; color: #6B7280; cursor: pointer; background: white; }
     .chip.active { background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color); }
 
-    /* 대시보드 그리드 */
-    .dashboard-grid {
-      display: grid; grid-template-columns: 280px 1fr; gap: 24px;
-      flex: 1; 
-    }
-
+    .dashboard-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; flex: 1; min-height: 0; } 
     .kpi-column { display: flex; flex-direction: column; gap: 16px; }
-    .kpi-box {
-      background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color);
-      display: flex; flex-direction: column; gap: 4px;
-    }
+    .kpi-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px; }
     .kpi-head { font-size: 12px; color: #9CA3AF; font-weight: 700; }
     .kpi-val { font-size: 24px; font-weight: 800; color: #111827; }
-    .kpi-sub { font-size: 12px; color: #10B981; font-weight: 600; }
+    .kpi-sub { font-size: 12px; color: var(--success); font-weight: 600; }
 
-    .chart-box {
-      background: white; border-radius: 16px; border: 1px solid var(--border-color);
-      padding: 24px; display: flex; flex-direction: column;
-    }
-    .chart-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
-    
-    .heatmap-layout { display: flex; gap: 10px; flex: 1; }
+    .chart-box { background: white; border-radius: 16px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; flex: 1; }
+    .heatmap-layout { display: flex; gap: 10px; flex: 1; min-height: 0; }
     .hm-y-axis { display: grid; grid-template-rows: repeat(7, 1fr); text-align: right; padding-right: 10px; }
     .hm-row-label { font-size: 12px; color: #6B7280; font-weight: 600; display:flex; align-items:center; justify-content:flex-end; }
-    
     .hm-grid { flex: 1; display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; }
     .hm-cell { background: #F3F4F6; border-radius: 4px; }
     .l1 { background: #DBEAFE; } .l2 { background: #93C5FD; } .l3 { background: #3B82F6; } .l4 { background: #1E40AF; }
-
     .hm-x-axis { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; margin-top: 8px; padding-left: 40px; }
     .hm-col-label { font-size: 10px; color: #9CA3AF; text-align: center; }
+
+    /* --- [PAGE 2] MONITOR LIST STYLES (업그레이드된 디자인) --- */
+    .table-container { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    
+    .table-header { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
+    
+    .monitor-list { flex: 1; overflow-y: auto; }
+    
+    .table-row { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; border-bottom: 1px solid var(--border-color); align-items: center; font-size: 14px; transition: background 0.1s; }
+    .table-row:hover { background: #F9FAFB; }
+    .table-row:last-child { border-bottom: none; }
+
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    .st-active { background: #DCFCE7; color: #166534; } 
+    .st-inactive { background: #FEE2E2; color: #991B1B; }
+    .st-maintenance { background: #FEF3C7; color: #92400E; }
+    .st-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    
+    .action-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: white; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .action-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: #EFF6FF; }
+    .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: #FEF2F2; }
+
+    /* --- [PAGE 3] UPLOAD STYLES --- */
+    .upload-section { display: flex; gap: 24px; }
+    .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 300px; }
+    .upload-card:hover { border-color: var(--primary-color); background: #EFF6FF; }
+    .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
+    .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .upload-desc { font-size: 13px; color: var(--text-sub); }
+
+    /* 모달 (팝업) */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
+    .modal-box { background: white; width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+    .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
 
   </style>
 </head>
 <body>
-
   <div class="sidebar">
     <div class="logo-area">
       <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
@@ -222,10 +145,9 @@
     </div>
 
     <ul class="nav-menu">
-      <li class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</li>
-      <li class="nav-item"><i class="fa-solid fa-desktop"></i> Monitors</li>
-      <li class="nav-item"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
-      <li class="nav-item"><i class="fa-solid fa-gear"></i> Settings</li>
+      <li class="nav-item active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
+      <li class="nav-item" onclick="showPage('monitors', this)"><i class="fa-solid fa-desktop"></i> Monitors</li>
+      <li class="nav-item" onclick="showPage('upload', this)"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
     </ul>
 
     <div class="sidebar-cal">
@@ -250,133 +172,146 @@
 
   <div class="main-content">
     
-    <div class="top-section">
-      <div class="page-header">
-        <h1>Dashboard Overview</h1>
+    <div id="page-dashboard" class="page-view active">
+      <div class="top-section">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+          <p>Monitor Traffic & Ad Performance Analysis</p>
+        </div>
+        <div class="header-controls">
+          <div class="btn-white btn" onclick="location.href='https://inwave.ai.kr/analyze.html'">
+            <i class="fa-solid fa-user"></i> Admin
+          </div>
+          <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export</button>
+        </div>
+      </div>
+
+      <div class="map-card">
+        <div id="miniMap" style="width:100%; height:100%;"></div>
+        <div class="map-badge"><i class="fa-solid fa-location-dot" style="color:#3B82F6"></i> Live Location</div>
+      </div>
+
+      <div class="filter-card">
+        <div class="filter-item">
+          <div class="filter-label">Target</div>
+          <select class="select-box"><option>All Traffic</option><option>Nike Ad</option></select>
+        </div>
+        <div style="width:1px; height:24px; background:#E5E7EB;"></div>
+        <div class="filter-item">
+          <div class="filter-label">Filter</div>
+          <div class="toggle-chips">
+            <div class="chip active">Traffic</div>
+            <div class="chip">Male</div>
+            <div class="chip">Female</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <div class="kpi-column">
+          <div class="kpi-box">
+            <div class="kpi-head">Total Impressions</div>
+            <div class="kpi-val">42,593</div>
+            <div class="kpi-sub">+12.5%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Avg. Dwell Time</div>
+            <div class="kpi-val">4.8s</div>
+            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Peak Hour</div>
+            <div class="kpi-val">19:00</div>
+            <div class="kpi-sub" style="color:#6B7280">Fri</div>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">
+            <div style="font-weight:700;">Weekly Heatmap</div>
+            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+          </div>
+          <div class="heatmap-layout">
+            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
+            <div class="hm-grid" id="heatGrid"></div>
+          </div>
+          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="page-monitors" class="page-view">
+      <div class="top-section">
+        <div class="page-header">
+          <h1>Monitor Management</h1>
+          <p>등록된 모니터 기기 목록 및 상태를 관리합니다.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fa-solid fa-plus"></i> Add New Monitor
+        </button>
+      </div>
+
+      <div class="table-container">
+        <div class="table-header">
+          <div>ID</div><div>Location Name</div><div>Coordinates</div><div>Status</div><div>Last Update</div><div style="text-align:right">Action</div>
+        </div>
         
-        <div class="user-profile-btn" onclick="location.href='https://inwave.ai.kr/analyze.html'">
-          <div style="width:24px; height:24px; background:#CBD5E1; border-radius:50%; display:flex; justify-content:center; align-items:center;">
-            <i class="fa-solid fa-user" style="font-size:12px; color:white;"></i>
-          </div>
-          <span style="font-size:14px; color:#374151; font-weight:600;">관리자님</span>
-          <i class="fa-solid fa-chevron-right" style="font-size:10px; color:#9CA3AF;"></i>
+        <div class="monitor-list" id="monitorList">
+          <div style="padding:40px; text-align:center; color:#999;">데이터를 불러오는 중입니다...</div>
+        </div>
+      </div>
+    </div>
+
+
+    <div id="page-upload" class="page-view">
+      <div class="top-section">
+        <div class="page-header">
+          <h1>Data Upload</h1>
+          <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
+        </div>
+      </div>
+
+      <div class="upload-section">
+        <div class="upload-card">
+          <i class="fa-solid fa-users-viewfinder upload-icon"></i>
+          <div class="upload-title">Face Analysis CSV</div>
+          <div class="upload-desc">Click to Upload or Drag & Drop</div>
+        </div>
+        
+        <div class="upload-card">
+          <i class="fa-solid fa-file-video upload-icon"></i>
+          <div class="upload-title">Video Log CSV</div>
+          <div class="upload-desc">Click to Upload or Drag & Drop</div>
         </div>
       </div>
       
-      <div class="header-controls">
-        <button class="btn btn-white"><i class="fa-solid fa-download"></i> Export</button>
-        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Report</button>
-      </div>
-    </div>
-
-    <div class="map-card">
-      <div id="miniMap" style="width:100%; height:100%;"></div>
-      
-      <div class="map-controls-overlay">
-        <button class="map-btn" onclick="getCurrentLocation()">
-          <i class="fa-solid fa-crosshairs"></i> 내 위치
-        </button>
-        <button class="map-btn accent" onclick="prepareAddMonitor()">
-          <i class="fa-solid fa-plus"></i> 기기 추가
+      <div style="margin-top:20px; text-align:right;">
+        <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;">
+          <i class="fa-solid fa-play"></i> Start Analysis Processing
         </button>
       </div>
-
-      <div id="monitorFormOverlay">
-        <h4 style="margin:0 0 10px 0; color:#1F2937;">새 모니터 등록</h4>
-        <input type="text" id="m_id" class="form-input" placeholder="모니터 ID (예: SEOUL_01)">
-        <input type="text" id="m_name" class="form-input" placeholder="설치 장소명">
-        <div style="display:flex; gap:5px;">
-          <input type="text" id="m_lat" class="form-input" placeholder="위도" readonly style="background:#F3F4F6;">
-          <input type="text" id="m_lng" class="form-input" placeholder="경도" readonly style="background:#F3F4F6;">
-        </div>
-        <select id="m_status" class="form-input">
-          <option value="active">Active</option>
-          <option value="inactive">Inactive</option>
-        </select>
-        <div style="display:flex; gap:8px; margin-top:auto;">
-          <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="saveMonitor()">저장하기</button>
-          <button class="btn btn-white" style="flex:1; justify-content:center;" onclick="closeForm()">취소</button>
-        </div>
-      </div>
     </div>
 
-    <div class="filter-card">
-      <div class="filter-item">
-        <div class="filter-label">Target</div>
-        <select class="select-box">
-          <option>All Traffic</option>
-          <option>Nike Winter Ad</option>
-          <option>Galaxy S25 Launch</option>
-        </select>
+  </div> <div class="modal-overlay" id="addModal">
+    <div class="modal-box">
+      <div class="modal-title">Add New Monitor</div>
+      <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
+      <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
+      <div style="display:flex; gap:10px;">
+        <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)">
+        <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)">
       </div>
-      <div style="width:1px; height:24px; background:#E5E7EB;"></div>
-      <div class="filter-item">
-        <div class="filter-label">View</div>
-        <div class="toggle-chips">
-          <div class="chip active">Traffic</div>
-          <div class="chip">Attention</div>
-        </div>
-      </div>
-      <div class="filter-item">
-        <div class="filter-label">Filter</div>
-        <div class="toggle-chips">
-          <div class="chip active">Male</div>
-          <div class="chip active">Female</div>
-          <div class="chip active">20s</div>
-          <div class="chip active">30s</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="dashboard-grid">
-      <div class="kpi-column">
-        <div class="kpi-box">
-          <div class="kpi-head">Total Impressions</div>
-          <div class="kpi-val">42,593</div>
-          <div class="kpi-sub">+12.5% vs last week</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-head">Avg. Dwell Time</div>
-          <div class="kpi-val">4.8s</div>
-          <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
-        </div>
-        <div class="kpi-box">
-          <div class="kpi-head">Peak Hour</div>
-          <div class="kpi-val">19:00</div>
-          <div class="kpi-sub" style="color:#6B7280">Wed, Fri</div>
-        </div>
-      </div>
-
-      <div class="chart-box">
-        <div class="chart-header">
-          <div style="font-weight:700; font-size:16px;">Weekly Traffic Heatmap</div>
-          <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
-        </div>
-        <div class="heatmap-layout">
-          <div class="hm-y-axis">
-            <div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div>
-            <div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div>
-            <div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div>
-            <div class="hm-row-label">Sun</div>
-          </div>
-          <div class="hm-grid" id="heatGrid"></div>
-        </div>
-        <div class="hm-x-axis">
-          <span class="hm-col-label">06</span><span class="hm-col-label">07</span><span class="hm-col-label">08</span>
-          <span class="hm-col-label">09</span><span class="hm-col-label">10</span><span class="hm-col-label">11</span>
-          <span class="hm-col-label">12</span><span class="hm-col-label">13</span><span class="hm-col-label">14</span>
-          <span class="hm-col-label">15</span><span class="hm-col-label">16</span><span class="hm-col-label">17</span>
-          <span class="hm-col-label">18</span><span class="hm-col-label">19</span><span class="hm-col-label">20</span>
-          <span class="hm-col-label">21</span><span class="hm-col-label">22</span><span class="hm-col-label">23</span>
-        </div>
+      <div class="modal-actions">
+        <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
+        <button class="btn btn-white" style="flex:1" onclick="closeAddModal()">Cancel</button>
       </div>
     </div>
   </div>
-
-<script>
-  /* -------------------------------------------
-     1. Firebase Configuration (DB 연동)
-     ------------------------------------------- */
+  <script>
+  /* ==========================================================================
+     1. FIREBASE CONFIGURATION (설정)
+     * 주의: 선생님의 실제 API Key가 적용되어 있습니다.
+     ========================================================================== */
   const firebaseConfig = {
     apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
     authDomain: "twopage-ea909.firebaseapp.com",
@@ -386,192 +321,233 @@
     appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
   };
 
+  // 파이어베이스 초기화 (중복 실행 방지)
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
   const db = firebase.firestore();
 
-  /* -------------------------------------------
-     2. Map Logic & Monitor Functions
-     ------------------------------------------- */
-  var mapOptions = { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 };
-  var map = new naver.maps.Map('miniMap', mapOptions);
+
+  /* ==========================================================================
+     2. NAVIGATION & PAGE CONTROL (화면 전환)
+     ========================================================================== */
   
-  let tempMarker = null;
-  let markers = [];
+  // 메뉴 클릭 시 화면 전환 함수
+  function showPage(pageId, btnElement) {
+    // 1. 사이드바 메뉴 활성화 스타일 변경
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    btnElement.classList.add('active');
+    
+    // 2. 메인 컨텐츠 영역 교체 (SPA 방식)
+    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
 
-  // 초기 실행: 모니터 불러오기
-  loadMonitors();
-
-  // 지도 클릭 이벤트 (기기 추가 모드일 때)
-  naver.maps.Event.addListener(map, 'click', function(e) {
-    const formOverlay = document.getElementById('monitorFormOverlay');
-    if(formOverlay.style.display === 'flex') {
-      setTempMarker(e.coord);
-    }
-  });
-
-  // [기능 1] 내 위치 찾기
-  function getCurrentLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(position => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const loc = new naver.maps.LatLng(lat, lng);
-        map.setCenter(loc);
-        map.setZoom(17);
-      });
-    } else {
-      alert("위치 정보를 사용할 수 없습니다.");
-    }
-  }
-
-  // [기능 2] 기기 추가 모드 활성화
-  function prepareAddMonitor() {
-    const form = document.getElementById('monitorFormOverlay');
-    form.style.display = 'flex';
-    document.getElementById('m_id').value = '';
-    document.getElementById('m_name').value = '';
-    document.getElementById('m_lat').value = '';
-    document.getElementById('m_lng').value = '';
-    alert('지도에서 설치할 위치를 클릭하세요.');
-  }
-
-  function closeForm() {
-    document.getElementById('monitorFormOverlay').style.display = 'none';
-    if(tempMarker) tempMarker.setMap(null);
-  }
-
-  // [기능 3] 지도 클릭 시 임시 핀 찍기
-  function setTempMarker(latlng) {
-    if(tempMarker) tempMarker.setMap(null);
-    tempMarker = new naver.maps.Marker({
-      position: latlng,
-      map: map,
-      icon: {
-        content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5); animation: bounce 0.5s;"></div>',
-        anchor: new naver.maps.Point(10, 10)
+    // 3. 페이지별 특수 동작 처리
+    if(pageId === 'dashboard') {
+      // 지도가 숨겨져 있다가 나올 때 깨짐 방지 (리사이즈)
+      if(map) {
+        setTimeout(() => {
+          map.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 280));
+        }, 100);
       }
-    });
-    // 폼에 좌표 입력
-    document.getElementById('m_lat').value = latlng.lat();
-    document.getElementById('m_lng').value = latlng.lng();
-  }
-
-  // [기능 4] DB에 저장하기
-  function saveMonitor() {
-    const id = document.getElementById('m_id').value;
-    const name = document.getElementById('m_name').value;
-    const lat = parseFloat(document.getElementById('m_lat').value);
-    const lng = parseFloat(document.getElementById('m_lng').value);
-    const status = document.getElementById('m_status').value;
-
-    if (!id || !name || isNaN(lat)) {
-      alert('필수 정보를 모두 입력해주세요 (지도 클릭 포함).');
-      return;
+    } else if (pageId === 'monitors') {
+      // 모니터 리스트 페이지로 가면 데이터 새로고침
+      loadMonitorList();
     }
-
-    db.collection("monitors").doc(id).set({
-      monitor_id: id,
-      name: name,
-      location: { lat, lng },
-      status: status,
-      updated_at: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true })
-    .then(() => {
-      alert('저장되었습니다.');
-      closeForm();
-      loadMonitors(); // 마커 새로고침
-    })
-    .catch((err) => {
-      console.error(err);
-      alert('저장 실패');
-    });
-  }
-
-  // [기능 5] DB에서 불러와서 마커 찍기 (이름 표시)
-  function loadMonitors() {
-    markers.forEach(m => m.setMap(null));
-    markers = [];
-
-    db.collection("monitors").get().then((snapshot) => {
-      snapshot.forEach((doc) => {
-        const data = doc.data();
-        const color = data.status === 'active' ? '#3B82F6' : '#EF4444';
-        
-        // 말풍선 마커 디자인
-        const content = `
-          <div style="position:relative; cursor:pointer;">
-            <div style="background:${color}; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
-            <div style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); 
-                        background:white; padding:4px 8px; border-radius:8px; 
-                        font-size:11px; font-weight:700; white-space:nowrap; 
-                        box-shadow:0 2px 6px rgba(0,0,0,0.15); border:1px solid #E5E7EB; color:#1F2937;">
-              ${data.name}
-            </div>
-          </div>
-        `;
-
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(data.location.lat, data.location.lng),
-          map: map,
-          icon: {
-            content: content,
-            anchor: new naver.maps.Point(6, 6)
-          }
-        });
-        
-        // 마커 클릭 시 팝업 띄우거나 이동 (여기선 중앙 이동만)
-        naver.maps.Event.addListener(marker, 'click', () => {
-          map.panTo(marker.getPosition());
-        });
-
-        markers.push(marker);
-      });
-    });
   }
 
 
-  /* -------------------------------------------
-     3. 기타 UI 로직 (달력, 히트맵 등)
-     ------------------------------------------- */
-  // 사이드바 달력
+  /* ==========================================================================
+     3. DASHBOARD LOGIC (지도, 달력, 히트맵)
+     ========================================================================== */
+  
+  // 3-1. 네이버 지도 초기화
+  var map = null;
+  var mapOptions = { 
+    center: new naver.maps.LatLng(37.498095, 127.027610), // 기본위치: 강남역
+    zoom: 15 
+  };
+  
+  // 페이지 로드 시 실행
+  window.onload = function() {
+    map = new naver.maps.Map('miniMap', mapOptions);
+    
+    // 초기 로딩 시 모니터 리스트도 한번 가져옴 (데이터 확인용)
+    loadMonitorList();
+  };
+
+  // 3-2. 사이드바 달력 그리기 (디자인용 더미 데이터)
   const sbCalGrid = document.getElementById('sidebarCalGrid');
-  const selCount = document.getElementById('selCount');
-  const available = [25, 26, 27, 28, 29, 30];
-  let selected = [26, 27, 28];
+  const availableDates = [25, 26, 27, 28, 29, 30]; // 데이터가 있는 날
+  let selectedDates = [26, 27, 28]; // 선택된 날
 
   function renderSbCal() {
     sbCalGrid.innerHTML = '';
+    // 빈칸 (10월 1일 요일 맞추기)
     for(let i=0; i<3; i++) sbCalGrid.innerHTML += `<div></div>`;
     
     for(let d=1; d<=31; d++) {
-      const hasData = available.includes(d);
-      const isSel = selected.includes(d);
+      const hasData = availableDates.includes(d);
+      const isSel = selectedDates.includes(d);
+      
       let cls = 'sb-date-cell';
       if(hasData) cls += ' has-data';
       if(isSel) cls += ' selected';
+      
+      // 날짜 클릭 이벤트
       const evt = hasData ? `onclick="toggleDate(${d})"` : '';
-      sbCalGrid.innerHTML += `<div class="${cls}" ${evt}>${d}<div class="sb-dot"></div></div>`;
+      
+      sbCalGrid.innerHTML += `
+        <div class="${cls}" ${evt}>
+          ${d}
+          <div class="sb-dot"></div>
+        </div>
+      `;
     }
-    selCount.innerText = selected.length;
+    // 선택된 날짜 수 업데이트
+    document.getElementById('selCount').innerText = selectedDates.length;
   }
-  window.toggleDate = function(d) {
-    if(selected.includes(d)) selected = selected.filter(dt => dt !== d);
-    else selected.push(d);
-    renderSbCal();
-  }
-  renderSbCal();
 
-  // 히트맵
+  // 날짜 선택 토글
+  window.toggleDate = function(d) {
+    if(selectedDates.includes(d)) {
+      selectedDates = selectedDates.filter(dt => dt !== d);
+    } else {
+      selectedDates.push(d);
+    }
+    renderSbCal(); // 다시 그리기
+  }
+  renderSbCal(); // 최초 실행
+
+  // 3-3. 히트맵 차트 그리기 (더미 시각화)
   const heatGrid = document.getElementById('heatGrid');
   for(let i=0; i<7*18; i++) {
-    const lv = Math.floor(Math.random() * 5);
+    // 랜덤 농도 생성 (1~4)
+    const lv = Math.ceil(Math.random() * 4);
     const div = document.createElement('div');
-    div.className = `hm-cell ${lv>0 ? 'l'+lv : ''}`;
+    div.className = `hm-cell l${lv}`;
     heatGrid.appendChild(div);
   }
-</script>
 
+
+  /* ==========================================================================
+     4. MONITOR MANAGEMENT LOGIC (모니터 관리 페이지)
+     ========================================================================== */
+
+  // 4-1. 모니터 리스트 불러오기 (Firestore -> Table)
+  function loadMonitorList() {
+    const listEl = document.getElementById('monitorList');
+    // 로딩 표시
+    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">데이터를 불러오는 중입니다...</div>';
+    
+    db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
+      let html = '';
+      
+      if (snapshot.empty) {
+        listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 모니터가 없습니다.</div>';
+        return;
+      }
+
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        // 상태에 따른 배지 스타일 설정
+        let badgeClass = 'st-active';
+        let statusText = 'ACTIVE';
+        
+        if(d.status === 'inactive') { badgeClass = 'st-inactive'; statusText = 'INACTIVE'; }
+        if(d.status === 'maintenance') { badgeClass = 'st-maintenance'; statusText = 'CHECKING'; }
+
+        // 날짜 포맷팅 (타임스탬프 -> 날짜문자열)
+        let dateStr = '-';
+        if(d.updated_at) {
+          const date = d.updated_at.toDate();
+          dateStr = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
+        }
+
+        // HTML 조립
+        html += `
+          <div class="table-row">
+            <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
+            <div style="font-weight:600;">${d.name}</div>
+            <div style="color:#6B7280; font-size:13px;">${d.location.lat}, ${d.location.lng}</div>
+            <div>
+              <span class="status-badge ${badgeClass}">
+                <span class="st-dot"></span> ${statusText}
+              </span>
+            </div>
+            <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
+            <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
+              <button class="action-btn" title="수정 (준비중)"><i class="fa-solid fa-pen"></i></button>
+              <button class="action-btn delete" title="삭제" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
+      });
+      
+      listEl.innerHTML = html;
+    }).catch((error) => {
+      console.error("Error loading monitors:", error);
+      listEl.innerHTML = '<div style="padding:40px; text-align:center; color:red;">데이터 로드 실패</div>';
+    });
+  }
+
+  // 4-2. 모니터 추가 모달 제어
+  function openAddModal() { 
+    // 입력창 초기화
+    document.getElementById('new_id').value = '';
+    document.getElementById('new_name').value = '';
+    document.getElementById('new_lat').value = '';
+    document.getElementById('new_lng').value = '';
+    document.getElementById('addModal').style.display = 'flex'; 
+  }
+  
+  function closeAddModal() { 
+    document.getElementById('addModal').style.display = 'none'; 
+  }
+
+  // 4-3. 신규 모니터 저장 (Firestore Write)
+  function saveNewMonitor() {
+    const id = document.getElementById('new_id').value.trim();
+    const name = document.getElementById('new_name').value.trim();
+    const lat = parseFloat(document.getElementById('new_lat').value);
+    const lng = parseFloat(document.getElementById('new_lng').value);
+
+    // 유효성 검사
+    if(!id || !name) return alert("ID와 설치 장소명은 필수입니다.");
+    if(isNaN(lat) || isNaN(lng)) return alert("위도/경도는 숫자여야 합니다.");
+
+    // 저장 로직
+    db.collection("monitors").doc(id).set({
+      monitor_id: id,
+      name: name,
+      location: { lat: lat, lng: lng },
+      status: 'active', // 기본값 Active
+      updated_at: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }) // 이미 있으면 덮어쓰기
+    .then(() => {
+      alert("성공적으로 등록되었습니다!");
+      closeAddModal();
+      loadMonitorList(); // 리스트 새로고침
+    })
+    .catch((error) => {
+      console.error("Error saving monitor:", error);
+      alert("저장 중 오류가 발생했습니다.");
+    });
+  }
+
+  // 4-4. 모니터 삭제 (Firestore Delete)
+  function deleteMonitor(id) {
+    if(confirm("정말 이 모니터를 삭제하시겠습니까? (복구 불가)")) {
+      db.collection("monitors").doc(id).delete().then(() => {
+        alert("삭제되었습니다.");
+        loadMonitorList(); // 리스트 새로고침
+      }).catch((error) => {
+        console.error("Error deleting monitor:", error);
+        alert("삭제 실패");
+      });
+    }
+  }
+
+</script>
 </body>
 </html>
