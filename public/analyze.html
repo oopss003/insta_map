@@ -33,146 +33,95 @@
     }
 
     .app-container {
-      display: flex;
-      width: 100%; height: 100%;
-      padding: 20px;
-      gap: 20px;
+      display: flex; width: 100%; height: 100%; padding: 20px; gap: 20px;
     }
 
     /* === [LEFT PANEL] === */
     .left-panel {
-      flex: 3.5;
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      min-width: 350px;
-      height: 100%;
+      flex: 3.5; display: flex; flex-direction: column; gap: 20px; min-width: 350px; height: 100%;
     }
 
-    /* 1. 지도 영역 (비율 6, min-height:0) */
     .map-box {
-      flex: 5;
-      min-height: 0;
-      background: white;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid white;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      position: relative;
+      flex: 6; min-height: 0; background: white; border-radius: 20px;
+      overflow: hidden; border: 1px solid white; box-shadow: 0 4px 20px rgba(0,0,0,0.05); position: relative;
     }
-    
     .map-badge {
       position: absolute; top: 16px; left: 16px; z-index: 100;
       background: white; padding: 8px 12px; border-radius: 12px;
       font-size: 13px; font-weight: 700; color: var(--text-main);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      display: flex; align-items: center; gap: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px;
     }
 
-    /* 2. 달력 영역 (비율 4, min-height:0) */
     .calendar-box {
-      flex: 5;
-      min-height: 0;
-      background: white;
-      border-radius: 20px;
-      padding: 20px;
-      border: 1px solid white;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-      display: flex; flex-direction: column;
+      flex: 4; min-height: 0; background: white; border-radius: 20px; padding: 20px;
+      border: 1px solid white; box-shadow: 0 4px 20px rgba(0,0,0,0.05); display: flex; flex-direction: column;
     }
-
-    .cal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
+    .cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
     .cal-title { font-size: 18px; font-weight: 800; color: #1E3A8A; }
     .cal-nav { display: flex; gap: 8px; }
-    .btn-nav {
-      background: #F8FAFC; border: none; width: 32px; height: 32px;
-      border-radius: 8px; cursor: pointer; color: var(--text-sub);
-    }
+    .btn-nav { background: #F8FAFC; border: none; width: 32px; height: 32px; border-radius: 8px; cursor: pointer; color: var(--text-sub); }
 
-    .cal-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      flex: 1;
-      align-content: center;
-      overflow: hidden;
-    }
-
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; flex: 1; align-content: center; overflow: hidden; }
     .day-name { text-align: center; font-size: 11px; font-weight: 700; color: #94A3B8; }
-    
-    .date-cell {
-      height: 100%; 
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border-radius: 8px; font-size: 13px; font-weight: 600; color: #CBD5E1;
-      cursor: default; border: 1px solid transparent;
-    }
-
+    .date-cell { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; font-weight: 600; color: #CBD5E1; cursor: default; border: 1px solid transparent; }
     .date-cell.has-data { color: var(--text-main); background-color: #F8FAFC; cursor: pointer; }
     .date-cell.has-data:hover { border-color: var(--primary-color); color: var(--primary-color); }
     .date-cell.selected { background-color: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-
     .dot { width: 4px; height: 4px; background: var(--success-dot); border-radius: 50%; margin-top: 2px; display: none; }
     .date-cell.has-data .dot { display: block; }
     .date-cell.selected .dot { background: white; }
-
-    .selection-summary {
-      margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);
-      font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between;
-      flex-shrink: 0;
-    }
+    .selection-summary { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color); font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between; flex-shrink: 0; }
 
     /* === [RIGHT PANEL] === */
     .right-panel {
-      flex: 6.5; 
-      background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+      flex: 6.5; background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       display: flex; flex-direction: column; overflow: hidden;
     }
 
     .dash-header { padding: 24px 32px; border-bottom: 1px solid var(--border-color); }
-    
-    .header-top { 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: flex-start; 
-      margin-bottom: 20px; 
-    }
-    
-    .header-actions {
-      display: flex;
-      gap: 12px; /* 버튼 사이 간격 */
-    }
-
-    /* 버튼 스타일 정의 */
-    .btn-base {
-      padding: 12px 20px; border-radius: 10px; font-weight: 700; 
-      cursor: pointer; display: flex; align-items: center; gap: 8px;
-      font-size: 14px; transition: all 0.2s; border: none;
-    }
-    
-    /* 메인 버튼 (다운로드) */
-    .btn-primary {
-      background: var(--primary-color); color: white;
-    }
+    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }
+    .header-actions { display: flex; gap: 12px; }
+    .btn-base { padding: 10px 18px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; font-size: 14px; transition: all 0.2s; border: none; }
+    .btn-primary { background: var(--primary-color); color: white; }
     .btn-primary:hover { background: #1D4ED8; }
-
-    /* 서브 버튼 (설정 - 새로 추가됨) */
-    .btn-secondary {
-      background: white; border: 1px solid var(--border-color); color: var(--text-sub);
-    }
+    .btn-secondary { background: white; border: 1px solid var(--border-color); color: var(--text-sub); }
     .btn-secondary:hover { background: #F8FAFC; color: var(--text-main); border-color: #CBD5E1; }
-
     .page-title h2 { margin: 0; font-size: 22px; font-weight: 800; color: #1E3A8A; }
     .page-title p { margin: 4px 0 0; font-size: 13px; color: var(--text-sub); }
 
-    .filter-bar { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
-    .custom-select { padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px; font-weight: 600; }
-    .toggle-group { display: flex; gap: 8px; }
-    .t-btn { padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 13px; font-weight: 600; color: var(--text-sub); display:flex; align-items:center; gap:6px; cursor:pointer;}
-    .t-btn.active { background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color); }
+    /* --- 필터 바 수정됨 (상세 필터) --- */
+    .filter-bar { display: flex; flex-direction: column; gap: 16px; }
+
+    /* 1행: 광고 선택 & 메트릭 */
+    .filter-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+    
+    .custom-select {
+      padding: 10px 16px; border: 1px solid var(--border-color); border-radius: 10px;
+      font-size: 14px; font-weight: 600; color: var(--text-main); cursor: pointer;
+      background: white; outline: none; min-width: 240px;
+    }
+
+    /* 필터 그룹 스타일 */
+    .filter-group { display: flex; align-items: center; gap: 12px; }
+    .filter-label { font-size: 12px; font-weight: 700; color: #94A3B8; text-transform: uppercase; min-width: 40px;}
+    
+    .chip-container { display: flex; gap: 6px; flex-wrap: wrap; }
+    
+    /* 상세 필터 버튼 (칩) */
+    .chip-btn {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);
+      font-size: 12px; font-weight: 600; color: var(--text-sub); cursor: pointer;
+      transition: all 0.2s; background: white; display: flex; align-items: center; gap: 4px;
+    }
+    .chip-btn:hover { background: #F8FAFC; border-color: #CBD5E1; }
+    
+    /* 활성화 상태 */
+    .chip-btn.active {
+      background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color);
+    }
+    .chip-btn.active-female { background: #FFF0F6; border-color: #EC4899; color: #EC4899; }
+    .chip-btn.active-male { background: #EFF6FF; border-color: #3B82F6; color: #3B82F6; }
+
 
     .dash-content { flex: 1; overflow-y: auto; padding: 32px; background: #FAFAFA; }
 
@@ -237,31 +186,64 @@
           <h2>Analytics Dashboard</h2>
           <p>모니터 유동인구 및 광고 효율 분석</p>
         </div>
-        
         <div class="header-actions">
           <button class="btn-base btn-secondary" onclick="alert('설정 페이지로 이동합니다.')">
             <i class="fa-solid fa-gear"></i> 설정 및 관리
           </button>
-          
           <button class="btn-base btn-primary">
             <i class="fa-solid fa-file-export"></i> 리포트 다운로드
           </button>
         </div>
-
       </div>
 
       <div class="filter-bar">
-        <select class="custom-select">
-          <option>전체 트래픽 (All Traffic)</option>
-          <option>[광고] 나이키 겨울 시즌</option>
-          <option>[광고] 아이폰 16 런칭</option>
-        </select>
-        <div class="toggle-group">
-          <div class="t-btn active" onclick="this.classList.toggle('active')"><i class="fa-solid fa-users"></i> Traffic</div>
-          <div class="t-btn active" onclick="this.classList.toggle('active')"><i class="fa-solid fa-venus-mars"></i> Gender</div>
-          <div class="t-btn" onclick="this.classList.toggle('active')"><i class="fa-solid fa-arrow-down-9-1"></i> Age</div>
-          <div class="t-btn" onclick="this.classList.toggle('active')"><i class="fa-regular fa-eye"></i> Attention</div>
+        
+        <div class="filter-row">
+           <select class="custom-select">
+            <option>전체 트래픽 (All Traffic)</option>
+            <option>[광고] 나이키 겨울 시즌</option>
+            <option>[광고] 아이폰 16 런칭</option>
+          </select>
+          
+          <div class="filter-group" style="margin-left: 20px;">
+            <div class="filter-label">Metric</div>
+            <div class="chip-container">
+               <div class="chip-btn active" onclick="this.classList.toggle('active')">Traffic</div>
+               <div class="chip-btn" onclick="this.classList.toggle('active')">Attention</div>
+            </div>
+          </div>
         </div>
+
+        <div class="filter-row">
+          
+          <div class="filter-group">
+            <div class="filter-label">Gender</div>
+            <div class="chip-container">
+              <div class="chip-btn active-male" onclick="this.classList.toggle('active-male')">
+                <i class="fa-solid fa-mars"></i> Male
+              </div>
+              <div class="chip-btn active-female" onclick="this.classList.toggle('active-female')">
+                <i class="fa-solid fa-venus"></i> Female
+              </div>
+            </div>
+          </div>
+
+          <div style="width:1px; height:24px; background:#E2E8F0; margin:0 10px;"></div>
+
+          <div class="filter-group">
+            <div class="filter-label">Age</div>
+            <div class="chip-container">
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">10s</div>
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">20s</div>
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">30s</div>
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">40s</div>
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">50s</div>
+              <div class="chip-btn active" onclick="this.classList.toggle('active')">60+</div>
+            </div>
+          </div>
+
+        </div>
+
       </div>
     </div>
 
