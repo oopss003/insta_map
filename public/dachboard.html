@@ -1,1 +1,478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>모니터 통합 관제 시스템</title>
 
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+
+  <style>
+    :root {
+      /* 브랜드 컬러 정의 */
+      --primary-color: #3B82F6;  /* 세련된 블루 */
+      --secondary-color: #64748B;
+      --success-color: #10B981;
+      --danger-color: #EF4444;
+      --bg-color: #F1F5F9;
+      --card-bg: #FFFFFF;
+      --text-main: #1E293B;
+      --text-sub: #64748B;
+      --border-color: #E2E8F0;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden; /* 전체 스크롤 방지 */
+    }
+
+    /* === 전체 레이아웃 (Split View) === */
+    .app-container {
+      display: flex;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* [왼쪽] 지도 영역 (60%) */
+    .map-section {
+      flex: 6;
+      position: relative;
+      background-color: #e5e7eb; /* 지도 로딩 전 배경색 */
+    }
+
+    #map { width: 100%; height: 100%; }
+
+    /* 지도 위 플로팅 버튼 그룹 */
+    .map-overlay-top {
+      position: absolute;
+      top: 24px;
+      left: 24px;
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn-float {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(0,0,0,0.05);
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-main);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-float:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); }
+    .btn-float.primary { background: var(--primary-color); color: white; border: none; }
+    .btn-float i { font-size: 14px; }
+
+
+    /* [오른쪽] 패널 영역 (40%) */
+    .panel-section {
+      flex: 4;
+      min-width: 400px;
+      background: var(--card-bg);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -5px 0 25px rgba(0,0,0,0.03);
+      z-index: 20;
+    }
+
+    /* 패널 헤더 */
+    .panel-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-titles h1 { font-size: 20px; font-weight: 800; margin: 0 0 4px 0; color: var(--text-main); }
+    .header-titles p { font-size: 13px; color: var(--text-sub); margin: 0; font-weight: 500; }
+    
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-color);
+      padding: 6px 12px;
+      border-radius: 20px;
+    }
+    .user-avatar { width: 28px; height: 28px; background: #CBD5E1; border-radius: 50%; display:flex; align-items:center; justify-content:center; font-size:12px; }
+    .user-name { font-size: 13px; font-weight: 600; }
+
+    /* 탭 메뉴 디자인 */
+    .tabs-container {
+      padding: 0 28px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      gap: 32px;
+    }
+    .tab-btn {
+      padding: 18px 0;
+      background: none;
+      border: none;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-sub);
+      cursor: pointer;
+      position: relative;
+      transition: color 0.2s;
+    }
+    .tab-btn:hover { color: var(--primary-color); }
+    .tab-btn.active { color: var(--primary-color); }
+    .tab-btn.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; width: 100%; height: 3px;
+      background: var(--primary-color);
+      border-radius: 3px 3px 0 0;
+    }
+
+    /* 패널 컨텐츠 (스크롤) */
+    .panel-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      background-color: #FAFAFA; /* 아주 연한 회색 배경 */
+    }
+
+    /* 폼 스타일 */
+    .form-card {
+      background: white;
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .form-group { margin-bottom: 20px; }
+    .form-group:last-child { margin-bottom: 0; }
+    
+    .label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 8px;
+    }
+    
+    .input-wrapper { position: relative; }
+    .input-wrapper i {
+      position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+      color: #94A3B8; font-size: 14px;
+    }
+    
+    .input-field {
+      width: 100%;
+      padding: 12px 16px 12px 40px; /* 아이콘 공간 확보 */
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      transition: all 0.2s;
+      background: #F8FAFC;
+    }
+    .input-field:focus {
+      outline: none;
+      border-color: var(--primary-color);
+      background: white;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+    .input-field.readonly { background: #F1F5F9; color: #64748B; cursor: default; }
+
+    /* 상태 뱃지 셀렉트 박스 커스텀 */
+    .select-field {
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      font-size: 14px;
+      background: white;
+      cursor: pointer;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748B' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 14px center;
+      background-size: 16px;
+    }
+
+    /* 드래그 앤 드롭 존 디자인 */
+    .upload-area-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    
+    .upload-box {
+      background: white;
+      border: 2px dashed var(--border-color);
+      border-radius: 12px;
+      height: 140px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+    .upload-box:hover {
+      border-color: var(--primary-color);
+      background: #EFF6FF;
+    }
+    .upload-box i { font-size: 28px; color: #CBD5E1; margin-bottom: 12px; transition: color 0.2s; }
+    .upload-box:hover i { color: var(--primary-color); }
+    
+    .upload-text-main { font-size: 13px; font-weight: 700; color: var(--text-main); }
+    .upload-text-sub { font-size: 11px; color: var(--text-sub); margin-top: 4px; }
+
+    /* 선택된 모니터 정보 카드 */
+    .info-card {
+      background: #EFF6FF;
+      border: 1px solid #DBEAFE;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .info-icon {
+      width: 40px; height: 40px;
+      background: white;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary-color);
+      font-size: 18px;
+      box-shadow: 0 2px 4px rgba(59, 130, 246, 0.1);
+    }
+    .info-content div:first-child { font-size: 12px; color: var(--primary-color); font-weight: 700; margin-bottom: 2px; }
+    .info-content div:last-child { font-size: 16px; font-weight: 800; color: #1E3A8A; }
+
+    /* 하단 버튼 */
+    .btn-action {
+      width: 100%;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary-action {
+      background: var(--primary-color);
+      color: white;
+      box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.4);
+    }
+    .btn-primary-action:hover { background: #2563EB; transform: translateY(-1px); }
+    
+    .btn-secondary-action {
+      background: white;
+      border: 1px solid var(--border-color);
+      color: var(--text-sub);
+      margin-top: 12px;
+    }
+    .btn-secondary-action:hover { background: #F8FAFC; color: var(--text-main); }
+
+
+    /* 모바일 반응형 (768px 이하) */
+    @media (max-width: 768px) {
+      .app-container { flex-direction: column; }
+      .map-section { flex: 4; }
+      .panel-section {
+        flex: 6;
+        min-width: auto;
+        border-left: none;
+        border-radius: 24px 24px 0 0;
+        margin-top: -24px; /* 지도 위로 살짝 올라오게 */
+        box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+      }
+      .panel-header { padding: 20px 24px; }
+      .map-overlay-top { top: 16px; left: 16px; }
+    }
+
+    /* 탭 내용 전환용 */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    
+    <div class="map-section">
+      <div id="map"></div>
+      
+      <div class="map-overlay-top">
+        <button class="btn-float">
+          <i class="fa-solid fa-crosshairs"></i> 내 위치
+        </button>
+        <button class="btn-float primary" onclick="switchTab('tab-settings')">
+          <i class="fa-solid fa-plus"></i> 기기 추가
+        </button>
+      </div>
+    </div>
+
+    <div class="panel-section">
+      
+      <div class="panel-header">
+        <div class="header-titles">
+          <h1>Admin Center</h1>
+          <p>디지털 사이니지 통합 관제</p>
+        </div>
+        <div class="user-profile">
+          <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+          <span class="user-name">관리자</span>
+        </div>
+      </div>
+
+      <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('tab-settings')">모니터 설정</button>
+        <button class="tab-btn" onclick="switchTab('tab-upload')">데이터 업로드</button>
+      </div>
+
+      <div class="panel-body">
+        
+        <div id="tab-settings" class="tab-content active">
+          <div class="form-card">
+            <h3 style="margin:0 0 20px 0; font-size:16px;">기기 정보 입력</h3>
+            
+            <div class="form-group">
+              <label class="label">모니터 ID</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-fingerprint"></i>
+                <input type="text" class="input-field" placeholder="예: SEOUL_GN_01" value="SEOUL_GN_01">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">설치 장소 (Alias)</label>
+              <div class="input-wrapper">
+                <i class="fa-solid fa-location-dot"></i>
+                <input type="text" class="input-field" placeholder="예: 강남역 1번 출구 앞" value="강남역 1번 출구 메인">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">위치 좌표</label>
+              <div style="display:flex; gap:10px;">
+                <input type="text" class="input-field readonly" value="37.498095" readonly>
+                <input type="text" class="input-field readonly" value="127.027610" readonly>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">운영 상태</label>
+              <select class="select-field">
+                <option value="active">🟢 정상 운영 (Active)</option>
+                <option value="maintenance">🟠 점검 중 (Maintenance)</option>
+                <option value="inactive">🔴 운영 중지 (Inactive)</option>
+              </select>
+            </div>
+          </div>
+
+          <button class="btn-action btn-primary-action">저장하기</button>
+          <button class="btn-action btn-secondary-action">초기화</button>
+        </div>
+
+
+        <div id="tab-upload" class="tab-content">
+          
+          <div class="info-card">
+            <div class="info-icon"><i class="fa-solid fa-desktop"></i></div>
+            <div class="info-content">
+              <div>SELECTED MONITOR</div>
+              <div>강남역 1번 출구 메인</div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-group">
+              <label class="label">데이터 날짜 선택</label>
+              <div class="input-wrapper">
+                <i class="fa-regular fa-calendar"></i>
+                <input type="date" class="input-field">
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="label">로그 파일 등록</label>
+              <div class="upload-area-wrapper">
+                <div class="upload-box">
+                  <i class="fa-solid fa-users-viewfinder"></i>
+                  <div class="upload-text-main">Face Analysis</div>
+                  <div class="upload-text-sub">.csv / .xlsx 파일</div>
+                </div>
+
+                <div class="upload-box">
+                  <i class="fa-solid fa-file-video"></i>
+                  <div class="upload-text-main">Video Log</div>
+                  <div class="upload-text-sub">.csv / .xlsx 파일</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-action btn-primary-action">
+            <i class="fa-solid fa-cloud-arrow-up" style="margin-right:8px;"></i>
+            데이터 업로드 및 분석
+          </button>
+        </div>
+
+      </div> </div> </div>
+
+  <script>
+    // [UI 확인용 스크립트] - 실제 기능은 추후 연결
+    
+    // 1. 지도 로드 (디자인 확인용 더미)
+    var mapOptions = {
+        center: new naver.maps.LatLng(37.498095, 127.027610),
+        zoom: 16
+    };
+    var map = new naver.maps.Map('map', mapOptions);
+
+    // 더미 마커 하나 찍기
+    var marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(37.498095, 127.027610),
+        map: map,
+        icon: {
+          content: '<div style="background:#3B82F6; width:18px; height:18px; border:3px solid white; border-radius:50%; box-shadow:0 3px 6px rgba(0,0,0,0.3);"></div>',
+          anchor: new naver.maps.Point(9, 9)
+        }
+    });
+
+    // 2. 탭 전환 로직
+    function switchTab(tabId) {
+      // 버튼 활성화 처리
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = document.querySelector(`button[onclick="switchTab('${tabId}')"]`);
+      if(activeBtn) activeBtn.classList.add('active');
+
+      // 컨텐츠 표시 처리
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.getElementById(tabId).classList.add('active');
+    }
+  </script>
+</body>
+</html>
