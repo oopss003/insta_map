@@ -99,45 +99,41 @@
     .hm-x-axis { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; margin-top: 8px; padding-left: 40px; }
     .hm-col-label { font-size: 10px; color: #9CA3AF; text-align: center; }
 
-    /* --- [PAGE 2] MONITOR LIST STYLES (업그레이드된 디자인) --- */
+    /* --- [PAGE 2] MONITOR LIST STYLES --- */
     .table-container { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    
     .table-header { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
-    
     .monitor-list { flex: 1; overflow-y: auto; }
-    
     .table-row { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; border-bottom: 1px solid var(--border-color); align-items: center; font-size: 14px; transition: background 0.1s; }
     .table-row:hover { background: #F9FAFB; }
     .table-row:last-child { border-bottom: none; }
-
     .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
-    .st-active { background: #DCFCE7; color: #166534; } 
-    .st-inactive { background: #FEE2E2; color: #991B1B; }
-    .st-maintenance { background: #FEF3C7; color: #92400E; }
+    .st-active { background: #DCFCE7; color: #166534; } .st-inactive { background: #FEE2E2; color: #991B1B; } .st-maintenance { background: #FEF3C7; color: #92400E; }
     .st-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    
     .action-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: white; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
     .action-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: #EFF6FF; }
     .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: #FEF2F2; }
 
     /* --- [PAGE 3] UPLOAD STYLES --- */
-    .upload-section { display: flex; gap: 24px; }
-    .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 300px; }
+    .upload-section { display: flex; gap: 24px; height: 100%; }
+    .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 400px; }
     .upload-card:hover { border-color: var(--primary-color); background: #EFF6FF; }
     .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
     .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
     .upload-desc { font-size: 13px; color: var(--text-sub); }
 
-    /* 모달 (팝업) */
+    /* --- MODAL STYLES --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
-    .modal-box { background: white; width: 400px; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal-box { background: white; width: 450px; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
-    .form-input { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+    .form-input-full { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
     .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
-
+    
+    /* 지도 추가 스타일 */
+    .modal-map { width: 100%; height: 200px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; overflow: hidden; }
   </style>
 </head>
 <body>
+
   <div class="sidebar">
     <div class="logo-area">
       <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
@@ -298,8 +294,8 @@
       <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
       <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
       <div style="display:flex; gap:10px;">
-        <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)">
-        <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)">
+        <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)" readonly style="background:#f9f9f9">
+        <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)" readonly style="background:#f9f9f9">
       </div>
       <div class="modal-actions">
         <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
@@ -307,10 +303,10 @@
       </div>
     </div>
   </div>
-  <script>
+
+<script>
   /* ==========================================================================
-     1. FIREBASE CONFIGURATION (설정)
-     * 주의: 선생님의 실제 API Key가 적용되어 있습니다.
+     1. FIREBASE CONFIGURATION
      ========================================================================== */
   const firebaseConfig = {
     apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
@@ -321,7 +317,6 @@
     appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
   };
 
-  // 파이어베이스 초기화 (중복 실행 방지)
   if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
   }
@@ -329,120 +324,106 @@
 
 
   /* ==========================================================================
-     2. NAVIGATION & PAGE CONTROL (화면 전환)
+     2. DYNAMIC UI INJECTION
      ========================================================================== */
   
-  // 메뉴 클릭 시 화면 전환 함수
-  function showPage(pageId, btnElement) {
-    // 1. 사이드바 메뉴 활성화 스타일 변경
+  // 모달 창에 지도 추가
+  const modalBox = document.querySelector('.modal-box');
+  if (modalBox) {
+    const mapContainer = document.createElement('div');
+    mapContainer.id = "modalMap";
+    mapContainer.className = "modal-map";
+    const title = modalBox.querySelector('.modal-title');
+    title.insertAdjacentElement('afterend', mapContainer);
+  }
+
+  // 업로드 페이지에 모니터 선택 추가
+  const uploadHeader = document.querySelector('#page-upload .page-header');
+  if (uploadHeader) {
+    const selectDiv = document.createElement('div');
+    selectDiv.style.marginTop = "16px";
+    selectDiv.innerHTML = `
+      <label style="font-size:13px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Target Monitor</label>
+      <select id="upload_monitor_select" style="width:100%; max-width:300px; padding:10px; border:1px solid #E5E7EB; border-radius:8px; font-size:14px;">
+        <option value="">Select a monitor...</option>
+      </select>
+    `;
+    uploadHeader.appendChild(selectDiv);
+  }
+
+
+  /* ==========================================================================
+     3. MAP LOGIC
+     ========================================================================== */
+  
+  var dashboardMap = null;
+  var modalMap = null;
+  var tempMarker = null;
+
+  function initMaps() {
+    // 대시보드 맵
+    dashboardMap = new naver.maps.Map('miniMap', {
+      center: new naver.maps.LatLng(37.498095, 127.027610),
+      zoom: 15
+    });
+
+    // 모달 맵
+    modalMap = new naver.maps.Map('modalMap', {
+      center: new naver.maps.LatLng(37.498095, 127.027610),
+      zoom: 15
+    });
+
+    naver.maps.Event.addListener(modalMap, 'click', function(e) {
+      setModalMarker(e.coord);
+    });
+  }
+
+  function setModalMarker(latlng) {
+    if (tempMarker) tempMarker.setMap(null);
+    tempMarker = new naver.maps.Marker({
+      position: latlng,
+      map: modalMap,
+      icon: {
+        content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5);"></div>',
+        anchor: new naver.maps.Point(10, 10)
+      }
+    });
+    document.getElementById('new_lat').value = latlng.lat();
+    document.getElementById('new_lng').value = latlng.lng();
+  }
+
+
+  /* ==========================================================================
+     4. PAGE NAVIGATION
+     ========================================================================== */
+  
+  function showPage(pageId, btn) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    btnElement.classList.add('active');
+    btn.classList.add('active');
     
-    // 2. 메인 컨텐츠 영역 교체 (SPA 방식)
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
 
-    // 3. 페이지별 특수 동작 처리
     if(pageId === 'dashboard') {
-      // 지도가 숨겨져 있다가 나올 때 깨짐 방지 (리사이즈)
-      if(map) {
-        setTimeout(() => {
-          map.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 280));
-        }, 100);
-      }
+      setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 280)), 100);
     } else if (pageId === 'monitors') {
-      // 모니터 리스트 페이지로 가면 데이터 새로고침
       loadMonitorList();
+    } else if (pageId === 'upload') {
+      loadMonitorSelectOptions();
     }
   }
 
 
   /* ==========================================================================
-     3. DASHBOARD LOGIC (지도, 달력, 히트맵)
-     ========================================================================== */
-  
-  // 3-1. 네이버 지도 초기화
-  var map = null;
-  var mapOptions = { 
-    center: new naver.maps.LatLng(37.498095, 127.027610), // 기본위치: 강남역
-    zoom: 15 
-  };
-  
-  // 페이지 로드 시 실행
-  window.onload = function() {
-    map = new naver.maps.Map('miniMap', mapOptions);
-    
-    // 초기 로딩 시 모니터 리스트도 한번 가져옴 (데이터 확인용)
-    loadMonitorList();
-  };
-
-  // 3-2. 사이드바 달력 그리기 (디자인용 더미 데이터)
-  const sbCalGrid = document.getElementById('sidebarCalGrid');
-  const availableDates = [25, 26, 27, 28, 29, 30]; // 데이터가 있는 날
-  let selectedDates = [26, 27, 28]; // 선택된 날
-
-  function renderSbCal() {
-    sbCalGrid.innerHTML = '';
-    // 빈칸 (10월 1일 요일 맞추기)
-    for(let i=0; i<3; i++) sbCalGrid.innerHTML += `<div></div>`;
-    
-    for(let d=1; d<=31; d++) {
-      const hasData = availableDates.includes(d);
-      const isSel = selectedDates.includes(d);
-      
-      let cls = 'sb-date-cell';
-      if(hasData) cls += ' has-data';
-      if(isSel) cls += ' selected';
-      
-      // 날짜 클릭 이벤트
-      const evt = hasData ? `onclick="toggleDate(${d})"` : '';
-      
-      sbCalGrid.innerHTML += `
-        <div class="${cls}" ${evt}>
-          ${d}
-          <div class="sb-dot"></div>
-        </div>
-      `;
-    }
-    // 선택된 날짜 수 업데이트
-    document.getElementById('selCount').innerText = selectedDates.length;
-  }
-
-  // 날짜 선택 토글
-  window.toggleDate = function(d) {
-    if(selectedDates.includes(d)) {
-      selectedDates = selectedDates.filter(dt => dt !== d);
-    } else {
-      selectedDates.push(d);
-    }
-    renderSbCal(); // 다시 그리기
-  }
-  renderSbCal(); // 최초 실행
-
-  // 3-3. 히트맵 차트 그리기 (더미 시각화)
-  const heatGrid = document.getElementById('heatGrid');
-  for(let i=0; i<7*18; i++) {
-    // 랜덤 농도 생성 (1~4)
-    const lv = Math.ceil(Math.random() * 4);
-    const div = document.createElement('div');
-    div.className = `hm-cell l${lv}`;
-    heatGrid.appendChild(div);
-  }
-
-
-  /* ==========================================================================
-     4. MONITOR MANAGEMENT LOGIC (모니터 관리 페이지)
+     5. MONITOR MANAGEMENT
      ========================================================================== */
 
-  // 4-1. 모니터 리스트 불러오기 (Firestore -> Table)
   function loadMonitorList() {
     const listEl = document.getElementById('monitorList');
-    // 로딩 표시
-    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">데이터를 불러오는 중입니다...</div>';
+    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
     
     db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
       let html = '';
-      
       if (snapshot.empty) {
         listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 모니터가 없습니다.</div>';
         return;
@@ -450,104 +431,116 @@
 
       snapshot.forEach((doc) => {
         const d = doc.data();
-        // 상태에 따른 배지 스타일 설정
-        let badgeClass = 'st-active';
-        let statusText = 'ACTIVE';
-        
-        if(d.status === 'inactive') { badgeClass = 'st-inactive'; statusText = 'INACTIVE'; }
-        if(d.status === 'maintenance') { badgeClass = 'st-maintenance'; statusText = 'CHECKING'; }
-
-        // 날짜 포맷팅 (타임스탬프 -> 날짜문자열)
+        const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
         let dateStr = '-';
         if(d.updated_at) {
           const date = d.updated_at.toDate();
-          dateStr = date.getFullYear() + '-' + (date.getMonth()+1) + '-' + date.getDate();
+          dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
         }
 
-        // HTML 조립
         html += `
           <div class="table-row">
             <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
             <div style="font-weight:600;">${d.name}</div>
-            <div style="color:#6B7280; font-size:13px;">${d.location.lat}, ${d.location.lng}</div>
-            <div>
-              <span class="status-badge ${badgeClass}">
-                <span class="st-dot"></span> ${statusText}
-              </span>
-            </div>
+            <div style="color:#6B7280; font-size:13px;">${d.location.lat.toFixed(4)}, ${d.location.lng.toFixed(4)}</div>
+            <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
             <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
             <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
-              <button class="action-btn" title="수정 (준비중)"><i class="fa-solid fa-pen"></i></button>
-              <button class="action-btn delete" title="삭제" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
+              <button class="action-btn" onclick="alert('수정 기능 준비중')"><i class="fa-solid fa-pen"></i></button>
+              <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `;
       });
-      
       listEl.innerHTML = html;
-    }).catch((error) => {
-      console.error("Error loading monitors:", error);
-      listEl.innerHTML = '<div style="padding:40px; text-align:center; color:red;">데이터 로드 실패</div>';
     });
   }
 
-  // 4-2. 모니터 추가 모달 제어
   function openAddModal() { 
-    // 입력창 초기화
-    document.getElementById('new_id').value = '';
-    document.getElementById('new_name').value = '';
-    document.getElementById('new_lat').value = '';
-    document.getElementById('new_lng').value = '';
-    document.getElementById('addModal').style.display = 'flex'; 
+    document.getElementById('addModal').style.display = 'flex';
+    setTimeout(() => {
+      if(modalMap) {
+        modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
+      }
+    }, 100);
   }
-  
-  function closeAddModal() { 
-    document.getElementById('addModal').style.display = 'none'; 
-  }
+  function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
 
-  // 4-3. 신규 모니터 저장 (Firestore Write)
   function saveNewMonitor() {
-    const id = document.getElementById('new_id').value.trim();
-    const name = document.getElementById('new_name').value.trim();
+    const id = document.getElementById('new_id').value;
+    const name = document.getElementById('new_name').value;
     const lat = parseFloat(document.getElementById('new_lat').value);
     const lng = parseFloat(document.getElementById('new_lng').value);
 
-    // 유효성 검사
-    if(!id || !name) return alert("ID와 설치 장소명은 필수입니다.");
-    if(isNaN(lat) || isNaN(lng)) return alert("위도/경도는 숫자여야 합니다.");
+    if(!id || !name || isNaN(lat)) return alert("ID, 이름, 위치(지도클릭)는 필수입니다.");
 
-    // 저장 로직
     db.collection("monitors").doc(id).set({
-      monitor_id: id,
-      name: name,
-      location: { lat: lat, lng: lng },
-      status: 'active', // 기본값 Active
+      monitor_id: id, name: name, location: {lat, lng}, status: 'active',
       updated_at: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }) // 이미 있으면 덮어쓰기
-    .then(() => {
-      alert("성공적으로 등록되었습니다!");
+    }, { merge: true }).then(() => {
+      alert("저장되었습니다!");
       closeAddModal();
-      loadMonitorList(); // 리스트 새로고침
-    })
-    .catch((error) => {
-      console.error("Error saving monitor:", error);
-      alert("저장 중 오류가 발생했습니다.");
+      loadMonitorList();
     });
   }
 
-  // 4-4. 모니터 삭제 (Firestore Delete)
   function deleteMonitor(id) {
-    if(confirm("정말 이 모니터를 삭제하시겠습니까? (복구 불가)")) {
-      db.collection("monitors").doc(id).delete().then(() => {
-        alert("삭제되었습니다.");
-        loadMonitorList(); // 리스트 새로고침
-      }).catch((error) => {
-        console.error("Error deleting monitor:", error);
-        alert("삭제 실패");
-      });
+    if(confirm("정말 삭제하시겠습니까?")) {
+      db.collection("monitors").doc(id).delete().then(() => loadMonitorList());
     }
   }
 
+  function loadMonitorSelectOptions() {
+    const sel = document.getElementById('upload_monitor_select');
+    if(!sel) return;
+    
+    db.collection("monitors").get().then((snapshot) => {
+      let opts = '<option value="">Select a monitor...</option>';
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        opts += `<option value="${d.monitor_id}">${d.name} (${d.monitor_id})</option>`;
+      });
+      sel.innerHTML = opts;
+    });
+  }
+
+
+  /* ==========================================================================
+     6. VISUALIZATION
+     ========================================================================== */
+  const sbCalGrid = document.getElementById('sidebarCalGrid');
+  const available = [25, 26, 27, 28, 29, 30];
+  let selected = [26, 27, 28];
+
+  function renderSbCal() {
+    sbCalGrid.innerHTML = '';
+    for(let i=0; i<3; i++) sbCalGrid.innerHTML += `<div></div>`;
+    for(let d=1; d<=31; d++) {
+      const cls = `sb-date-cell ${available.includes(d)?'has-data':''} ${selected.includes(d)?'selected':''}`;
+      sbCalGrid.innerHTML += `<div class="${cls}" onclick="toggleDate(${d})">${d}<div class="sb-dot"></div></div>`;
+    }
+    document.getElementById('selCount').innerText = selected.length;
+  }
+  window.toggleDate = (d) => {
+    if(selected.includes(d)) selected = selected.filter(x=>x!==d); else selected.push(d);
+    renderSbCal();
+  }
+  
+  window.onload = function() {
+    initMaps();
+    renderSbCal();
+    loadMonitorList(); // 초기 데이터 로드
+  };
+
+  const heatGrid = document.getElementById('heatGrid');
+  if(heatGrid) {
+    for(let i=0; i<7*18; i++) {
+      const lv = Math.ceil(Math.random()*4);
+      const div = document.createElement('div');
+      div.className = `hm-cell l${lv}`;
+      heatGrid.appendChild(div);
+    }
+  }
 </script>
 </body>
 </html>
