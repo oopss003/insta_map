@@ -46,13 +46,13 @@
       flex-direction: column;
       gap: 20px;
       min-width: 350px;
-      height: 100%; /* 높이 100% 명시 */
+      height: 100%;
     }
 
-    /* 1. 지도 영역 (수정됨) */
+    /* 1. 지도 영역 (비율 6, min-height:0) */
     .map-box {
-      flex: 5;               /* 비율을 6으로 증가 (지도를 더 크게) */
-      min-height: 0;         /* ★핵심 수정: 내용물 크기 무시하고 강제 리사이징 */
+      flex: 5;
+      min-height: 0;
       background: white;
       border-radius: 20px;
       overflow: hidden;
@@ -69,13 +69,13 @@
       display: flex; align-items: center; gap: 6px;
     }
 
-    /* 2. 달력 영역 (수정됨) */
+    /* 2. 달력 영역 (비율 4, min-height:0) */
     .calendar-box {
-      flex: 5;               /* 비율을 4로 감소 */
-      min-height: 0;         /* ★핵심 수정: 달력이 찌그러질 수 있게 허용 */
+      flex: 5;
+      min-height: 0;
       background: white;
       border-radius: 20px;
-      padding: 24px;
+      padding: 20px;
       border: 1px solid white;
       box-shadow: 0 4px 20px rgba(0,0,0,0.05);
       display: flex; flex-direction: column;
@@ -83,56 +83,49 @@
 
     .cal-header {
       display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px; /* 여백 살짝 줄임 */
-      flex-shrink: 0;      /* 헤더는 줄어들지 않게 고정 */
+      margin-bottom: 10px;
+      flex-shrink: 0;
     }
     .cal-title { font-size: 18px; font-weight: 800; color: #1E3A8A; }
     .cal-nav { display: flex; gap: 8px; }
     .btn-nav {
       background: #F8FAFC; border: none; width: 32px; height: 32px;
       border-radius: 8px; cursor: pointer; color: var(--text-sub);
-      transition: all 0.2s;
     }
-    .btn-nav:hover { background: #E2E8F0; color: var(--primary-color); }
 
     .cal-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
-      gap: 4px;       /* 간격 미세 조정 */
-      flex: 1;        /* 남은 공간 차지 */
-      align-content: center; /* 내용 중앙 정렬 */
-      overflow: hidden; /* 넘치면 숨김 */
+      gap: 4px;
+      flex: 1;
+      align-content: center;
+      overflow: hidden;
     }
 
-    .day-name {
-      text-align: center; font-size: 12px; font-weight: 700; color: #94A3B8;
-      margin-bottom: 4px;
-    }
+    .day-name { text-align: center; font-size: 11px; font-weight: 700; color: #94A3B8; }
     
     .date-cell {
-      /* aspect-ratio 제거 (높이 강제 조절을 위해) */
       height: 100%; 
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      border-radius: 12px; font-size: 14px; font-weight: 600; color: #CBD5E1;
-      cursor: default; position: relative; border: 1px solid transparent;
-      transition: all 0.2s;
+      border-radius: 8px; font-size: 13px; font-weight: 600; color: #CBD5E1;
+      cursor: default; border: 1px solid transparent;
     }
 
     .date-cell.has-data { color: var(--text-main); background-color: #F8FAFC; cursor: pointer; }
     .date-cell.has-data:hover { border-color: var(--primary-color); color: var(--primary-color); }
     .date-cell.selected { background-color: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
 
-    .dot { width: 5px; height: 5px; background: var(--success-dot); border-radius: 50%; margin-top: 4px; display: none; }
+    .dot { width: 4px; height: 4px; background: var(--success-dot); border-radius: 50%; margin-top: 2px; display: none; }
     .date-cell.has-data .dot { display: block; }
     .date-cell.selected .dot { background: white; }
 
     .selection-summary {
       margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border-color);
-      font-size: 13px; color: var(--text-sub); display: flex; justify-content: space-between;
-      flex-shrink: 0; /* 요약바 크기 고정 */
+      font-size: 12px; color: var(--text-sub); display: flex; justify-content: space-between;
+      flex-shrink: 0;
     }
 
-    /* === [RIGHT PANEL] (기존 동일) === */
+    /* === [RIGHT PANEL] === */
     .right-panel {
       flex: 6.5; 
       background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.05);
@@ -140,7 +133,38 @@
     }
 
     .dash-header { padding: 24px 32px; border-bottom: 1px solid var(--border-color); }
-    .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+    
+    .header-top { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: flex-start; 
+      margin-bottom: 20px; 
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px; /* 버튼 사이 간격 */
+    }
+
+    /* 버튼 스타일 정의 */
+    .btn-base {
+      padding: 12px 20px; border-radius: 10px; font-weight: 700; 
+      cursor: pointer; display: flex; align-items: center; gap: 8px;
+      font-size: 14px; transition: all 0.2s; border: none;
+    }
+    
+    /* 메인 버튼 (다운로드) */
+    .btn-primary {
+      background: var(--primary-color); color: white;
+    }
+    .btn-primary:hover { background: #1D4ED8; }
+
+    /* 서브 버튼 (설정 - 새로 추가됨) */
+    .btn-secondary {
+      background: white; border: 1px solid var(--border-color); color: var(--text-sub);
+    }
+    .btn-secondary:hover { background: #F8FAFC; color: var(--text-main); border-color: #CBD5E1; }
+
     .page-title h2 { margin: 0; font-size: 22px; font-weight: 800; color: #1E3A8A; }
     .page-title p { margin: 4px 0 0; font-size: 13px; color: var(--text-sub); }
 
@@ -173,7 +197,6 @@
 <div class="app-container">
   
   <div class="left-panel">
-    
     <div class="map-box">
       <div id="miniMap" style="width:100%; height:100%;"></div>
       <div class="map-badge">
@@ -189,16 +212,12 @@
           <button class="btn-nav"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
       </div>
-
       <div class="cal-grid" style="flex:0; min-height:auto; margin-bottom:10px;">
         <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
         <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div>
         <div class="day-name">Sat</div>
       </div>
-
-      <div class="cal-grid" id="calendarGrid">
-        </div>
-
+      <div class="cal-grid" id="calendarGrid"></div>
       <div class="selection-summary">
         <div style="display:flex; gap:10px; align-items:center;">
           <div style="display:flex; align-items:center; gap:4px;"><span style="width:8px; height:8px; background:#10B981; border-radius:50%;"></span> Data Available</div>
@@ -208,7 +227,6 @@
         </div>
       </div>
     </div>
-
   </div>
 
 
@@ -219,10 +237,19 @@
           <h2>Analytics Dashboard</h2>
           <p>모니터 유동인구 및 광고 효율 분석</p>
         </div>
-        <button style="background:#2563EB; color:white; border:none; padding:12px 24px; border-radius:10px; font-weight:700; cursor:pointer;">
-          <i class="fa-solid fa-file-export"></i> 리포트 다운로드
-        </button>
+        
+        <div class="header-actions">
+          <button class="btn-base btn-secondary" onclick="alert('설정 페이지로 이동합니다.')">
+            <i class="fa-solid fa-gear"></i> 설정 및 관리
+          </button>
+          
+          <button class="btn-base btn-primary">
+            <i class="fa-solid fa-file-export"></i> 리포트 다운로드
+          </button>
+        </div>
+
       </div>
+
       <div class="filter-bar">
         <select class="custom-select">
           <option>전체 트래픽 (All Traffic)</option>
