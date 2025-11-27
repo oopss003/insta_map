@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>모니터 통합 관제 시스템</title>
+  <title>Analytics Dashboard</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,358 +14,564 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 
   <style>
-    /* ... (기존 디자인 스타일 그대로 유지) ... */
-    :root { --primary-color: #3B82F6; --bg-color: #F1F5F9; --card-bg: #FFFFFF; --text-main: #1E293B; --text-sub: #64748B; --border-color: #E2E8F0; }
+    :root {
+      --primary-color: #3B82F6;
+      --sidebar-bg: #1E293B;
+      --sidebar-text: #94A3B8;
+      --bg-color: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --border-color: #E5E7EB;
+      --success-dot: #10B981;
+    }
+
     * { box-sizing: border-box; }
-    body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; overflow: hidden; display: flex; justify-content: center; align-items: center; }
-    .app-container { display: flex; width: 98%; height: 96%; gap: 20px; max-width: 1600px; }
-    .map-card-section { flex: 4; background: white; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); position: relative; overflow: hidden; border: 1px solid white; }
-    #map { width: 100%; height: 100%; }
-    .map-overlay-top { position: absolute; top: 20px; left: 20px; z-index: 10; display: flex; gap: 10px; }
-    .btn-float { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px); border: 1px solid rgba(0,0,0,0.1); padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--text-main); box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease; }
-    .btn-float:hover { transform: translateY(-2px); background: white; }
-    .btn-float.primary { background: var(--primary-color); color: white; border: none; }
-    .panel-card-section { flex: 6; background: var(--card-bg); border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: flex; flex-direction: column; border: 1px solid white; overflow: hidden; }
-    .panel-header { padding: 24px 32px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; background: #fff; }
-    .header-titles h1 { font-size: 22px; font-weight: 800; margin: 0 0 4px 0; }
-    .user-profile { display: flex; align-items: center; gap: 10px; background: var(--bg-color); padding: 8px 16px; border-radius: 20px; }
-    .user-avatar { width: 32px; height: 32px; background: #CBD5E1; border-radius: 50%; display:flex; align-items:center; justify-content:center; }
-    .tabs-container { padding: 0 32px; border-bottom: 1px solid var(--border-color); display: flex; gap: 40px; background: #fff; }
-    .tab-btn { padding: 20px 0; background: none; border: none; font-size: 16px; font-weight: 600; color: var(--text-sub); cursor: pointer; position: relative; }
-    .tab-btn.active { color: var(--primary-color); }
-    .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background: var(--primary-color); border-radius: 3px 3px 0 0; }
-    .panel-body { flex: 1; overflow-y: auto; padding: 32px; background-color: #FAFAFA; }
-    .form-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 30px; margin-bottom: 24px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
-    .form-group { margin-bottom: 24px; }
-    .label { display: block; font-size: 14px; font-weight: 700; color: var(--text-main); margin-bottom: 10px; }
-    .input-wrapper { position: relative; }
-    .input-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #94A3B8; font-size: 16px; }
-    .input-field, .select-field { width: 100%; padding: 14px 16px 14px 48px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 15px; background: #F8FAFC; transition: all 0.2s; }
-    .input-field:focus, .select-field:focus { outline: none; border-color: var(--primary-color); background: white; box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1); }
-    .select-field { padding-left: 16px; cursor: pointer; } 
-    .upload-area-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .upload-box { background: white; border: 2px dashed var(--border-color); border-radius: 16px; height: 180px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; }
-    .upload-box:hover { border-color: var(--primary-color); background: #EFF6FF; }
-    .upload-box i { font-size: 32px; color: #CBD5E1; margin-bottom: 16px; }
-    .btn-action { width: 100%; padding: 18px; border-radius: 12px; border: none; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-    .btn-primary-action { background: var(--primary-color); color: white; box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3); }
-    .btn-primary-action:hover { background: #2563EB; transform: translateY(-2px); }
-    @media (max-width: 900px) { .app-container { flex-direction: column; height: auto; padding: 20px 0; } .map-card-section { flex: none; height: 300px; width: 100%; } .panel-card-section { flex: none; width: 100%; } .upload-area-wrapper { grid-template-columns: 1fr; } }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Pretendard', sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* === [LEFT SIDEBAR] === */
+    .sidebar {
+      width: 320px;
+      background-color: var(--sidebar-bg);
+      color: var(--sidebar-text);
+      display: flex; flex-direction: column;
+      padding: 24px;
+      flex-shrink: 0;
+    }
+
+    .logo-area {
+      margin-bottom: 40px; color: white; font-size: 20px; font-weight: 800;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .logo-icon {
+      width: 32px; height: 32px; background: var(--primary-color);
+      border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    }
+
+    .nav-menu { list-style: none; padding: 0; margin: 0 0 40px 0; }
+    .nav-item {
+      padding: 12px 16px; border-radius: 12px; cursor: pointer;
+      display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600;
+      color: var(--sidebar-text); transition: all 0.2s; margin-bottom: 4px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-item.active { background: var(--primary-color); color: white; }
+
+    /* 사이드바 달력 */
+    .sidebar-cal {
+      background: rgba(255,255,255,0.05);
+      border-radius: 16px; padding: 20px;
+      margin-top: auto; 
+    }
+    .sb-cal-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+      color: white; font-weight: 700; font-size: 14px;
+    }
+    .sb-cal-grid {
+      display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center;
+    }
+    .sb-day-name { font-size: 10px; color: #64748B; margin-bottom: 6px; }
+    
+    .sb-date-cell {
+      aspect-ratio: 1/1; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: #CBD5E1; cursor: pointer; position: relative;
+    }
+    .sb-date-cell:hover { background: rgba(255,255,255,0.1); }
+    .sb-date-cell.selected { background: var(--primary-color); color: white; font-weight: 700; }
+    .sb-dot {
+      width: 4px; height: 4px; background: var(--success-dot); border-radius: 50%;
+      position: absolute; bottom: 4px; display: none;
+    }
+    .sb-date-cell.has-data .sb-dot { display: block; }
+
+
+    /* === [RIGHT MAIN CONTENT] === */
+    .main-content {
+      flex: 1;
+      padding: 30px;
+      display: flex; flex-direction: column; gap: 24px;
+      overflow-y: auto;
+    }
+
+    /* 상단 헤더 */
+    .top-section {
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .page-header h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
+    .page-header p { margin: 0; font-size: 14px; color: #6B7280; }
+
+    /* 관리자 프로필 버튼 (커서 추가) */
+    .user-profile-btn {
+      display: flex; align-items: center; gap: 10px; 
+      cursor: pointer; padding: 8px 12px; border-radius: 12px; transition: background 0.2s;
+    }
+    .user-profile-btn:hover { background: #E5E7EB; }
+
+    .header-controls { display: flex; gap: 12px; }
+    .btn {
+      padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px;
+    }
+    .btn-white { background: white; border: 1px solid var(--border-color); color: #374151; }
+    .btn-primary { background: var(--primary-color); color: white; }
+
+    /* 지도 카드 */
+    .map-card {
+      height: 300px; /* 지도 높이 좀 더 확보 */
+      background: white; border-radius: 16px; overflow: hidden;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+      position: relative;
+      border: 1px solid var(--border-color);
+    }
+    
+    /* 지도 위 컨트롤 버튼들 */
+    .map-controls-overlay {
+      position: absolute; top: 16px; left: 16px; z-index: 100;
+      display: flex; gap: 8px;
+    }
+    .map-btn {
+      background: white; padding: 8px 12px; border-radius: 8px; 
+      font-size: 12px; font-weight: 700; color: #374151;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1); border: 1px solid #E5E7EB; cursor: pointer;
+      display: flex; align-items: center; gap: 6px; transition: all 0.2s;
+    }
+    .map-btn:hover { background: #F9FAFB; transform: translateY(-1px); }
+    .map-btn.accent { background: var(--primary-color); color: white; border: none; }
+
+    /* 모니터 입력 폼 (숨김/보임 처리용) */
+    #monitorFormOverlay {
+      position: absolute; top: 16px; right: 16px; bottom: 16px; width: 300px;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(5px);
+      border-radius: 16px; padding: 20px; z-index: 200;
+      box-shadow: -4px 0 10px rgba(0,0,0,0.05); border: 1px solid #E5E7EB;
+      display: none; flex-direction: column; gap: 12px;
+    }
+    .form-input {
+      width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px; font-size: 13px;
+    }
+
+    /* 필터 바 */
+    .filter-card {
+      background: white; padding: 16px 24px; border-radius: 16px;
+      border: 1px solid var(--border-color);
+      display: flex; align-items: center; gap: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .filter-item { display: flex; align-items: center; gap: 12px; }
+    .filter-label { font-size: 12px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; }
+    
+    .select-box {
+      padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #F9FAFB;
+    }
+    
+    .toggle-chips { display: flex; gap: 6px; }
+    .chip {
+      padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color);
+      font-size: 12px; font-weight: 600; color: #6B7280; cursor: pointer; background: white;
+    }
+    .chip.active { background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color); }
+
+    /* 대시보드 그리드 */
+    .dashboard-grid {
+      display: grid; grid-template-columns: 280px 1fr; gap: 24px;
+      flex: 1; 
+    }
+
+    .kpi-column { display: flex; flex-direction: column; gap: 16px; }
+    .kpi-box {
+      background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color);
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .kpi-head { font-size: 12px; color: #9CA3AF; font-weight: 700; }
+    .kpi-val { font-size: 24px; font-weight: 800; color: #111827; }
+    .kpi-sub { font-size: 12px; color: #10B981; font-weight: 600; }
+
+    .chart-box {
+      background: white; border-radius: 16px; border: 1px solid var(--border-color);
+      padding: 24px; display: flex; flex-direction: column;
+    }
+    .chart-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+    
+    .heatmap-layout { display: flex; gap: 10px; flex: 1; }
+    .hm-y-axis { display: grid; grid-template-rows: repeat(7, 1fr); text-align: right; padding-right: 10px; }
+    .hm-row-label { font-size: 12px; color: #6B7280; font-weight: 600; display:flex; align-items:center; justify-content:flex-end; }
+    
+    .hm-grid { flex: 1; display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; }
+    .hm-cell { background: #F3F4F6; border-radius: 4px; }
+    .l1 { background: #DBEAFE; } .l2 { background: #93C5FD; } .l3 { background: #3B82F6; } .l4 { background: #1E40AF; }
+
+    .hm-x-axis { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; margin-top: 8px; padding-left: 40px; }
+    .hm-col-label { font-size: 10px; color: #9CA3AF; text-align: center; }
+
   </style>
 </head>
 <body>
 
-  <div class="app-container">
-    
-    <div class="map-card-section">
-      <div id="map"></div>
-      
-      <div class="map-overlay-top">
-        <button class="btn-float" onclick="getCurrentLocation()">
-          <i class="fa-solid fa-crosshairs"></i> 내 위치
-        </button>
-        <button class="btn-float primary" onclick="prepareNewMonitor()">
-          <i class="fa-solid fa-plus"></i> 기기 추가
-        </button>
-      </div>
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
+      Analytics
     </div>
 
-    <div class="panel-card-section">
-      
-      <div class="panel-header">
-        <div class="header-titles">
-          <h1>Admin Dashboard</h1>
-          <p style="color:#64748B; margin-top:4px;">모니터링 & 데이터 분석 센터</p>
-        </div>
-        <div class="user-profile">
-          <div class="user-avatar"><i class="fa-solid fa-user" style="color:#64748B;"></i></div>
-          <span style="font-size:14px; font-weight:600; color:#334155;">관리자님</span>
+    <ul class="nav-menu">
+      <li class="nav-item active"><i class="fa-solid fa-house"></i> Dashboard</li>
+      <li class="nav-item"><i class="fa-solid fa-desktop"></i> Monitors</li>
+      <li class="nav-item"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
+      <li class="nav-item"><i class="fa-solid fa-gear"></i> Settings</li>
+    </ul>
+
+    <div class="sidebar-cal">
+      <div class="sb-cal-header">
+        <span>October 2025</span>
+        <div style="display:flex; gap:8px;">
+          <i class="fa-solid fa-chevron-left" style="cursor:pointer"></i>
+          <i class="fa-solid fa-chevron-right" style="cursor:pointer"></i>
         </div>
       </div>
-
-      <div class="tabs-container">
-        <button class="tab-btn active" onclick="switchTab('tab-settings')">모니터 설정</button>
-        <button class="tab-btn" onclick="switchTab('tab-upload')">데이터 업로드</button>
+      <div class="sb-cal-grid" style="margin-bottom:8px;">
+        <div class="sb-day-name">S</div><div class="sb-day-name">M</div><div class="sb-day-name">T</div>
+        <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
       </div>
-
-      <div class="panel-body">
-        
-        <div id="tab-settings" class="tab-content active">
-          <div class="form-card">
-            <h3 style="margin:0 0 24px 0; font-size:18px;">기기 정보 관리</h3>
-            
-            <div class="form-group">
-              <label class="label">모니터 고유 ID</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-fingerprint"></i>
-                <input type="text" id="monitor_id" class="input-field" placeholder="예: SEOUL_GN_01">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="label">설치 장소 (Alias)</label>
-              <div class="input-wrapper">
-                <i class="fa-solid fa-location-dot"></i>
-                <input type="text" id="monitor_name" class="input-field" placeholder="예: 강남역 1번 출구 앞">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="label">좌표 정보 (지도 연동)</label>
-              <div style="display:grid; grid-template-columns: 1fr 1fr; gap:12px;">
-                <input type="text" id="monitor_lat" class="input-field" placeholder="위도" readonly style="background:#F1F5F9; color:#94A3B8;">
-                <input type="text" id="monitor_lng" class="input-field" placeholder="경도" readonly style="background:#F1F5F9; color:#94A3B8;">
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label class="label">현재 상태</label>
-              <select id="monitor_status" class="select-field">
-                <option value="active">🟢 정상 운영 (Active)</option>
-                <option value="maintenance">🟠 점검 중 (Maintenance)</option>
-                <option value="inactive">🔴 운영 중지 (Inactive)</option>
-              </select>
-            </div>
-          </div>
-          
-          <div style="display:flex; gap:12px;">
-            <button class="btn-action btn-primary-action" style="flex:2;" onclick="saveMonitor()">저장하기</button>
-            <button class="btn-action" style="flex:1; background:white; border:1px solid #E2E8F0;" onclick="resetForm()">취소</button>
-          </div>
-        </div>
-
-        <div id="tab-upload" class="tab-content">
-          <div class="form-card" style="border:1px solid #DBEAFE; background:#EFF6FF;">
-            <div style="display:flex; align-items:center; gap:12px;">
-              <div style="background:white; padding:10px; border-radius:10px; color:#2563EB;">
-                <i class="fa-solid fa-desktop" style="font-size:20px;"></i>
-              </div>
-              <div>
-                <div style="font-size:12px; font-weight:700; color:#3B82F6;">CURRENT TARGET</div>
-                <div id="target_monitor_display" style="font-size:16px; font-weight:800; color:#1E3A8A;">선택된 모니터 없음</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-card">
-             <div class="form-group">
-               <label class="label">분석할 날짜</label>
-               <div class="input-wrapper">
-                 <i class="fa-regular fa-calendar"></i>
-                 <input type="date" class="input-field">
-               </div>
-             </div>
-             <div class="form-group">
-               <label class="label">로그 파일 업로드</label>
-               <div class="upload-area-wrapper">
-                 <div class="upload-box"><i class="fa-solid fa-users-viewfinder"></i><div style="font-weight:700; color:#334155;">Face Analysis</div><div style="font-size:12px; color:#94A3B8; margin-top:4px;">Drag & Drop CSV</div></div>
-                 <div class="upload-box"><i class="fa-solid fa-file-video"></i><div style="font-weight:700; color:#334155;">Video Log</div><div style="font-size:12px; color:#94A3B8; margin-top:4px;">Drag & Drop CSV</div></div>
-               </div>
-             </div>
-          </div>
-          <button class="btn-action btn-primary-action"><i class="fa-solid fa-cloud-arrow-up" style="margin-right:8px;"></i> 데이터 업로드 및 분석 시작</button>
-        </div>
-
+      <div class="sb-cal-grid" id="sidebarCalGrid"></div>
+      <div style="margin-top:16px; font-size:11px; color:#94A3B8; text-align:center;">
+        <span style="color:white; font-weight:700;" id="selCount">3</span> days selected
       </div>
     </div>
   </div>
 
-  <script>
-    /* =========================================
-       1. Firebase 설정 (선생님 계정)
-       ========================================= */
-    const firebaseConfig = {
-      apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
-      authDomain: "twopage-ea909.firebaseapp.com",
-      projectId: "twopage-ea909",
-      storageBucket: "twopage-ea909.firebasestorage.app",
-      messagingSenderId: "398686352913",
-      appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
-    };
 
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
-    const db = firebase.firestore();
-
-    /* =========================================
-       2. 지도 초기화 및 마커 로직
-       ========================================= */
-    let map;
-    let tempMarker = null; // 새로 추가할 때 쓰는 임시 마커
-    let markers = [];      // 기존 모니터 마커들
-
-    function initMap() {
-      map = new naver.maps.Map('map', {
-        center: new naver.maps.LatLng(37.498095, 127.027610), // 강남역
-        zoom: 15
-      });
-
-      // 지도 클릭 이벤트 (새 위치 지정)
-      naver.maps.Event.addListener(map, 'click', function(e) {
-        setTempLocation(e.coord);
-      });
-
-      // 기존 모니터 불러오기
-      loadMonitors();
-    }
-
-    // 지도 클릭 시 핀 찍기 및 좌표 입력
-    function setTempLocation(latlng) {
-      if (tempMarker) tempMarker.setMap(null);
-      
-      tempMarker = new naver.maps.Marker({
-        position: latlng,
-        map: map,
-        icon: {
-          content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5); animation: bounce 0.5s;"></div>',
-          anchor: new naver.maps.Point(10, 10)
-        }
-      });
-
-      // 폼에 좌표 자동 입력
-      document.getElementById('monitor_lat').value = latlng.lat();
-      document.getElementById('monitor_lng').value = latlng.lng();
-      
-      // 탭 전환 (설정 화면 보여주기)
-      switchTab('tab-settings');
-    }
-
-    /* =========================================
-       3. 데이터베이스 연동 (CRUD)
-       ========================================= */
+  <div class="main-content">
     
-    // [READ] 모니터 목록 불러오기
-    function loadMonitors() {
-      db.collection("monitors").get().then((querySnapshot) => {
-        // 기존 마커 초기화
-        markers.forEach(m => m.setMap(null));
-        markers = [];
+    <div class="top-section">
+      <div class="page-header">
+        <h1>Dashboard Overview</h1>
+        
+        <div class="user-profile-btn" onclick="location.href='https://inwave.ai.kr/analyze.html'">
+          <div style="width:24px; height:24px; background:#CBD5E1; border-radius:50%; display:flex; justify-content:center; align-items:center;">
+            <i class="fa-solid fa-user" style="font-size:12px; color:white;"></i>
+          </div>
+          <span style="font-size:14px; color:#374151; font-weight:600;">관리자님</span>
+          <i class="fa-solid fa-chevron-right" style="font-size:10px; color:#9CA3AF;"></i>
+        </div>
+      </div>
+      
+      <div class="header-controls">
+        <button class="btn btn-white"><i class="fa-solid fa-download"></i> Export</button>
+        <button class="btn btn-primary"><i class="fa-solid fa-plus"></i> New Report</button>
+      </div>
+    </div>
 
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const position = new naver.maps.LatLng(data.location.lat, data.location.lng);
-          
-          // 상태별 색상
-          let color = '#3B82F6'; // Active
-          if(data.status === 'maintenance') color = '#F59E0B';
-          if(data.status === 'inactive') color = '#EF4444';
+    <div class="map-card">
+      <div id="miniMap" style="width:100%; height:100%;"></div>
+      
+      <div class="map-controls-overlay">
+        <button class="map-btn" onclick="getCurrentLocation()">
+          <i class="fa-solid fa-crosshairs"></i> 내 위치
+        </button>
+        <button class="map-btn accent" onclick="prepareAddMonitor()">
+          <i class="fa-solid fa-plus"></i> 기기 추가
+        </button>
+      </div>
 
-          const marker = new naver.maps.Marker({
-            position: position,
-            map: map,
-            icon: {
-              content: `
-                <div style="position:relative;">
-                  <div style="background:${color}; width:16px; height:16px; border:2px solid white; border-radius:50%; box-shadow:0 2px 5px rgba(0,0,0,0.3);"></div>
-                  <div style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); background:white; padding:4px 8px; border-radius:8px; font-size:11px; font-weight:700; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.1); border:1px solid #E2E8F0;">${data.name}</div>
-                </div>
-              `,
-              anchor: new naver.maps.Point(8, 8)
-            }
-          });
+      <div id="monitorFormOverlay">
+        <h4 style="margin:0 0 10px 0; color:#1F2937;">새 모니터 등록</h4>
+        <input type="text" id="m_id" class="form-input" placeholder="모니터 ID (예: SEOUL_01)">
+        <input type="text" id="m_name" class="form-input" placeholder="설치 장소명">
+        <div style="display:flex; gap:5px;">
+          <input type="text" id="m_lat" class="form-input" placeholder="위도" readonly style="background:#F3F4F6;">
+          <input type="text" id="m_lng" class="form-input" placeholder="경도" readonly style="background:#F3F4F6;">
+        </div>
+        <select id="m_status" class="form-input">
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+        <div style="display:flex; gap:8px; margin-top:auto;">
+          <button class="btn btn-primary" style="flex:1; justify-content:center;" onclick="saveMonitor()">저장하기</button>
+          <button class="btn btn-white" style="flex:1; justify-content:center;" onclick="closeForm()">취소</button>
+        </div>
+      </div>
+    </div>
 
-          // 마커 클릭 시 정보 불러오기
-          naver.maps.Event.addListener(marker, 'click', function() {
-            selectMonitor(doc.id, data);
-          });
+    <div class="filter-card">
+      <div class="filter-item">
+        <div class="filter-label">Target</div>
+        <select class="select-box">
+          <option>All Traffic</option>
+          <option>Nike Winter Ad</option>
+          <option>Galaxy S25 Launch</option>
+        </select>
+      </div>
+      <div style="width:1px; height:24px; background:#E5E7EB;"></div>
+      <div class="filter-item">
+        <div class="filter-label">View</div>
+        <div class="toggle-chips">
+          <div class="chip active">Traffic</div>
+          <div class="chip">Attention</div>
+        </div>
+      </div>
+      <div class="filter-item">
+        <div class="filter-label">Filter</div>
+        <div class="toggle-chips">
+          <div class="chip active">Male</div>
+          <div class="chip active">Female</div>
+          <div class="chip active">20s</div>
+          <div class="chip active">30s</div>
+        </div>
+      </div>
+    </div>
 
-          markers.push(marker);
-        });
+    <div class="dashboard-grid">
+      <div class="kpi-column">
+        <div class="kpi-box">
+          <div class="kpi-head">Total Impressions</div>
+          <div class="kpi-val">42,593</div>
+          <div class="kpi-sub">+12.5% vs last week</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-head">Avg. Dwell Time</div>
+          <div class="kpi-val">4.8s</div>
+          <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+        </div>
+        <div class="kpi-box">
+          <div class="kpi-head">Peak Hour</div>
+          <div class="kpi-val">19:00</div>
+          <div class="kpi-sub" style="color:#6B7280">Wed, Fri</div>
+        </div>
+      </div>
+
+      <div class="chart-box">
+        <div class="chart-header">
+          <div style="font-weight:700; font-size:16px;">Weekly Traffic Heatmap</div>
+          <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+        </div>
+        <div class="heatmap-layout">
+          <div class="hm-y-axis">
+            <div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div>
+            <div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div>
+            <div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div>
+            <div class="hm-row-label">Sun</div>
+          </div>
+          <div class="hm-grid" id="heatGrid"></div>
+        </div>
+        <div class="hm-x-axis">
+          <span class="hm-col-label">06</span><span class="hm-col-label">07</span><span class="hm-col-label">08</span>
+          <span class="hm-col-label">09</span><span class="hm-col-label">10</span><span class="hm-col-label">11</span>
+          <span class="hm-col-label">12</span><span class="hm-col-label">13</span><span class="hm-col-label">14</span>
+          <span class="hm-col-label">15</span><span class="hm-col-label">16</span><span class="hm-col-label">17</span>
+          <span class="hm-col-label">18</span><span class="hm-col-label">19</span><span class="hm-col-label">20</span>
+          <span class="hm-col-label">21</span><span class="hm-col-label">22</span><span class="hm-col-label">23</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  /* -------------------------------------------
+     1. Firebase Configuration (DB 연동)
+     ------------------------------------------- */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
+    authDomain: "twopage-ea909.firebaseapp.com",
+    projectId: "twopage-ea909",
+    storageBucket: "twopage-ea909.firebasestorage.app",
+    messagingSenderId: "398686352913",
+    appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
+  };
+
+  if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+  }
+  const db = firebase.firestore();
+
+  /* -------------------------------------------
+     2. Map Logic & Monitor Functions
+     ------------------------------------------- */
+  var mapOptions = { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 };
+  var map = new naver.maps.Map('miniMap', mapOptions);
+  
+  let tempMarker = null;
+  let markers = [];
+
+  // 초기 실행: 모니터 불러오기
+  loadMonitors();
+
+  // 지도 클릭 이벤트 (기기 추가 모드일 때)
+  naver.maps.Event.addListener(map, 'click', function(e) {
+    const formOverlay = document.getElementById('monitorFormOverlay');
+    if(formOverlay.style.display === 'flex') {
+      setTempMarker(e.coord);
+    }
+  });
+
+  // [기능 1] 내 위치 찾기
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const loc = new naver.maps.LatLng(lat, lng);
+        map.setCenter(loc);
+        map.setZoom(17);
       });
+    } else {
+      alert("위치 정보를 사용할 수 없습니다.");
     }
+  }
 
-    // [CREATE / UPDATE] 모니터 저장
-    function saveMonitor() {
-      const id = document.getElementById('monitor_id').value;
-      const name = document.getElementById('monitor_name').value;
-      const lat = parseFloat(document.getElementById('monitor_lat').value);
-      const lng = parseFloat(document.getElementById('monitor_lng').value);
-      const status = document.getElementById('monitor_status').value;
+  // [기능 2] 기기 추가 모드 활성화
+  function prepareAddMonitor() {
+    const form = document.getElementById('monitorFormOverlay');
+    form.style.display = 'flex';
+    document.getElementById('m_id').value = '';
+    document.getElementById('m_name').value = '';
+    document.getElementById('m_lat').value = '';
+    document.getElementById('m_lng').value = '';
+    alert('지도에서 설치할 위치를 클릭하세요.');
+  }
 
-      if (!id || !name || isNaN(lat)) {
-        alert('모니터 ID, 이름, 위치(지도 클릭)는 필수입니다.');
-        return;
+  function closeForm() {
+    document.getElementById('monitorFormOverlay').style.display = 'none';
+    if(tempMarker) tempMarker.setMap(null);
+  }
+
+  // [기능 3] 지도 클릭 시 임시 핀 찍기
+  function setTempMarker(latlng) {
+    if(tempMarker) tempMarker.setMap(null);
+    tempMarker = new naver.maps.Marker({
+      position: latlng,
+      map: map,
+      icon: {
+        content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5); animation: bounce 0.5s;"></div>',
+        anchor: new naver.maps.Point(10, 10)
       }
+    });
+    // 폼에 좌표 입력
+    document.getElementById('m_lat').value = latlng.lat();
+    document.getElementById('m_lng').value = latlng.lng();
+  }
 
-      const monitorData = {
-        monitor_id: id,
-        name: name,
-        location: { lat: lat, lng: lng },
-        status: status,
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      };
+  // [기능 4] DB에 저장하기
+  function saveMonitor() {
+    const id = document.getElementById('m_id').value;
+    const name = document.getElementById('m_name').value;
+    const lat = parseFloat(document.getElementById('m_lat').value);
+    const lng = parseFloat(document.getElementById('m_lng').value);
+    const status = document.getElementById('m_status').value;
 
-      // Firestore에 저장 (merge: true 옵션으로 덮어쓰기)
-      db.collection("monitors").doc(id).set(monitorData, { merge: true })
-        .then(() => {
-          alert('모니터가 저장되었습니다.');
-          loadMonitors(); // 지도 새로고침
-          resetForm();    // 폼 초기화
-        })
-        .catch((error) => {
-          console.error("Error writing document: ", error);
-          alert('저장 중 오류가 발생했습니다.');
-        });
+    if (!id || !name || isNaN(lat)) {
+      alert('필수 정보를 모두 입력해주세요 (지도 클릭 포함).');
+      return;
     }
 
-    /* =========================================
-       4. UI 헬퍼 함수
-       ========================================= */
+    db.collection("monitors").doc(id).set({
+      monitor_id: id,
+      name: name,
+      location: { lat, lng },
+      status: status,
+      updated_at: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true })
+    .then(() => {
+      alert('저장되었습니다.');
+      closeForm();
+      loadMonitors(); // 마커 새로고침
+    })
+    .catch((err) => {
+      console.error(err);
+      alert('저장 실패');
+    });
+  }
+
+  // [기능 5] DB에서 불러와서 마커 찍기 (이름 표시)
+  function loadMonitors() {
+    markers.forEach(m => m.setMap(null));
+    markers = [];
+
+    db.collection("monitors").get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        const color = data.status === 'active' ? '#3B82F6' : '#EF4444';
+        
+        // 말풍선 마커 디자인
+        const content = `
+          <div style="position:relative; cursor:pointer;">
+            <div style="background:${color}; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
+            <div style="position:absolute; top:-30px; left:50%; transform:translateX(-50%); 
+                        background:white; padding:4px 8px; border-radius:8px; 
+                        font-size:11px; font-weight:700; white-space:nowrap; 
+                        box-shadow:0 2px 6px rgba(0,0,0,0.15); border:1px solid #E5E7EB; color:#1F2937;">
+              ${data.name}
+            </div>
+          </div>
+        `;
+
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(data.location.lat, data.location.lng),
+          map: map,
+          icon: {
+            content: content,
+            anchor: new naver.maps.Point(6, 6)
+          }
+        });
+        
+        // 마커 클릭 시 팝업 띄우거나 이동 (여기선 중앙 이동만)
+        naver.maps.Event.addListener(marker, 'click', () => {
+          map.panTo(marker.getPosition());
+        });
+
+        markers.push(marker);
+      });
+    });
+  }
+
+
+  /* -------------------------------------------
+     3. 기타 UI 로직 (달력, 히트맵 등)
+     ------------------------------------------- */
+  // 사이드바 달력
+  const sbCalGrid = document.getElementById('sidebarCalGrid');
+  const selCount = document.getElementById('selCount');
+  const available = [25, 26, 27, 28, 29, 30];
+  let selected = [26, 27, 28];
+
+  function renderSbCal() {
+    sbCalGrid.innerHTML = '';
+    for(let i=0; i<3; i++) sbCalGrid.innerHTML += `<div></div>`;
     
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
-      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-      document.getElementById(tabId).classList.add('active');
+    for(let d=1; d<=31; d++) {
+      const hasData = available.includes(d);
+      const isSel = selected.includes(d);
+      let cls = 'sb-date-cell';
+      if(hasData) cls += ' has-data';
+      if(isSel) cls += ' selected';
+      const evt = hasData ? `onclick="toggleDate(${d})"` : '';
+      sbCalGrid.innerHTML += `<div class="${cls}" ${evt}>${d}<div class="sb-dot"></div></div>`;
     }
+    selCount.innerText = selected.length;
+  }
+  window.toggleDate = function(d) {
+    if(selected.includes(d)) selected = selected.filter(dt => dt !== d);
+    else selected.push(d);
+    renderSbCal();
+  }
+  renderSbCal();
 
-    function selectMonitor(id, data) {
-      document.getElementById('monitor_id').value = id;
-      document.getElementById('monitor_name').value = data.name;
-      document.getElementById('monitor_lat').value = data.location.lat;
-      document.getElementById('monitor_lng').value = data.location.lng;
-      document.getElementById('monitor_status').value = data.status;
-      
-      // 업로드 탭에도 표시
-      document.getElementById('target_monitor_display').innerText = data.name;
-      
-      switchTab('tab-settings');
-    }
+  // 히트맵
+  const heatGrid = document.getElementById('heatGrid');
+  for(let i=0; i<7*18; i++) {
+    const lv = Math.floor(Math.random() * 5);
+    const div = document.createElement('div');
+    div.className = `hm-cell ${lv>0 ? 'l'+lv : ''}`;
+    heatGrid.appendChild(div);
+  }
+</script>
 
-    function prepareNewMonitor() {
-      resetForm();
-      alert('지도에서 설치할 위치를 클릭하세요.');
-    }
-
-    function resetForm() {
-      document.getElementById('monitor_id').value = '';
-      document.getElementById('monitor_name').value = '';
-      document.getElementById('monitor_lat').value = '';
-      document.getElementById('monitor_lng').value = '';
-      if(tempMarker) tempMarker.setMap(null);
-    }
-
-    function getCurrentLocation() {
-      if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(position => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const loc = new naver.maps.LatLng(lat, lng);
-          map.setCenter(loc);
-          map.setZoom(17);
-          setTempLocation(loc); // 내 위치에 바로 핀 찍기
-        });
-      } else {
-        alert("위치 정보를 사용할 수 없습니다.");
-      }
-    }
-
-    // 실행
-    window.onload = initMap;
-
-  </script>
 </body>
 </html>
