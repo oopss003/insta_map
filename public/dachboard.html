@@ -181,12 +181,10 @@
           <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export</button>
         </div>
       </div>
-
       <div class="map-card">
         <div id="miniMap" style="width:100%; height:100%;"></div>
         <div class="map-badge"><i class="fa-solid fa-location-dot" style="color:#3B82F6"></i> Live Location</div>
       </div>
-
       <div class="filter-card">
         <div class="filter-item">
           <div class="filter-label">Target</div>
@@ -202,7 +200,6 @@
           </div>
         </div>
       </div>
-
       <div class="dashboard-grid">
         <div class="kpi-column">
           <div class="kpi-box">
@@ -247,6 +244,11 @@
         </button>
       </div>
 
+      <div class="map-card" style="margin-bottom: 24px; height: 300px;">
+        <div id="monitorMap" style="width:100%; height:100%;"></div>
+        <div class="map-badge"><i class="fa-solid fa-map" style="color:#3B82F6"></i> Device Overview</div>
+      </div>
+
       <div class="table-container">
         <div class="table-header">
           <div>ID</div><div>Location Name</div><div>Coordinates</div><div>Status</div><div>Last Update</div><div style="text-align:right">Action</div>
@@ -266,21 +268,18 @@
           <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
         </div>
       </div>
-
       <div class="upload-section">
         <div class="upload-card">
           <i class="fa-solid fa-users-viewfinder upload-icon"></i>
           <div class="upload-title">Face Analysis CSV</div>
           <div class="upload-desc">Click to Upload or Drag & Drop</div>
         </div>
-        
         <div class="upload-card">
           <i class="fa-solid fa-file-video upload-icon"></i>
           <div class="upload-title">Video Log CSV</div>
           <div class="upload-desc">Click to Upload or Drag & Drop</div>
         </div>
       </div>
-      
       <div style="margin-top:20px; text-align:right;">
         <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;">
           <i class="fa-solid fa-play"></i> Start Analysis Processing
@@ -304,10 +303,9 @@
     </div>
   </div>
 
-<script>
-  /* ==========================================================================
-     1. FIREBASE CONFIGURATION
-     ========================================================================== */
+
+  <script>
+  /* 1. FIREBASE CONFIGURATION */
   const firebaseConfig = {
     apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
     authDomain: "twopage-ea909.firebaseapp.com",
@@ -316,18 +314,10 @@
     messagingSenderId: "398686352913",
     appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
   };
-
-  if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-  }
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
   const db = firebase.firestore();
 
-
-  /* ==========================================================================
-     2. DYNAMIC UI INJECTION
-     ========================================================================== */
-  
-  // 모달 창에 지도 추가
+  /* 2. DYNAMIC UI INJECTION */
   const modalBox = document.querySelector('.modal-box');
   if (modalBox) {
     const mapContainer = document.createElement('div');
@@ -336,92 +326,73 @@
     const title = modalBox.querySelector('.modal-title');
     title.insertAdjacentElement('afterend', mapContainer);
   }
-
-  // 업로드 페이지에 모니터 선택 추가
   const uploadHeader = document.querySelector('#page-upload .page-header');
   if (uploadHeader) {
     const selectDiv = document.createElement('div');
     selectDiv.style.marginTop = "16px";
-    selectDiv.innerHTML = `
-      <label style="font-size:13px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Target Monitor</label>
-      <select id="upload_monitor_select" style="width:100%; max-width:300px; padding:10px; border:1px solid #E5E7EB; border-radius:8px; font-size:14px;">
-        <option value="">Select a monitor...</option>
-      </select>
-    `;
+    selectDiv.innerHTML = `<label style="font-size:13px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Target Monitor</label><select id="upload_monitor_select" style="width:100%; max-width:300px; padding:10px; border:1px solid #E5E7EB; border-radius:8px; font-size:14px;"><option value="">Select a monitor...</option></select>`;
     uploadHeader.appendChild(selectDiv);
   }
 
-
-  /* ==========================================================================
-     3. MAP LOGIC
-     ========================================================================== */
-  
+  /* 3. MAP LOGIC */
   var dashboardMap = null;
+  var monitorMap = null; // [NEW] 모니터 관리용 지도
   var modalMap = null;
   var tempMarker = null;
+  var monitorMarkers = []; // [NEW] 모니터 지도 마커 리스트
 
   function initMaps() {
-    // 대시보드 맵
-    dashboardMap = new naver.maps.Map('miniMap', {
-      center: new naver.maps.LatLng(37.498095, 127.027610),
-      zoom: 15
-    });
+    // 1. 대시보드 맵
+    dashboardMap = new naver.maps.Map('miniMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
+    
+    // 2. [NEW] 모니터 관리 맵
+    monitorMap = new naver.maps.Map('monitorMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 14 });
 
-    // 모달 맵
-    modalMap = new naver.maps.Map('modalMap', {
-      center: new naver.maps.LatLng(37.498095, 127.027610),
-      zoom: 15
-    });
-
-    naver.maps.Event.addListener(modalMap, 'click', function(e) {
-      setModalMarker(e.coord);
-    });
+    // 3. 모달 맵
+    modalMap = new naver.maps.Map('modalMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
+    naver.maps.Event.addListener(modalMap, 'click', function(e) { setModalMarker(e.coord); });
   }
 
   function setModalMarker(latlng) {
     if (tempMarker) tempMarker.setMap(null);
     tempMarker = new naver.maps.Marker({
-      position: latlng,
-      map: modalMap,
-      icon: {
-        content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5);"></div>',
-        anchor: new naver.maps.Point(10, 10)
-      }
+      position: latlng, map: modalMap,
+      icon: { content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5);"></div>', anchor: new naver.maps.Point(10, 10) }
     });
     document.getElementById('new_lat').value = latlng.lat();
     document.getElementById('new_lng').value = latlng.lng();
   }
 
-
-  /* ==========================================================================
-     4. PAGE NAVIGATION
-     ========================================================================== */
-  
+  /* 4. PAGE NAVIGATION */
   function showPage(pageId, btn) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
-    
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
 
+    // 지도 깨짐 방지 및 데이터 로드
     if(pageId === 'dashboard') {
       setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 280)), 100);
     } else if (pageId === 'monitors') {
-      loadMonitorList();
+      // [NEW] 모니터 페이지 열릴 때 지도 리사이즈 + 데이터 로드
+      setTimeout(() => {
+        monitorMap.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 300));
+        loadMonitorList(); 
+      }, 100);
     } else if (pageId === 'upload') {
       loadMonitorSelectOptions();
     }
   }
 
-
-  /* ==========================================================================
-     5. MONITOR MANAGEMENT
-     ========================================================================== */
-
+  /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
   function loadMonitorList() {
     const listEl = document.getElementById('monitorList');
     listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
     
+    // 기존 마커 제거
+    monitorMarkers.forEach(m => m.setMap(null));
+    monitorMarkers = [];
+
     db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
       let html = '';
       if (snapshot.empty) {
@@ -438,6 +409,7 @@
           dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
         }
 
+        // 1. 리스트 추가
         html += `
           <div class="table-row">
             <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
@@ -446,22 +418,40 @@
             <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
             <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
             <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
-              <button class="action-btn" onclick="alert('수정 기능 준비중')"><i class="fa-solid fa-pen"></i></button>
+              <button class="action-btn" onclick="alert('수정 기능')"><i class="fa-solid fa-pen"></i></button>
               <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
         `;
+
+        // 2. 지도 마커 추가
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(d.location.lat, d.location.lng),
+          map: monitorMap,
+          icon: {
+            content: `<div style="position:relative; cursor:pointer;">
+              <div style="background:#3B82F6; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
+              <div style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:white; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.2); white-space:nowrap;">${d.name}</div>
+            </div>`,
+            anchor: new naver.maps.Point(6, 6)
+          }
+        });
+        monitorMarkers.push(marker);
       });
+      
       listEl.innerHTML = html;
+      
+      // 마커가 있다면 첫 번째 마커로 이동
+      if(monitorMarkers.length > 0) {
+        monitorMap.panTo(monitorMarkers[0].getPosition());
+      }
     });
   }
 
   function openAddModal() { 
     document.getElementById('addModal').style.display = 'flex';
     setTimeout(() => {
-      if(modalMap) {
-        modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
-      }
+      if(modalMap) modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
     }, 100);
   }
   function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
@@ -504,10 +494,7 @@
     });
   }
 
-
-  /* ==========================================================================
-     6. VISUALIZATION
-     ========================================================================== */
+  /* 6. VISUALIZATION (더미) */
   const sbCalGrid = document.getElementById('sidebarCalGrid');
   const available = [25, 26, 27, 28, 29, 30];
   let selected = [26, 27, 28];
@@ -529,7 +516,7 @@
   window.onload = function() {
     initMaps();
     renderSbCal();
-    loadMonitorList(); // 초기 데이터 로드
+    loadMonitorList();
   };
 
   const heatGrid = document.getElementById('heatGrid');
