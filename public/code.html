@@ -240,14 +240,10 @@
                     const indent = indentMatch ? indentMatch[0] : "";
                     
                     const newContentLines = afterVal.split('\n');
-                    // ▼ 이 코드로 통째로 바꾸세요! (노란색 마커 칠하는 기능)
-                    const highlightedNewLines = newContentLines.map(line => {
-                        // escapeHtml 함수가 없으면 에러가 날 수 있으니, 없으면 그냥 line만 넣어도 됩니다.
-                        // 하지만 Ver 3.4 전체 코드를 쓰신다면 escapeHtml을 쓰는 게 안전합니다.
-                        return `<span class="highlight-marker">${escapeHtml(indent + line)}</span>`;
-                    }).join('\n');
+                    const indentedNewLines = newContentLines.map(line => indent + line).join('\n');
                     
-                    resultHtml += highlightedNewLines + "\n";
+                    newLines.push(indentedNewLines);
+                    // --- 수정된 부분 끝 ---
 
                     let matchIdx = 0;
                     let scanning = i;
