@@ -572,25 +572,37 @@
       sel.innerHTML = opts;
     });
   }
-/* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC (Drag & Drop Updated) */
-  let selectedFiles = { face: null, video: null };
+/* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC (Final: Multi-File + Date Parsing) */
+  // [변경] 여러 파일을 담기 위해 배열([])로 초기화
+  let selectedFiles = { face: [], video: [] };
 
-  // [수정됨] 파일 처리 공통 함수 (Input 변경 및 Drop 공용)
-  function handleFileUpdate(file, type) {
-    if (file) {
-      selectedFiles[type] = file;
-      document.getElementById('status_' + type).innerText = `Ready: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+  // [수정됨] 파일 목록 처리 함수 (여러 파일 처리)
+  function handleFileUpdate(files, type) {
+    if (files && files.length > 0) {
+      // FileList를 배열로 변환하여 저장
+      selectedFiles[type] = Array.from(files);
+      
+      // UI 업데이트: 선택된 파일 개수 표시
+      const count = selectedFiles[type].length;
+      const firstName = selectedFiles[type][0].name;
+      const text = count === 1 ? 
+        `Ready: ${firstName}` : 
+        `Ready: ${count} files selected`;
+      
+      document.getElementById('status_' + type).innerText = text;
+      
+      // 드래그 효과 유지를 위한 스타일
+      document.getElementById('drop_zone_' + type).style.borderColor = "#3B82F6";
+      document.getElementById('drop_zone_' + type).style.backgroundColor = "#EFF6FF";
     }
   }
 
-  // [기존] Input type="file" 변경 시 호출 (HTML onchange 연결)
+  // [기존] Input 변경 시 호출
   function handleFileSelect(input, type) {
-    if (input.files && input.files[0]) {
-      handleFileUpdate(input.files[0], type);
-    }
+    handleFileUpdate(input.files, type);
   }
 
-  // [추가됨] 드래그 앤 드롭 이벤트 초기화 함수
+  // [기존] 드래그 앤 드롭 초기화
   function initDragAndDrop() {
     const zones = [
       { id: 'drop_zone_face', type: 'face' },
@@ -601,71 +613,103 @@
       const zone = document.getElementById(item.id);
       if (!zone) return;
 
-      // 1. 드래그 진입/오버 시 스타일 변경 및 기본 동작 방지
       ['dragenter', 'dragover'].forEach(eventName => {
         zone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+          e.preventDefault(); e.stopPropagation();
           zone.classList.add('drag-over');
         }, false);
       });
 
-      // 2. 드래그 떠날 시 스타일 복구
       ['dragleave', 'drop'].forEach(eventName => {
         zone.addEventListener(eventName, (e) => {
-          e.preventDefault();
-          e.stopPropagation();
+          e.preventDefault(); e.stopPropagation();
           zone.classList.remove('drag-over');
         }, false);
       });
 
-      // 3. 파일 드롭 시 처리
       zone.addEventListener('drop', (e) => {
         const dt = e.dataTransfer;
-        const files = dt.files;
-        if (files && files.length > 0) {
-          // 첫 번째 파일만 처리
-          handleFileUpdate(files[0], item.type);
-        }
+        handleFileUpdate(dt.files, item.type); // 여러 파일 전달
       }, false);
     });
   }
 
-  // 업로드 시작 버튼 로직 (기존 동일)
+  // [수정됨] 다중 파일 업로드 시작 로직
   async function startUploadProcess() {
     const monitorId = document.getElementById('upload_monitor_select').value;
     
     if (!monitorId) return alert("Please select a Target Monitor first.");
-    if (!selectedFiles.face && !selectedFiles.video) return alert("Please select at least one file to upload.");
+    if (selectedFiles.face.length === 0 && selectedFiles.video.length === 0) {
+      return alert("Please select files to upload.");
+    }
 
-    if (confirm(`Monitor [${monitorId}]에 데이터를 업로드 하시겠습니까?`)) {
-      if(selectedFiles.face) await processAndUpload(selectedFiles.face, 'face_analysis', monitorId);
-      if(selectedFiles.video) await processAndUpload(selectedFiles.video, 'video_logs', monitorId);
+    const totalFiles = selectedFiles.face.length + selectedFiles.video.length;
+
+    if (confirm(`Monitor [${monitorId}]에 총 ${totalFiles}개의 파일을 업로드 하시겠습니까?`)) {
+      const promises = [];
+
+      // Face 파일들 큐에 추가
+      selectedFiles.face.forEach(file => {
+        promises.push(processAndUpload(file, 'face_analysis', monitorId));
+      });
+
+      // Video 파일들 큐에 추가
+      selectedFiles.video.forEach(file => {
+        promises.push(processAndUpload(file, 'video_logs', monitorId));
+      });
+
+      // 모든 업로드가 끝날 때까지 대기
+      try {
+        await Promise.all(promises);
+        alert(`Successfully processed ${totalFiles} files!`);
+        
+        // 초기화
+        selectedFiles = { face: [], video: [] };
+        document.getElementById('status_face').innerText = "";
+        document.getElementById('status_video').innerText = "";
+        
+        // 달력 갱신 (데이터가 늘어났으므로)
+        checkDataExistence();
+      } catch (error) {
+        console.error(error);
+        alert("Some uploads failed. Check console for details.");
+      }
     }
   }
 
-// [수정됨] 엑셀 파싱 및 업로드 (파일명 날짜 추출 로직 추가)
+  // [수정됨] 개별 파일 파싱 및 업로드 (Promise 반환)
   function processAndUpload(file, collectionName, monitorId) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
+      
       reader.onload = function(e) {
-        const data = new Uint8Array(e.target.result);
-        const workbook = XLSX.read(data, { type: 'array' });
-        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-        if(jsonData.length === 0) {
-          alert(`File ${file.name} is empty.`);
-          resolve();
-          return;
+          if(jsonData.length === 0) {
+            console.warn(`File ${file.name} is empty.`);
+            resolve(); 
+            return;
+          }
+
+          // 파일명(file.name)을 전달하여 배치 업로드 호출
+          uploadInBatches(jsonData, collectionName, monitorId, file.name)
+            .then(() => {
+              console.log(`Finished: ${file.name}`);
+              resolve();
+            })
+            .catch(err => reject(err));
+
+        } catch (err) {
+          console.error("Error parsing file:", file.name, err);
+          reject(err);
         }
-
-        // [중요] uploadInBatches에 파일명(file.name)을 네 번째 인자로 전달
-        uploadInBatches(jsonData, collectionName, monitorId, file.name).then(() => {
-          alert(`[${collectionName}] Upload Complete! (${jsonData.length} rows)`);
-          resolve();
-        });
       };
+      
+      reader.onerror = (err) => reject(err);
       reader.readAsArrayBuffer(file);
     });
   }
@@ -675,18 +719,14 @@
     const BATCH_SIZE = 450;
     const total = data.length;
     
-    // 1. 정규식으로 파일명에서 날짜 추출 (예: video_log_2025-05-09_235959.xlsx)
+    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
     const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
     const match = fileName.match(dateRegex);
-    
     let fileDate;
     
     if (match) {
-      // 추출된 정보로 Date 객체 생성 (월은 -1 해줘야 함)
       fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
-      console.log("Extracted Date:", fileDate);
     } else {
-      console.warn("Date parsing failed. Using current time.");
       fileDate = new Date(); // 실패 시 현재 시간
     }
     
@@ -697,16 +737,15 @@
       
       chunk.forEach((row) => {
         row.monitor_id = monitorId;
-        // [중요] 추출한 fileDate를 타임스탬프로 변환하여 저장
+        // 추출한 날짜를 저장
         row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
-        row.source_filename = fileName; // 원본 파일명도 저장
+        row.source_filename = fileName;
         
         const docRef = db.collection(collectionName).doc();
         batch.set(docRef, row);
       });
 
       await batch.commit();
-      console.log(`Uploaded batch ${i/BATCH_SIZE + 1} / ${Math.ceil(total/BATCH_SIZE)}`);
     }
   }
 /* 7. CALENDAR LOGIC (Real Data Integration) */
