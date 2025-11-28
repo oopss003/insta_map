@@ -364,19 +364,30 @@
   }
 
   /* 4. PAGE NAVIGATION */
+  /* 수정된 showPage 함수 */
   function showPage(pageId, btn) {
     document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
     btn.classList.add('active');
     document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
     document.getElementById('page-' + pageId).classList.add('active');
-
+  
     // 지도 깨짐 방지 및 데이터 로드
     if(pageId === 'dashboard') {
-      setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 280)), 100);
+      // 대시보드 맵 리사이즈 (기존 코드 유지)
+      setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('#page-dashboard .map-card').offsetWidth, 280)), 100);
     } else if (pageId === 'monitors') {
-      // [NEW] 모니터 페이지 열릴 때 지도 리사이즈 + 데이터 로드
+      // [수정됨] 모니터 페이지 열릴 때 정확한 타겟(.map-card)의 너비를 가져오도록 수정
       setTimeout(() => {
-        monitorMap.setSize(new naver.maps.Size(document.querySelector('.map-card').offsetWidth, 300));
+        // 1. #page-monitors 안의 .map-card를 찾도록 수정
+        const monitorCard = document.querySelector('#page-monitors .map-card'); 
+        
+        if (monitorCard) {
+          monitorMap.setSize(new naver.maps.Size(monitorCard.offsetWidth, 300));
+          
+          // (선택사항) 리사이즈 후 중심점이 어긋나는 것을 방지하기 위해 센터 재설정 추천
+          // monitorMap.setCenter(new naver.maps.LatLng(37.498095, 127.027610)); 
+        }
+        
         loadMonitorList(); 
       }, 100);
     } else if (pageId === 'upload') {
