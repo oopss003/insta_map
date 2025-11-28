@@ -118,6 +118,11 @@
     .upload-section { display: flex; gap: 24px; height: 100%; }
     .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 400px; }
     .upload-card:hover { border-color: var(--primary-color); background: #EFF6FF; }
+    .upload-card.drag-over {
+          border-color: var(--primary-color);
+          background-color: #DBEAFE; /* 조금 더 진한 파란색 배경 */
+          transform: scale(1.02);
+        }
     .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
     .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
     .upload-desc { font-size: 13px; color: var(--text-sub); }
@@ -275,14 +280,14 @@
           <input type="file" id="file_video" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'video')">
     
           <div class="upload-section">
-            <div class="upload-card" onclick="document.getElementById('file_face').click()">
+            <div class="upload-card" id="drop_zone_face" onclick="document.getElementById('file_face').click()">
               <i class="fa-solid fa-users-viewfinder upload-icon"></i>
               <div class="upload-title">Face Analysis CSV</div>
               <div class="upload-desc">Click to Upload or Drag & Drop</div>
               <div id="status_face" class="file-status"></div>
             </div>
             
-            <div class="upload-card" onclick="document.getElementById('file_video').click()">
+            <div class="upload-card" id="drop_zone_video" onclick="document.getElementById('file_video').click()">
               <i class="fa-solid fa-file-video upload-icon"></i>
               <div class="upload-title">Video Log CSV</div>
               <div class="upload-desc">Click to Upload or Drag & Drop</div>
@@ -296,22 +301,22 @@
             </button>
           </div>
         </div>
-
-  </div> <div class="modal-overlay" id="addModal">
-    <div class="modal-box">
-      <div class="modal-title">Add New Monitor</div>
-      <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
-      <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
-      <div style="display:flex; gap:10px;">
-        <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)" readonly style="background:#f9f9f9">
-        <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)" readonly style="background:#f9f9f9">
+    
+      </div> <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+          <div class="modal-title">Add New Monitor</div>
+          <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
+          <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)" readonly style="background:#f9f9f9">
+            <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)" readonly style="background:#f9f9f9">
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
+            <button class="btn btn-white" style="flex:1" onclick="closeAddModal()">Cancel</button>
+          </div>
+        </div>
       </div>
-      <div class="modal-actions">
-        <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
-        <button class="btn btn-white" style="flex:1" onclick="closeAddModal()">Cancel</button>
-      </div>
-    </div>
-  </div>
 
 
   <script>
@@ -568,21 +573,67 @@
       sel.innerHTML = opts;
     });
   }
-/* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC */
+/* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC (Drag & Drop Updated) */
   let selectedFiles = { face: null, video: null };
 
-  // 파일 선택 시 변수에 저장하고 화면에 파일명 표시
-  function handleFileSelect(input, type) {
-    if (input.files && input.files[0]) {
-      const file = input.files[0];
+  // [수정됨] 파일 처리 공통 함수 (Input 변경 및 Drop 공용)
+  function handleFileUpdate(file, type) {
+    if (file) {
       selectedFiles[type] = file;
-      document.getElementById('status_' + type).innerText = `Selected: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+      document.getElementById('status_' + type).innerText = `Ready: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
     }
   }
 
-  // 업로드 시작 버튼 클릭 시 실행
+  // [기존] Input type="file" 변경 시 호출 (HTML onchange 연결)
+  function handleFileSelect(input, type) {
+    if (input.files && input.files[0]) {
+      handleFileUpdate(input.files[0], type);
+    }
+  }
+
+  // [추가됨] 드래그 앤 드롭 이벤트 초기화 함수
+  function initDragAndDrop() {
+    const zones = [
+      { id: 'drop_zone_face', type: 'face' },
+      { id: 'drop_zone_video', type: 'video' }
+    ];
+
+    zones.forEach(item => {
+      const zone = document.getElementById(item.id);
+      if (!zone) return;
+
+      // 1. 드래그 진입/오버 시 스타일 변경 및 기본 동작 방지
+      ['dragenter', 'dragover'].forEach(eventName => {
+        zone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.add('drag-over');
+        }, false);
+      });
+
+      // 2. 드래그 떠날 시 스타일 복구
+      ['dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          zone.classList.remove('drag-over');
+        }, false);
+      });
+
+      // 3. 파일 드롭 시 처리
+      zone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files && files.length > 0) {
+          // 첫 번째 파일만 처리
+          handleFileUpdate(files[0], item.type);
+        }
+      }, false);
+    });
+  }
+
+  // 업로드 시작 버튼 로직 (기존 동일)
   async function startUploadProcess() {
-    // 동적으로 생성된 Select Box에서 값 가져오기
     const monitorId = document.getElementById('upload_monitor_select').value;
     
     if (!monitorId) return alert("Please select a Target Monitor first.");
@@ -594,7 +645,7 @@
     }
   }
 
-  // 엑셀/CSV 파일을 JSON으로 변환하여 업로드 위임
+  // 엑셀 파싱 및 업로드 (기존 동일)
   function processAndUpload(file, collectionName, monitorId) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -610,7 +661,6 @@
           return;
         }
 
-        // Firestore 일괄 업로드 실행
         uploadInBatches(jsonData, collectionName, monitorId).then(() => {
           alert(`[${collectionName}] Upload Complete! (${jsonData.length} rows)`);
           resolve();
@@ -620,9 +670,9 @@
     });
   }
 
-  // 대용량 데이터를 위한 Batch Upload (500개씩 끊어서 저장)
+  // 배치 업로드 (기존 동일)
   async function uploadInBatches(data, collectionName, monitorId) {
-    const BATCH_SIZE = 450; // Firestore 제한 고려하여 여유 있게 설정
+    const BATCH_SIZE = 450;
     const total = data.length;
     
     for (let i = 0; i < total; i += BATCH_SIZE) {
@@ -630,11 +680,9 @@
       const chunk = data.slice(i, i + BATCH_SIZE);
       
       chunk.forEach((row) => {
-        // 메타데이터 추가
         row.monitor_id = monitorId;
         row.uploaded_at = firebase.firestore.FieldValue.serverTimestamp();
-        
-        const docRef = db.collection(collectionName).doc(); // 자동 문서 ID 생성
+        const docRef = db.collection(collectionName).doc();
         batch.set(docRef, row);
       });
 
@@ -660,11 +708,13 @@
     if(selected.includes(d)) selected = selected.filter(x=>x!==d); else selected.push(d);
     renderSbCal();
   }
-  
-  window.onload = function() {
+    window.onload = function() {
     initMaps();
     renderSbCal();
     loadMonitorList();
+    
+    // [추가됨] 드래그 앤 드롭 초기화 실행
+    initDragAndDrop();
   };
 
   const heatGrid = document.getElementById('heatGrid');
