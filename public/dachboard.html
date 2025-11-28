@@ -11,6 +11,7 @@
   <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
   <style>
     /* === GLOBAL VARIABLES === */
@@ -120,6 +121,7 @@
     .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
     .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
     .upload-desc { font-size: 13px; color: var(--text-sub); }
+    .file-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--primary-color); }
 
     /* --- MODAL STYLES --- */
     .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
@@ -262,30 +264,38 @@
 
 
     <div id="page-upload" class="page-view">
-      <div class="top-section">
-        <div class="page-header">
-          <h1>Data Upload</h1>
-          <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
+          <div class="top-section">
+            <div class="page-header">
+              <h1>Data Upload</h1>
+              <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
+            </div>
+          </div>
+          
+          <input type="file" id="file_face" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'face')">
+          <input type="file" id="file_video" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'video')">
+    
+          <div class="upload-section">
+            <div class="upload-card" onclick="document.getElementById('file_face').click()">
+              <i class="fa-solid fa-users-viewfinder upload-icon"></i>
+              <div class="upload-title">Face Analysis CSV</div>
+              <div class="upload-desc">Click to Upload or Drag & Drop</div>
+              <div id="status_face" class="file-status"></div>
+            </div>
+            
+            <div class="upload-card" onclick="document.getElementById('file_video').click()">
+              <i class="fa-solid fa-file-video upload-icon"></i>
+              <div class="upload-title">Video Log CSV</div>
+              <div class="upload-desc">Click to Upload or Drag & Drop</div>
+              <div id="status_video" class="file-status"></div>
+            </div>
+          </div>
+    
+          <div style="margin-top:20px; text-align:right;">
+            <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;" onclick="startUploadProcess()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Start Analysis Processing
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="upload-section">
-        <div class="upload-card">
-          <i class="fa-solid fa-users-viewfinder upload-icon"></i>
-          <div class="upload-title">Face Analysis CSV</div>
-          <div class="upload-desc">Click to Upload or Drag & Drop</div>
-        </div>
-        <div class="upload-card">
-          <i class="fa-solid fa-file-video upload-icon"></i>
-          <div class="upload-title">Video Log CSV</div>
-          <div class="upload-desc">Click to Upload or Drag & Drop</div>
-        </div>
-      </div>
-      <div style="margin-top:20px; text-align:right;">
-        <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;">
-          <i class="fa-solid fa-play"></i> Start Analysis Processing
-        </button>
-      </div>
-    </div>
 
   </div> <div class="modal-overlay" id="addModal">
     <div class="modal-box">
@@ -558,7 +568,80 @@
       sel.innerHTML = opts;
     });
   }
+/* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC */
+  let selectedFiles = { face: null, video: null };
 
+  // 파일 선택 시 변수에 저장하고 화면에 파일명 표시
+  function handleFileSelect(input, type) {
+    if (input.files && input.files[0]) {
+      const file = input.files[0];
+      selectedFiles[type] = file;
+      document.getElementById('status_' + type).innerText = `Selected: ${file.name} (${(file.size/1024).toFixed(1)} KB)`;
+    }
+  }
+
+  // 업로드 시작 버튼 클릭 시 실행
+  async function startUploadProcess() {
+    // 동적으로 생성된 Select Box에서 값 가져오기
+    const monitorId = document.getElementById('upload_monitor_select').value;
+    
+    if (!monitorId) return alert("Please select a Target Monitor first.");
+    if (!selectedFiles.face && !selectedFiles.video) return alert("Please select at least one file to upload.");
+
+    if (confirm(`Monitor [${monitorId}]에 데이터를 업로드 하시겠습니까?`)) {
+      if(selectedFiles.face) await processAndUpload(selectedFiles.face, 'face_analysis', monitorId);
+      if(selectedFiles.video) await processAndUpload(selectedFiles.video, 'video_logs', monitorId);
+    }
+  }
+
+  // 엑셀/CSV 파일을 JSON으로 변환하여 업로드 위임
+  function processAndUpload(file, collectionName, monitorId) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const data = new Uint8Array(e.target.result);
+        const workbook = XLSX.read(data, { type: 'array' });
+        const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+        const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+
+        if(jsonData.length === 0) {
+          alert(`File ${file.name} is empty.`);
+          resolve();
+          return;
+        }
+
+        // Firestore 일괄 업로드 실행
+        uploadInBatches(jsonData, collectionName, monitorId).then(() => {
+          alert(`[${collectionName}] Upload Complete! (${jsonData.length} rows)`);
+          resolve();
+        });
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  // 대용량 데이터를 위한 Batch Upload (500개씩 끊어서 저장)
+  async function uploadInBatches(data, collectionName, monitorId) {
+    const BATCH_SIZE = 450; // Firestore 제한 고려하여 여유 있게 설정
+    const total = data.length;
+    
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = data.slice(i, i + BATCH_SIZE);
+      
+      chunk.forEach((row) => {
+        // 메타데이터 추가
+        row.monitor_id = monitorId;
+        row.uploaded_at = firebase.firestore.FieldValue.serverTimestamp();
+        
+        const docRef = db.collection(collectionName).doc(); // 자동 문서 ID 생성
+        batch.set(docRef, row);
+      });
+
+      await batch.commit();
+      console.log(`Uploaded batch ${i/BATCH_SIZE + 1} / ${Math.ceil(total/BATCH_SIZE)}`);
+    }
+  }
   /* 6. VISUALIZATION (더미) */
   const sbCalGrid = document.getElementById('sidebarCalGrid');
   const available = [25, 26, 27, 28, 29, 30];
