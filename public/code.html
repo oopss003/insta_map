@@ -2,52 +2,43 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노베이스를 위한 코드 수정 도우미</title>
+    <title>노베이스 코드 수정 도우미 (Ver 2.0)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #f0f2f5; }
         header { background-color: #333; color: white; padding: 10px 20px; text-align: center; font-weight: bold; }
         
-        /* 3단 레이아웃 */
         .container { display: flex; height: calc(100vh - 50px); }
-        
-        /* 좌/우측 패널 */
         .panel { flex: 1; padding: 10px; display: flex; flex-direction: column; }
         .panel h3 { text-align: center; margin: 0 0 10px 0; color: #555; }
         textarea { flex: 1; padding: 10px; font-family: 'Consolas', monospace; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; resize: none; line-height: 1.5; white-space: pre; overflow-wrap: normal; overflow-x: scroll; }
         
-        /* 중앙 컨트롤 패널 */
         .controls { flex: 0 0 350px; padding: 10px; background-color: #e9ecef; border-left: 2px solid #ddd; border-right: 2px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
-        /* 각 기능 박스 스타일 */
         .control-box { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .control-box h4 { margin: 0 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; }
-        .control-box.delete { border-top: 5px solid #ff6b6b; } /* 삭제 - 빨강 */
-        .control-box.replace { border-top: 5px solid #4dabf7; } /* 수정 - 파랑 */
-        .control-box.insert { border-top: 5px solid #51cf66; } /* 추가 - 초록 */
+        .control-box.delete { border-top: 5px solid #ff6b6b; }
+        .control-box.replace { border-top: 5px solid #4dabf7; }
+        .control-box.insert { border-top: 5px solid #51cf66; }
 
         label { display: block; margin-top: 8px; font-size: 12px; font-weight: bold; color: #666; }
         input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: 'Consolas', monospace; }
         
-        /* 버튼 그룹 */
         .btn-group { display: flex; gap: 5px; margin-top: 10px; }
         button { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         
-        .btn-find { background-color: #fcc419; color: #333; } /* 찾기 - 노랑 */
-        .btn-del { background-color: #fa5252; color: white; } /* 삭제 버튼 */
-        .btn-mod { background-color: #228be6; color: white; } /* 수정 버튼 */
-        .btn-add { background-color: #40c057; color: white; } /* 추가 버튼 */
+        .btn-find { background-color: #fcc419; color: #333; }
+        .btn-del { background-color: #fa5252; color: white; }
+        .btn-mod { background-color: #228be6; color: white; }
+        .btn-add { background-color: #40c057; color: white; }
         
         button:hover { opacity: 0.8; }
-        button:active { transform: scale(0.98); }
-
-        /* 상태 메시지 */
+        
         #status-msg { text-align: center; color: #d6336c; font-weight: bold; height: 20px; margin-top: 5px; font-size: 13px; }
-
     </style>
 </head>
 <body>
 
-<header>🛠️ 노베이스 코드 수정 도우미 (누적 수정 방식)</header>
+<header>🛠️ 노베이스 코드 수정 도우미 (Ver 2.0 - 스마트 공백 감지)</header>
 
 <div class="container">
     <div class="panel">
@@ -60,11 +51,11 @@
 
         <div class="control-box delete">
             <h4>🗑️ 코드 삭제</h4>
-            <label>지울 코드 (복사해서 넣으세요)</label>
+            <label>지울 코드 (공백 신경쓰지 말고 넣으세요)</label>
             <input type="text" id="delTarget" placeholder="예: delay(1000);">
             <div class="btn-group">
-                <button class="btn-find" onclick="findText('delTarget')">🔍 위치 확인</button>
-                <button class="btn-del" onclick="deleteCode()">❌ 삭제 실행</button>
+                <button class="btn-find" onclick="smartFind('delTarget')">🔍 위치 확인</button>
+                <button class="btn-del" onclick="smartDelete()">❌ 삭제 실행</button>
             </div>
         </div>
 
@@ -75,8 +66,8 @@
             <label>수정 후 코드 (바꿀 내용)</label>
             <input type="text" id="modAfter" placeholder="예: int a = 20;">
             <div class="btn-group">
-                <button class="btn-find" onclick="findText('modBefore')">🔍 위치 확인</button>
-                <button class="btn-mod" onclick="replaceCode()">🔄 교체 실행</button>
+                <button class="btn-find" onclick="smartFind('modBefore')">🔍 위치 확인</button>
+                <button class="btn-mod" onclick="smartReplace()">🔄 교체 실행</button>
             </div>
         </div>
 
@@ -87,8 +78,8 @@
             <label>추가할 코드 (새 내용)</label>
             <input type="text" id="addContent" placeholder="예: Serial.begin(9600);">
             <div class="btn-group">
-                <button class="btn-find" onclick="findText('addAnchor')">🔍 위치 확인</button>
-                <button class="btn-add" onclick="insertCode()">➕ 추가 실행</button>
+                <button class="btn-find" onclick="smartFind('addAnchor')">🔍 위치 확인</button>
+                <button class="btn-add" onclick="smartInsert()">➕ 추가 실행</button>
             </div>
         </div>
     </div>
@@ -100,85 +91,106 @@
 </div>
 
 <script>
-    // 페이지 로드 시, 좌측 코드가 바뀌면 우측에 복사해둠 (초기화)
     const leftArea = document.getElementById('leftCode');
     const rightArea = document.getElementById('rightCode');
     const msgArea = document.getElementById('status-msg');
 
     leftArea.addEventListener('input', function() {
-        if(rightArea.value === "") { // 우측이 비어있을 때만 자동 동기화
+        if(rightArea.value === "") { 
             rightArea.value = leftArea.value;
         }
     });
 
-    // 1. 찾기 기능 (좌측 원본에서 하이라이트)
-    function findText(inputId) {
-        const textToFind = document.getElementById(inputId).value;
-        if (!textToFind) { showMsg("찾을 내용을 입력하세요!"); return; }
+    // ✨ 핵심 기능: 스마트 검색 (공백 무시하고 진짜 위치 찾기)
+    function findRealStringWithIndent(searchText, sourceCode) {
+        if (!searchText) return null;
+        
+        // 코드를 줄 단위로 쪼갭니다.
+        const lines = sourceCode.split('\n');
+        const trimmedSearch = searchText.trim(); // 사용자가 입력한 값의 앞뒤 공백 제거
 
-        const content = leftArea.value;
-        const index = content.indexOf(textToFind);
+        for (let i = 0; i < lines.length; i++) {
+            // 원본 줄의 공백을 제거하고 비교
+            if (lines[i].trim().includes(trimmedSearch)) {
+                // 찾았다면, 공백이 포함된 '진짜 원본 줄'을 반환
+                return lines[i]; 
+            }
+        }
+        return null;
+    }
 
-        if (index !== -1) {
+    // 1. 찾기
+    function smartFind(inputId) {
+        const inputVal = document.getElementById(inputId).value;
+        const realLine = findRealStringWithIndent(inputVal, leftArea.value);
+
+        if (realLine) {
+            // 진짜 위치(공백 포함)를 찾아서 하이라이트
+            const index = leftArea.value.indexOf(realLine);
             leftArea.focus();
-            leftArea.setSelectionRange(index, index + textToFind.length);
-            showMsg("좌측에서 코드를 찾았습니다! (파란색 블록)");
+            leftArea.setSelectionRange(index, index + realLine.length);
+            showMsg("✅ 찾았습니다! (앞에 공백이 있어도 찾음)");
         } else {
-            showMsg("⚠️ 좌측 원본에 그런 코드가 없습니다.");
+            showMsg("⚠️ 코드를 찾을 수 없습니다. 오타가 있나요?");
         }
     }
 
-    // 2. 삭제 기능
-    function deleteCode() {
-        const target = document.getElementById('delTarget').value;
-        if (!target) return;
-
-        let currentCode = rightArea.value || leftArea.value; // 우측값이 없으면 좌측값 사용
+    // 2. 삭제
+    function smartDelete() {
+        const inputVal = document.getElementById('delTarget').value;
+        let currentCode = rightArea.value || leftArea.value;
         
-        if (currentCode.includes(target)) {
-            // 해당 코드를 빈 문자열로 대체 (삭제)
-            rightArea.value = currentCode.replace(target, ""); 
-            showMsg("✅ 삭제 완료! (우측 확인)");
+        // 공백 포함된 진짜 문자열 찾기
+        const realLine = findRealStringWithIndent(inputVal, currentCode);
+
+        if (realLine) {
+            rightArea.value = currentCode.replace(realLine, ""); // 해당 줄 전체 삭제
+            showMsg("✅ 삭제 완료!");
         } else {
             showMsg("⚠️ 이미 삭제되었거나 찾을 수 없습니다.");
         }
     }
 
-    // 3. 수정 기능
-    function replaceCode() {
-        const before = document.getElementById('modBefore').value;
-        const after = document.getElementById('modAfter').value;
-        if (!before) return;
-
+    // 3. 수정
+    function smartReplace() {
+        const beforeVal = document.getElementById('modBefore').value;
+        const afterVal = document.getElementById('modAfter').value;
         let currentCode = rightArea.value || leftArea.value;
 
-        if (currentCode.includes(before)) {
-            rightArea.value = currentCode.replace(before, after);
-            showMsg("✅ 수정 완료! (우측 확인)");
+        const realLine = findRealStringWithIndent(beforeVal, currentCode);
+
+        if (realLine) {
+            // 기존 들여쓰기(공백)를 유지하기 위해 앞부분 공백을 계산
+            const indent = realLine.substring(0, realLine.indexOf(realLine.trim()));
+            const newLine = indent + afterVal; // 들여쓰기 + 새 코드
+
+            rightArea.value = currentCode.replace(realLine, newLine);
+            showMsg("✅ 수정 완료! (들여쓰기 유지됨)");
         } else {
-            showMsg("⚠️ 수정할 코드를 찾을 수 없습니다.");
+            showMsg("⚠️ 수정할 대상을 찾을 수 없습니다.");
         }
     }
 
-    // 4. 추가 기능 (끼워넣기)
-    function insertCode() {
-        const anchor = document.getElementById('addAnchor').value;
-        const content = document.getElementById('addContent').value;
-        if (!anchor) return;
-
+    // 4. 추가
+    function smartInsert() {
+        const anchorVal = document.getElementById('addAnchor').value;
+        const contentVal = document.getElementById('addContent').value;
         let currentCode = rightArea.value || leftArea.value;
 
-        if (currentCode.includes(anchor)) {
-            // 기준 코드 뒤에 줄바꿈(\n) + 새 코드 추가
-            const newBlock = anchor + "\n" + content;
-            rightArea.value = currentCode.replace(anchor, newBlock);
-            showMsg("✅ 추가 완료! (우측 확인)");
+        const realLine = findRealStringWithIndent(anchorVal, currentCode);
+
+        if (realLine) {
+            // 기준 줄의 들여쓰기를 파악해서 똑같이 맞춰줌
+            const indent = realLine.substring(0, realLine.indexOf(realLine.trim()));
+            const newBlock = realLine + "\n" + indent + contentVal;
+            
+            rightArea.value = currentCode.replace(realLine, newBlock);
+            showMsg("✅ 추가 완료! (줄맞춤 자동 적용)");
         } else {
-            showMsg("⚠️ 기준 코드를 찾을 수 없습니다.");
+            showMsg("⚠️ 기준 위치를 찾을 수 없습니다.");
         }
     }
 
-    // 메시지 표시 도우미
     function showMsg(text) {
         msgArea.innerText = text;
         setTimeout(() => { msgArea.innerText = ""; }, 3000);
