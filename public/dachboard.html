@@ -689,46 +689,57 @@
       console.log(`Uploaded batch ${i/BATCH_SIZE + 1} / ${Math.ceil(total/BATCH_SIZE)}`);
     }
   }
-/* 7. CALENDAR LOGIC (Real Date Calculation) */
-  let currentCalDate = new Date(); // 현재 날짜 기준
-  let selectedDates = []; // 선택된 날짜 저장
+/* 7. CALENDAR LOGIC (Real Data Integration) */
+  let currentCalDate = new Date();
+  let selectedDates = []; 
+  let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
 
-  // 월 변경 함수
+  // [NEW] 파이어베이스에서 데이터가 있는 날짜 확인하기
+  function checkDataExistence() {
+    // 'video_logs' 컬렉션 조회 (필요하면 'face_analysis'도 추가 가능)
+    db.collection('video_logs').get().then((snapshot) => {
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        if (d.uploaded_at) {
+          const date = d.uploaded_at.toDate();
+          // 달력 키 형식(YYYY-M-D)으로 변환하여 저장
+          const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+          dataDates.add(dateKey);
+        }
+      });
+      renderSbCal(); // 데이터를 다 확인했으면 달력을 다시 그림
+    });
+  }
+
   function changeMonth(step) {
+    currentCalDate.setDate(1);
     currentCalDate.setMonth(currentCalDate.getMonth() + step);
     renderSbCal();
   }
 
-  // 달력 그리기 함수
   function renderSbCal() {
     const year = currentCalDate.getFullYear();
-    const month = currentCalDate.getMonth(); // 0~11
+    const month = currentCalDate.getMonth();
 
-    // 1. 헤더 텍스트 업데이트 (예: October 2025)
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
 
-    // 2. 날짜 계산
-    // 이번 달 1일이 무슨 요일인지 (0:일, 1:월 ...)
     const firstDay = new Date(year, month, 1).getDay();
-    // 이번 달 마지막 날짜가 며칠인지 (28, 30, 31)
     const lastDate = new Date(year, month + 1, 0).getDate();
 
     const grid = document.getElementById('sidebarCalGrid');
     grid.innerHTML = '';
 
-    // 3. 앞쪽 빈칸 채우기 (요일 맞추기)
     for (let i = 0; i < firstDay; i++) {
       grid.innerHTML += `<div></div>`;
     }
 
-    // 4. 날짜 채우기
-    // (더미 데이터: 예시로 짝수 날짜에 데이터가 있다고 가정)
     for (let d = 1; d <= lastDate; d++) {
-      // 해당 날짜의 고유 키 생성 (YYYY-MM-DD)
       const dateKey = `${year}-${month+1}-${d}`;
       const isSelected = selectedDates.includes(dateKey);
-      const hasData = d % 2 === 0; // 예시: 짝수 날짜면 점 표시 (나중에 DB연동 가능)
+      
+      // [핵심 수정] 실제 데이터가 있는 날짜인지 확인 (Set에 들어있는지 체크)
+      const hasData = dataDates.has(dateKey);
 
       const cls = `sb-date-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`;
       
@@ -739,30 +750,28 @@
         </div>`;
     }
     
-    // 선택된 날짜 개수 업데이트
     document.getElementById('selCount').innerText = selectedDates.length;
   }
 
-  // 날짜 클릭 토글 함수
   window.toggleDate = (dateKey) => {
     if (selectedDates.includes(dateKey)) {
       selectedDates = selectedDates.filter(d => d !== dateKey);
     } else {
       selectedDates.push(dateKey);
     }
-    renderSbCal(); // 상태 반영을 위해 다시 그리기
+    renderSbCal();
   };
-
-  /* ▲▲▲▲▲ [여기까지 붙여넣기] ▲▲▲▲▲ */
 
     window.onload = function() {
-    initMaps();
-    renderSbCal();
-    loadMonitorList();
-    
-    // [추가됨] 드래그 앤 드롭 초기화 실행
-    initDragAndDrop();
-  };
+        initMaps();
+        loadMonitorList();     // 모니터 목록 불러오기
+        initDragAndDrop();     // 드래그 앤 드롭 설정
+        
+        // [추가됨] 데이터가 있는 날짜 확인 시작
+        checkDataExistence();  
+        
+        renderSbCal();         // 일단 빈 달력 먼저 그리기
+      };
 
   const heatGrid = document.getElementById('heatGrid');
   if(heatGrid) {
