@@ -644,7 +644,7 @@
     }
   }
 
-  // 엑셀 파싱 및 업로드 (기존 동일)
+// [수정됨] 엑셀 파싱 및 업로드 (파일명 날짜 추출 로직 추가)
   function processAndUpload(file, collectionName, monitorId) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -660,7 +660,8 @@
           return;
         }
 
-        uploadInBatches(jsonData, collectionName, monitorId).then(() => {
+        // [중요] uploadInBatches에 파일명(file.name)을 네 번째 인자로 전달
+        uploadInBatches(jsonData, collectionName, monitorId, file.name).then(() => {
           alert(`[${collectionName}] Upload Complete! (${jsonData.length} rows)`);
           resolve();
         });
@@ -669,18 +670,37 @@
     });
   }
 
-  // 배치 업로드 (기존 동일)
-  async function uploadInBatches(data, collectionName, monitorId) {
+  // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
+  async function uploadInBatches(data, collectionName, monitorId, fileName) {
     const BATCH_SIZE = 450;
     const total = data.length;
     
+    // 1. 정규식으로 파일명에서 날짜 추출 (예: video_log_2025-05-09_235959.xlsx)
+    const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
+    const match = fileName.match(dateRegex);
+    
+    let fileDate;
+    
+    if (match) {
+      // 추출된 정보로 Date 객체 생성 (월은 -1 해줘야 함)
+      fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
+      console.log("Extracted Date:", fileDate);
+    } else {
+      console.warn("Date parsing failed. Using current time.");
+      fileDate = new Date(); // 실패 시 현재 시간
+    }
+    
+    // 2. Firestore 저장
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = db.batch();
       const chunk = data.slice(i, i + BATCH_SIZE);
       
       chunk.forEach((row) => {
         row.monitor_id = monitorId;
-        row.uploaded_at = firebase.firestore.FieldValue.serverTimestamp();
+        // [중요] 추출한 fileDate를 타임스탬프로 변환하여 저장
+        row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
+        row.source_filename = fileName; // 원본 파일명도 저장
+        
         const docRef = db.collection(collectionName).doc();
         batch.set(docRef, row);
       });
