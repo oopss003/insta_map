@@ -1,226 +1,189 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>코드 비교 및 저장 도구</title>
-  <style>
-    body {
-      font-family: 'Pretendard', monospace;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    .top-bar {
-      margin-bottom: 12px;
-    }
-    .top-bar input, .top-bar button, .top-bar select {
-      padding: 8px;
-      margin-right: 6px;
-      font-weight: bold;
-    }
-    .container {
-      display: flex;
-      gap: 10px;
-    }
-    .editor-wrapper {
-      display: flex;
-      width: 48%;
-      height: 250px;
-      border: 1px solid #ccc;
-      background: white;
-      font-family: monospace;
-    }
-    .line-numbers {
-      width: 40px;
-      background: #eee;
-      text-align: right;
-      padding: 10px 4px;
-      color: #888;
-      user-select: none;
-      overflow: hidden;
-      line-height: 1.4em;
-      white-space: pre-wrap;
-    }
-    textarea {
-      flex: 1;
-      border: none;
-      resize: none;
-      font-size: 14px;
-      padding: 10px;
-      line-height: 1.4em;
-      outline: none;
-      overflow: auto;
-    }
-    .diff-result {
-      margin-top: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 10px;
-      font-family: monospace;
-      white-space: pre-wrap;
-    }
-    .added { background-color: #ddffdd; }
-    .removed { background-color: #ffdddd; }
-    .line-number {
-      color: gray;
-      display: inline-block;
-      width: 40px;
-      text-align: right;
-      margin-right: 8px;
-      user-select: none;
-    }
-    .copy-button-wrapper {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .copy-button-wrapper button {
-      font-size: 20px;
-      padding: 8px 12px;
-      cursor: pointer;
-    }
-    mark.add { background-color: #aaffaa; color: #060; }
-    mark.del { background-color: #ffcccc; color: #900; }
-  </style>
+    <meta charset="UTF-8">
+    <title>노베이스를 위한 코드 수정 도우미</title>
+    <style>
+        body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #f0f2f5; }
+        header { background-color: #333; color: white; padding: 10px 20px; text-align: center; font-weight: bold; }
+        
+        /* 3단 레이아웃 */
+        .container { display: flex; height: calc(100vh - 50px); }
+        
+        /* 좌/우측 패널 */
+        .panel { flex: 1; padding: 10px; display: flex; flex-direction: column; }
+        .panel h3 { text-align: center; margin: 0 0 10px 0; color: #555; }
+        textarea { flex: 1; padding: 10px; font-family: 'Consolas', monospace; font-size: 14px; border: 1px solid #ccc; border-radius: 5px; resize: none; line-height: 1.5; white-space: pre; overflow-wrap: normal; overflow-x: scroll; }
+        
+        /* 중앙 컨트롤 패널 */
+        .controls { flex: 0 0 350px; padding: 10px; background-color: #e9ecef; border-left: 2px solid #ddd; border-right: 2px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* 각 기능 박스 스타일 */
+        .control-box { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .control-box h4 { margin: 0 0 10px 0; border-bottom: 2px solid #eee; padding-bottom: 5px; }
+        .control-box.delete { border-top: 5px solid #ff6b6b; } /* 삭제 - 빨강 */
+        .control-box.replace { border-top: 5px solid #4dabf7; } /* 수정 - 파랑 */
+        .control-box.insert { border-top: 5px solid #51cf66; } /* 추가 - 초록 */
+
+        label { display: block; margin-top: 8px; font-size: 12px; font-weight: bold; color: #666; }
+        input[type="text"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: 'Consolas', monospace; }
+        
+        /* 버튼 그룹 */
+        .btn-group { display: flex; gap: 5px; margin-top: 10px; }
+        button { flex: 1; padding: 8px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        
+        .btn-find { background-color: #fcc419; color: #333; } /* 찾기 - 노랑 */
+        .btn-del { background-color: #fa5252; color: white; } /* 삭제 버튼 */
+        .btn-mod { background-color: #228be6; color: white; } /* 수정 버튼 */
+        .btn-add { background-color: #40c057; color: white; } /* 추가 버튼 */
+        
+        button:hover { opacity: 0.8; }
+        button:active { transform: scale(0.98); }
+
+        /* 상태 메시지 */
+        #status-msg { text-align: center; color: #d6336c; font-weight: bold; height: 20px; margin-top: 5px; font-size: 13px; }
+
+    </style>
 </head>
 <body>
 
-  <div class="top-bar">
-    <input type="text" id="codeName" placeholder="코드 이름 입력 (예: 코드1)">
-    <button onclick="compareCode()">🔍 분석</button>
-    <button onclick="saveCode()">💾 저장</button>
-    <button onclick="exportCodeToFile()">📥 파일로 저장</button>
-    <label>
-      📤 코드 파일 불러오기:
-      <input type="file" id="fileInput" onchange="loadCodeFile(event)">
-    </label>
-  </div>
+<header>🛠️ 노베이스 코드 수정 도우미 (누적 수정 방식)</header>
 
-  <div class="container">
-    <div class="editor-wrapper">
-      <pre class="line-numbers" id="oldLineNumbers">1</pre>
-      <textarea id="oldCode" oninput="updateLineNumbers('oldCode', 'oldLineNumbers')" onscroll="syncScroll('oldCode','oldLineNumbers')" placeholder="이전 코드 입력"></textarea>
+<div class="container">
+    <div class="panel">
+        <h3>1. 원본 코드 (기준)</h3>
+        <textarea id="leftCode" placeholder="여기에 원래 코드를 붙여넣으세요."></textarea>
     </div>
 
-    <div class="copy-button-wrapper">
-      <button onclick="copyNewToOld()">←</button>
+    <div class="controls">
+        <div id="status-msg"></div>
+
+        <div class="control-box delete">
+            <h4>🗑️ 코드 삭제</h4>
+            <label>지울 코드 (복사해서 넣으세요)</label>
+            <input type="text" id="delTarget" placeholder="예: delay(1000);">
+            <div class="btn-group">
+                <button class="btn-find" onclick="findText('delTarget')">🔍 위치 확인</button>
+                <button class="btn-del" onclick="deleteCode()">❌ 삭제 실행</button>
+            </div>
+        </div>
+
+        <div class="control-box replace">
+            <h4>🔄 코드 수정 (교체)</h4>
+            <label>수정 전 코드 (찾을 내용)</label>
+            <input type="text" id="modBefore" placeholder="예: int a = 10;">
+            <label>수정 후 코드 (바꿀 내용)</label>
+            <input type="text" id="modAfter" placeholder="예: int a = 20;">
+            <div class="btn-group">
+                <button class="btn-find" onclick="findText('modBefore')">🔍 위치 확인</button>
+                <button class="btn-mod" onclick="replaceCode()">🔄 교체 실행</button>
+            </div>
+        </div>
+
+        <div class="control-box insert">
+            <h4>➕ 코드 추가 (끼워넣기)</h4>
+            <label>바로 윗줄 코드 (기준점)</label>
+            <input type="text" id="addAnchor" placeholder="예: void setup() {">
+            <label>추가할 코드 (새 내용)</label>
+            <input type="text" id="addContent" placeholder="예: Serial.begin(9600);">
+            <div class="btn-group">
+                <button class="btn-find" onclick="findText('addAnchor')">🔍 위치 확인</button>
+                <button class="btn-add" onclick="insertCode()">➕ 추가 실행</button>
+            </div>
+        </div>
     </div>
 
-    <div class="editor-wrapper">
-      <pre class="line-numbers" id="newLineNumbers">1</pre>
-      <textarea id="newCode" oninput="updateLineNumbers('newCode', 'newLineNumbers')" onscroll="syncScroll('newCode','newLineNumbers')" placeholder="신규 코드 입력"></textarea>
+    <div class="panel">
+        <h3>3. 결과 코드 (완성본)</h3>
+        <textarea id="rightCode" placeholder="버튼을 누르면 여기에 수정된 코드가 나옵니다."></textarea>
     </div>
-  </div>
+</div>
 
-  <div id="diffOutput" class="diff-result"></div>
+<script>
+    // 페이지 로드 시, 좌측 코드가 바뀌면 우측에 복사해둠 (초기화)
+    const leftArea = document.getElementById('leftCode');
+    const rightArea = document.getElementById('rightCode');
+    const msgArea = document.getElementById('status-msg');
 
-  <script src="https://cdn.jsdelivr.net/npm/diff-match-patch@1.0.5/index.min.js"></script>
-  <script>
-    function escapeHtml(text) {
-      return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    }
-
-    function pad(n) {
-      return n.toString().padStart(2, '0');
-    }
-
-    function updateLineNumbers(textareaId, lineNumberId) {
-      const textarea = document.getElementById(textareaId);
-      const lineNumberDiv = document.getElementById(lineNumberId);
-      const lines = textarea.value.split('\n').map((_, i) => i + 1).join('\n');
-      lineNumberDiv.textContent = lines;
-    }
-
-    function syncScroll(textareaId, lineNumberId) {
-      const textarea = document.getElementById(textareaId);
-      const lineNumberDiv = document.getElementById(lineNumberId);
-      lineNumberDiv.scrollTop = textarea.scrollTop;
-    }
-
-    function compareCode() {
-      const oldCode = document.getElementById("oldCode").value.trim().split('\n');
-      const newCode = document.getElementById("newCode").value.trim().split('\n');
-      const maxLines = Math.max(oldCode.length, newCode.length);
-      const dmp = new diff_match_patch();
-      let resultHTML = "";
-
-      for (let i = 0; i < maxLines; i++) {
-        const oldLine = oldCode[i] || "";
-        const newLine = newCode[i] || "";
-        const lineNum = `<span class="line-number">${i + 1}</span>`;
-
-        if (oldLine === newLine) {
-          resultHTML += `${lineNum}${escapeHtml(newLine)}\n`;
-        } else if (!oldLine && newLine) {
-          resultHTML += `<span class="added">${lineNum}${escapeHtml(newLine)}</span>\n`;
-        } else if (oldLine && !newLine) {
-          resultHTML += `<span class="removed">${lineNum}${escapeHtml(oldLine)}</span>\n`;
-        } else {
-          const diffs = dmp.diff_main(oldLine, newLine);
-          dmp.diff_cleanupSemantic(diffs);
-          let oldHtml = "", newHtml = "";
-          for (const [op, data] of diffs) {
-            const esc = escapeHtml(data);
-            if (op === 0) oldHtml += esc, newHtml += esc;
-            else if (op === -1) oldHtml += `<mark class="del">${esc}</mark>`;
-            else if (op === 1) newHtml += `<mark class="add">${esc}</mark>`;
-          }
-          resultHTML += `<span class="removed">${lineNum}${oldHtml}</span>\n`;
-          resultHTML += `<span class="added">${lineNum}${newHtml}</span>\n`;
+    leftArea.addEventListener('input', function() {
+        if(rightArea.value === "") { // 우측이 비어있을 때만 자동 동기화
+            rightArea.value = leftArea.value;
         }
-      }
+    });
 
-      document.getElementById("diffOutput").innerHTML = `<pre>${resultHTML}</pre>`;
+    // 1. 찾기 기능 (좌측 원본에서 하이라이트)
+    function findText(inputId) {
+        const textToFind = document.getElementById(inputId).value;
+        if (!textToFind) { showMsg("찾을 내용을 입력하세요!"); return; }
+
+        const content = leftArea.value;
+        const index = content.indexOf(textToFind);
+
+        if (index !== -1) {
+            leftArea.focus();
+            leftArea.setSelectionRange(index, index + textToFind.length);
+            showMsg("좌측에서 코드를 찾았습니다! (파란색 블록)");
+        } else {
+            showMsg("⚠️ 좌측 원본에 그런 코드가 없습니다.");
+        }
     }
 
-    function saveCode() {
-      const codeName = document.getElementById("codeName").value.trim();
-      const newCode = document.getElementById("newCode").value;
-      if (!codeName) return alert("코드 이름을 입력해주세요!");
+    // 2. 삭제 기능
+    function deleteCode() {
+        const target = document.getElementById('delTarget').value;
+        if (!target) return;
 
-      const history = JSON.parse(localStorage.getItem("codeHistory") || "{}");
-      history[codeName] = newCode;
-      localStorage.setItem("codeHistory", JSON.stringify(history));
-      alert(`'${codeName}' 코드가 저장되었습니다.`);
+        let currentCode = rightArea.value || leftArea.value; // 우측값이 없으면 좌측값 사용
+        
+        if (currentCode.includes(target)) {
+            // 해당 코드를 빈 문자열로 대체 (삭제)
+            rightArea.value = currentCode.replace(target, ""); 
+            showMsg("✅ 삭제 완료! (우측 확인)");
+        } else {
+            showMsg("⚠️ 이미 삭제되었거나 찾을 수 없습니다.");
+        }
     }
 
-    function exportCodeToFile() {
-      const codeName = document.getElementById("codeName").value.trim();
-      const codeText = document.getElementById("newCode").value;
-      if (!codeName) return alert("코드 이름을 입력해주세요!");
+    // 3. 수정 기능
+    function replaceCode() {
+        const before = document.getElementById('modBefore').value;
+        const after = document.getElementById('modAfter').value;
+        if (!before) return;
 
-      const blob = new Blob([codeText], { type: "text/plain;charset=utf-8" });
-      const now = new Date();
-      const dateStr = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}`;
-      const filename = `${codeName}_${dateStr}.txt`;
+        let currentCode = rightArea.value || leftArea.value;
 
-      const link = document.createElement("a");
-      link.href = URL.createObjectURL(blob);
-      link.download = filename;
-      link.click();
-      URL.revokeObjectURL(link.href);
+        if (currentCode.includes(before)) {
+            rightArea.value = currentCode.replace(before, after);
+            showMsg("✅ 수정 완료! (우측 확인)");
+        } else {
+            showMsg("⚠️ 수정할 코드를 찾을 수 없습니다.");
+        }
     }
 
-    function copyNewToOld() {
-      document.getElementById('oldCode').value = document.getElementById('newCode').value;
-      updateLineNumbers('oldCode', 'oldLineNumbers');
+    // 4. 추가 기능 (끼워넣기)
+    function insertCode() {
+        const anchor = document.getElementById('addAnchor').value;
+        const content = document.getElementById('addContent').value;
+        if (!anchor) return;
+
+        let currentCode = rightArea.value || leftArea.value;
+
+        if (currentCode.includes(anchor)) {
+            // 기준 코드 뒤에 줄바꿈(\n) + 새 코드 추가
+            const newBlock = anchor + "\n" + content;
+            rightArea.value = currentCode.replace(anchor, newBlock);
+            showMsg("✅ 추가 완료! (우측 확인)");
+        } else {
+            showMsg("⚠️ 기준 코드를 찾을 수 없습니다.");
+        }
     }
 
-    function loadCodeFile(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        document.getElementById("newCode").value = e.target.result;
-        updateLineNumbers('newCode', 'newLineNumbers');
-      };
-      reader.readAsText(file);
+    // 메시지 표시 도우미
+    function showMsg(text) {
+        msgArea.innerText = text;
+        setTimeout(() => { msgArea.innerText = ""; }, 3000);
     }
+</script>
 
-    window.onload = () => {
-      updateLineNumbers('oldCode', 'oldLineNumbers');
-      updateLineNumbers('newCode', 'newLineNumbers');
-    };
-  </script>
 </body>
 </html>
