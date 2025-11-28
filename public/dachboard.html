@@ -429,7 +429,7 @@
             <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
             <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
             <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
-              <button class="action-btn" onclick="alert('수정 기능')"><i class="fa-solid fa-pen"></i></button>
+              <button class="action-btn" onclick="openEditModal('${d.monitor_id}', '${d.name}', ${d.location.lat}, ${d.location.lng})"><i class="fa-solid fa-pen"></i></button>
               <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
             </div>
           </div>
@@ -459,12 +459,6 @@
     });
   }
 
-  function openAddModal() { 
-    document.getElementById('addModal').style.display = 'flex';
-    setTimeout(() => {
-      if(modalMap) modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
-    }, 100);
-  }
   function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
 
   function saveNewMonitor() {
@@ -490,6 +484,66 @@
       db.collection("monitors").doc(id).delete().then(() => loadMonitorList());
     }
   }
+  // [새로운 코드] 추가 버튼 눌렀을 때 (내용 비우고 열기)
+    function openAddModal() { 
+      // 1. 입력창 초기화
+      document.getElementById('new_id').value = '';
+      document.getElementById('new_name').value = '';
+      document.getElementById('new_lat').value = '';
+      document.getElementById('new_lng').value = '';
+      
+      // 2. ID 입력창 활성화 (수정 모드에서 잠겼을 수 있으므로 풀기)
+      const idInput = document.getElementById('new_id');
+      idInput.disabled = false;
+      idInput.style.backgroundColor = "white";
+  
+      // 3. 타이틀 변경
+      const titleEl = document.querySelector('.modal-title');
+      if(titleEl) titleEl.innerText = "Add New Monitor";
+  
+      // 4. 모달 열기
+      document.getElementById('addModal').style.display = 'flex';
+      
+      // 5. 지도 세팅 (기존 마커 제거)
+      setTimeout(() => {
+        if(modalMap) {
+            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
+            if(tempMarker) tempMarker.setMap(null); 
+        }
+      }, 100);
+    }
+  
+    // [새로운 코드] 수정 버튼 눌렀을 때 (내용 채우고 열기)
+    function openEditModal(id, name, lat, lng) {
+      // 1. 기존 값 채워넣기
+      const idInput = document.getElementById('new_id');
+      idInput.value = id;
+      document.getElementById('new_name').value = name;
+      document.getElementById('new_lat').value = lat;
+      document.getElementById('new_lng').value = lng;
+  
+      // 2. ID는 수정 못하게 막기 (회색 처리)
+      idInput.disabled = true;
+      idInput.style.backgroundColor = "#F3F4F6"; 
+  
+      // 3. 타이틀 변경
+      const titleEl = document.querySelector('.modal-title');
+      if(titleEl) titleEl.innerText = "Edit Monitor";
+  
+      // 4. 모달 열기
+      document.getElementById('addModal').style.display = 'flex';
+  
+      // 5. 지도 세팅 (해당 위치에 마커 찍기)
+      setTimeout(() => {
+        if(modalMap) {
+            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
+            
+            const targetLoc = new naver.maps.LatLng(lat, lng);
+            modalMap.setCenter(targetLoc); // 지도 중심 이동
+            setModalMarker(targetLoc);     // 마커 표시
+        }
+      }, 100);
+    }
 
   function loadMonitorSelectOptions() {
     const sel = document.getElementById('upload_monitor_select');
