@@ -2,27 +2,33 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노베이스 코드 수정 도우미 (Ver 3.3 - 수정 내역 하이라이트)</title>
+    <title>노베이스 코드 수정 도우미 (Ver 3.4 - HTML 렌더링 방지 & 하이라이트)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #f0f2f5; }
         header { background-color: #333; color: white; padding: 10px 20px; text-align: center; font-weight: bold; }
         
-        /* 기본 하이라이트 (드래그 선택 시) */
+        /* 기본 드래그 선택 색상 */
         ::selection { background-color: #ffeb3b; color: #000; }
-        ::-moz-selection { background-color: #ffeb3b; color: #000; }
-
-        /* ✨ [신규 기능] 수정된 코드에 적용될 형광펜 스타일 (연한 초록색) */
-        .highlight-change { background-color: #d4edda; display: inline-block; width: 100%; }
+        
+        /* ✨ [신규] 수정된 부분 노란색 마커 (눈에 잘 띄게) */
+        .highlight-marker { background-color: #fff176; color: #000; display: inline-block; min-width: 100%; font-weight: bold; }
 
         .container { display: flex; height: calc(100vh - 50px); }
         .panel { flex: 1; padding: 10px; display: flex; flex-direction: column; }
         .panel h3 { text-align: center; margin: 0 0 10px 0; color: #555; }
         
-        /* 좌측, 중앙 입력창 스타일 */
+        /* 좌측 에디터 (textarea) */
         textarea.code-editor { flex: 1; padding: 10px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #ccc; border-radius: 5px; resize: none; line-height: 1.5; white-space: pre; overflow-wrap: normal; overflow-x: scroll; background-color: #fff; }
         
-        /* 우측 결과창 스타일 (색상 표현을 위해 div로 변경됨) */
-        #rightCode { flex: 1; padding: 10px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #ccc; border-radius: 5px; overflow: auto; line-height: 1.5; white-space: pre; background-color: #fff; }
+        /* 우측 결과창 (HTML 렌더링 방지 처리된 div) */
+        #rightCode { 
+            flex: 1; padding: 10px; 
+            font-family: 'Consolas', monospace; font-size: 13px; 
+            border: 1px solid #ccc; border-radius: 5px; 
+            overflow: auto; line-height: 1.5; white-space: pre; 
+            background-color: #fff; 
+            color: #333;
+        }
 
         .controls { flex: 0 0 380px; padding: 10px; background-color: #e9ecef; border-left: 2px solid #ddd; border-right: 2px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
@@ -33,21 +39,14 @@
         .control-box.insert { border-top: 5px solid #51cf66; }
 
         label { display: block; margin-top: 8px; font-size: 12px; font-weight: bold; color: #666; }
-        
-        .code-input { 
-            width: 100%; height: 80px; 
-            padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: 'Consolas', monospace; font-size: 12px;
-            resize: vertical; 
-        }
+        .code-input { width: 100%; height: 80px; padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: 'Consolas', monospace; font-size: 12px; resize: vertical; }
         
         .btn-group { display: flex; gap: 5px; margin-top: 10px; }
         button { flex: 1; padding: 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-        
         .btn-find { background-color: #fcc419; color: #333; }
         .btn-del { background-color: #fa5252; color: white; }
         .btn-mod { background-color: #228be6; color: white; }
         .btn-add { background-color: #40c057; color: white; }
-        
         button:hover { opacity: 0.8; }
         
         #status-msg { text-align: center; color: #d6336c; font-weight: bold; min-height: 20px; margin-top: 5px; font-size: 13px; }
@@ -55,7 +54,7 @@
 </head>
 <body>
 
-<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.3 - 수정 내역 하이라이트)</header>
+<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.4 - 노란색 마커 & 깨짐 방지)</header>
 
 <div class="container">
     <div class="panel">
@@ -68,7 +67,7 @@
 
         <div class="control-box delete">
             <h4>🗑️ 코드 삭제</h4>
-            <label>지울 코드 (여러 줄 복사해도 됩니다)</label>
+            <label>지울 코드</label>
             <textarea id="delTarget" class="code-input" placeholder="function abc() { ... }"></textarea>
             <div class="btn-group">
                 <button class="btn-find" onclick="findBlock('delTarget')">🔍 위치 확인</button>
@@ -78,10 +77,10 @@
 
         <div class="control-box replace">
             <h4>🔄 코드 수정 (교체)</h4>
-            <label>수정 전 코드 (찾을 내용)</label>
+            <label>수정 전 코드</label>
             <textarea id="modBefore" class="code-input" placeholder="기존 코드"></textarea>
-            <label>수정 후 코드 (바꿀 내용)</label>
-            <textarea id="modAfter" class="code-input" placeholder="새로운 코드 (초록색 표시됨)"></textarea>
+            <label>수정 후 코드</label>
+            <textarea id="modAfter" class="code-input" placeholder="새로운 코드 (노란색 표시됨)"></textarea>
             <div class="btn-group">
                 <button class="btn-find" onclick="findBlock('modBefore')">🔍 위치 확인</button>
                 <button class="btn-mod" onclick="replaceBlock()">🔄 덩어리 교체</button>
@@ -90,10 +89,10 @@
 
         <div class="control-box insert">
             <h4>➕ 코드 추가 (끼워넣기)</h4>
-            <label>기준 코드 (이 코드 밑에 추가됨)</label>
+            <label>기준 코드</label>
             <textarea id="addAnchor" class="code-input" style="height:50px;" placeholder="예: void setup() {"></textarea>
             <label>추가할 코드</label>
-            <textarea id="addContent" class="code-input" placeholder="새로운 기능 (초록색 표시됨)"></textarea>
+            <textarea id="addContent" class="code-input" placeholder="새로운 기능 (노란색 표시됨)"></textarea>
             <div class="btn-group">
                 <button class="btn-find" onclick="findBlock('addAnchor')">🔍 위치 확인</button>
                 <button class="btn-add" onclick="insertBlock()">➕ 추가 실행</button>
@@ -103,7 +102,7 @@
 
     <div class="panel">
         <h3>3. 결과 코드 (수정 내역 확인)</h3>
-        <div id="rightCode" contenteditable="true" spellcheck="false"></div>
+        <div id="rightCode"></div>
     </div>
 </div>
 
@@ -112,21 +111,27 @@
     const rightArea = document.getElementById('rightCode');
     const msgArea = document.getElementById('status-msg');
 
-    // 우측 코드창의 내용을 가져오는 헬퍼 함수 (div로 바뀌어서 필요함)
-    function getRightCodeContent() {
-        return rightArea.innerText || ""; 
+    // ✨ [핵심] HTML 코드를 글자 그대로 보여주기 위한 변환 함수 (방어막)
+    function escapeHtml(text) {
+        return text
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
     }
 
-    // 초기화 및 동기화 로직 업데이트
+    // 좌측 입력 시 우측 초기화
     leftArea.addEventListener('input', function() {
-        if(getRightCodeContent().trim() === "") { 
-            rightArea.innerText = leftArea.value; // 초기엔 그냥 텍스트로 넣음
+        if(rightArea.innerText.trim() === "") { 
+            // 초기화 할 때도 방어막을 쳐서 태그가 실행되지 않게 함
+            rightArea.innerText = leftArea.value; 
         }
     });
 
     function normalize(str) { return str.replace(/\s+/g, ''); }
 
-    // 기존 로직 유지
+    // 줄 범위 찾기 (기존 유지)
     function findLineRange(searchText, sourceCode) {
         if (!searchText.trim()) return null;
         const sourceLines = sourceCode.split('\n');
@@ -147,7 +152,7 @@
         return null;
     }
 
-    // 기존 로직 유지
+    // 하이라이트 (기존 유지)
     function highlightRange(startLineIndex, lineCount) {
         const fullText = leftArea.value;
         const lines = fullText.split('\n');
@@ -168,27 +173,29 @@
         leftArea.scrollTop = scrollPos > 0 ? scrollPos : 0;
     }
 
-    // 기존 로직 유지
+    // 찾기 버튼 (기존 유지)
     function findBlock(inputId) {
         const inputVal = document.getElementById(inputId).value;
         const currentCode = leftArea.value;
         const result = findLineRange(inputVal, currentCode);
         if (result) {
-            showMsg(`✅ 찾았습니다! (좌측 형광색 부분)`);
+            showMsg(`✅ 찾았습니다! (형광색 확인)`);
             highlightRange(result.start, result.count);
         } else { showMsg("⚠️ 코드를 찾을 수 없습니다."); }
     }
 
-    // 2. 삭제 실행 (업데이트: 우측 내용 가져오는 방식 변경)
+    // 삭제 실행 (기존 유지)
     function deleteBlock() {
         const inputVal = document.getElementById('delTarget').value;
-        let currentCode = getRightCodeContent() || leftArea.value; 
+        // 우측 내용을 가져올 때 innerText를 써서 순수 코드만 가져옴
+        let currentCode = rightArea.innerText || leftArea.value; 
         const result = findLineRange(inputVal, currentCode);
 
         if (result) {
             const lines = currentCode.split('\n');
-            let newLines = [];
+            let resultHtml = ""; // HTML로 조립 예정
             const searchLines = inputVal.split('\n').filter(l => l.trim() !== '');
+
             for (let i = 0; i < lines.length; i++) {
                 if (i === result.start) {
                     let matchIdx = 0; let scanning = i;
@@ -198,23 +205,25 @@
                     }
                     i = scanning - 1;
                     showMsg("✅ 삭제 완료!");
-                } else { newLines.push(lines[i]); }
+                } else {
+                    // 삭제되지 않은 줄은 그냥 텍스트로(방어막 처리) 보여줌
+                    resultHtml += escapeHtml(lines[i]) + "\n";
+                }
             }
-            // 결과를 HTML로 넣음 (기존 하이라이트 유지 위해)
-            rightArea.innerHTML = newLines.join('\n');
-        } else { showMsg("⚠️ 삭제할 코드를 본문에서 찾지 못했습니다."); }
+            rightArea.innerHTML = resultHtml;
+        } else { showMsg("⚠️ 삭제할 코드를 못 찾았습니다."); }
     }
 
-    // 3. 수정 (교체) 실행 - ✨ [핵심 수정] 변경된 부분에 색상 태그 추가
+    // 수정 (교체) 실행 - ✨ 노란색 마커 추가
     function replaceBlock() {
         const beforeVal = document.getElementById('modBefore').value;
         const afterVal = document.getElementById('modAfter').value;
-        let currentCode = getRightCodeContent() || leftArea.value;
+        let currentCode = rightArea.innerText || leftArea.value;
         const result = findLineRange(beforeVal, currentCode);
 
         if (result) {
             const lines = currentCode.split('\n');
-            let newLines = [];
+            let resultHtml = "";
             const searchLines = beforeVal.split('\n').filter(l => l.trim() !== '');
 
             for (let i = 0; i < lines.length; i++) {
@@ -224,10 +233,13 @@
                     const indent = indentMatch ? indentMatch[0] : "";
                     
                     const newContentLines = afterVal.split('\n');
-                    const indentedNewLines = newContentLines.map(line => indent + line).join('\n');
+                    // ✨ 새 코드를 노란색 띠(<span class="highlight-marker">)로 감싸기
+                    // 내용물은 escapeHtml로 안전하게 처리
+                    const highlightedNewLines = newContentLines.map(line => {
+                        return `<span class="highlight-marker">${escapeHtml(indent + line)}</span>`;
+                    }).join('\n');
                     
-                    // ✨ 여기! 수정된 코드를 <span class="highlight-change"> 태그로 감쌉니다.
-                    newLines.push('<span class="highlight-change">' + indentedNewLines + '</span>');
+                    resultHtml += highlightedNewLines + "\n";
 
                     let matchIdx = 0; let scanning = i;
                     while(matchIdx < searchLines.length && scanning < lines.length) {
@@ -235,52 +247,59 @@
                         scanning++;
                     }
                     i = scanning - 1;
-                    showMsg("✅ 교체 완료! (초록색 확인)");
-                } else { newLines.push(lines[i]); }
+                    showMsg("✅ 교체 완료! (노란색 확인)");
+                } else { 
+                    resultHtml += escapeHtml(lines[i]) + "\n"; 
+                }
             }
-            // 결과를 HTML로 넣음
-            rightArea.innerHTML = newLines.join('\n');
-        } else { showMsg("⚠️ 교체할 대상을 찾지 못했습니다."); }
+            rightArea.innerHTML = resultHtml;
+        } else { showMsg("⚠️ 교체 대상을 못 찾았습니다."); }
     }
 
-    // 4. 추가 실행 - ✨ [핵심 수정] 추가된 부분에 색상 태그 추가
+    // 추가 실행 - ✨ 노란색 마커 추가
     function insertBlock() {
         const anchorVal = document.getElementById('addAnchor').value;
         const contentVal = document.getElementById('addContent').value;
-        let currentCode = getRightCodeContent() || leftArea.value;
+        let currentCode = rightArea.innerText || leftArea.value;
         const result = findLineRange(anchorVal, currentCode);
 
         if (result) {
              const lines = currentCode.split('\n');
-             let newLines = [];
+             let resultHtml = "";
              const searchLines = anchorVal.split('\n').filter(l => l.trim() !== '');
             
             for (let i = 0; i < lines.length; i++) {
-                newLines.push(lines[i]); 
+                resultHtml += escapeHtml(lines[i]) + "\n"; // 기존 코드 (안전 처리)
+                
                 if (i === result.start) {
                     const originalLine = lines[i];
                     const indentMatch = originalLine.match(/^\s*/);
                     const indent = indentMatch ? indentMatch[0] : "";
                     let matchIdx = 1; let scanning = i + 1;
                     while(matchIdx < searchLines.length && scanning < lines.length) {
-                        if (normalize(lines[scanning]) === normalize(searchLines[matchIdx])) { newLines.push(lines[scanning]); matchIdx++; }
-                        else { newLines.push(lines[scanning]); }
+                        if (normalize(lines[scanning]) === normalize(searchLines[matchIdx])) { 
+                            resultHtml += escapeHtml(lines[scanning]) + "\n"; 
+                            matchIdx++; 
+                        } else { 
+                            resultHtml += escapeHtml(lines[scanning]) + "\n"; 
+                        }
                         scanning++;
                     }
                     
                     const newContentLines = contentVal.split('\n');
-                    const indentedNewContent = newContentLines.map(line => indent + line).join('\n');
+                    // ✨ 추가된 코드도 노란색 띠로 감싸기
+                    const highlightedNewContent = newContentLines.map(line => {
+                         return `<span class="highlight-marker">${escapeHtml(indent + line)}</span>`;
+                    }).join('\n');
                     
-                    // ✨ 여기! 추가된 코드를 <span class="highlight-change"> 태그로 감쌉니다.
-                    newLines.push('<span class="highlight-change">' + indentedNewContent + '</span>');
+                    resultHtml += highlightedNewContent + "\n";
 
                     i = scanning - 1; 
-                    showMsg("✅ 추가 완료! (초록색 확인)");
+                    showMsg("✅ 추가 완료! (노란색 확인)");
                 }
             }
-            // 결과를 HTML로 넣음
-            rightArea.innerHTML = newLines.join('\n');
-        } else { showMsg("⚠️ 기준 위치를 찾지 못했습니다."); }
+            rightArea.innerHTML = resultHtml;
+        } else { showMsg("⚠️ 기준 위치를 못 찾았습니다."); }
     }
 
     function showMsg(text) {
