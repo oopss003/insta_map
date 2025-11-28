@@ -689,24 +689,72 @@
       console.log(`Uploaded batch ${i/BATCH_SIZE + 1} / ${Math.ceil(total/BATCH_SIZE)}`);
     }
   }
-  /* 6. VISUALIZATION (더미) */
-  const sbCalGrid = document.getElementById('sidebarCalGrid');
-  const available = [25, 26, 27, 28, 29, 30];
-  let selected = [26, 27, 28];
+/* 7. CALENDAR LOGIC (Real Date Calculation) */
+  let currentCalDate = new Date(); // 현재 날짜 기준
+  let selectedDates = []; // 선택된 날짜 저장
 
-  function renderSbCal() {
-    sbCalGrid.innerHTML = '';
-    for(let i=0; i<3; i++) sbCalGrid.innerHTML += `<div></div>`;
-    for(let d=1; d<=31; d++) {
-      const cls = `sb-date-cell ${available.includes(d)?'has-data':''} ${selected.includes(d)?'selected':''}`;
-      sbCalGrid.innerHTML += `<div class="${cls}" onclick="toggleDate(${d})">${d}<div class="sb-dot"></div></div>`;
-    }
-    document.getElementById('selCount').innerText = selected.length;
-  }
-  window.toggleDate = (d) => {
-    if(selected.includes(d)) selected = selected.filter(x=>x!==d); else selected.push(d);
+  // 월 변경 함수
+  function changeMonth(step) {
+    currentCalDate.setMonth(currentCalDate.getMonth() + step);
     renderSbCal();
   }
+
+  // 달력 그리기 함수
+  function renderSbCal() {
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth(); // 0~11
+
+    // 1. 헤더 텍스트 업데이트 (예: October 2025)
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+
+    // 2. 날짜 계산
+    // 이번 달 1일이 무슨 요일인지 (0:일, 1:월 ...)
+    const firstDay = new Date(year, month, 1).getDay();
+    // 이번 달 마지막 날짜가 며칠인지 (28, 30, 31)
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    const grid = document.getElementById('sidebarCalGrid');
+    grid.innerHTML = '';
+
+    // 3. 앞쪽 빈칸 채우기 (요일 맞추기)
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div></div>`;
+    }
+
+    // 4. 날짜 채우기
+    // (더미 데이터: 예시로 짝수 날짜에 데이터가 있다고 가정)
+    for (let d = 1; d <= lastDate; d++) {
+      // 해당 날짜의 고유 키 생성 (YYYY-MM-DD)
+      const dateKey = `${year}-${month+1}-${d}`;
+      const isSelected = selectedDates.includes(dateKey);
+      const hasData = d % 2 === 0; // 예시: 짝수 날짜면 점 표시 (나중에 DB연동 가능)
+
+      const cls = `sb-date-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`;
+      
+      grid.innerHTML += `
+        <div class="${cls}" onclick="toggleDate('${dateKey}')">
+          ${d}
+          <div class="sb-dot"></div>
+        </div>`;
+    }
+    
+    // 선택된 날짜 개수 업데이트
+    document.getElementById('selCount').innerText = selectedDates.length;
+  }
+
+  // 날짜 클릭 토글 함수
+  window.toggleDate = (dateKey) => {
+    if (selectedDates.includes(dateKey)) {
+      selectedDates = selectedDates.filter(d => d !== dateKey);
+    } else {
+      selectedDates.push(dateKey);
+    }
+    renderSbCal(); // 상태 반영을 위해 다시 그리기
+  };
+
+  /* ▲▲▲▲▲ [여기까지 붙여넣기] ▲▲▲▲▲ */
+
     window.onload = function() {
     initMaps();
     renderSbCal();
