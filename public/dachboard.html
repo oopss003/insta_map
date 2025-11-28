@@ -154,23 +154,22 @@
     </ul>
 
     <div class="sidebar-cal">
-      <div class="sb-cal-header">
-        <span>October 2025</span>
-        <div style="display:flex; gap:8px;">
-          <i class="fa-solid fa-chevron-left" style="cursor:pointer"></i>
-          <i class="fa-solid fa-chevron-right" style="cursor:pointer"></i>
+          <div class="sb-cal-header">
+            <span id="calMonthYear">October 2025</span>
+            <div style="display:flex; gap:8px;">
+              <i class="fa-solid fa-chevron-left" style="cursor:pointer" onclick="changeMonth(-1)"></i>
+              <i class="fa-solid fa-chevron-right" style="cursor:pointer" onclick="changeMonth(1)"></i>
+            </div>
+          </div>
+          <div class="sb-cal-grid" style="margin-bottom:8px;">
+            <div class="sb-day-name">S</div><div class="sb-day-name">M</div><div class="sb-day-name">T</div>
+            <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
+          </div>
+          <div class="sb-cal-grid" id="sidebarCalGrid"></div>
+          <div style="margin-top:16px; font-size:11px; color:#94A3B8; text-align:center;">
+            <span style="color:white; font-weight:700;" id="selCount">0</span> days selected
+          </div>
         </div>
-      </div>
-      <div class="sb-cal-grid" style="margin-bottom:8px;">
-        <div class="sb-day-name">S</div><div class="sb-day-name">M</div><div class="sb-day-name">T</div>
-        <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
-      </div>
-      <div class="sb-cal-grid" id="sidebarCalGrid"></div>
-      <div style="margin-top:16px; font-size:11px; color:#94A3B8; text-align:center;">
-        <span style="color:white; font-weight:700;" id="selCount">3</span> days selected
-      </div>
-    </div>
-  </div>
 
 
   <div class="main-content">
