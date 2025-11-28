@@ -2,12 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노베이스 코드 수정 도우미 (Ver 3.1 - 하이라이트 수정판)</title>
+    <title>노베이스 코드 수정 도우미 (Ver 3.2 - 줄맞춤 완벽 해결)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #f0f2f5; }
         header { background-color: #333; color: white; padding: 10px 20px; text-align: center; font-weight: bold; }
         
-        /* ✨ 드래그(선택) 했을 때 색상을 형광 노란색으로 변경하는 마법의 코드 */
+        /* 하이라이트 색상 (형광 노랑) - Ver 3.1 기능 유지 */
         ::selection { background-color: #ffeb3b; color: #000; }
         ::-moz-selection { background-color: #ffeb3b; color: #000; }
 
@@ -48,7 +48,7 @@
 </head>
 <body>
 
-<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.1 - 하이라이트 수정판)</header>
+<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.2 - 줄맞춤 완벽 해결)</header>
 
 <div class="container">
     <div class="panel">
@@ -115,7 +115,7 @@
         return str.replace(/\s+/g, '');
     }
 
-    // 줄 범위 찾기 함수
+    // 줄 범위 찾기 함수 (Ver 3.1 유지)
     function findLineRange(searchText, sourceCode) {
         if (!searchText.trim()) return null;
 
@@ -142,7 +142,7 @@
         return null;
     }
 
-    // ✨ 수정된 핵심 기능: 줄 번호를 '글자 위치(index)'로 변환하여 하이라이트
+    // 하이라이트 함수 (Ver 3.1 유지)
     function highlightRange(startLineIndex, lineCount) {
         const fullText = leftArea.value;
         const lines = fullText.split('\n');
@@ -150,61 +150,29 @@
         let startCharIndex = 0;
         let endCharIndex = 0;
 
-        // 1. 시작 위치 계산: 시작 줄 이전까지의 모든 글자 수 + 줄바꿈 문자(\n) 개수 합산
         for (let i = 0; i < startLineIndex; i++) {
-            startCharIndex += lines[i].length + 1; // +1은 줄바꿈 문자
+            startCharIndex += lines[i].length + 1; 
         }
 
-        // 2. 끝 위치 계산: 시작 위치부터 찾은 줄 개수만큼 글자 수 더하기
-        // 주의: 찾은 대상은 원본 코드에서 연속된 줄이 아닐 수도 있지만(빈줄 등),
-        // 여기서는 편의상 해당 줄부터 아래로 쭉 긁어서 선택함.
         endCharIndex = startCharIndex;
-        // 검색된 줄의 개수가 아니라, 검색된 텍스트가 차지하는 실제 줄만큼 더해야 함.
-        // 하지만 normalize 로직상 정확한 실제 줄 수를 역산하기 어려우므로,
-        // 대략적으로 시작 줄부터 적당히 긴 범위를 잡거나,
-        // 여기서는 심플하게 해당 줄부터 일정 범위까지만 보여줌.
-        // (정확도를 위해 검색된 텍스트 전체 길이를 더하는 방식 시도)
+        let linesChecked = 0;
+        let currentLineIdx = startLineIndex;
         
-        // 개선: 그냥 줄 단위로 모두 더해버림
-        // 하지만 원본 코드 중간에 빈 줄이 많으면 오차가 생길 수 있음.
-        // 일단 발견된 줄부터 lineCount 개수만큼은 확실히 선택.
-        
-        // 실제 원본에서 매칭된 블록의 끝을 찾아야 함.
-        // 여기서는 간단하게 "시작 줄"부터 "검색한 줄 개수" 만큼 선택.
-        // (단, 중간 빈 줄 때문에 정확하지 않을 수 있어, 넉넉하게 잡는 로직 대신
-        //  사용자가 찾기 쉬운 '첫 줄'만이라도 확실히 강조)
-        
-        // 선택 범위 계산 (시작 줄 + 매칭된 줄 수)
-        // 만약 원본에 빈 줄이 섞여있다면 선택 범위가 짧아질 수 있음.
-        // 여기서는 "시작 지점"을 정확히 보여주는 데 집중.
-        
-        endCharIndex = startCharIndex + lines[startLineIndex].length; // 일단 첫 줄만 선택해도 눈에 띔
-        
-        // 여러 줄 선택 시도
-        let draggingLine = startLineIndex;
-        let linesToSelect = lineCount; 
-        
-        // 검색어 줄 수 만큼 반복하며 길이 더함 (간단 버전)
-        for(let k=0; k < lineCount; k++) {
-             if(draggingLine < lines.length) {
-                 endCharIndex += lines[draggingLine].length; 
-                 draggingLine++;
-             }
+        while(linesChecked < lineCount && currentLineIdx < lines.length) {
+            endCharIndex += lines[currentLineIdx].length + 1;
+            currentLineIdx++;
+            linesChecked++;
         }
-        // 줄바꿈 문자 보정
-        endCharIndex += (lineCount * 1); 
 
-        // 3. 실제 선택(하이라이트) 실행
         leftArea.focus();
-        leftArea.setSelectionRange(startCharIndex, endCharIndex);
+        leftArea.setSelectionRange(startCharIndex, endCharIndex - 1); 
         
-        // 4. 스크롤 이동 (선택된 곳이 화면 중앙에 오도록)
-        const lineHeight = 20; // 대략적인 줄 높이 px
+        const lineHeight = 20; 
         const scrollPos = (startLineIndex * lineHeight) - (leftArea.clientHeight / 2);
         leftArea.scrollTop = scrollPos > 0 ? scrollPos : 0;
     }
 
-    // 1. 찾기 버튼
+    // 1. 찾기 버튼 (Ver 3.1 유지)
     function findBlock(inputId) {
         const inputVal = document.getElementById(inputId).value;
         const currentCode = leftArea.value;
@@ -212,14 +180,13 @@
 
         if (result) {
             showMsg(`✅ 찾았습니다! (형광색 부분을 확인하세요)`);
-            // ✨ 여기서 하이라이트 함수 호출
             highlightRange(result.start, result.count);
         } else {
             showMsg("⚠️ 코드를 찾을 수 없습니다.");
         }
     }
 
-    // 2. 삭제 실행
+    // 2. 삭제 실행 (Ver 3.1 유지)
     function deleteBlock() {
         const inputVal = document.getElementById('delTarget').value;
         let currentCode = rightArea.value || leftArea.value; 
@@ -253,7 +220,7 @@
         }
     }
 
-    // 3. 수정 (교체) 실행
+    // 3. 수정 (교체) 실행 - [여기만 수정됨: 들여쓰기 기능 추가]
     function replaceBlock() {
         const beforeVal = document.getElementById('modBefore').value;
         const afterVal = document.getElementById('modAfter').value;
@@ -267,7 +234,17 @@
 
             for (let i = 0; i < lines.length; i++) {
                 if (i === result.start) {
-                    newLines.push(afterVal);
+                    // --- 수정된 부분 시작 ---
+                    const originalLine = lines[i];
+                    const indentMatch = originalLine.match(/^\s*/); // 공백 찾기
+                    const indent = indentMatch ? indentMatch[0] : "";
+                    
+                    const newContentLines = afterVal.split('\n');
+                    const indentedNewLines = newContentLines.map(line => indent + line).join('\n');
+                    
+                    newLines.push(indentedNewLines);
+                    // --- 수정된 부분 끝 ---
+
                     let matchIdx = 0;
                     let scanning = i;
                     while(matchIdx < searchLines.length && scanning < lines.length) {
@@ -277,7 +254,7 @@
                         scanning++;
                     }
                     i = scanning - 1;
-                    showMsg("✅ 교체 완료!");
+                    showMsg("✅ 교체 완료! (들여쓰기 적용됨)");
                 } else {
                     newLines.push(lines[i]);
                 }
@@ -288,7 +265,7 @@
         }
     }
 
-    // 4. 추가 실행
+    // 4. 추가 실행 - [여기만 수정됨: 들여쓰기 기능 추가]
     function insertBlock() {
         const anchorVal = document.getElementById('addAnchor').value;
         const contentVal = document.getElementById('addContent').value;
@@ -302,9 +279,16 @@
             
             for (let i = 0; i < lines.length; i++) {
                 newLines.push(lines[i]); 
+                
                 if (i === result.start) {
+                    // --- 수정된 부분 시작 ---
+                    const originalLine = lines[i];
+                    const indentMatch = originalLine.match(/^\s*/); // 공백 찾기
+                    const indent = indentMatch ? indentMatch[0] : "";
+
                     let matchIdx = 1; 
                     let scanning = i + 1;
+                    
                     while(matchIdx < searchLines.length && scanning < lines.length) {
                         if (normalize(lines[scanning]) === normalize(searchLines[matchIdx])) {
                             newLines.push(lines[scanning]); 
@@ -314,9 +298,15 @@
                         }
                         scanning++;
                     }
-                    newLines.push(contentVal);
+                    
+                    const newContentLines = contentVal.split('\n');
+                    const indentedNewContent = newContentLines.map(line => indent + line).join('\n');
+                    
+                    newLines.push(indentedNewContent);
+                    // --- 수정된 부분 끝 ---
+
                     i = scanning - 1; 
-                    showMsg("✅ 추가 완료!");
+                    showMsg("✅ 추가 완료! (들여쓰기 적용됨)");
                 }
             }
             rightArea.value = newLines.join('\n');
