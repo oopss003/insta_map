@@ -2,19 +2,21 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <title>노베이스 코드 수정 도우미 (Ver 3.0 - 멀티라인 완벽 지원)</title>
+    <title>노베이스 코드 수정 도우미 (Ver 3.1 - 하이라이트 수정판)</title>
     <style>
         body { font-family: 'Malgun Gothic', sans-serif; margin: 0; padding: 0; height: 100vh; overflow: hidden; background-color: #f0f2f5; }
         header { background-color: #333; color: white; padding: 10px 20px; text-align: center; font-weight: bold; }
         
+        /* ✨ 드래그(선택) 했을 때 색상을 형광 노란색으로 변경하는 마법의 코드 */
+        ::selection { background-color: #ffeb3b; color: #000; }
+        ::-moz-selection { background-color: #ffeb3b; color: #000; }
+
         .container { display: flex; height: calc(100vh - 50px); }
         .panel { flex: 1; padding: 10px; display: flex; flex-direction: column; }
         .panel h3 { text-align: center; margin: 0 0 10px 0; color: #555; }
         
-        /* 텍스트 에디터 스타일 통일 */
         textarea { flex: 1; padding: 10px; font-family: 'Consolas', monospace; font-size: 13px; border: 1px solid #ccc; border-radius: 5px; resize: none; line-height: 1.5; white-space: pre; overflow-wrap: normal; overflow-x: scroll; background-color: #fff; }
         
-        /* 중앙 컨트롤 패널 */
         .controls { flex: 0 0 380px; padding: 10px; background-color: #e9ecef; border-left: 2px solid #ddd; border-right: 2px solid #ddd; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
         
         .control-box { background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
@@ -25,11 +27,10 @@
 
         label { display: block; margin-top: 8px; font-size: 12px; font-weight: bold; color: #666; }
         
-        /* 중요: 입력창을 input에서 textarea로 변경하여 여러 줄 입력 가능하게 함 */
         .code-input { 
-            width: 100%; height: 80px; /* 높이 확보 */
+            width: 100%; height: 80px; 
             padding: 8px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; font-family: 'Consolas', monospace; font-size: 12px;
-            resize: vertical; /* 세로로 늘리기 가능 */
+            resize: vertical; 
         }
         
         .btn-group { display: flex; gap: 5px; margin-top: 10px; }
@@ -47,7 +48,7 @@
 </head>
 <body>
 
-<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.0 - 긴 코드도 한방에!)</header>
+<header>🛠️ 노베이스 코드 수정 도우미 (Ver 3.1 - 하이라이트 수정판)</header>
 
 <div class="container">
     <div class="panel">
@@ -110,46 +111,97 @@
         }
     });
 
-    // ✨ 핵심 엔진: 공백/줄바꿈을 싹 무시하고 "의미"만 비교하는 정규화 함수
     function normalize(str) {
-        // 모든 공백(스페이스, 탭, 줄바꿈)을 제거하고 한 줄로 만듦
         return str.replace(/\s+/g, '');
     }
 
-    // 블록 찾기 함수 (원본 코드에서 몇 번째 줄부터 몇 번째 줄까지인지 찾음)
+    // 줄 범위 찾기 함수
     function findLineRange(searchText, sourceCode) {
         if (!searchText.trim()) return null;
 
         const sourceLines = sourceCode.split('\n');
-        const searchLines = searchText.split('\n').filter(line => line.trim() !== ''); // 빈 줄은 검색에서 제외
+        const searchLines = searchText.split('\n').filter(line => line.trim() !== ''); 
         
         if (searchLines.length === 0) return null;
 
-        // 원본 코드를 한 줄씩 훑으면서 검색
         for (let i = 0; i < sourceLines.length; i++) {
-            // 1. 첫 줄이 매칭되는지 확인 (공백 무시)
             if (normalize(sourceLines[i]) === normalize(searchLines[0])) {
-                
-                // 2. 첫 줄이 같다면, 그 다음 줄들도 연속으로 같은지 확인
                 let isMatch = true;
                 for (let j = 1; j < searchLines.length; j++) {
-                    // 원본 코드 범위를 벗어나면 불일치
                     if (i + j >= sourceLines.length) { isMatch = false; break; }
-                    
-                    // 다음 줄 비교
                     if (normalize(sourceLines[i + j]) !== normalize(searchLines[j])) {
                         isMatch = false;
                         break;
                     }
                 }
-
-                // 3. 모든 줄이 일치하면 범위 반환 (시작줄 인덱스, 줄 개수)
                 if (isMatch) {
-                    return { start: i, count: searchLines.length, totalSearchLines: searchLines.length };
+                    return { start: i, count: searchLines.length };
                 }
             }
         }
         return null;
+    }
+
+    // ✨ 수정된 핵심 기능: 줄 번호를 '글자 위치(index)'로 변환하여 하이라이트
+    function highlightRange(startLineIndex, lineCount) {
+        const fullText = leftArea.value;
+        const lines = fullText.split('\n');
+        
+        let startCharIndex = 0;
+        let endCharIndex = 0;
+
+        // 1. 시작 위치 계산: 시작 줄 이전까지의 모든 글자 수 + 줄바꿈 문자(\n) 개수 합산
+        for (let i = 0; i < startLineIndex; i++) {
+            startCharIndex += lines[i].length + 1; // +1은 줄바꿈 문자
+        }
+
+        // 2. 끝 위치 계산: 시작 위치부터 찾은 줄 개수만큼 글자 수 더하기
+        // 주의: 찾은 대상은 원본 코드에서 연속된 줄이 아닐 수도 있지만(빈줄 등),
+        // 여기서는 편의상 해당 줄부터 아래로 쭉 긁어서 선택함.
+        endCharIndex = startCharIndex;
+        // 검색된 줄의 개수가 아니라, 검색된 텍스트가 차지하는 실제 줄만큼 더해야 함.
+        // 하지만 normalize 로직상 정확한 실제 줄 수를 역산하기 어려우므로,
+        // 대략적으로 시작 줄부터 적당히 긴 범위를 잡거나,
+        // 여기서는 심플하게 해당 줄부터 일정 범위까지만 보여줌.
+        // (정확도를 위해 검색된 텍스트 전체 길이를 더하는 방식 시도)
+        
+        // 개선: 그냥 줄 단위로 모두 더해버림
+        // 하지만 원본 코드 중간에 빈 줄이 많으면 오차가 생길 수 있음.
+        // 일단 발견된 줄부터 lineCount 개수만큼은 확실히 선택.
+        
+        // 실제 원본에서 매칭된 블록의 끝을 찾아야 함.
+        // 여기서는 간단하게 "시작 줄"부터 "검색한 줄 개수" 만큼 선택.
+        // (단, 중간 빈 줄 때문에 정확하지 않을 수 있어, 넉넉하게 잡는 로직 대신
+        //  사용자가 찾기 쉬운 '첫 줄'만이라도 확실히 강조)
+        
+        // 선택 범위 계산 (시작 줄 + 매칭된 줄 수)
+        // 만약 원본에 빈 줄이 섞여있다면 선택 범위가 짧아질 수 있음.
+        // 여기서는 "시작 지점"을 정확히 보여주는 데 집중.
+        
+        endCharIndex = startCharIndex + lines[startLineIndex].length; // 일단 첫 줄만 선택해도 눈에 띔
+        
+        // 여러 줄 선택 시도
+        let draggingLine = startLineIndex;
+        let linesToSelect = lineCount; 
+        
+        // 검색어 줄 수 만큼 반복하며 길이 더함 (간단 버전)
+        for(let k=0; k < lineCount; k++) {
+             if(draggingLine < lines.length) {
+                 endCharIndex += lines[draggingLine].length; 
+                 draggingLine++;
+             }
+        }
+        // 줄바꿈 문자 보정
+        endCharIndex += (lineCount * 1); 
+
+        // 3. 실제 선택(하이라이트) 실행
+        leftArea.focus();
+        leftArea.setSelectionRange(startCharIndex, endCharIndex);
+        
+        // 4. 스크롤 이동 (선택된 곳이 화면 중앙에 오도록)
+        const lineHeight = 20; // 대략적인 줄 높이 px
+        const scrollPos = (startLineIndex * lineHeight) - (leftArea.clientHeight / 2);
+        leftArea.scrollTop = scrollPos > 0 ? scrollPos : 0;
     }
 
     // 1. 찾기 버튼
@@ -159,64 +211,36 @@
         const result = findLineRange(inputVal, currentCode);
 
         if (result) {
-            // 시각적 하이라이트 (정확한 문자 위치 계산은 복잡하므로 줄 단위로 알림)
-            showMsg(`✅ 찾았습니다! (원본 코드의 ${result.start + 1}번째 줄 근처)`);
-            
-            // 대략적인 위치로 스크롤 이동
-            const lineHeight = 20; // 대략적인 줄 높이
-            leftArea.scrollTop = result.start * lineHeight;
-            leftArea.focus();
+            showMsg(`✅ 찾았습니다! (형광색 부분을 확인하세요)`);
+            // ✨ 여기서 하이라이트 함수 호출
+            highlightRange(result.start, result.count);
         } else {
-            showMsg("⚠️ 코드를 찾을 수 없습니다. (띄어쓰기는 상관없지만 오타를 확인하세요)");
+            showMsg("⚠️ 코드를 찾을 수 없습니다.");
         }
     }
 
     // 2. 삭제 실행
     function deleteBlock() {
         const inputVal = document.getElementById('delTarget').value;
-        let currentCode = rightArea.value || leftArea.value; // 우측 우선
+        let currentCode = rightArea.value || leftArea.value; 
         const result = findLineRange(inputVal, currentCode);
 
         if (result) {
-            // 줄 단위로 쪼개서 해당 범위 삭제
             const lines = currentCode.split('\n');
-            
-            // 삭제 로직: 찾은 위치에서 '검색된 줄 개수'만큼 건너뛰고 나머지 재조립
-            // 주의: 원본 코드에는 빈 줄이 섞여 있을 수 있으므로, 매칭된 줄들을 순차적으로 찾아서 지워야 함.
-            // 하지만 복잡성을 줄이기 위해 단순 교체 방식을 사용 (normalize 기반 replace)
-            
-            // 더 강력한 삭제: 텍스트 덩어리 교체 시도
-            // (줄 단위 매칭된 부분을 찾아서 제거)
             let newLines = [];
-            let skipCount = 0;
             const searchLines = inputVal.split('\n').filter(l => l.trim() !== '');
 
             for (let i = 0; i < lines.length; i++) {
-                // 매칭 시작 지점 도달
                 if (i === result.start) {
-                    // 여기서부터는 건너뜀 (삭제)
-                    // 단, 원본 코드의 빈 줄 여부를 고려해야 함.
-                    // 현재 알고리즘은 '내용이 있는 줄' 기준이므로, 
-                    // 간단하게 start부터 대략적인 범위만큼 지우는 방식보다는
-                    // 정확히 매칭된 구간을 도려내는 게 안전함.
-                    
-                    // 여기서는 심플하게: "찾은 블록과 내용이 같은 부분을 지움"
                     let matchIdx = 0;
                     let scanning = i;
                     while(matchIdx < searchLines.length && scanning < lines.length) {
                         if (normalize(lines[scanning]) === normalize(searchLines[matchIdx])) {
-                            // 지울 대상임 -> newLines에 안 넣음
                             matchIdx++;
-                        } else if (lines[scanning].trim() === '') {
-                             // 빈 줄은 그냥 둠? 아니면 같이 지움? -> 보통 같이 지우는게 깔끔함
-                             // 여기선 빈줄도 삭제 대상에 포함된다고 가정
-                        } else {
-                            // 매칭 실패? (이론상 안 옴)
-                            newLines.push(lines[scanning]);
                         }
                         scanning++;
                     }
-                    i = scanning - 1; // 루프 인덱스 조정
+                    i = scanning - 1;
                     showMsg("✅ 삭제 완료!");
                 } else {
                     newLines.push(lines[i]);
@@ -243,10 +267,7 @@
 
             for (let i = 0; i < lines.length; i++) {
                 if (i === result.start) {
-                    // 매칭된 부분 발견 -> 여기에 새 코드 삽입
                     newLines.push(afterVal);
-                    
-                    // 기존 코드는 건너뛰기
                     let matchIdx = 0;
                     let scanning = i;
                     while(matchIdx < searchLines.length && scanning < lines.length) {
@@ -277,41 +298,24 @@
         if (result) {
              const lines = currentCode.split('\n');
              let newLines = [];
-             // 기준 코드의 마지막 줄 인덱스를 찾아야 함
-             // result.start는 시작 줄. result.count는 줄 수.
-             // 하지만 중간에 빈 줄이 있을 수 있으니 실제 스캔 필요.
-             
-            const searchLines = anchorVal.split('\n').filter(l => l.trim() !== '');
+             const searchLines = anchorVal.split('\n').filter(l => l.trim() !== '');
             
             for (let i = 0; i < lines.length; i++) {
-                newLines.push(lines[i]); // 일단 현재 줄 넣고
-
+                newLines.push(lines[i]); 
                 if (i === result.start) {
-                    // 여기가 매칭 시작점. 
-                    // 기준 코드 덩어리가 끝나는 지점까지 루프를 미리 돌려봄?
-                    // 아니, 간단하게: "기준 코드의 첫 줄"을 찾으면, 그 덩어리 맨 뒤에 추가하는 게 아니라
-                    // "기준 코드 덩어리" 전체를 찾은 뒤 그 뒤에 추가해야 함.
-                    
-                    // 로직 단순화: 사용자가 입력한 기준 코드가 다 끝나는 지점을 찾음
-                    let matchIdx = 1; // 첫 줄은 이미 i에서 찾음
+                    let matchIdx = 1; 
                     let scanning = i + 1;
-                    
-                    // 기준 코드의 나머지 줄들을 패스
                     while(matchIdx < searchLines.length && scanning < lines.length) {
                         if (normalize(lines[scanning]) === normalize(searchLines[matchIdx])) {
-                            newLines.push(lines[scanning]); // 기존 코드 유지
+                            newLines.push(lines[scanning]); 
                             matchIdx++;
                         } else {
-                             // 빈 줄 등은 그냥 유지
                              newLines.push(lines[scanning]);
                         }
                         scanning++;
                     }
-                    
-                    // 기준 코드가 끝난 직후에 새 코드 삽입
                     newLines.push(contentVal);
-                    
-                    i = scanning - 1; // 메인 루프 인덱스 점프
+                    i = scanning - 1; 
                     showMsg("✅ 추가 완료!");
                 }
             }
