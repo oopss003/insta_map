@@ -893,10 +893,80 @@
     });
   }
 
-  // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
-  async function uploadInBatches(data, collectionName, monitorId, fileName) {
-    const BATCH_SIZE = 450;
-    const total = data.length;
+  // [FINAL FIX] 배치 업로드 (ID 추출 로직 강화 - 컬럼명 무관)
+    async function uploadInBatches(data, collectionName, monitorId, fileName) {
+      const BATCH_SIZE = 450;
+      const total = data.length;
+      
+      // 날짜 추출
+      const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
+      const match = fileName.match(dateRegex);
+      let fileDate = match ? new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]) : new Date();
+      
+      for (let i = 0; i < total; i += BATCH_SIZE) {
+        const batch = db.batch();
+        const chunk = data.slice(i, i + BATCH_SIZE);
+        
+        chunk.forEach((row, idx) => {
+          row.monitor_id = monitorId;
+          row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
+          row.source_filename = fileName;
+  
+          // [UPGRADE] 비디오 로그일 때만 실행
+          if (collectionName === 'video_logs') {
+            let foundPath = null;
+            
+            // 1. 모든 키(컬럼)를 순회하며 동영상 파일 경로 찾기 (.mp4, .avi 등)
+            for (const key in row) {
+              const val = String(row[key]);
+              if (val.match(/\.(mp4|avi|mov|mkv|wmv)$/i)) { 
+                foundPath = val;
+                row.video_name = val; // 표준 컬럼명으로 강제 통일
+                break; 
+              }
+            }
+  
+            if (foundPath) {
+              try {
+                // 2. 경로(\ 또는 /) 제거하고 순수 파일명만 추출
+                let cleanName = foundPath.replace(/^.*[\\\/]/, ''); 
+                cleanName = cleanName.replace(/\.[^/.]+$/, ""); // 확장자 제거
+                
+                row.ad_id = cleanName; // 추출된 ID 저장
+  
+                // 3. Ad Manager(광고 관리)에도 자동 등록
+                const adDocRef = db.collection('ads').doc(cleanName);
+                batch.set(adDocRef, {
+                  ad_id: cleanName,
+                  name: `Auto-Ad (${cleanName})`,
+                  client: 'Unknown',
+                  status: 'active',
+                  updated_at: firebase.firestore.FieldValue.serverTimestamp()
+                }, { merge: true });
+  
+              } catch (e) { console.warn("ID Extract Error", e); }
+            }
+          }
+          
+          // 중복 방지 ID 생성 (파일명 + 행번호)
+          const uniqueDocId = `${fileName}_row_${i + idx}`;
+          const docRef = db.collection(collectionName).doc(uniqueDocId);
+          batch.set(docRef, row, { merge: true });
+        });
+  
+        await batch.commit();
+  
+        // 달력 통계 생성 (calendar_stats)
+        const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
+        const statsDocId = `${dateKey}_${monitorId}`;
+        await db.collection('calendar_stats').doc(statsDocId).set({
+          dateKey: dateKey,
+          monitor_id: monitorId,
+          uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
+          has_data: true
+        }, { merge: true });
+      }
+    }
     
     // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
     const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
