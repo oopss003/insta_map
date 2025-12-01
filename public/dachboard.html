@@ -1431,15 +1431,6 @@
         renderSbCal();         // 일단 빈 달력 먼저 그리기
       };
 
-  const heatGrid = document.getElementById('heatGrid');
-  if(heatGrid) {
-    for(let i=0; i<7*18; i++) {
-      const lv = Math.ceil(Math.random()*4);
-      const div = document.createElement('div');
-      div.className = `hm-cell l${lv}`;
-      heatGrid.appendChild(div);
-    }
-  }
 </script>
 <div id="globalLoader">
     <div class="loader-spinner"></div>
