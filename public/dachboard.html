@@ -919,16 +919,24 @@
         row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
         row.source_filename = fileName;
 
-        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
-        // 예: "C:\media\b435345.mp4" -> "b435345" 로 변환하여 ad_id에 저장
+        // [NEW] 비디오 로그일 경우: ID 추출 + Ad Manager 자동 등록
         if (collectionName === 'video_logs' && row.video_name) {
           try {
-            // 1. 경로 구분자(\ 또는 /) 뒤의 파일명만 추출
             let cleanName = row.video_name.replace(/^.*[\\\/]/, '');
-            // 2. 확장자(.mp4 등) 제거
             cleanName = cleanName.replace(/\.[^/.]+$/, "");
             
-            row.ad_id = cleanName; // 추출된 ID 저장
+            row.ad_id = cleanName; // 1. 로그 데이터에 ID 저장
+
+            // 2. [핵심] 발견된 ID를 Ad Manager 목록에도 자동 등록
+            const adDocRef = db.collection('ads').doc(cleanName);
+            batch.set(adDocRef, {
+              ad_id: cleanName,
+              name: `Auto-Ad (${cleanName})`, // 임시 이름
+              client: 'Unknown',
+              status: 'active',
+              updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true }); // 이미 등록된 광고면 건드리지 않음
+
           } catch (e) {
             console.warn("ID Extraction failed for:", row.video_name);
           }
