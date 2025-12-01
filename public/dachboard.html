@@ -960,12 +960,12 @@
   }
 
   // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
-// [최종 완성] 배치 업로드: 시간/날짜 결합 + 나이(age, age_group) 동시 저장
+// [최종 완성] 배치 업로드: 얼굴 데이터(나이/체류시간) + 비디오 로그(시작/종료시간) 완벽 처리
   async function uploadInBatches(data, collectionName, monitorId, fileName) {
     const BATCH_SIZE = 450;
     const total = data.length;
     
-    // 1. 파일명에서 기준 날짜 추출 (형식: YYYY-MM-DD)
+    // 1. 파일명에서 기준 날짜 추출 (YYYY-MM-DD)
     const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
     const match = fileName.match(dateRegex);
     let baseDateStr = "";
@@ -994,11 +994,9 @@
         // CASE A: Face Analysis 파일
         // -------------------------------------------------------
         if (row['처음 발견된 시간']) {
-          // 1. 시작 시간 결합
           const startTimeStr = row['처음 발견된 시간']; 
           finalDate = new Date(`${baseDateStr}T${startTimeStr}`);
           
-          // 2. 종료 시간 및 체류시간 계산
           if (row['없어진 시간']) {
             const endTimeStr = row['없어진 시간'];
             const endDate = new Date(`${baseDateStr}T${endTimeStr}`);
@@ -1008,29 +1006,34 @@
             row.dwell_time = dwellSeconds > 0 ? dwellSeconds : 0;
           }
 
-          // [핵심 수정] 나이(age)와 연령대(age_group) 둘 다 저장
           if (row['평균 나이'] !== undefined) {
              const ageNum = parseFloat(row['평균 나이']);
              if (!isNaN(ageNum)) {
-               row.age = ageNum; // 원래 숫자 저장 (예: 48.0)
-               // 10으로 나누고 내림 후 다시 10 곱함 (23 -> 20)
+               row.age = ageNum; 
                row.age_group = String(Math.floor(ageNum / 10) * 10); 
              }
           }
           
-          // 4. 정면 점수 확보
           if (row['정면 점수'] !== undefined) {
             row.frontal_score = parseFloat(row['정면 점수']);
           }
         } 
         
         // -------------------------------------------------------
-        // CASE B: Video Log 파일
+        // CASE B: Video Log 파일 (여기도 종료 시간 추가!)
         // -------------------------------------------------------
         else if (row['송출시작 시간']) {
+          // 1. 시작 시간 결합
           const timeStr = row['송출시작 시간'];
           finalDate = new Date(`${baseDateStr}T${timeStr}`);
           
+          // [NEW] 종료 시간도 날짜와 결합하여 저장
+          if (row['송출 끝난시간']) {
+             const endTimeStr = row['송출 끝난시간'];
+             const endDate = new Date(`${baseDateStr}T${endTimeStr}`);
+             row.end_at = firebase.firestore.Timestamp.fromDate(endDate);
+          }
+
           if (row['영상이름']) {
              row.ad_id = row['영상이름'].replace(/\.mp4$/i, '').trim();
           }
