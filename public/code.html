@@ -142,9 +142,9 @@
         return null;
     }
 
-    // 하이라이트 함수 (Ver 3.1 유지)
-    function highlightRange(startLineIndex, lineCount) {
-        const fullText = leftArea.value;
+// 하이라이트 함수 (Ver 3.3 - 양쪽 창 지원)
+    function highlightRange(targetArea, startLineIndex, lineCount) {
+        const fullText = targetArea.value;
         const lines = fullText.split('\n');
         
         let startCharIndex = 0;
@@ -164,23 +164,37 @@
             linesChecked++;
         }
 
-        leftArea.focus();
-        leftArea.setSelectionRange(startCharIndex, endCharIndex - 1); 
+        targetArea.focus();
+        targetArea.setSelectionRange(startCharIndex, endCharIndex - 1); 
         
         const lineHeight = 20; 
-        const scrollPos = (startLineIndex * lineHeight) - (leftArea.clientHeight / 2);
-        leftArea.scrollTop = scrollPos > 0 ? scrollPos : 0;
+        const scrollPos = (startLineIndex * lineHeight) - (targetArea.clientHeight / 2);
+        targetArea.scrollTop = scrollPos > 0 ? scrollPos : 0;
     }
 
-    // 1. 찾기 버튼 (Ver 3.1 유지)
+// 1. 찾기 버튼 (Ver 3.3 - 양쪽 동시 찾기)
     function findBlock(inputId) {
         const inputVal = document.getElementById(inputId).value;
-        const currentCode = leftArea.value;
-        const result = findLineRange(inputVal, currentCode);
+        
+        // 왼쪽(원본) 찾기
+        const leftResult = findLineRange(inputVal, leftArea.value);
+        if (leftResult) {
+            highlightRange(leftArea, leftResult.start, leftResult.count);
+        }
 
-        if (result) {
-            showMsg(`✅ 찾았습니다! (형광색 부분을 확인하세요)`);
-            highlightRange(result.start, result.count);
+        // 오른쪽(결과) 찾기
+        const rightResult = findLineRange(inputVal, rightArea.value);
+        if (rightResult) {
+            highlightRange(rightArea, rightResult.start, rightResult.count);
+        }
+
+        // 결과 메시지 표시
+        if (leftResult && rightResult) {
+            showMsg(`✅ 양쪽 모두에서 찾았습니다! (양쪽 화면 이동됨)`);
+        } else if (leftResult) {
+            showMsg(`✅ 원본(왼쪽)에서만 찾았습니다.`);
+        } else if (rightResult) {
+            showMsg(`✅ 결과(오른쪽)에서만 찾았습니다.`);
         } else {
             showMsg("⚠️ 코드를 찾을 수 없습니다.");
         }
