@@ -916,14 +916,27 @@
       
       chunk.forEach((row) => {
         row.monitor_id = monitorId;
-        // 추출한 날짜를 저장
         row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
         row.source_filename = fileName;
+
+        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
+        // 예: "C:\media\b435345.mp4" -> "b435345" 로 변환하여 ad_id에 저장
+        if (collectionName === 'video_logs' && row.video_name) {
+          try {
+            // 1. 경로 구분자(\ 또는 /) 뒤의 파일명만 추출
+            let cleanName = row.video_name.replace(/^.*[\\\/]/, '');
+            // 2. 확장자(.mp4 등) 제거
+            cleanName = cleanName.replace(/\.[^/.]+$/, "");
+            
+            row.ad_id = cleanName; // 추출된 ID 저장
+          } catch (e) {
+            console.warn("ID Extraction failed for:", row.video_name);
+          }
+        }
         
         const docRef = db.collection(collectionName).doc();
         batch.set(docRef, row);
       });
-
       await batch.commit();
 
       // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
