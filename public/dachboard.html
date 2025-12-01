@@ -157,6 +157,19 @@
     
     /* 지도 추가 스타일 */
     .modal-map { width: 100%; height: 200px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; overflow: hidden; }
+    /* [NEW] 화면 전체를 덮는 로딩 오버레이 (클릭 방지용) */
+        #globalLoader {
+          position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+          background: rgba(0, 0, 0, 0.7); z-index: 9999;
+          display: none; flex-direction: column; justify-content: center; align-items: center;
+          color: white; font-size: 16px; font-weight: 600;
+          backdrop-filter: blur(3px);
+        }
+        .loader-spinner {
+          width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.3);
+          border-radius: 50%; border-top-color: var(--primary-color);
+          animation: spin 1s ease-in-out infinite; margin-bottom: 20px;
+        }
   </style>
 </head>
 <body>
@@ -814,6 +827,7 @@
   }
 
   // [수정됨] 다중 파일 업로드 시작 로직
+  // [수정됨] 업로드 시작 함수: 로딩 화면 제어 및 예외 처리 강화
   async function startUploadProcess() {
     const monitorId = document.getElementById('upload_monitor_select').value;
     
@@ -825,33 +839,41 @@
     const totalFiles = selectedFiles.face.length + selectedFiles.video.length;
 
     if (confirm(`Monitor [${monitorId}]에 총 ${totalFiles}개의 파일을 업로드 하시겠습니까?`)) {
+      // 1. 화면 잠금 (로딩 시작) - 사용자가 다른 버튼을 못 누르게 함
+      document.getElementById('globalLoader').style.display = 'flex';
+      document.getElementById('globalLoaderMsg').innerText = "Starting Upload...";
+
       const promises = [];
 
-      // Face 파일들 큐에 추가
+      // Face 파일 처리
       selectedFiles.face.forEach(file => {
         promises.push(processAndUpload(file, 'face_analysis', monitorId));
       });
 
-      // Video 파일들 큐에 추가
+      // Video 파일 처리
       selectedFiles.video.forEach(file => {
         promises.push(processAndUpload(file, 'video_logs', monitorId));
       });
 
-      // 모든 업로드가 끝날 때까지 대기
+      // 모든 처리가 끝날 때까지 대기
       try {
         await Promise.all(promises);
-        alert(`Successfully processed ${totalFiles} files!`);
         
-        // 초기화
+        // 성공 시 초기화
         selectedFiles = { face: [], video: [] };
         document.getElementById('status_face').innerText = "";
         document.getElementById('status_video').innerText = "";
         
-        // 달력 갱신 (데이터가 늘어났으므로)
+        // 달력 데이터 갱신
         checkDataExistence();
+        
+        alert(`Successfully processed ${totalFiles} files!`);
       } catch (error) {
         console.error(error);
         alert("Some uploads failed. Check console for details.");
+      } finally {
+        // 2. 화면 잠금 해제 (성공하든 실패하든 무조건 실행)
+        document.getElementById('globalLoader').style.display = 'none';
       }
     }
   }
@@ -1203,5 +1225,9 @@
     }
   }
 </script>
+<div id="globalLoader">
+    <div class="loader-spinner"></div>
+    <div id="globalLoaderMsg">Processing Data...</div>
+  </div>
 </body>
 </html>
