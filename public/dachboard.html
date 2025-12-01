@@ -1076,74 +1076,63 @@
     }
     let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
     /* [NEW] Filter & Analysis Logic */
-// [수정됨] 필터 상태 저장 변수 (나이는 배열[]로 초기화)
-      let currentFilters = { gender: 'ALL', age: ['ALL'], attention: 'ALL' };
-      
-      // [수정됨] 필터 칩 선택 함수 (나이 그룹 복수 선택 지원)
+
+      // [수정됨] 필터 상태 저장 변수 (체류시간 'dwell' 추가)
+      let currentFilters = { gender: 'ALL', age: ['ALL'], attention: 'ALL', dwell: 'ALL' };
+    
+      // [수정됨] 필터 칩 선택 함수 (나이 복수 선택 + 나머지 단일 선택)
       function selectFilter(type, el, value) {
         const group = document.getElementById('filter_' + type);
-
-        // A. 나이(Age) 외의 필터 (기존 방식: 단일 선택)
+    
+        // A. 나이(Age) 외의 필터 (성별, 주목도, 체류시간 -> 단일 선택)
         if (type !== 'age') {
           group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
           el.classList.add('active');
           currentFilters[type] = value;
         } 
-        
-        // B. 나이(Age) 필터 (복수 선택 로직)
+        // B. 나이(Age) 필터 (복수 선택)
         else {
-          // B-1. "전체(ALL)"을 클릭했을 때
           if (value === 'ALL') {
-            // 모든 칩 끄고 ALL만 켜기
             group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             currentFilters.age = ['ALL'];
-          } 
-          // B-2. 특정 나이대를 클릭했을 때
-          else {
-            // 만약 현재 'ALL'이 켜져 있었다면 -> 끄고 시작
-            const allChip = group.firstElementChild; // 첫 번째 칩이 '전체'라고 가정
+          } else {
+            const allChip = group.firstElementChild;
             if (currentFilters.age.includes('ALL')) {
                 allChip.classList.remove('active');
                 currentFilters.age = [];
             }
-
-            // 클릭한 칩 토글 (켜져있으면 끄고, 꺼져있으면 켜기)
             if (el.classList.contains('active')) {
               el.classList.remove('active');
-              currentFilters.age = currentFilters.age.filter(v => v !== value); // 배열에서 제거
+              currentFilters.age = currentFilters.age.filter(v => v !== value);
             } else {
               el.classList.add('active');
-              currentFilters.age.push(value); // 배열에 추가
+              currentFilters.age.push(value);
             }
-
-            // 다 껐을 경우 -> 자동으로 '전체(ALL)' 다시 선택
             if (currentFilters.age.length === 0) {
               allChip.classList.add('active');
               currentFilters.age = ['ALL'];
             }
           }
         }
+        console.log("Filters:", currentFilters);
+      }
         
-        // 디버깅용: 현재 선택된 필터 상태 확인
-        console.log("Current Filters:", currentFilters);
-      }
-    
-      // 사이드바 광고 목록 불러오기
-      function loadSidebarAds() {
-        const adSel = document.getElementById('sidebarAdSelect');
-        if(!adSel) return;
-    
-        db.collection("ads").get().then(snapshot => {
-          let opts = '<option value="ALL">All Ads</option>';
-          snapshot.forEach(doc => {
-            const d = doc.data();
-            // 삭제되지 않은(active/inactive) 광고만 표시
-            opts += `<option value="${d.ad_id}">${d.name}</option>`;
-          });
-          adSel.innerHTML = opts;
-        });
-      }
+          // 사이드바 광고 목록 불러오기
+          function loadSidebarAds() {
+            const adSel = document.getElementById('sidebarAdSelect');
+            if(!adSel) return;
+        
+            db.collection("ads").get().then(snapshot => {
+              let opts = '<option value="ALL">All Ads</option>';
+              snapshot.forEach(doc => {
+                const d = doc.data();
+                // 삭제되지 않은(active/inactive) 광고만 표시
+                opts += `<option value="${d.ad_id}">${d.name}</option>`;
+              });
+              adSel.innerHTML = opts;
+            });
+          }
     
       // [핵심] 분석 버튼 클릭 시 실행
       function runAnalysis() {
