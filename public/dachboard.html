@@ -912,11 +912,40 @@
           row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
           row.source_filename = fileName;
   
-          // [UPGRADE] 비디오 로그일 때만 실행
-          if (collectionName === 'video_logs') {
-            let foundPath = null;
+// [FINAL FIX] 컬렉션 종류 상관없이 동영상 파일명 보이면 ID 추출
+        // (Video Log든 Face Analysis든 무조건 실행)
+        let foundPath = null;
+        
+        // 1. 모든 키(컬럼)를 순회하며 동영상 파일 경로 찾기
+        for (const key in row) {
+          const val = String(row[key]);
+          if (val.match(/\.(mp4|avi|mov|mkv|wmv)$/i)) { 
+            foundPath = val;
+            row.video_name = val; // 표준 컬럼명으로 통일
+            break; 
+          }
+        }
+
+        if (foundPath) {
+          try {
+            // 2. 경로 및 확장자 제거 -> 순수 ID 추출
+            let cleanName = foundPath.replace(/^.*[\\\/]/, ''); 
+            cleanName = cleanName.replace(/\.[^/.]+$/, ""); 
             
-            // 1. 모든 키(컬럼)를 순회하며 동영상 파일 경로 찾기 (.mp4, .avi 등)
+            row.ad_id = cleanName; // 데이터에 ID 필드 추가
+
+            // 3. Ad Manager(광고 관리)에 자동 등록
+            const adDocRef = db.collection('ads').doc(cleanName);
+            batch.set(adDocRef, {
+              ad_id: cleanName,
+              name: `Auto-Ad (${cleanName})`,
+              client: 'Unknown',
+              status: 'active',
+              updated_at: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+          } catch (e) { console.warn("ID Extract Error", e); }
+        }
             for (const key in row) {
               const val = String(row[key]);
               if (val.match(/\.(mp4|avi|mov|mkv|wmv)$/i)) { 
