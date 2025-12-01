@@ -259,6 +259,16 @@
                     <div class="chip" onclick="selectFilter('attention', this, 'High')">집중인구 (High)</div>
                   </div>
                 </div>
+    
+                <div class="filter-item">
+                  <div class="filter-label" style="margin-bottom:8px;">Dwell Time</div>
+                  <div class="toggle-chips" id="filter_dwell">
+                    <div class="chip active" onclick="selectFilter('dwell', this, 'ALL')">전체</div>
+                    <div class="chip" onclick="selectFilter('dwell', this, '3')">3초↑</div>
+                    <div class="chip" onclick="selectFilter('dwell', this, '5')">5초↑</div>
+                    <div class="chip" onclick="selectFilter('dwell', this, '10')">10초↑</div>
+                  </div>
+                </div>
               </div>
       
               <div style="display:flex; justify-content:space-between; align-items:flex-end;">
