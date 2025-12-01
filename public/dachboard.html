@@ -52,6 +52,26 @@
     .sb-date-cell.selected { background: var(--primary-color); color: white; font-weight: 700; }
     .sb-dot { width: 4px; height: 4px; background: var(--success); border-radius: 50%; position: absolute; bottom: 4px; display: none; }
     .sb-date-cell.has-data .sb-dot { display: block; }
+     /* [NEW] 로딩 스피너 & 드롭다운 스타일 */
+    .sb-loader-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30, 41, 59, 0.8); z-index: 10;
+      display: none; justify-content: center; align-items: center; flex-direction: column;
+      border-radius: 16px; font-size: 12px; color: white;
+    }
+    .sb-spinner {
+      width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%; border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite; margin-bottom: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .sb-monitor-select {
+      margin-top: 16px; width: 100%; padding: 10px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color: #CBD5E1; font-size: 13px; outline: none;
+    }
+    .sb-monitor-select option { background: #1E293B; color: #CBD5E1; }
 
     /* === MAIN CONTENT === */
     .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
@@ -153,7 +173,12 @@
       <li class="nav-item" onclick="showPage('upload', this)"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
     </ul>
 
-    <div class="sidebar-cal">
+    <div class="sidebar-cal" style="position:relative;">
+          <div id="calLoader" class="sb-loader-overlay">
+            <div class="sb-spinner"></div>
+            <span>Checking Data...</span>
+          </div>
+    
           <div class="sb-cal-header">
             <span id="calMonthYear">October 2025</span>
             <div style="display:flex; gap:8px;">
@@ -166,7 +191,12 @@
             <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
           </div>
           <div class="sb-cal-grid" id="sidebarCalGrid"></div>
-          <div style="margin-top:16px; font-size:11px; color:#94A3B8; text-align:center;">
+          
+          <select id="sidebarMonitorSelect" class="sb-monitor-select" onchange="filterCalendarByMonitor()">
+            <option value="ALL">All Monitors</option>
+          </select>
+    
+          <div style="margin-top:12px; font-size:11px; color:#94A3B8; text-align:center;">
             <span style="color:white; font-weight:700;" id="selCount">0</span> days selected
           </div>
         </div>
@@ -753,22 +783,69 @@
   let selectedDates = []; 
   let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
 
-  // [NEW] 파이어베이스에서 데이터가 있는 날짜 확인하기
-  function checkDataExistence() {
-    // 'video_logs' 컬렉션 조회 (필요하면 'face_analysis'도 추가 가능)
-    db.collection('video_logs').get().then((snapshot) => {
-      snapshot.forEach((doc) => {
-        const d = doc.data();
-        if (d.uploaded_at) {
-          const date = d.uploaded_at.toDate();
-          // 달력 키 형식(YYYY-M-D)으로 변환하여 저장
-          const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-          dataDates.add(dateKey);
+  /* [UPGRADE] 데이터 로딩 & 필터링 시스템 */
+    let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
+  
+    async function checkDataExistence() {
+      const loader = document.getElementById('calLoader');
+      const monitorSel = document.getElementById('sidebarMonitorSelect');
+      
+      // 1. 로딩 시작 표시
+      if(loader) loader.style.display = 'flex';
+      
+      try {
+        // 2. 모니터 목록 가져와서 드롭다운 채우기 (한 번만 실행)
+        const monitorSnap = await db.collection("monitors").get();
+        let options = '<option value="ALL">All Monitors</option>';
+        monitorSnap.forEach(doc => {
+          const m = doc.data();
+          options += `<option value="${m.monitor_id}">${m.name}</option>`;
+        });
+        if(monitorSel) monitorSel.innerHTML = options;
+  
+        // 3. 로그 데이터 전체 가져오기 (face_analysis 기준)
+        // 주의: 데이터가 너무 많으면 .limit(5000) 등을 붙여야 합니다.
+        const logSnap = await db.collection('face_analysis').orderBy('uploaded_at', 'desc').get();
+        
+        allLogCache = []; // 캐시 초기화
+        logSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.uploaded_at) {
+            const date = d.uploaded_at.toDate();
+            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            // 필요한 정보만 메모리에 최소한으로 저장
+            allLogCache.push({ dateKey: dateKey, monitor_id: d.monitor_id });
+          }
+        });
+  
+        // 4. 초기 필터링 (All Monitors) 실행
+        filterCalendarByMonitor();
+  
+      } catch (err) {
+        console.error("Data Load Error:", err);
+      } finally {
+        // 5. 로딩 종료
+        if(loader) loader.style.display = 'none';
+      }
+    }
+  
+    // 모니터 선택 시 달력 점만 다시 찍는 함수 (서버 통신 X, 즉시 반응)
+    function filterCalendarByMonitor() {
+      const selectedId = document.getElementById('sidebarMonitorSelect').value;
+      
+      // Set 초기화
+      dataDates.clear();
+  
+      // 메모리(allLogCache)에서 필터링
+      allLogCache.forEach(item => {
+        if (selectedId === 'ALL' || item.monitor_id === selectedId) {
+          dataDates.add(item.dateKey);
         }
       });
-      renderSbCal(); // 데이터를 다 확인했으면 달력을 다시 그림
-    });
-  }
+  
+      // 달력 다시 그리기
+      renderSbCal();
+    }
 
   function changeMonth(step) {
     currentCalDate.setDate(1);
