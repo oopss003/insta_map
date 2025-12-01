@@ -259,16 +259,6 @@
                     <div class="chip" onclick="selectFilter('attention', this, 'High')">집중인구 (High)</div>
                   </div>
                 </div>
-    
-                <div class="filter-item">
-                  <div class="filter-label" style="margin-bottom:8px;">Dwell Time</div>
-                  <div class="toggle-chips" id="filter_dwell">
-                    <div class="chip active" onclick="selectFilter('dwell', this, 'ALL')">전체</div>
-                    <div class="chip" onclick="selectFilter('dwell', this, '3')">3초↑</div>
-                    <div class="chip" onclick="selectFilter('dwell', this, '5')">5초↑</div>
-                    <div class="chip" onclick="selectFilter('dwell', this, '10')">10초↑</div>
-                  </div>
-                </div>
               </div>
       
               <div style="display:flex; justify-content:space-between; align-items:flex-end;">
@@ -290,57 +280,37 @@
                 </button>
               </div>
             </div>
-
       <div class="dashboard-grid">
-          <div class="kpi-column">
-            <div class="kpi-box">
-              <div class="kpi-head">Effective Impressions</div>
-              <div class="kpi-val" id="kpi_impressions">-</div>
-              <div class="kpi-sub">총 유효 노출수</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-head">Attention Ratio</div>
-              <div class="kpi-val" id="kpi_attention">-</div>
-              <div class="kpi-sub">평균 주목률 (0.6↑)</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-head">Avg. Dwell Time</div>
-              <div class="kpi-val" id="kpi_dwell">-</div>
-              <div class="kpi-sub">평균 체류시간</div>
-            </div>
-            <div class="kpi-box">
-              <div class="kpi-head">Prime Time</div>
-              <div class="kpi-val" id="kpi_prime">-</div>
-              <div class="kpi-sub">가장 붐비는 시간</div>
-            </div>
+        <div class="kpi-column">
+          <div class="kpi-box">
+            <div class="kpi-head">Total Impressions</div>
+            <div class="kpi-val">42,593</div>
+            <div class="kpi-sub">+12.5%</div>
           </div>
-      
-          <div class="chart-box">
-            <div class="chart-header" style="display:flex; justify-content:space-between; margin-bottom:16px;">
-              <div style="font-weight:700; font-size:16px;">Hourly Traffic Heatmap (06:00 ~ 24:00)</div>
-              <div style="font-size:12px; color:#9CA3AF; display:flex; gap:4px; align-items:center;">
-                Low <div style="width:10px; height:10px; background:#EFF6FF"></div>
-                <div style="width:10px; height:10px; background:#93C5FD"></div>
-                <div style="width:10px; height:10px; background:#3B82F6"></div>
-                <div style="width:10px; height:10px; background:#1E40AF"></div> High
-              </div>
-            </div>
-            <div class="heatmap-layout">
-              <div class="hm-y-axis" style="display:grid; grid-template-rows: repeat(7, 1fr);">
-                <div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div>
-                <div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div>
-              </div>
-              <div class="hm-grid" id="heatGrid" style="display:grid; grid-template-columns: repeat(19, 1fr); gap:2px;"></div>
-            </div>
-            <div class="hm-x-axis" style="display:grid; grid-template-columns: repeat(19, 1fr); margin-top:8px; padding-left:40px;">
-              <span class="hm-col-label">06</span><span class="hm-col-label"></span><span class="hm-col-label">08</span><span class="hm-col-label"></span>
-              <span class="hm-col-label">10</span><span class="hm-col-label"></span><span class="hm-col-label">12</span><span class="hm-col-label"></span>
-              <span class="hm-col-label">14</span><span class="hm-col-label"></span><span class="hm-col-label">16</span><span class="hm-col-label"></span>
-              <span class="hm-col-label">18</span><span class="hm-col-label"></span><span class="hm-col-label">20</span><span class="hm-col-label"></span>
-              <span class="hm-col-label">22</span><span class="hm-col-label"></span><span class="hm-col-label">24</span>
-            </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Avg. Dwell Time</div>
+            <div class="kpi-val">4.8s</div>
+            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Peak Hour</div>
+            <div class="kpi-val">19:00</div>
+            <div class="kpi-sub" style="color:#6B7280">Fri</div>
           </div>
         </div>
+        <div class="chart-box">
+          <div class="chart-header">
+            <div style="font-weight:700;">Weekly Heatmap</div>
+            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+          </div>
+          <div class="heatmap-layout">
+            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
+            <div class="hm-grid" id="heatGrid"></div>
+          </div>
+          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
+        </div>
+      </div>
+    </div>
 
 
     <div id="page-monitors" class="page-view">
@@ -1076,238 +1046,104 @@
     }
     let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
     /* [NEW] Filter & Analysis Logic */
-
-      // [수정됨] 필터 상태 저장 변수 (체류시간 'dwell' 추가)
-      let currentFilters = { gender: 'ALL', age: ['ALL'], attention: 'ALL', dwell: 'ALL' };
-    
-      // [수정됨] 필터 칩 선택 함수 (나이 복수 선택 + 나머지 단일 선택)
+// [수정됨] 필터 상태 저장 변수 (나이는 배열[]로 초기화)
+      let currentFilters = { gender: 'ALL', age: ['ALL'], attention: 'ALL' };
+      
+      // [수정됨] 필터 칩 선택 함수 (나이 그룹 복수 선택 지원)
       function selectFilter(type, el, value) {
         const group = document.getElementById('filter_' + type);
-    
-        // A. 나이(Age) 외의 필터 (성별, 주목도, 체류시간 -> 단일 선택)
+
+        // A. 나이(Age) 외의 필터 (기존 방식: 단일 선택)
         if (type !== 'age') {
           group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
           el.classList.add('active');
           currentFilters[type] = value;
         } 
-        // B. 나이(Age) 필터 (복수 선택)
+        
+        // B. 나이(Age) 필터 (복수 선택 로직)
         else {
+          // B-1. "전체(ALL)"을 클릭했을 때
           if (value === 'ALL') {
+            // 모든 칩 끄고 ALL만 켜기
             group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
             currentFilters.age = ['ALL'];
-          } else {
-            const allChip = group.firstElementChild;
+          } 
+          // B-2. 특정 나이대를 클릭했을 때
+          else {
+            // 만약 현재 'ALL'이 켜져 있었다면 -> 끄고 시작
+            const allChip = group.firstElementChild; // 첫 번째 칩이 '전체'라고 가정
             if (currentFilters.age.includes('ALL')) {
                 allChip.classList.remove('active');
                 currentFilters.age = [];
             }
+
+            // 클릭한 칩 토글 (켜져있으면 끄고, 꺼져있으면 켜기)
             if (el.classList.contains('active')) {
               el.classList.remove('active');
-              currentFilters.age = currentFilters.age.filter(v => v !== value);
+              currentFilters.age = currentFilters.age.filter(v => v !== value); // 배열에서 제거
             } else {
               el.classList.add('active');
-              currentFilters.age.push(value);
+              currentFilters.age.push(value); // 배열에 추가
             }
+
+            // 다 껐을 경우 -> 자동으로 '전체(ALL)' 다시 선택
             if (currentFilters.age.length === 0) {
               allChip.classList.add('active');
               currentFilters.age = ['ALL'];
             }
           }
         }
-        console.log("Filters:", currentFilters);
+        
+        // 디버깅용: 현재 선택된 필터 상태 확인
+        console.log("Current Filters:", currentFilters);
       }
-        
-          // 사이드바 광고 목록 불러오기
-          function loadSidebarAds() {
-            const adSel = document.getElementById('sidebarAdSelect');
-            if(!adSel) return;
-        
-            db.collection("ads").get().then(snapshot => {
-              let opts = '<option value="ALL">All Ads</option>';
-              snapshot.forEach(doc => {
-                const d = doc.data();
-                // 삭제되지 않은(active/inactive) 광고만 표시
-                opts += `<option value="${d.ad_id}">${d.name}</option>`;
-              });
-              adSel.innerHTML = opts;
-            });
-          }
-
-      // [최종] 분석 실행 함수: 데이터 수집 -> 필터링 -> 시각화
-      async function runAnalysis() {
+    
+      // 사이드바 광고 목록 불러오기
+      function loadSidebarAds() {
+        const adSel = document.getElementById('sidebarAdSelect');
+        if(!adSel) return;
+    
+        db.collection("ads").get().then(snapshot => {
+          let opts = '<option value="ALL">All Ads</option>';
+          snapshot.forEach(doc => {
+            const d = doc.data();
+            // 삭제되지 않은(active/inactive) 광고만 표시
+            opts += `<option value="${d.ad_id}">${d.name}</option>`;
+          });
+          adSel.innerHTML = opts;
+        });
+      }
+    
+      // [핵심] 분석 버튼 클릭 시 실행
+      function runAnalysis() {
+        // 1. 선택된 조건 수집
         const monitorId = document.getElementById('sidebarMonitorSelect').value;
         const adId = document.getElementById('sidebarAdSelect').value;
+        const selectedDateCount = selectedDates.length; // 달력에서 선택된 날짜 수
     
-        if(selectedDates.length === 0) return alert("달력에서 날짜를 먼저 선택해주세요.");
-    
-        // 1. 화면 잠금 (로딩 시작)
-        document.getElementById('globalLoader').style.display = 'flex';
-        document.getElementById('globalLoaderMsg').innerText = "Analyzing Data...";
-    
-        try {
-          // --- A. 광고 스케줄 가져오기 (광고 선택 시) ---
-          let adSchedules = [];
-          if (adId !== 'ALL') {
-            // video_logs에서 해당 광고의 시작~종료 시간 조회
-            // (주의: 데이터가 많으면 날짜 조건도 추가해야 함. 여기선 단순화)
-            const videoSnap = await db.collection('video_logs')
-              .where('ad_id', '==', adId)
-              .get();
-    
-            videoSnap.forEach(doc => {
-              const d = doc.data();
-              // start_time과 end_time이 문자열("HH:mm:ss")로 되어있다면 날짜와 결합 필요
-              // 현재 엑셀 포맷상 "송출시작 시간"이 "00:00:00" 형태라고 가정하고
-              // 실제 비교를 위해선 해당 날짜의 Date 객체로 변환해야 함.
-              // *복잡성을 피하기 위해 이번 버전에서는 '광고 미선택(전체)' 로직 위주로 구현하고
-              // 광고 선택 시에는 일단 전체 시간대로 처리하거나 추후 정교화 추천.
-            });
-          }
-    
-          // --- B. 사람 데이터 가져오기 (Face Analysis) ---
-          // 선택된 날짜들의 데이터를 병렬로 모두 가져옴
-          const promises = selectedDates.map(dateStr => {
-            // dateStr: "2025-10-1" -> Timestamp 변환 필요
-            // 여기서는 편의상 날짜 문자열 필터링 대신, 모든 데이터를 가져와서 메모리 필터링 (데이터 양에 따라 최적화 필요)
-            // *실제 서비스에선: .where('uploaded_at', '>=', start).where('uploaded_at', '<=', end) 사용 권장
-            return db.collection('face_analysis')
-                     .where('monitor_id', '==', (monitorId === 'ALL' ? '' : monitorId)) // 모니터 전체일 땐 쿼리 수정 필요
-                     .get(); 
-          });
-    
-          // *모니터가 ALL일 때 쿼리 에러 방지를 위해, 그냥 전체 기간 조회 후 필터링으로 구현
-          // (데모용: 실제로는 날짜별 쿼리가 정확함)
-          const allFaceSnap = await db.collection('face_analysis').get();
-    
-          let rawData = [];
-          allFaceSnap.forEach(doc => rawData.push(doc.data()));
-    
-          // --- C. 메모리 필터링 (핵심 로직) ---
-          const filteredData = rawData.filter(row => {
-            // 1. 날짜 확인
-            if (!row.uploaded_at) return false;
-            const rowDate = row.uploaded_at.toDate();
-            const dateKey = `${rowDate.getFullYear()}-${rowDate.getMonth()+1}-${rowDate.getDate()}`;
-            if (!selectedDates.includes(dateKey)) return false;
-    
-            // 2. 모니터 확인
-            if (monitorId !== 'ALL' && row.monitor_id !== monitorId) return false;
-    
-            // 3. 필터: 성별
-            if (currentFilters.gender !== 'ALL') {
-              // DB값(Male/Female)과 필터값 매칭 (대소문자 유의)
-              if (row.gender !== currentFilters.gender) return false;
-            }
-    
-            // 4. 필터: 나이 (배열 포함 여부)
-            if (!currentFilters.age.includes('ALL')) {
-              // row.age_group 예: "20", 필터: ["20", "30"]
-              if (!currentFilters.age.includes(row.age_group)) return false;
-            }
-    
-            // 5. 필터: 주목도 (0.6 이상)
-            if (currentFilters.attention === 'High') {
-              // frontal_score가 없으면 0으로 취급
-              const score = row.frontal_score || 0;
-              if (score < 0.6) return false;
-            }
-    
-            // 6. 필터: 체류시간
-            if (currentFilters.dwell !== 'ALL') {
-              const dwell = row.dwell_time || 0; // 초 단위 가정
-              const minTime = parseInt(currentFilters.dwell);
-              if (dwell < minTime) return false;
-            }
-    
-            // 7. 시간대 (06~24시)
-            const hour = rowDate.getHours();
-            if (hour < 6) return false; // 0~5시 제외
-    
-            return true; // 생존!
-          });
-    
-          // --- D. 데이터 집계 (Aggregation) ---
-          let totalImpressions = filteredData.length;
-          let totalDwell = 0;
-          let attentionCount = 0;
-    
-          // 히트맵용 2차원 배열 [요일(0~6)][시간(6~24 -> 인덱스 0~18)]
-          // 요일: 0(일)~6(토) -> 변환: 0(월)~6(일)
-          let heatMapData = Array.from({length: 7}, () => Array(19).fill(0));
-          let timeCounts = Array(24).fill(0); // 골든타임 계산용
-    
-          filteredData.forEach(row => {
-            const date = row.uploaded_at.toDate();
-    
-            // KPI 계산
-            totalDwell += (row.dwell_time || 0);
-            if ((row.frontal_score || 0) >= 0.6) attentionCount++;
-    
-            // 히트맵 데이터 채우기
-            let jsDay = date.getDay(); // 0(일)~6(토)
-            // 월(0)~일(6)로 인덱스 변환
-            let dayIdx = jsDay === 0 ? 6 : jsDay - 1;
-    
-            let hour = date.getHours();
-            if (hour >= 6 && hour <= 24) {
-              heatMapData[dayIdx][hour - 6]++;
-              timeCounts[hour]++;
-            }
-          });
-    
-          // --- E. UI 업데이트 (KPI) ---
-          const avgDwell = totalImpressions > 0 ? (totalDwell / totalImpressions).toFixed(1) : "0.0";
-          const attRatio = totalImpressions > 0 ? ((attentionCount / totalImpressions) * 100).toFixed(1) : "0.0";
-    
-          // 골든타임 찾기
-          let maxCount = -1; 
-          let primeHour = "-";
-          timeCounts.forEach((cnt, h) => {
-            if(cnt > maxCount) { maxCount = cnt; primeHour = h; }
-          });
-    
-          document.getElementById('kpi_impressions').innerText = totalImpressions.toLocaleString();
-          document.getElementById('kpi_attention').innerText = attRatio + "%";
-          document.getElementById('kpi_dwell').innerText = avgDwell + "s";
-          document.getElementById('kpi_prime').innerText = primeHour !== "-" ? `${primeHour}:00` : "-";
-    
-          // --- F. UI 업데이트 (히트맵) ---
-          const gridEl = document.getElementById('heatGrid');
-          gridEl.innerHTML = ""; // 초기화
-    
-          // 최대값 찾기 (색상 정규화용)
-          let maxVal = 0;
-          heatMapData.forEach(row => row.forEach(v => { if(v > maxVal) maxVal = v; }));
-    
-          // 그리드 그리기 (7행 x 19열)
-          for (let d = 0; d < 7; d++) {
-            for (let h = 0; h < 19; h++) {
-              const val = heatMapData[d][h];
-              const div = document.createElement('div');
-              div.className = "hm-cell";
-    
-              // 색상 단계 결정 (0~4단계)
-              if (val > 0) {
-                const ratio = val / maxVal;
-                if (ratio > 0.75) div.classList.add('l4');
-                else if (ratio > 0.5) div.classList.add('l3');
-                else if (ratio > 0.25) div.classList.add('l2');
-                else div.classList.add('l1');
-              }
-    
-              div.title = `${val}명`; // 마우스 오버 시 숫자 표시
-              gridEl.appendChild(div);
-            }
-          }
-    
-        } catch (err) {
-          console.error(err);
-          alert("분석 중 오류가 발생했습니다.");
-        } finally {
-          // 2. 화면 잠금 해제
-          document.getElementById('globalLoader').style.display = 'none';
+        if(selectedDateCount === 0) {
+          return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
         }
+    
+        // 2. 로딩 표시 (KPI 박스에)
+        document.getElementById("kpi_impressions").innerText = "Analyzing...";
+        document.getElementById("kpi_dwell").innerText = "...";
+    
+        // 3. (여기에 실제 데이터 조회 로직이 들어갈 예정)
+        // 현재는 UI 동작 확인용 알림
+        console.log("Analysis Condition:", {
+          dates: selectedDates,
+          monitor: monitorId,
+          ad: adId,
+          filters: currentFilters
+        });
+    
+        // 4. 임시 결과 표시 (다음 단계에서 실제 DB 연동)
+        setTimeout(() => {
+          loadDashboardStats(); // 기존 함수 재활용하여 화면 갱신
+          alert("분석 조건이 적용되었습니다.\n(실제 필터링 로직은 다음 단계에서 연결합니다)");
+        }, 500);
       }
   
     async function checkDataExistence() {
