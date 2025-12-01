@@ -197,6 +197,9 @@
           </select>
     
           <div style="margin-top:12px; font-size:11px; color:#94A3B8; text-align:center;">
+          <button onclick="migrateExistingData()" style="width:100%; margin-top:10px; padding:8px; background:#475569; border:none; border-radius:6px; color:white; cursor:pointer; font-size:11px;">
+                      <i class="fa-solid fa-bolt"></i> Refresh Old Data Stats
+                    </button>
             <span style="color:white; font-weight:700;" id="selCount">0</span> days selected
           </div>
         </div>
@@ -776,6 +779,19 @@
       });
 
       await batch.commit();
+
+      // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
+      // "YYYY-M-D_MonitorID" 형태의 문서 ID를 사용하여 중복 방지 및 빠른 조회
+      const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
+      const statsDocId = `${dateKey}_${monitorId}`;
+      
+      // 요약 컬렉션(calendar_stats)에 "이 날짜, 이 모니터에 데이터 있음" 기록
+      await db.collection('calendar_stats').doc(statsDocId).set({
+        dateKey: dateKey,
+        monitor_id: monitorId,
+        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
+        has_data: true
+      }, { merge: true });
     }
   }
 /* 7. CALENDAR LOGIC (Real Data Integration) */
@@ -784,6 +800,51 @@
   let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
 
   /* [UPGRADE] 데이터 로딩 & 필터링 시스템 */
+  // [임시 기능] 기존의 무거운 데이터를 읽어서 가벼운 요약본(calendar_stats)을 생성하는 함수
+    async function migrateExistingData() {
+      if(!confirm("기존 데이터를 스캔하여 달력 속도를 최적화하시겠습니까? (시간이 조금 걸릴 수 있습니다)")) return;
+      
+      const loader = document.getElementById('calLoader');
+      if(loader) { loader.style.display = 'flex'; loader.querySelector('span').innerText = "Optimizing DB..."; }
+  
+      try {
+        const snap = await db.collection('face_analysis').get();
+        const batch = db.batch();
+        let count = 0;
+        let addedKeys = new Set();
+  
+        snap.forEach(doc => {
+          const d = doc.data();
+          if(d.uploaded_at && d.monitor_id) {
+            const date = d.uploaded_at.toDate();
+            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const statsId = `${dateKey}_${d.monitor_id}`;
+  
+            // 중복 방지 (같은 날짜, 같은 모니터는 한 번만 기록)
+            if(!addedKeys.has(statsId)) {
+              const ref = db.collection('calendar_stats').doc(statsId);
+              batch.set(ref, {
+                dateKey: dateKey,
+                monitor_id: d.monitor_id,
+                uploaded_at: d.uploaded_at,
+                has_data: true
+              }, { merge: true });
+              addedKeys.add(statsId);
+              count++;
+            }
+          }
+        });
+  
+        await batch.commit();
+        alert(`최적화 완료! ${count}개의 날짜 정보가 요약되었습니다.`);
+        checkDataExistence(); // 달력 새로고침
+      } catch(e) {
+        console.error(e);
+        alert("최적화 중 오류 발생");
+      } finally {
+        if(loader) loader.style.display = 'none';
+      }
+    }
     let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
   
     async function checkDataExistence() {
@@ -803,18 +864,16 @@
         });
         if(monitorSel) monitorSel.innerHTML = options;
   
-        // 3. 로그 데이터 전체 가져오기 (face_analysis 기준)
-        // 주의: 데이터가 너무 많으면 .limit(5000) 등을 붙여야 합니다.
-        const logSnap = await db.collection('face_analysis').orderBy('uploaded_at', 'desc').get();
+        // 3. [최적화됨] 요약 컬렉션(calendar_stats)에서 조회 (속도 100배 향상)
+        // 수만 개의 로그 대신 날짜별 요약본만 가져오므로 매우 빠름
+        const statsSnap = await db.collection('calendar_stats').get();
         
         allLogCache = []; // 캐시 초기화
-        logSnap.forEach(doc => {
+        statsSnap.forEach(doc => {
           const d = doc.data();
-          if (d.uploaded_at) {
-            const date = d.uploaded_at.toDate();
-            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            // 필요한 정보만 메모리에 최소한으로 저장
-            allLogCache.push({ dateKey: dateKey, monitor_id: d.monitor_id });
+          if (d.dateKey && d.monitor_id) {
+            // 이미 요약된 정보이므로 그대로 캐시에 저장
+            allLogCache.push({ dateKey: d.dateKey, monitor_id: d.monitor_id });
           }
         });
   
