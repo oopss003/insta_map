@@ -1046,19 +1046,57 @@
     }
     let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
     /* [NEW] Filter & Analysis Logic */
-      let currentFilters = { gender: 'ALL', age: 'ALL', attention: 'ALL' };
-    
-      // 필터 칩 선택 함수 (UI 변경)
+// [수정됨] 필터 상태 저장 변수 (나이는 배열[]로 초기화)
+      let currentFilters = { gender: 'ALL', age: ['ALL'], attention: 'ALL' };
+      
+      // [수정됨] 필터 칩 선택 함수 (나이 그룹 복수 선택 지원)
       function selectFilter(type, el, value) {
-        // 1. 해당 그룹의 모든 칩에서 active 제거
         const group = document.getElementById('filter_' + type);
-        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+
+        // A. 나이(Age) 외의 필터 (기존 방식: 단일 선택)
+        if (type !== 'age') {
+          group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+          el.classList.add('active');
+          currentFilters[type] = value;
+        } 
         
-        // 2. 선택된 칩에 active 추가
-        el.classList.add('active');
+        // B. 나이(Age) 필터 (복수 선택 로직)
+        else {
+          // B-1. "전체(ALL)"을 클릭했을 때
+          if (value === 'ALL') {
+            // 모든 칩 끄고 ALL만 켜기
+            group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            currentFilters.age = ['ALL'];
+          } 
+          // B-2. 특정 나이대를 클릭했을 때
+          else {
+            // 만약 현재 'ALL'이 켜져 있었다면 -> 끄고 시작
+            const allChip = group.firstElementChild; // 첫 번째 칩이 '전체'라고 가정
+            if (currentFilters.age.includes('ALL')) {
+                allChip.classList.remove('active');
+                currentFilters.age = [];
+            }
+
+            // 클릭한 칩 토글 (켜져있으면 끄고, 꺼져있으면 켜기)
+            if (el.classList.contains('active')) {
+              el.classList.remove('active');
+              currentFilters.age = currentFilters.age.filter(v => v !== value); // 배열에서 제거
+            } else {
+              el.classList.add('active');
+              currentFilters.age.push(value); // 배열에 추가
+            }
+
+            // 다 껐을 경우 -> 자동으로 '전체(ALL)' 다시 선택
+            if (currentFilters.age.length === 0) {
+              allChip.classList.add('active');
+              currentFilters.age = ['ALL'];
+            }
+          }
+        }
         
-        // 3. 값 저장
-        currentFilters[type] = value;
+        // 디버깅용: 현재 선택된 필터 상태 확인
+        console.log("Current Filters:", currentFilters);
       }
     
       // 사이드바 광고 목록 불러오기
