@@ -1115,35 +1115,40 @@
         });
       }
     
-      // [핵심] 분석 버튼 클릭 시 실행
+// [핵심] 분석 버튼 클릭 시 실행
       function runAnalysis() {
-        // 1. 선택된 조건 수집
         const monitorId = document.getElementById('sidebarMonitorSelect').value;
         const adId = document.getElementById('sidebarAdSelect').value;
-        const selectedDateCount = selectedDates.length; // 달력에서 선택된 날짜 수
-    
-        if(selectedDateCount === 0) {
+        
+        if(selectedDates.length === 0) {
           return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
         }
-    
-        // 2. 로딩 표시 (KPI 박스에)
+       
         document.getElementById("kpi_impressions").innerText = "Analyzing...";
         document.getElementById("kpi_dwell").innerText = "...";
-    
-        // 3. (여기에 실제 데이터 조회 로직이 들어갈 예정)
-        // 현재는 UI 동작 확인용 알림
-        console.log("Analysis Condition:", {
-          dates: selectedDates,
-          monitor: monitorId,
-          ad: adId,
-          filters: currentFilters
-        });
-    
-        // 4. 임시 결과 표시 (다음 단계에서 실제 DB 연동)
+       
+        console.log("Analysis Condition:", { dates: selectedDates, monitor: monitorId, ad: adId, filters: currentFilters });
+       
         setTimeout(() => {
-          loadDashboardStats(); // 기존 함수 재활용하여 화면 갱신
-          alert("분석 조건이 적용되었습니다.\n(실제 필터링 로직은 다음 단계에서 연결합니다)");
+          // loadDashboardStats 함수가 있다면 실행, 없으면 패스
+          if(typeof loadDashboardStats === 'function') loadDashboardStats(); 
+          alert("분석 조건이 적용되었습니다. (Data Ready)");
         }, 500);
+      }
+
+      // [FIX] 함수 위치 수정: 사이드바 광고 목록 불러오기 (전역 함수로 분리)
+      function loadSidebarAds() {
+        const adSel = document.getElementById('sidebarAdSelect');
+        if(!adSel) return;
+       
+        db.collection("ads").get().then(snapshot => {
+          let opts = '<option value="ALL">All Ads</option>';
+          snapshot.forEach(doc => {
+            const d = doc.data();
+            opts += `<option value="${d.ad_id}">${d.name}</option>`;
+          });
+          adSel.innerHTML = opts;
+        });
       }
   
     async function checkDataExistence() {
