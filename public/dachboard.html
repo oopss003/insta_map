@@ -960,109 +960,67 @@
   }
 
   // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
-// [최종 완성] 배치 업로드: 얼굴 데이터(나이/체류시간) + 비디오 로그(시작/종료시간) 완벽 처리
   async function uploadInBatches(data, collectionName, monitorId, fileName) {
     const BATCH_SIZE = 450;
     const total = data.length;
     
-    // 1. 파일명에서 기준 날짜 추출 (YYYY-MM-DD)
-    const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
+    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
+    const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
     const match = fileName.match(dateRegex);
-    let baseDateStr = "";
+    let fileDate;
     
     if (match) {
-      baseDateStr = `${match[1]}-${match[2]}-${match[3]}`; 
+      fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
     } else {
-      const now = new Date();
-      baseDateStr = `${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')}`;
+      fileDate = new Date(); // 실패 시 현재 시간
     }
     
-    const msgEl = document.getElementById('globalLoaderMsg');
-    if(msgEl) msgEl.innerText = `Uploading ${fileName}...`;
-
+    // 2. Firestore 저장
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = db.batch();
       const chunk = data.slice(i, i + BATCH_SIZE);
       
-      chunk.forEach((row, index) => {
+      chunk.forEach((row) => {
         row.monitor_id = monitorId;
+        row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
         row.source_filename = fileName;
-        
-        let finalDate = new Date(); // 기본값
 
-        // -------------------------------------------------------
-        // CASE A: Face Analysis 파일
-        // -------------------------------------------------------
-        if (row['처음 발견된 시간']) {
-          const startTimeStr = row['처음 발견된 시간']; 
-          finalDate = new Date(`${baseDateStr}T${startTimeStr}`);
-          
-          if (row['없어진 시간']) {
-            const endTimeStr = row['없어진 시간'];
-            const endDate = new Date(`${baseDateStr}T${endTimeStr}`);
-            row.end_at = firebase.firestore.Timestamp.fromDate(endDate);
+        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
+        // [수정됨] 엑셀의 '영상이름' 컬럼을 확인하여 .mp4 제거 후 ad_id로 저장
+        if (collectionName === 'video_logs' && row['영상이름']) {
+          try {
+            let rawName = row['영상이름']; // 예: "b64563.mp4"
             
-            const dwellSeconds = (endDate - finalDate) / 1000;
-            row.dwell_time = dwellSeconds > 0 ? dwellSeconds : 0;
-          }
-
-          if (row['평균 나이'] !== undefined) {
-             const ageNum = parseFloat(row['평균 나이']);
-             if (!isNaN(ageNum)) {
-               row.age = ageNum; 
-               row.age_group = String(Math.floor(ageNum / 10) * 10); 
-             }
-          }
-          
-          if (row['정면 점수'] !== undefined) {
-            row.frontal_score = parseFloat(row['정면 점수']);
-          }
-        } 
-        
-        // -------------------------------------------------------
-        // CASE B: Video Log 파일 (여기도 종료 시간 추가!)
-        // -------------------------------------------------------
-        else if (row['송출시작 시간']) {
-          // 1. 시작 시간 결합
-          const timeStr = row['송출시작 시간'];
-          finalDate = new Date(`${baseDateStr}T${timeStr}`);
-          
-          // [NEW] 종료 시간도 날짜와 결합하여 저장
-          if (row['송출 끝난시간']) {
-             const endTimeStr = row['송출 끝난시간'];
-             const endDate = new Date(`${baseDateStr}T${endTimeStr}`);
-             row.end_at = firebase.firestore.Timestamp.fromDate(endDate);
-          }
-
-          if (row['영상이름']) {
-             row.ad_id = row['영상이름'].replace(/\.mp4$/i, '').trim();
+            // 정규식: 대소문자 구분없이 .mp4로 끝나는 부분 제거
+            let cleanId = rawName.replace(/\.mp4$/i, '').trim(); 
+            
+            // DB에는 ad_id라는 필드명으로 저장 (예: "b64563")
+            row.ad_id = cleanId; 
+            
+            // (선택사항) 원본 '영상이름' 필드가 굳이 DB에 필요 없다면 아래 주석 해제
+            // delete row['영상이름']; 
+          } catch (e) {
+            console.warn("ID Extraction failed for:", row['영상이름']);
           }
         }
         
-        // 최종 업로드 시간 저장
-        row.uploaded_at = firebase.firestore.Timestamp.fromDate(finalDate);
-
-        // 중복 방지 ID 생성
-        const uniqueDocId = `${monitorId}_${fileName}_${i + index}`;
-        const docRef = db.collection(collectionName).doc(uniqueDocId);
-        batch.set(docRef, row); 
+        const docRef = db.collection(collectionName).doc();
+        batch.set(docRef, row);
       });
-      
       await batch.commit();
 
-      // 달력 최적화 데이터 저장
-      if (chunk.length > 0 && chunk[0].uploaded_at) {
-          const d = chunk[0].uploaded_at.toDate();
-          const dateKey = `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
-          const statsDocId = `${dateKey}_${monitorId}`;
-          
-          await db.collection('calendar_stats').doc(statsDocId).set({
-            dateKey: dateKey,
-            monitor_id: monitorId,
-            uploaded_at: chunk[0].uploaded_at,
-            has_data: true
-          }, { merge: true });
-      }
+      // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
+      // "YYYY-M-D_MonitorID" 형태의 문서 ID를 사용하여 중복 방지 및 빠른 조회
+      const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
+      const statsDocId = `${dateKey}_${monitorId}`;
+      
+      // 요약 컬렉션(calendar_stats)에 "이 날짜, 이 모니터에 데이터 있음" 기록
+      await db.collection('calendar_stats').doc(statsDocId).set({
+        dateKey: dateKey,
+        monitor_id: monitorId,
+        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
+        has_data: true
+      }, { merge: true });
     }
   }
 /* 7. CALENDAR LOGIC (Real Data Integration) */
