@@ -1,1203 +1,1203 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Analytics Dashboard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Analytics Dashboard</title>
 
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://oapi.map.naver.com/openapi/v3/maps.js?ncpKeyId=qpbrmxiff4"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
-  <style>
-    /* === GLOBAL VARIABLES === */
-    :root {
-      --primary-color: #3B82F6;
-      --sidebar-bg: #1E293B;
-      --sidebar-text: #94A3B8;
-      --bg-color: #F3F4F6;
-      --card-bg: #FFFFFF;
-      --text-main: #1F2937;
-      --text-sub: #6B7280;
-      --border-color: #E5E7EB;
-      --success: #10B981;
-      --danger: #EF4444;
-      --warning: #F59E0B;
-    }
+  <style>
+    /* === GLOBAL VARIABLES === */
+    :root {
+      --primary-color: #3B82F6;
+      --sidebar-bg: #1E293B;
+      --sidebar-text: #94A3B8;
+      --bg-color: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --text-sub: #6B7280;
+      --border-color: #E5E7EB;
+      --success: #10B981;
+      --danger: #EF4444;
+      --warning: #F59E0B;
+    }
 
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; font-family: 'Pretendard', sans-serif; background-color: var(--bg-color); color: var(--text-main); height: 100vh; display: flex; overflow: hidden; }
 
-    /* === SIDEBAR === */
-    .sidebar { width: 280px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; }
-    .logo-area { margin-bottom: 40px; color: white; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 32px; height: 32px; background: var(--primary-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
-    
-    .nav-menu { list-style: none; padding: 0; margin: 0 0 40px 0; }
-    .nav-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--sidebar-text); transition: all 0.2s; margin-bottom: 4px; }
-    .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
-    .nav-item.active { background: var(--primary-color); color: white; }
+    /* === SIDEBAR === */
+    .sidebar { width: 280px; background-color: var(--sidebar-bg); color: var(--sidebar-text); display: flex; flex-direction: column; padding: 24px; flex-shrink: 0; }
+    .logo-area { margin-bottom: 40px; color: white; font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 10px; }
+    .logo-icon { width: 32px; height: 32px; background: var(--primary-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    
+    .nav-menu { list-style: none; padding: 0; margin: 0 0 40px 0; }
+    .nav-item { padding: 12px 16px; border-radius: 12px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; font-weight: 600; color: var(--sidebar-text); transition: all 0.2s; margin-bottom: 4px; }
+    .nav-item:hover { background: rgba(255,255,255,0.05); color: white; }
+    .nav-item.active { background: var(--primary-color); color: white; }
 
-    /* 사이드바 달력 (상단 기준 고정) */
-    .sidebar-cal { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-top: 24px; }
-    .sb-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; color: white; font-weight: 700; font-size: 14px; }
-    .sb-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-    .sb-day-name { font-size: 10px; color: #64748B; margin-bottom: 6px; }
-    .sb-date-cell { aspect-ratio: 1/1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #CBD5E1; cursor: pointer; position: relative; }
-    .sb-date-cell:hover { background: rgba(255,255,255,0.1); }
-    .sb-date-cell.selected { background: var(--primary-color); color: white; font-weight: 700; }
-    .sb-dot { width: 4px; height: 4px; background: var(--success); border-radius: 50%; position: absolute; bottom: 4px; display: none; }
-    .sb-date-cell.has-data .sb-dot { display: block; }
-     /* [NEW] 로딩 스피너 & 드롭다운 스타일 */
-    .sb-loader-overlay {
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(30, 41, 59, 0.8); z-index: 10;
-      display: none; justify-content: center; align-items: center; flex-direction: column;
-      border-radius: 16px; font-size: 12px; color: white;
-    }
-    .sb-spinner {
-      width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3);
-      border-radius: 50%; border-top-color: var(--primary-color);
-      animation: spin 1s ease-in-out infinite; margin-bottom: 8px;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .sb-monitor-select {
-      margin-top: 16px; width: 100%; padding: 10px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px; color: #CBD5E1; font-size: 13px; outline: none;
-    }
-    .sb-monitor-select option { background: #1E293B; color: #CBD5E1; }
+    /* 사이드바 달력 (상단 기준 고정) */
+    .sidebar-cal { background: rgba(255,255,255,0.05); border-radius: 16px; padding: 20px; margin-top: 24px; }
+    .sb-cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; color: white; font-weight: 700; font-size: 14px; }
+    .sb-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+    .sb-day-name { font-size: 10px; color: #64748B; margin-bottom: 6px; }
+    .sb-date-cell { aspect-ratio: 1/1; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #CBD5E1; cursor: pointer; position: relative; }
+    .sb-date-cell:hover { background: rgba(255,255,255,0.1); }
+    .sb-date-cell.selected { background: var(--primary-color); color: white; font-weight: 700; }
+    .sb-dot { width: 4px; height: 4px; background: var(--success); border-radius: 50%; position: absolute; bottom: 4px; display: none; }
+    .sb-date-cell.has-data .sb-dot { display: block; }
+     /* [NEW] 로딩 스피너 & 드롭다운 스타일 */
+    .sb-loader-overlay {
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(30, 41, 59, 0.8); z-index: 10;
+      display: none; justify-content: center; align-items: center; flex-direction: column;
+      border-radius: 16px; font-size: 12px; color: white;
+    }
+    .sb-spinner {
+      width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%; border-top-color: var(--primary-color);
+      animation: spin 1s ease-in-out infinite; margin-bottom: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .sb-monitor-select {
+      margin-top: 16px; width: 100%; padding: 10px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px; color: #CBD5E1; font-size: 13px; outline: none;
+    }
+    .sb-monitor-select option { background: #1E293B; color: #CBD5E1; }
 
-    /* === MAIN CONTENT === */
-    .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
-    
-    /* 공통 헤더 */
-    .top-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-shrink: 0; }
-    .page-header h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
-    .page-header p { margin: 0; font-size: 14px; color: #6B7280; }
-    
-    .header-controls { display: flex; gap: 12px; }
-    .btn { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
-    .btn-white { background: white; border: 1px solid var(--border-color); color: #374151; }
-    .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); }
-    .btn-primary:hover { background: #2563EB; transform: translateY(-1px); }
+    /* === MAIN CONTENT === */
+    .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; overflow-y: auto; position: relative; }
+    
+    /* 공통 헤더 */
+    .top-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-shrink: 0; }
+    .page-header h1 { font-size: 24px; font-weight: 800; margin: 0 0 8px 0; color: var(--text-main); }
+    .page-header p { margin: 0; font-size: 14px; color: #6B7280; }
+    
+    .header-controls { display: flex; gap: 12px; }
+    .btn { padding: 10px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none; display: flex; align-items: center; gap: 6px; transition: all 0.2s; }
+    .btn-white { background: white; border: 1px solid var(--border-color); color: #374151; }
+    .btn-primary { background: var(--primary-color); color: white; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.3); }
+    .btn-primary:hover { background: #2563EB; transform: translateY(-1px); }
 
-    /* 페이지 전환용 (Display None Toggle) */
-    .page-view { display: none; flex-direction: column; gap: 24px; height: 100%; }
-    .page-view.active { display: flex; }
+    /* 페이지 전환용 (Display None Toggle) */
+    .page-view { display: none; flex-direction: column; gap: 24px; height: 100%; }
+    .page-view.active { display: flex; }
 
-    /* --- [PAGE 1] DASHBOARD STYLES --- */
-    .map-card { height: 280px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; border: 1px solid var(--border-color); flex-shrink: 0; }
-    .map-badge { position: absolute; top: 16px; left: 16px; z-index: 10; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-    
-    .filter-card { background: white; padding: 16px 24px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0; flex-wrap: wrap; }
-    .filter-item { display: flex; align-items: center; gap: 12px; }
-    .filter-label { font-size: 12px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; }
-    .select-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #F9FAFB; }
-    .toggle-chips { display: flex; gap: 6px; }
-    .chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 12px; font-weight: 600; color: #6B7280; cursor: pointer; background: white; }
-    .chip.active { background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color); }
+    /* --- [PAGE 1] DASHBOARD STYLES --- */
+    .map-card { height: 280px; background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); position: relative; border: 1px solid var(--border-color); flex-shrink: 0; }
+    .map-badge { position: absolute; top: 16px; left: 16px; z-index: 10; background: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    
+    .filter-card { background: white; padding: 16px 24px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 24px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); flex-shrink: 0; flex-wrap: wrap; }
+    .filter-item { display: flex; align-items: center; gap: 12px; }
+    .filter-label { font-size: 12px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; }
+    .select-box { padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 13px; font-weight: 600; outline: none; background: #F9FAFB; }
+    .toggle-chips { display: flex; gap: 6px; }
+    .chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 12px; font-weight: 600; color: #6B7280; cursor: pointer; background: white; }
+    .chip.active { background: #EFF6FF; border-color: var(--primary-color); color: var(--primary-color); }
 
-    .dashboard-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; flex: 1; min-height: 0; } 
-    .kpi-column { display: flex; flex-direction: column; gap: 16px; }
-    .kpi-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px; }
-    .kpi-head { font-size: 12px; color: #9CA3AF; font-weight: 700; }
-    .kpi-val { font-size: 24px; font-weight: 800; color: #111827; }
-    .kpi-sub { font-size: 12px; color: var(--success); font-weight: 600; }
+    .dashboard-grid { display: grid; grid-template-columns: 280px 1fr; gap: 24px; flex: 1; min-height: 0; } 
+    .kpi-column { display: flex; flex-direction: column; gap: 16px; }
+    .kpi-box { background: white; padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 4px; }
+    .kpi-head { font-size: 12px; color: #9CA3AF; font-weight: 700; }
+    .kpi-val { font-size: 24px; font-weight: 800; color: #111827; }
+    .kpi-sub { font-size: 12px; color: var(--success); font-weight: 600; }
 
-    .chart-box { background: white; border-radius: 16px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; flex: 1; }
-    .heatmap-layout { display: flex; gap: 10px; flex: 1; min-height: 0; }
-    .hm-y-axis { display: grid; grid-template-rows: repeat(7, 1fr); text-align: right; padding-right: 10px; }
-    .hm-row-label { font-size: 12px; color: #6B7280; font-weight: 600; display:flex; align-items:center; justify-content:flex-end; }
-    .hm-grid { flex: 1; display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; }
-    .hm-cell { background: #F3F4F6; border-radius: 4px; }
-    .l1 { background: #DBEAFE; } .l2 { background: #93C5FD; } .l3 { background: #3B82F6; } .l4 { background: #1E40AF; }
-    .hm-x-axis { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; margin-top: 8px; padding-left: 40px; }
-    .hm-col-label { font-size: 10px; color: #9CA3AF; text-align: center; }
+    .chart-box { background: white; border-radius: 16px; border: 1px solid var(--border-color); padding: 24px; display: flex; flex-direction: column; flex: 1; }
+    .heatmap-layout { display: flex; gap: 10px; flex: 1; min-height: 0; }
+    .hm-y-axis { display: grid; grid-template-rows: repeat(7, 1fr); text-align: right; padding-right: 10px; }
+    .hm-row-label { font-size: 12px; color: #6B7280; font-weight: 600; display:flex; align-items:center; justify-content:flex-end; }
+    .hm-grid { flex: 1; display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; }
+    .hm-cell { background: #F3F4F6; border-radius: 4px; }
+    .l1 { background: #DBEAFE; } .l2 { background: #93C5FD; } .l3 { background: #3B82F6; } .l4 { background: #1E40AF; }
+    .hm-x-axis { display: grid; grid-template-columns: repeat(18, 1fr); gap: 2px; margin-top: 8px; padding-left: 40px; }
+    .hm-col-label { font-size: 10px; color: #9CA3AF; text-align: center; }
 
-    /* --- [PAGE 2] MONITOR LIST STYLES --- */
-    .table-container { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
-    .table-header { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
-    .monitor-list { flex: 1; overflow-y: auto; }
-    .table-row { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; border-bottom: 1px solid var(--border-color); align-items: center; font-size: 14px; transition: background 0.1s; }
-    .table-row:hover { background: #F9FAFB; }
-    .table-row:last-child { border-bottom: none; }
-    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
-    .st-active { background: #DCFCE7; color: #166534; } .st-inactive { background: #FEE2E2; color: #991B1B; } .st-maintenance { background: #FEF3C7; color: #92400E; }
-    .st-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
-    .action-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: white; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-    .action-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: #EFF6FF; }
-    .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: #FEF2F2; }
+    /* --- [PAGE 2] MONITOR LIST STYLES --- */
+    .table-container { background: white; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden; flex: 1; display: flex; flex-direction: column; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .table-header { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; background: #F8FAFC; border-bottom: 1px solid var(--border-color); font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; }
+    .monitor-list { flex: 1; overflow-y: auto; }
+    .table-row { display: grid; grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr; padding: 16px 24px; border-bottom: 1px solid var(--border-color); align-items: center; font-size: 14px; transition: background 0.1s; }
+    .table-row:hover { background: #F9FAFB; }
+    .table-row:last-child { border-bottom: none; }
+    .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; }
+    .st-active { background: #DCFCE7; color: #166534; } .st-inactive { background: #FEE2E2; color: #991B1B; } .st-maintenance { background: #FEF3C7; color: #92400E; }
+    .st-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+    .action-btn { width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border-color); background: white; cursor: pointer; color: #64748B; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .action-btn:hover { border-color: var(--primary-color); color: var(--primary-color); background: #EFF6FF; }
+    .action-btn.delete:hover { border-color: var(--danger); color: var(--danger); background: #FEF2F2; }
 
-    /* --- [PAGE 3] UPLOAD STYLES --- */
-    .upload-section { display: flex; gap: 24px; height: 100%; }
-    .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 400px; }
-    .upload-card:hover { border-color: var(--primary-color); background: #EFF6FF; }
-    .upload-card.drag-over {
-          border-color: var(--primary-color);
-          background-color: #DBEAFE; /* 조금 더 진한 파란색 배경 */
-          transform: scale(1.02);
-        }
-    .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
-    .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-    .upload-desc { font-size: 13px; color: var(--text-sub); }
-    .file-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--primary-color); }
+    /* --- [PAGE 3] UPLOAD STYLES --- */
+    .upload-section { display: flex; gap: 24px; height: 100%; }
+    .upload-card { flex: 1; background: white; padding: 40px; border-radius: 16px; border: 2px dashed var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; height: 400px; }
+    .upload-card:hover { border-color: var(--primary-color); background: #EFF6FF; }
+    .upload-card.drag-over {
+          border-color: var(--primary-color);
+          background-color: #DBEAFE; /* 조금 더 진한 파란색 배경 */
+          transform: scale(1.02);
+        }
+    .upload-icon { font-size: 48px; color: #CBD5E1; margin-bottom: 16px; }
+    .upload-title { font-size: 16px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
+    .upload-desc { font-size: 13px; color: var(--text-sub); }
+    .file-status { margin-top: 10px; font-size: 13px; font-weight: 600; color: var(--primary-color); }
 
-    /* --- MODAL STYLES --- */
-    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
-    .modal-box { background: white; width: 450px; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
-    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
-    .form-input-full { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
-    .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
-    
-    /* 지도 추가 스타일 */
-    .modal-map { width: 100%; height: 200px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; overflow: hidden; }
-  </style>
+    /* --- MODAL STYLES --- */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; justify-content: center; align-items: center; }
+    .modal-box { background: white; width: 450px; padding: 24px; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    .modal-title { font-size: 18px; font-weight: 800; margin-bottom: 16px; }
+    .form-input-full { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 8px; margin-bottom: 12px; font-size: 14px; }
+    .modal-actions { display: flex; gap: 10px; margin-top: 10px; }
+    
+    /* 지도 추가 스타일 */
+    .modal-map { width: 100%; height: 200px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 16px; overflow: hidden; }
+  </style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <div class="logo-area">
-      <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
-      INWAVE Analytics
-    </div>
+  <div class="sidebar">
+    <div class="logo-area">
+      <div class="logo-icon"><i class="fa-solid fa-chart-simple"></i></div>
+      INWAVE Analytics
+    </div>
 
-    <ul class="nav-menu">
-      <li class="nav-item active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
-      <li class="nav-item" onclick="showPage('monitors', this)"><i class="fa-solid fa-desktop"></i> Monitors</li>
-      <li class="nav-item" onclick="showPage('ads', this)"><i class="fa-solid fa-rectangle-ad"></i> Ad Manager</li>
-      <li class="nav-item" onclick="showPage('upload', this)"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
-    </ul>
+    <ul class="nav-menu">
+      <li class="nav-item active" onclick="showPage('dashboard', this)"><i class="fa-solid fa-house"></i> Dashboard</li>
+      <li class="nav-item" onclick="showPage('monitors', this)"><i class="fa-solid fa-desktop"></i> Monitors</li>
+      <li class="nav-item" onclick="showPage('ads', this)"><i class="fa-solid fa-rectangle-ad"></i> Ad Manager</li>
+      <li class="nav-item" onclick="showPage('upload', this)"><i class="fa-solid fa-file-arrow-up"></i> Data Upload</li>
+    </ul>
 
-    <div class="sidebar-cal" style="position:relative;">
-          <div id="calLoader" class="sb-loader-overlay">
-            <div class="sb-spinner"></div>
-            <span>Checking Data...</span>
-          </div>
-    
-          <div class="sb-cal-header">
-            <span id="calMonthYear">October 2025</span>
-            <div style="display:flex; gap:8px;">
-              <i class="fa-solid fa-chevron-left" style="cursor:pointer" onclick="changeMonth(-1)"></i>
-              <i class="fa-solid fa-chevron-right" style="cursor:pointer" onclick="changeMonth(1)"></i>
-            </div>
-          </div>
-          <div class="sb-cal-grid" style="margin-bottom:8px;">
-            <div class="sb-day-name">S</div><div class="sb-day-name">M</div><div class="sb-day-name">T</div>
-            <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
-          </div>
-          <div class="sb-cal-grid" id="sidebarCalGrid"></div>
-          
-          <select id="sidebarMonitorSelect" class="sb-monitor-select" onchange="filterCalendarByMonitor()">
-            <option value="ALL">All Monitors</option>
-          </select>
-          <select id="sidebarAdSelect" class="sb-monitor-select" style="margin-top:8px;">
-                      <option value="ALL">All Ads</option>
-                    </select>
-    
-          <div style="margin-top:12px; font-size:11px; color:#94A3B8; text-align:center;">
-          <button onclick="migrateExistingData()" style="width:100%; margin-top:10px; padding:8px; background:#475569; border:none; border-radius:6px; color:white; cursor:pointer; font-size:11px;">
-                      <i class="fa-solid fa-bolt"></i> Refresh Old Data Stats
-                    </button>
-            <span style="color:white; font-weight:700;" id="selCount">0</span> days selected
-          </div>
-        </div>
+    <div class="sidebar-cal" style="position:relative;">
+          <div id="calLoader" class="sb-loader-overlay">
+            <div class="sb-spinner"></div>
+            <span>Checking Data...</span>
+          </div>
+    
+          <div class="sb-cal-header">
+            <span id="calMonthYear">October 2025</span>
+            <div style="display:flex; gap:8px;">
+              <i class="fa-solid fa-chevron-left" style="cursor:pointer" onclick="changeMonth(-1)"></i>
+              <i class="fa-solid fa-chevron-right" style="cursor:pointer" onclick="changeMonth(1)"></i>
+            </div>
+          </div>
+          <div class="sb-cal-grid" style="margin-bottom:8px;">
+            <div class="sb-day-name">S</div><div class="sb-day-name">M</div><div class="sb-day-name">T</div>
+            <div class="sb-day-name">W</div><div class="sb-day-name">T</div><div class="sb-day-name">F</div><div class="sb-day-name">S</div>
+          </div>
+          <div class="sb-cal-grid" id="sidebarCalGrid"></div>
+          
+          <select id="sidebarMonitorSelect" class="sb-monitor-select" onchange="filterCalendarByMonitor()">
+            <option value="ALL">All Monitors</option>
+          </select>
+          <select id="sidebarAdSelect" class="sb-monitor-select" style="margin-top:8px;">
+                      <option value="ALL">All Ads</option>
+                    </select>
+    
+          <div style="margin-top:12px; font-size:11px; color:#94A3B8; text-align:center;">
+          <button onclick="migrateExistingData()" style="width:100%; margin-top:10px; padding:8px; background:#475569; border:none; border-radius:6px; color:white; cursor:pointer; font-size:11px;">
+                      <i class="fa-solid fa-bolt"></i> Refresh Old Data Stats
+                    </button>
+            <span style="color:white; font-weight:700;" id="selCount">0</span> days selected
+          </div>
+        </div>
 
 
 </div> <div class="main-content">
-    
-    <div id="page-dashboard" class="page-view active">
-      <div class="top-section">
-        <div class="page-header">
-          <h1>Dashboard Overview</h1>
-          <p>Monitor Traffic & Ad Performance Analysis</p>
-        </div>
-        <div class="header-controls">
-          <div class="btn-white btn" onclick="location.href='https://inwave.ai.kr/analyze.html'">
-            <i class="fa-solid fa-user"></i> Admin
-          </div>
-          <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export</button>
-        </div>
-      </div>
-      <div class="map-card">
-        <div id="miniMap" style="width:100%; height:100%;"></div>
-        <div class="map-badge"><i class="fa-solid fa-location-dot" style="color:#3B82F6"></i> Live Location</div>
-      </div>
-      <div class="filter-card" style="display:block; padding:20px;">
-              <div style="display:flex; gap:40px; margin-bottom:16px;">
-                <div class="filter-item">
-                  <div class="filter-label" style="margin-bottom:8px;">Gender</div>
-                  <div class="toggle-chips" id="filter_gender">
-                    <div class="chip active" onclick="selectFilter('gender', this, 'ALL')">전체</div>
-                    <div class="chip" onclick="selectFilter('gender', this, 'Male')">남자</div>
-                    <div class="chip" onclick="selectFilter('gender', this, 'Female')">여자</div>
-                  </div>
-                </div>
-                
-                <div class="filter-item">
-                  <div class="filter-label" style="margin-bottom:8px;">Attention</div>
-                  <div class="toggle-chips" id="filter_attention">
-                    <div class="chip active" onclick="selectFilter('attention', this, 'ALL')">전체 (All)</div>
-                    <div class="chip" onclick="selectFilter('attention', this, 'High')">집중인구 (High)</div>
-                  </div>
-                </div>
-              </div>
-      
-              <div style="display:flex; justify-content:space-between; align-items:flex-end;">
-                <div class="filter-item">
-                  <div class="filter-label" style="margin-bottom:8px;">Age Group</div>
-                  <div class="toggle-chips" id="filter_age" style="flex-wrap:wrap; gap:6px;">
-                    <div class="chip active" onclick="selectFilter('age', this, 'ALL')">전체</div>
-                    <div class="chip" onclick="selectFilter('age', this, '10')">10대</div>
-                    <div class="chip" onclick="selectFilter('age', this, '20')">20대</div>
-                    <div class="chip" onclick="selectFilter('age', this, '30')">30대</div>
-                    <div class="chip" onclick="selectFilter('age', this, '40')">40대</div>
-                    <div class="chip" onclick="selectFilter('age', this, '50')">50대</div>
-                    <div class="chip" onclick="selectFilter('age', this, '60')">60대+</div>
-                  </div>
-                </div>
-      
-                <button class="btn btn-primary" style="padding:12px 24px; font-size:14px;" onclick="runAnalysis()">
-                  <i class="fa-solid fa-magnifying-glass"></i> Analyze
-                </button>
-              </div>
-            </div>
-      <div class="dashboard-grid">
-        <div class="kpi-column">
-          <div class="kpi-box">
-            <div class="kpi-head">Total Impressions</div>
-            <div class="kpi-val">42,593</div>
-            <div class="kpi-sub">+12.5%</div>
-          </div>
-          <div class="kpi-box">
-            <div class="kpi-head">Avg. Dwell Time</div>
-            <div class="kpi-val">4.8s</div>
-            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
-          </div>
-          <div class="kpi-box">
-            <div class="kpi-head">Peak Hour</div>
-            <div class="kpi-val">19:00</div>
-            <div class="kpi-sub" style="color:#6B7280">Fri</div>
-          </div>
-        </div>
-        <div class="chart-box">
-          <div class="chart-header">
-            <div style="font-weight:700;">Weekly Heatmap</div>
-            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
-          </div>
-          <div class="heatmap-layout">
-            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
-            <div class="hm-grid" id="heatGrid"></div>
-          </div>
-          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
-        </div>
-      </div>
-    </div>
+    
+    <div id="page-dashboard" class="page-view active">
+      <div class="top-section">
+        <div class="page-header">
+          <h1>Dashboard Overview</h1>
+          <p>Monitor Traffic & Ad Performance Analysis</p>
+        </div>
+        <div class="header-controls">
+          <div class="btn-white btn" onclick="location.href='https://inwave.ai.kr/analyze.html'">
+            <i class="fa-solid fa-user"></i> Admin
+          </div>
+          <button class="btn btn-primary"><i class="fa-solid fa-download"></i> Export</button>
+        </div>
+      </div>
+      <div class="map-card">
+        <div id="miniMap" style="width:100%; height:100%;"></div>
+        <div class="map-badge"><i class="fa-solid fa-location-dot" style="color:#3B82F6"></i> Live Location</div>
+      </div>
+      <div class="filter-card" style="display:block; padding:20px;">
+              <div style="display:flex; gap:40px; margin-bottom:16px;">
+                <div class="filter-item">
+                  <div class="filter-label" style="margin-bottom:8px;">Gender</div>
+                  <div class="toggle-chips" id="filter_gender">
+                    <div class="chip active" onclick="selectFilter('gender', this, 'ALL')">전체</div>
+                    <div class="chip" onclick="selectFilter('gender', this, 'Male')">남자</div>
+                    <div class="chip" onclick="selectFilter('gender', this, 'Female')">여자</div>
+                  </div>
+                </div>
+                
+                <div class="filter-item">
+                  <div class="filter-label" style="margin-bottom:8px;">Attention</div>
+                  <div class="toggle-chips" id="filter_attention">
+                    <div class="chip active" onclick="selectFilter('attention', this, 'ALL')">전체 (All)</div>
+                    <div class="chip" onclick="selectFilter('attention', this, 'High')">집중인구 (High)</div>
+                  </div>
+                </div>
+              </div>
+      
+              <div style="display:flex; justify-content:space-between; align-items:flex-end;">
+                <div class="filter-item">
+                  <div class="filter-label" style="margin-bottom:8px;">Age Group</div>
+                  <div class="toggle-chips" id="filter_age" style="flex-wrap:wrap; gap:6px;">
+                    <div class="chip active" onclick="selectFilter('age', this, 'ALL')">전체</div>
+                    <div class="chip" onclick="selectFilter('age', this, '10')">10대</div>
+                    <div class="chip" onclick="selectFilter('age', this, '20')">20대</div>
+                    <div class="chip" onclick="selectFilter('age', this, '30')">30대</div>
+                    <div class="chip" onclick="selectFilter('age', this, '40')">40대</div>
+                    <div class="chip" onclick="selectFilter('age', this, '50')">50대</div>
+                    <div class="chip" onclick="selectFilter('age', this, '60')">60대+</div>
+                  </div>
+                </div>
+      
+                <button class="btn btn-primary" style="padding:12px 24px; font-size:14px;" onclick="runAnalysis()">
+                  <i class="fa-solid fa-magnifying-glass"></i> Analyze
+                </button>
+              </div>
+            </div>
+      <div class="dashboard-grid">
+        <div class="kpi-column">
+          <div class="kpi-box">
+            <div class="kpi-head">Total Impressions</div>
+            <div class="kpi-val">42,593</div>
+            <div class="kpi-sub">+12.5%</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Avg. Dwell Time</div>
+            <div class="kpi-val">4.8s</div>
+            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head">Peak Hour</div>
+            <div class="kpi-val">19:00</div>
+            <div class="kpi-sub" style="color:#6B7280">Fri</div>
+          </div>
+        </div>
+        <div class="chart-box">
+          <div class="chart-header">
+            <div style="font-weight:700;">Weekly Heatmap</div>
+            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+          </div>
+          <div class="heatmap-layout">
+            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
+            <div class="hm-grid" id="heatGrid"></div>
+          </div>
+          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
+        </div>
+      </div>
+    </div>
 
 
-    <div id="page-monitors" class="page-view">
-      <div class="top-section">
-        <div class="page-header">
-          <h1>Monitor Management</h1>
-          <p>등록된 모니터 기기 목록 및 상태를 관리합니다.</p>
-        </div>
-        <button class="btn btn-primary" onclick="openAddModal()">
-          <i class="fa-solid fa-plus"></i> Add New Monitor
-        </button>
-      </div>
+    <div id="page-monitors" class="page-view">
+      <div class="top-section">
+        <div class="page-header">
+          <h1>Monitor Management</h1>
+          <p>등록된 모니터 기기 목록 및 상태를 관리합니다.</p>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">
+          <i class="fa-solid fa-plus"></i> Add New Monitor
+        </button>
+      </div>
 
-      <div class="map-card" style="margin-bottom: 24px; height: 300px;">
-        <div id="monitorMap" style="width:100%; height:100%;"></div>
-        <div class="map-badge"><i class="fa-solid fa-map" style="color:#3B82F6"></i> Device Overview</div>
-      </div>
+      <div class="map-card" style="margin-bottom: 24px; height: 300px;">
+        <div id="monitorMap" style="width:100%; height:100%;"></div>
+        <div class="map-badge"><i class="fa-solid fa-map" style="color:#3B82F6"></i> Device Overview</div>
+      </div>
 
-      <div class="table-container">
-        <div class="table-header">
-          <div>ID</div><div>Location Name</div><div>Coordinates</div><div>Status</div><div>Last Update</div><div style="text-align:right">Action</div>
-        </div>
-        
-        <div class="monitor-list" id="monitorList">
-          <div style="padding:40px; text-align:center; color:#999;">데이터를 불러오는 중입니다...</div>
-        </div>
-      </div>
-    </div>
-
-
-    <div id="page-ads" class="page-view">
-          <div class="top-section">
-            <div class="page-header">
-              <h1>Ad Manager</h1>
-              <p>송출할 광고 콘텐츠 목록을 관리합니다.</p>
-            </div>
-            <button class="btn btn-primary" onclick="openAddAdModal()">
-              <i class="fa-solid fa-plus"></i> Add New Ad
-            </button>
-          </div>
-
-          <div class="table-container">
-            <div class="table-header" style="grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr;">
-              <div>Ad ID</div><div>Ad Name</div><div>Client</div><div>Status</div><div>Registered</div><div style="text-align:right">Action</div>
-            </div>
-        
-            <div class="monitor-list" id="adList">
-              <div style="padding:40px; text-align:center; color:#999;">Loading Ads...</div>
-            </div>
-          </div>
-        </div>
-
-        <div id="page-upload" class="page-view">
-          <div class="top-section">
-            <div class="page-header">
-              <h1>Data Upload</h1>
-              <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
-            </div>
-          </div>
-          
-          <input type="file" id="file_face" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'face')">
-          <input type="file" id="file_video" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'video')">
-    
-          <div class="upload-section">
-            <div class="upload-card" id="drop_zone_face" onclick="document.getElementById('file_face').click()">
-              <i class="fa-solid fa-users-viewfinder upload-icon"></i>
-              <div class="upload-title">Face Analysis CSV</div>
-              <div class="upload-desc">Click to Upload or Drag & Drop</div>
-              <div id="status_face" class="file-status"></div>
-            </div>
-            
-            <div class="upload-card" id="drop_zone_video" onclick="document.getElementById('file_video').click()">
-              <i class="fa-solid fa-file-video upload-icon"></i>
-              <div class="upload-title">Video Log CSV</div>
-              <div class="upload-desc">Click to Upload or Drag & Drop</div>
-              <div id="status_video" class="file-status"></div>
-            </div>
-          </div>
-    
-          <div style="margin-top:20px; text-align:right;">
-            <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;" onclick="startUploadProcess()">
-              <i class="fa-solid fa-cloud-arrow-up"></i> Start Analysis Processing
-            </button>
-          </div>
-        </div>
-    
-      </div> <div class="modal-overlay" id="addModal">
-        <div class="modal-box">
-          <div class="modal-title">Add New Monitor</div>
-          <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
-          <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
-          <div style="display:flex; gap:10px;">
-            <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)" readonly style="background:#f9f9f9">
-            <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)" readonly style="background:#f9f9f9">
-          </div>
-          <div class="modal-actions">
-            <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
-            <button class="btn btn-white" style="flex:1" onclick="closeAddModal()">Cancel</button>
-          </div>
-        </div>
-      </div>
-      <div class="modal-overlay" id="addAdModal">
-              <div class="modal-box">
-                <div class="modal-title">Add New Ad</div>
-                <input type="text" id="new_ad_id" class="form-input-full" placeholder="Ad ID (ex: AD_NIKE_001)">
-                <input type="text" id="new_ad_name" class="form-input-full" placeholder="Ad Name (ex: 나이키 썸머 세일)">
-                <input type="text" id="new_ad_client" class="form-input-full" placeholder="Client Name (ex: 나이키 코리아)">
-          
-                <label style="font-size:12px; font-weight:bold; color:#666; display:block; margin-bottom:8px;">Status</label>
-                <select id="new_ad_status" class="form-input-full">
-                  <option value="active">Active (집행 중)</option>
-                  <option value="inactive">Inactive (중지)</option>
-                </select>
-
-                <div class="modal-actions">
-                  <button class="btn btn-primary" style="flex:1" onclick="saveNewAd()">Save Ad</button>
-                  <button class="btn btn-white" style="flex:1" onclick="closeAddAdModal()">Cancel</button>
-                </div>
-              </div>
-           </div>
+      <div class="table-container">
+        <div class="table-header">
+          <div>ID</div><div>Location Name</div><div>Coordinates</div><div>Status</div><div>Last Update</div><div style="text-align:right">Action</div>
+        </div>
+        
+        <div class="monitor-list" id="monitorList">
+          <div style="padding:40px; text-align:center; color:#999;">데이터를 불러오는 중입니다...</div>
+        </div>
+      </div>
+    </div>
 
 
-  <script>
-  /* 1. FIREBASE CONFIGURATION */
-  const firebaseConfig = {
-    apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
-    authDomain: "twopage-ea909.firebaseapp.com",
-    projectId: "twopage-ea909",
-    storageBucket: "twopage-ea909.firebasestorage.app",
-    messagingSenderId: "398686352913",
-    appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
-  };
-  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-  const db = firebase.firestore();
+    <div id="page-ads" class="page-view">
+          <div class="top-section">
+            <div class="page-header">
+              <h1>Ad Manager</h1>
+              <p>송출할 광고 콘텐츠 목록을 관리합니다.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openAddAdModal()">
+              <i class="fa-solid fa-plus"></i> Add New Ad
+            </button>
+          </div>
 
-  /* 2. DYNAMIC UI INJECTION */
-  const modalBox = document.querySelector('.modal-box');
-  if (modalBox) {
-    const mapContainer = document.createElement('div');
-    mapContainer.id = "modalMap";
-    mapContainer.className = "modal-map";
-    const title = modalBox.querySelector('.modal-title');
-    title.insertAdjacentElement('afterend', mapContainer);
-  }
-  const uploadHeader = document.querySelector('#page-upload .page-header');
-  if (uploadHeader) {
-    const selectDiv = document.createElement('div');
-    selectDiv.style.marginTop = "16px";
-    selectDiv.innerHTML = `<label style="font-size:13px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Target Monitor</label><select id="upload_monitor_select" style="width:100%; max-width:300px; padding:10px; border:1px solid #E5E7EB; border-radius:8px; font-size:14px;"><option value="">Select a monitor...</option></select>`;
-    uploadHeader.appendChild(selectDiv);
-  }
+          <div class="table-container">
+            <div class="table-header" style="grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr;">
+              <div>Ad ID</div><div>Ad Name</div><div>Client</div><div>Status</div><div>Registered</div><div style="text-align:right">Action</div>
+            </div>
+        
+            <div class="monitor-list" id="adList">
+              <div style="padding:40px; text-align:center; color:#999;">Loading Ads...</div>
+            </div>
+          </div>
+        </div>
 
-  /* 3. MAP LOGIC */
-  var dashboardMap = null;
-  var monitorMap = null; // [NEW] 모니터 관리용 지도
-  var modalMap = null;
-  var tempMarker = null;
-  var monitorMarkers = []; // [NEW] 모니터 지도 마커 리스트
+        <div id="page-upload" class="page-view">
+          <div class="top-section">
+            <div class="page-header">
+              <h1>Data Upload</h1>
+              <p>Face Analysis 및 Video Log CSV 파일을 업로드하세요.</p>
+            </div>
+          </div>
+          
+          <input type="file" id="file_face" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'face')">
+          <input type="file" id="file_video" accept=".csv, .xlsx, .xls" style="display:none" onchange="handleFileSelect(this, 'video')">
+    
+          <div class="upload-section">
+            <div class="upload-card" id="drop_zone_face" onclick="document.getElementById('file_face').click()">
+              <i class="fa-solid fa-users-viewfinder upload-icon"></i>
+              <div class="upload-title">Face Analysis CSV</div>
+              <div class="upload-desc">Click to Upload or Drag & Drop</div>
+              <div id="status_face" class="file-status"></div>
+            </div>
+            
+            <div class="upload-card" id="drop_zone_video" onclick="document.getElementById('file_video').click()">
+              <i class="fa-solid fa-file-video upload-icon"></i>
+              <div class="upload-title">Video Log CSV</div>
+              <div class="upload-desc">Click to Upload or Drag & Drop</div>
+              <div id="status_video" class="file-status"></div>
+            </div>
+          </div>
+    
+          <div style="margin-top:20px; text-align:right;">
+            <button class="btn btn-primary" style="padding:14px 28px; font-size:15px;" onclick="startUploadProcess()">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Start Analysis Processing
+            </button>
+          </div>
+        </div>
+    
+      </div> <div class="modal-overlay" id="addModal">
+        <div class="modal-box">
+          <div class="modal-title">Add New Monitor</div>
+          <input type="text" id="new_id" class="form-input-full" placeholder="Monitor ID (ex: SEOUL_GN_01)">
+          <input type="text" id="new_name" class="form-input-full" placeholder="Location Name (ex: 강남역 1번출구)">
+          <div style="display:flex; gap:10px;">
+            <input type="text" id="new_lat" class="form-input-full" placeholder="Latitude (위도)" readonly style="background:#f9f9f9">
+            <input type="text" id="new_lng" class="form-input-full" placeholder="Longitude (경도)" readonly style="background:#f9f9f9">
+          </div>
+          <div class="modal-actions">
+            <button class="btn btn-primary" style="flex:1" onclick="saveNewMonitor()">Save</button>
+            <button class="btn btn-white" style="flex:1" onclick="closeAddModal()">Cancel</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-overlay" id="addAdModal">
+              <div class="modal-box">
+                <div class="modal-title">Add New Ad</div>
+                <input type="text" id="new_ad_id" class="form-input-full" placeholder="Ad ID (ex: AD_NIKE_001)">
+                <input type="text" id="new_ad_name" class="form-input-full" placeholder="Ad Name (ex: 나이키 썸머 세일)">
+                <input type="text" id="new_ad_client" class="form-input-full" placeholder="Client Name (ex: 나이키 코리아)">
+          
+                <label style="font-size:12px; font-weight:bold; color:#666; display:block; margin-bottom:8px;">Status</label>
+                <select id="new_ad_status" class="form-input-full">
+                  <option value="active">Active (집행 중)</option>
+                  <option value="inactive">Inactive (중지)</option>
+                </select>
 
-  function initMaps() {
-    // 1. 대시보드 맵
-    dashboardMap = new naver.maps.Map('miniMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
-    
-    // 2. [NEW] 모니터 관리 맵
-    monitorMap = new naver.maps.Map('monitorMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 14 });
+                <div class="modal-actions">
+                  <button class="btn btn-primary" style="flex:1" onclick="saveNewAd()">Save Ad</button>
+                  <button class="btn btn-white" style="flex:1" onclick="closeAddAdModal()">Cancel</button>
+                </div>
+              </div>
+           </div>
 
-    // 3. 모달 맵
-    modalMap = new naver.maps.Map('modalMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
-    naver.maps.Event.addListener(modalMap, 'click', function(e) { setModalMarker(e.coord); });
-  }
 
-  function setModalMarker(latlng) {
-    if (tempMarker) tempMarker.setMap(null);
-    tempMarker = new naver.maps.Marker({
-      position: latlng, map: modalMap,
-      icon: { content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5);"></div>', anchor: new naver.maps.Point(10, 10) }
-    });
-    document.getElementById('new_lat').value = latlng.lat();
-    document.getElementById('new_lng').value = latlng.lng();
-  }
+  <script>
+  /* 1. FIREBASE CONFIGURATION */
+  const firebaseConfig = {
+    apiKey: "AIzaSyDjxFnP5wEE6ivH6VSUHsu8nR_X8GkARB0",
+    authDomain: "twopage-ea909.firebaseapp.com",
+    projectId: "twopage-ea909",
+    storageBucket: "twopage-ea909.firebasestorage.app",
+    messagingSenderId: "398686352913",
+    appId: "1:398686352913:web:0bb872aa1e71c62ad863b0"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
 
-  /* 4. PAGE NAVIGATION */
-  /* 수정된 showPage 함수 */
-  function showPage(pageId, btn) {
-    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-    btn.classList.add('active');
-    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
-    document.getElementById('page-' + pageId).classList.add('active');
-  
-    // 지도 깨짐 방지 및 데이터 로드
-    if(pageId === 'dashboard') {
-      // 대시보드 맵 리사이즈 (기존 코드 유지)
-      setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('#page-dashboard .map-card').offsetWidth, 280)), 100);
-    } else if (pageId === 'monitors') {
-      // [수정됨] 모니터 페이지 열릴 때 정확한 타겟(.map-card)의 너비를 가져오도록 수정
-      setTimeout(() => {
-        // 1. #page-monitors 안의 .map-card를 찾도록 수정
-        const monitorCard = document.querySelector('#page-monitors .map-card'); 
-        
-        if (monitorCard) {
-          monitorMap.setSize(new naver.maps.Size(monitorCard.offsetWidth, 300));
-          
-          // (선택사항) 리사이즈 후 중심점이 어긋나는 것을 방지하기 위해 센터 재설정 추천
-          // monitorMap.setCenter(new naver.maps.LatLng(37.498095, 127.027610)); 
-        }
-        
-        loadMonitorList(); 
-      }, 100);
-    } else if (pageId === 'upload') {
-          loadMonitorSelectOptions();
-        } else if (pageId === 'ads') {
-          loadAdList();
-        }
-      }
+  /* 2. DYNAMIC UI INJECTION */
+  const modalBox = document.querySelector('.modal-box');
+  if (modalBox) {
+    const mapContainer = document.createElement('div');
+    mapContainer.id = "modalMap";
+    mapContainer.className = "modal-map";
+    const title = modalBox.querySelector('.modal-title');
+    title.insertAdjacentElement('afterend', mapContainer);
+  }
+  const uploadHeader = document.querySelector('#page-upload .page-header');
+  if (uploadHeader) {
+    const selectDiv = document.createElement('div');
+    selectDiv.style.marginTop = "16px";
+    selectDiv.innerHTML = `<label style="font-size:13px; font-weight:700; color:#374151; display:block; margin-bottom:8px;">Target Monitor</label><select id="upload_monitor_select" style="width:100%; max-width:300px; padding:10px; border:1px solid #E5E7EB; border-radius:8px; font-size:14px;"><option value="">Select a monitor...</option></select>`;
+    uploadHeader.appendChild(selectDiv);
+  }
 
-  /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
-  function loadMonitorList() {
-    const listEl = document.getElementById('monitorList');
-    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
-    
-    // 기존 마커 제거
-    monitorMarkers.forEach(m => m.setMap(null));
-    monitorMarkers = [];
+  /* 3. MAP LOGIC */
+  var dashboardMap = null;
+  var monitorMap = null; // [NEW] 모니터 관리용 지도
+  var modalMap = null;
+  var tempMarker = null;
+  var monitorMarkers = []; // [NEW] 모니터 지도 마커 리스트
 
-    db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
-      let html = '';
-      if (snapshot.empty) {
-        listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 모니터가 없습니다.</div>';
-        return;
-      }
+  function initMaps() {
+    // 1. 대시보드 맵
+    dashboardMap = new naver.maps.Map('miniMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
+    
+    // 2. [NEW] 모니터 관리 맵
+    monitorMap = new naver.maps.Map('monitorMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 14 });
 
-      snapshot.forEach((doc) => {
-        const d = doc.data();
-        const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
-        let dateStr = '-';
-        if(d.updated_at) {
-          const date = d.updated_at.toDate();
-          dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
-        }
+    // 3. 모달 맵
+    modalMap = new naver.maps.Map('modalMap', { center: new naver.maps.LatLng(37.498095, 127.027610), zoom: 15 });
+    naver.maps.Event.addListener(modalMap, 'click', function(e) { setModalMarker(e.coord); });
+  }
 
-        // 1. 리스트 추가
-        html += `
-          <div class="table-row">
-            <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
-            <div style="font-weight:600;">${d.name}</div>
-            <div style="color:#6B7280; font-size:13px;">${d.location.lat.toFixed(4)}, ${d.location.lng.toFixed(4)}</div>
-            <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
-            <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
-            <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
-              <button class="action-btn" onclick="openEditModal('${d.monitor_id}', '${d.name}', ${d.location.lat}, ${d.location.lng})"><i class="fa-solid fa-pen"></i></button>
-              <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
-            </div>
-          </div>
-        `;
+  function setModalMarker(latlng) {
+    if (tempMarker) tempMarker.setMap(null);
+    tempMarker = new naver.maps.Marker({
+      position: latlng, map: modalMap,
+      icon: { content: '<div style="background:#2563EB; width:20px; height:20px; border:3px solid white; border-radius:50%; box-shadow:0 0 10px rgba(37,99,235,0.5);"></div>', anchor: new naver.maps.Point(10, 10) }
+    });
+    document.getElementById('new_lat').value = latlng.lat();
+    document.getElementById('new_lng').value = latlng.lng();
+  }
 
-        // 2. 지도 마커 추가
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(d.location.lat, d.location.lng),
-          map: monitorMap,
-          icon: {
-            content: `<div style="position:relative; cursor:pointer;">
-              <div style="background:#3B82F6; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
-              <div style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:white; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.2); white-space:nowrap;">${d.name}</div>
-            </div>`,
-            anchor: new naver.maps.Point(6, 6)
-          }
-        });
-        monitorMarkers.push(marker);
-      });
-      
-      listEl.innerHTML = html;
-      
-      // 마커가 있다면 첫 번째 마커로 이동
-      if(monitorMarkers.length > 0) {
-        monitorMap.panTo(monitorMarkers[0].getPosition());
-      }
-    });
-  }
+  /* 4. PAGE NAVIGATION */
+  /* 수정된 showPage 함수 */
+  function showPage(pageId, btn) {
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.page-view').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-' + pageId).classList.add('active');
+  
+    // 지도 깨짐 방지 및 데이터 로드
+    if(pageId === 'dashboard') {
+      // 대시보드 맵 리사이즈 (기존 코드 유지)
+      setTimeout(() => dashboardMap.setSize(new naver.maps.Size(document.querySelector('#page-dashboard .map-card').offsetWidth, 280)), 100);
+    } else if (pageId === 'monitors') {
+      // [수정됨] 모니터 페이지 열릴 때 정확한 타겟(.map-card)의 너비를 가져오도록 수정
+      setTimeout(() => {
+        // 1. #page-monitors 안의 .map-card를 찾도록 수정
+        const monitorCard = document.querySelector('#page-monitors .map-card'); 
+        
+        if (monitorCard) {
+          monitorMap.setSize(new naver.maps.Size(monitorCard.offsetWidth, 300));
+          
+          // (선택사항) 리사이즈 후 중심점이 어긋나는 것을 방지하기 위해 센터 재설정 추천
+          // monitorMap.setCenter(new naver.maps.LatLng(37.498095, 127.027610)); 
+        }
+        
+        loadMonitorList(); 
+      }, 100);
+    } else if (pageId === 'upload') {
+          loadMonitorSelectOptions();
+        } else if (pageId === 'ads') {
+          loadAdList();
+        }
+      }
 
-  function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+  /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
+  function loadMonitorList() {
+    const listEl = document.getElementById('monitorList');
+    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
+    
+    // 기존 마커 제거
+    monitorMarkers.forEach(m => m.setMap(null));
+    monitorMarkers = [];
 
-  function saveNewMonitor() {
-    const id = document.getElementById('new_id').value;
-    const name = document.getElementById('new_name').value;
-    const lat = parseFloat(document.getElementById('new_lat').value);
-    const lng = parseFloat(document.getElementById('new_lng').value);
+    db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
+      let html = '';
+      if (snapshot.empty) {
+        listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 모니터가 없습니다.</div>';
+        return;
+      }
 
-    if(!id || !name || isNaN(lat)) return alert("ID, 이름, 위치(지도클릭)는 필수입니다.");
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
+        let dateStr = '-';
+        if(d.updated_at) {
+          const date = d.updated_at.toDate();
+          dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
+        }
 
-    db.collection("monitors").doc(id).set({
-      monitor_id: id, name: name, location: {lat, lng}, status: 'active',
-      updated_at: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true }).then(() => {
-      alert("저장되었습니다!");
-      closeAddModal();
-      loadMonitorList();
-    });
-  }
+        // 1. 리스트 추가
+        html += `
+          <div class="table-row">
+            <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
+            <div style="font-weight:600;">${d.name}</div>
+            <div style="color:#6B7280; font-size:13px;">${d.location.lat.toFixed(4)}, ${d.location.lng.toFixed(4)}</div>
+            <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
+            <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
+            <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
+              <button class="action-btn" onclick="openEditModal('${d.monitor_id}', '${d.name}', ${d.location.lat}, ${d.location.lng})"><i class="fa-solid fa-pen"></i></button>
+              <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
+            </div>
+          </div>
+        `;
 
-  function deleteMonitor(id) {
-    if(confirm("정말 삭제하시겠습니까?")) {
-      db.collection("monitors").doc(id).delete().then(() => loadMonitorList());
-    }
-  }
-  /* [NEW] AD MANAGER LOGIC */
-    function loadAdList() {
-      const listEl = document.getElementById('adList');
-      listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading Ads...</div>';
-      
-      db.collection("ads").orderBy("updated_at", "desc").get().then((snapshot) => {
-        let html = '';
-        if (snapshot.empty) {
-          listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 광고가 없습니다.</div>';
-          return;
-        }
-  
-        snapshot.forEach((doc) => {
-          const d = doc.data();
-          const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
-          let dateStr = '-';
-          if(d.updated_at) {
-            const date = d.updated_at.toDate();
-            dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
-          }
-  
-          html += `
-            <div class="table-row" style="grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr;">
-              <div style="font-weight:700; color:#3B82F6;">${d.ad_id}</div>
-              <div style="font-weight:600;">${d.name}</div>
-              <div style="color:#6B7280; font-size:13px;">${d.client || '-'}</div>
-              <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
-              <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
-              <div style="text-align:right;">
-                <button class="action-btn delete" onclick="deleteAd('${d.ad_id}')"><i class="fa-solid fa-trash"></i></button>
-              </div>
-            </div>
-          `;
-        });
-        listEl.innerHTML = html;
-      });
-    }
-  
-    function openAddAdModal() {
-      document.getElementById('new_ad_id').value = '';
-      document.getElementById('new_ad_name').value = '';
-      document.getElementById('new_ad_client').value = '';
-      document.getElementById('addAdModal').style.display = 'flex';
-    }
-  
-    function closeAddAdModal() {
-      document.getElementById('addAdModal').style.display = 'none';
-    }
-  
-    function saveNewAd() {
-      const id = document.getElementById('new_ad_id').value;
-      const name = document.getElementById('new_ad_name').value;
-      const client = document.getElementById('new_ad_client').value;
-      const status = document.getElementById('new_ad_status').value;
-  
-      if(!id || !name) return alert("ID와 광고명은 필수입니다.");
-  
-      db.collection("ads").doc(id).set({
-        ad_id: id, 
-        name: name, 
-        client: client, 
-        status: status,
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
-        alert("광고가 등록되었습니다!");
-        closeAddAdModal();
-        loadAdList();
-      });
-    }
-  
-    function deleteAd(id) {
-      if(confirm("이 광고 정보를 삭제하시겠습니까?")) {
-        db.collection("ads").doc(id).delete().then(() => loadAdList());
-      }
-    }
-  // [새로운 코드] 추가 버튼 눌렀을 때 (내용 비우고 열기)
-    function openAddModal() { 
-      // 1. 입력창 초기화
-      document.getElementById('new_id').value = '';
-      document.getElementById('new_name').value = '';
-      document.getElementById('new_lat').value = '';
-      document.getElementById('new_lng').value = '';
-      
-      // 2. ID 입력창 활성화 (수정 모드에서 잠겼을 수 있으므로 풀기)
-      const idInput = document.getElementById('new_id');
-      idInput.disabled = false;
-      idInput.style.backgroundColor = "white";
-  
-      // 3. 타이틀 변경
-      const titleEl = document.querySelector('.modal-title');
-      if(titleEl) titleEl.innerText = "Add New Monitor";
-  
-      // 4. 모달 열기
-      document.getElementById('addModal').style.display = 'flex';
-      
-      // 5. 지도 세팅 (기존 마커 제거)
-      setTimeout(() => {
-        if(modalMap) {
-            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
-            if(tempMarker) tempMarker.setMap(null); 
-        }
-      }, 100);
-    }
-  
-    // [새로운 코드] 수정 버튼 눌렀을 때 (내용 채우고 열기)
-    function openEditModal(id, name, lat, lng) {
-      // 1. 기존 값 채워넣기
-      const idInput = document.getElementById('new_id');
-      idInput.value = id;
-      document.getElementById('new_name').value = name;
-      document.getElementById('new_lat').value = lat;
-      document.getElementById('new_lng').value = lng;
-  
-      // 2. ID는 수정 못하게 막기 (회색 처리)
-      idInput.disabled = true;
-      idInput.style.backgroundColor = "#F3F4F6"; 
-  
-      // 3. 타이틀 변경
-      const titleEl = document.querySelector('.modal-title');
-      if(titleEl) titleEl.innerText = "Edit Monitor";
-  
-      // 4. 모달 열기
-      document.getElementById('addModal').style.display = 'flex';
-  
-      // 5. 지도 세팅 (해당 위치에 마커 찍기)
-      setTimeout(() => {
-        if(modalMap) {
-            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
-            
-            const targetLoc = new naver.maps.LatLng(lat, lng);
-            modalMap.setCenter(targetLoc); // 지도 중심 이동
-            setModalMarker(targetLoc);     // 마커 표시
-        }
-      }, 100);
-    }
+        // 2. 지도 마커 추가
+        const marker = new naver.maps.Marker({
+          position: new naver.maps.LatLng(d.location.lat, d.location.lng),
+          map: monitorMap,
+          icon: {
+            content: `<div style="position:relative; cursor:pointer;">
+              <div style="background:#3B82F6; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
+              <div style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:white; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.2); white-space:nowrap;">${d.name}</div>
+            </div>`,
+            anchor: new naver.maps.Point(6, 6)
+          }
+        });
+        monitorMarkers.push(marker);
+      });
+      
+      listEl.innerHTML = html;
+      
+      // 마커가 있다면 첫 번째 마커로 이동
+      if(monitorMarkers.length > 0) {
+        monitorMap.panTo(monitorMarkers[0].getPosition());
+      }
+    });
+  }
 
-  function loadMonitorSelectOptions() {
-    const sel = document.getElementById('upload_monitor_select');
-    if(!sel) return;
-    
-    db.collection("monitors").get().then((snapshot) => {
-      let opts = '<option value="">Select a monitor...</option>';
-      snapshot.forEach((doc) => {
-        const d = doc.data();
-        opts += `<option value="${d.monitor_id}">${d.name} (${d.monitor_id})</option>`;
-      });
-      sel.innerHTML = opts;
-    });
-  }
+  function closeAddModal() { document.getElementById('addModal').style.display = 'none'; }
+
+  function saveNewMonitor() {
+    const id = document.getElementById('new_id').value;
+    const name = document.getElementById('new_name').value;
+    const lat = parseFloat(document.getElementById('new_lat').value);
+    const lng = parseFloat(document.getElementById('new_lng').value);
+
+    if(!id || !name || isNaN(lat)) return alert("ID, 이름, 위치(지도클릭)는 필수입니다.");
+
+    db.collection("monitors").doc(id).set({
+      monitor_id: id, name: name, location: {lat, lng}, status: 'active',
+      updated_at: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true }).then(() => {
+      alert("저장되었습니다!");
+      closeAddModal();
+      loadMonitorList();
+    });
+  }
+
+  function deleteMonitor(id) {
+    if(confirm("정말 삭제하시겠습니까?")) {
+      db.collection("monitors").doc(id).delete().then(() => loadMonitorList());
+    }
+  }
+  /* [NEW] AD MANAGER LOGIC */
+    function loadAdList() {
+      const listEl = document.getElementById('adList');
+      listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading Ads...</div>';
+      
+      db.collection("ads").orderBy("updated_at", "desc").get().then((snapshot) => {
+        let html = '';
+        if (snapshot.empty) {
+          listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 광고가 없습니다.</div>';
+          return;
+        }
+  
+        snapshot.forEach((doc) => {
+          const d = doc.data();
+          const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
+          let dateStr = '-';
+          if(d.updated_at) {
+            const date = d.updated_at.toDate();
+            dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
+          }
+  
+          html += `
+            <div class="table-row" style="grid-template-columns: 1fr 2fr 1.5fr 1fr 1fr 1fr;">
+              <div style="font-weight:700; color:#3B82F6;">${d.ad_id}</div>
+              <div style="font-weight:600;">${d.name}</div>
+              <div style="color:#6B7280; font-size:13px;">${d.client || '-'}</div>
+              <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
+              <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
+              <div style="text-align:right;">
+                <button class="action-btn delete" onclick="deleteAd('${d.ad_id}')"><i class="fa-solid fa-trash"></i></button>
+              </div>
+            </div>
+          `;
+        });
+        listEl.innerHTML = html;
+      });
+    }
+  
+    function openAddAdModal() {
+      document.getElementById('new_ad_id').value = '';
+      document.getElementById('new_ad_name').value = '';
+      document.getElementById('new_ad_client').value = '';
+      document.getElementById('addAdModal').style.display = 'flex';
+    }
+  
+    function closeAddAdModal() {
+      document.getElementById('addAdModal').style.display = 'none';
+    }
+  
+    function saveNewAd() {
+      const id = document.getElementById('new_ad_id').value;
+      const name = document.getElementById('new_ad_name').value;
+      const client = document.getElementById('new_ad_client').value;
+      const status = document.getElementById('new_ad_status').value;
+  
+      if(!id || !name) return alert("ID와 광고명은 필수입니다.");
+  
+      db.collection("ads").doc(id).set({
+        ad_id: id, 
+        name: name, 
+        client: client, 
+        status: status,
+        updated_at: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true }).then(() => {
+        alert("광고가 등록되었습니다!");
+        closeAddAdModal();
+        loadAdList();
+      });
+    }
+  
+    function deleteAd(id) {
+      if(confirm("이 광고 정보를 삭제하시겠습니까?")) {
+        db.collection("ads").doc(id).delete().then(() => loadAdList());
+      }
+    }
+  // [새로운 코드] 추가 버튼 눌렀을 때 (내용 비우고 열기)
+    function openAddModal() { 
+      // 1. 입력창 초기화
+      document.getElementById('new_id').value = '';
+      document.getElementById('new_name').value = '';
+      document.getElementById('new_lat').value = '';
+      document.getElementById('new_lng').value = '';
+      
+      // 2. ID 입력창 활성화 (수정 모드에서 잠겼을 수 있으므로 풀기)
+      const idInput = document.getElementById('new_id');
+      idInput.disabled = false;
+      idInput.style.backgroundColor = "white";
+  
+      // 3. 타이틀 변경
+      const titleEl = document.querySelector('.modal-title');
+      if(titleEl) titleEl.innerText = "Add New Monitor";
+  
+      // 4. 모달 열기
+      document.getElementById('addModal').style.display = 'flex';
+      
+      // 5. 지도 세팅 (기존 마커 제거)
+      setTimeout(() => {
+        if(modalMap) {
+            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
+            if(tempMarker) tempMarker.setMap(null); 
+        }
+      }, 100);
+    }
+  
+    // [새로운 코드] 수정 버튼 눌렀을 때 (내용 채우고 열기)
+    function openEditModal(id, name, lat, lng) {
+      // 1. 기존 값 채워넣기
+      const idInput = document.getElementById('new_id');
+      idInput.value = id;
+      document.getElementById('new_name').value = name;
+      document.getElementById('new_lat').value = lat;
+      document.getElementById('new_lng').value = lng;
+  
+      // 2. ID는 수정 못하게 막기 (회색 처리)
+      idInput.disabled = true;
+      idInput.style.backgroundColor = "#F3F4F6"; 
+  
+      // 3. 타이틀 변경
+      const titleEl = document.querySelector('.modal-title');
+      if(titleEl) titleEl.innerText = "Edit Monitor";
+  
+      // 4. 모달 열기
+      document.getElementById('addModal').style.display = 'flex';
+  
+      // 5. 지도 세팅 (해당 위치에 마커 찍기)
+      setTimeout(() => {
+        if(modalMap) {
+            modalMap.setSize(new naver.maps.Size(document.getElementById('modalMap').offsetWidth, 200));
+            
+            const targetLoc = new naver.maps.LatLng(lat, lng);
+            modalMap.setCenter(targetLoc); // 지도 중심 이동
+            setModalMarker(targetLoc);     // 마커 표시
+        }
+      }, 100);
+    }
+
+  function loadMonitorSelectOptions() {
+    const sel = document.getElementById('upload_monitor_select');
+    if(!sel) return;
+    
+    db.collection("monitors").get().then((snapshot) => {
+      let opts = '<option value="">Select a monitor...</option>';
+      snapshot.forEach((doc) => {
+        const d = doc.data();
+        opts += `<option value="${d.monitor_id}">${d.name} (${d.monitor_id})</option>`;
+      });
+      sel.innerHTML = opts;
+    });
+  }
 /* 6. [NEW] EXCEL UPLOAD & PROCESSING LOGIC (Final: Multi-File + Date Parsing) */
-  // [변경] 여러 파일을 담기 위해 배열([])로 초기화
-  let selectedFiles = { face: [], video: [] };
+  // [변경] 여러 파일을 담기 위해 배열([])로 초기화
+  let selectedFiles = { face: [], video: [] };
 
-  // [수정됨] 파일 목록 처리 함수 (여러 파일 처리)
-  function handleFileUpdate(files, type) {
-    if (files && files.length > 0) {
-      // FileList를 배열로 변환하여 저장
-      selectedFiles[type] = Array.from(files);
-      
-      // UI 업데이트: 선택된 파일 개수 표시
-      const count = selectedFiles[type].length;
-      const firstName = selectedFiles[type][0].name;
-      const text = count === 1 ? 
-        `Ready: ${firstName}` : 
-        `Ready: ${count} files selected`;
-      
-      document.getElementById('status_' + type).innerText = text;
-      
-      // 드래그 효과 유지를 위한 스타일
-      document.getElementById('drop_zone_' + type).style.borderColor = "#3B82F6";
-      document.getElementById('drop_zone_' + type).style.backgroundColor = "#EFF6FF";
-    }
-  }
+  // [수정됨] 파일 목록 처리 함수 (여러 파일 처리)
+  function handleFileUpdate(files, type) {
+    if (files && files.length > 0) {
+      // FileList를 배열로 변환하여 저장
+      selectedFiles[type] = Array.from(files);
+      
+      // UI 업데이트: 선택된 파일 개수 표시
+      const count = selectedFiles[type].length;
+      const firstName = selectedFiles[type][0].name;
+      const text = count === 1 ? 
+        `Ready: ${firstName}` : 
+        `Ready: ${count} files selected`;
+      
+      document.getElementById('status_' + type).innerText = text;
+      
+      // 드래그 효과 유지를 위한 스타일
+      document.getElementById('drop_zone_' + type).style.borderColor = "#3B82F6";
+      document.getElementById('drop_zone_' + type).style.backgroundColor = "#EFF6FF";
+    }
+  }
 
-  // [기존] Input 변경 시 호출
-  function handleFileSelect(input, type) {
-    handleFileUpdate(input.files, type);
-  }
+  // [기존] Input 변경 시 호출
+  function handleFileSelect(input, type) {
+    handleFileUpdate(input.files, type);
+  }
 
-  // [기존] 드래그 앤 드롭 초기화
-  function initDragAndDrop() {
-    const zones = [
-      { id: 'drop_zone_face', type: 'face' },
-      { id: 'drop_zone_video', type: 'video' }
-    ];
+  // [기존] 드래그 앤 드롭 초기화
+  function initDragAndDrop() {
+    const zones = [
+      { id: 'drop_zone_face', type: 'face' },
+      { id: 'drop_zone_video', type: 'video' }
+    ];
 
-    zones.forEach(item => {
-      const zone = document.getElementById(item.id);
-      if (!zone) return;
+    zones.forEach(item => {
+      const zone = document.getElementById(item.id);
+      if (!zone) return;
 
-      ['dragenter', 'dragover'].forEach(eventName => {
-        zone.addEventListener(eventName, (e) => {
-          e.preventDefault(); e.stopPropagation();
-          zone.classList.add('drag-over');
-        }, false);
-      });
+      ['dragenter', 'dragover'].forEach(eventName => {
+        zone.addEventListener(eventName, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          zone.classList.add('drag-over');
+        }, false);
+      });
 
-      ['dragleave', 'drop'].forEach(eventName => {
-        zone.addEventListener(eventName, (e) => {
-          e.preventDefault(); e.stopPropagation();
-          zone.classList.remove('drag-over');
-        }, false);
-      });
+      ['dragleave', 'drop'].forEach(eventName => {
+        zone.addEventListener(eventName, (e) => {
+          e.preventDefault(); e.stopPropagation();
+          zone.classList.remove('drag-over');
+        }, false);
+      });
 
-      zone.addEventListener('drop', (e) => {
-        const dt = e.dataTransfer;
-        handleFileUpdate(dt.files, item.type); // 여러 파일 전달
-      }, false);
-    });
-  }
+      zone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        handleFileUpdate(dt.files, item.type); // 여러 파일 전달
+      }, false);
+    });
+  }
 
-  // [수정됨] 다중 파일 업로드 시작 로직
-  async function startUploadProcess() {
-    const monitorId = document.getElementById('upload_monitor_select').value;
-    
-    if (!monitorId) return alert("Please select a Target Monitor first.");
-    if (selectedFiles.face.length === 0 && selectedFiles.video.length === 0) {
-      return alert("Please select files to upload.");
-    }
+  // [수정됨] 다중 파일 업로드 시작 로직
+  async function startUploadProcess() {
+    const monitorId = document.getElementById('upload_monitor_select').value;
+    
+    if (!monitorId) return alert("Please select a Target Monitor first.");
+    if (selectedFiles.face.length === 0 && selectedFiles.video.length === 0) {
+      return alert("Please select files to upload.");
+    }
 
-    const totalFiles = selectedFiles.face.length + selectedFiles.video.length;
+    const totalFiles = selectedFiles.face.length + selectedFiles.video.length;
 
-    if (confirm(`Monitor [${monitorId}]에 총 ${totalFiles}개의 파일을 업로드 하시겠습니까?`)) {
-      const promises = [];
+    if (confirm(`Monitor [${monitorId}]에 총 ${totalFiles}개의 파일을 업로드 하시겠습니까?`)) {
+      const promises = [];
 
-      // Face 파일들 큐에 추가
-      selectedFiles.face.forEach(file => {
-        promises.push(processAndUpload(file, 'face_analysis', monitorId));
-      });
+      // Face 파일들 큐에 추가
+      selectedFiles.face.forEach(file => {
+        promises.push(processAndUpload(file, 'face_analysis', monitorId));
+      });
 
-      // Video 파일들 큐에 추가
-      selectedFiles.video.forEach(file => {
-        promises.push(processAndUpload(file, 'video_logs', monitorId));
-      });
+      // Video 파일들 큐에 추가
+      selectedFiles.video.forEach(file => {
+        promises.push(processAndUpload(file, 'video_logs', monitorId));
+      });
 
-      // 모든 업로드가 끝날 때까지 대기
-      try {
-        await Promise.all(promises);
-        alert(`Successfully processed ${totalFiles} files!`);
-        
-        // 초기화
-        selectedFiles = { face: [], video: [] };
-        document.getElementById('status_face').innerText = "";
-        document.getElementById('status_video').innerText = "";
-        
-        // 달력 갱신 (데이터가 늘어났으므로)
-        checkDataExistence();
-      } catch (error) {
-        console.error(error);
-        alert("Some uploads failed. Check console for details.");
-      }
-    }
-  }
+      // 모든 업로드가 끝날 때까지 대기
+      try {
+        await Promise.all(promises);
+        alert(`Successfully processed ${totalFiles} files!`);
+        
+        // 초기화
+        selectedFiles = { face: [], video: [] };
+        document.getElementById('status_face').innerText = "";
+        document.getElementById('status_video').innerText = "";
+        
+        // 달력 갱신 (데이터가 늘어났으므로)
+        checkDataExistence();
+      } catch (error) {
+        console.error(error);
+        alert("Some uploads failed. Check console for details.");
+      }
+    }
+  }
 
-  // [수정됨] 개별 파일 파싱 및 업로드 (Promise 반환)
-  function processAndUpload(file, collectionName, monitorId) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      
-      reader.onload = function(e) {
-        try {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-          const jsonData = XLSX.utils.sheet_to_json(firstSheet);
+  // [수정됨] 개별 파일 파싱 및 업로드 (Promise 반환)
+  function processAndUpload(file, collectionName, monitorId) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      
+      reader.onload = function(e) {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const jsonData = XLSX.utils.sheet_to_json(firstSheet);
 
-          if(jsonData.length === 0) {
-            console.warn(`File ${file.name} is empty.`);
-            resolve(); 
-            return;
-          }
+          if(jsonData.length === 0) {
+            console.warn(`File ${file.name} is empty.`);
+            resolve(); 
+            return;
+          }
 
-          // 파일명(file.name)을 전달하여 배치 업로드 호출
-          uploadInBatches(jsonData, collectionName, monitorId, file.name)
-            .then(() => {
-              console.log(`Finished: ${file.name}`);
-              resolve();
-            })
-            .catch(err => reject(err));
+          // 파일명(file.name)을 전달하여 배치 업로드 호출
+          uploadInBatches(jsonData, collectionName, monitorId, file.name)
+            .then(() => {
+              console.log(`Finished: ${file.name}`);
+              resolve();
+            })
+            .catch(err => reject(err));
 
-        } catch (err) {
-          console.error("Error parsing file:", file.name, err);
-          reject(err);
-        }
-      };
-      
-      reader.onerror = (err) => reject(err);
-      reader.readAsArrayBuffer(file);
-    });
-  }
+        } catch (err) {
+          console.error("Error parsing file:", file.name, err);
+          reject(err);
+        }
+      };
+      
+      reader.onerror = (err) => reject(err);
+      reader.readAsArrayBuffer(file);
+    });
+  }
 
-  // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
-  async function uploadInBatches(data, collectionName, monitorId, fileName) {
-    const BATCH_SIZE = 450;
-    const total = data.length;
-    
-    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
-    const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
-    const match = fileName.match(dateRegex);
-    let fileDate;
-    
-    if (match) {
-      fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
-    } else {
-      fileDate = new Date(); // 실패 시 현재 시간
-    }
-    
-    // 2. Firestore 저장
-    for (let i = 0; i < total; i += BATCH_SIZE) {
-      const batch = db.batch();
-      const chunk = data.slice(i, i + BATCH_SIZE);
-      
-      chunk.forEach((row) => {
-        row.monitor_id = monitorId;
-        row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
-        row.source_filename = fileName;
+  // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
+  async function uploadInBatches(data, collectionName, monitorId, fileName) {
+    const BATCH_SIZE = 450;
+    const total = data.length;
+    
+    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
+    const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
+    const match = fileName.match(dateRegex);
+    let fileDate;
+    
+    if (match) {
+      fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
+    } else {
+      fileDate = new Date(); // 실패 시 현재 시간
+    }
+    
+    // 2. Firestore 저장
+    for (let i = 0; i < total; i += BATCH_SIZE) {
+      const batch = db.batch();
+      const chunk = data.slice(i, i + BATCH_SIZE);
+      
+      chunk.forEach((row) => {
+        row.monitor_id = monitorId;
+        row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
+        row.source_filename = fileName;
 
-        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
-        // 예: "C:\media\b435345.mp4" -> "b435345" 로 변환하여 ad_id에 저장
-        if (collectionName === 'video_logs' && row.video_name) {
-          try {
-            // 1. 경로 구분자(\ 또는 /) 뒤의 파일명만 추출
-            let cleanName = row.video_name.replace(/^.*[\\\/]/, '');
-            // 2. 확장자(.mp4 등) 제거
-            cleanName = cleanName.replace(/\.[^/.]+$/, "");
-            
-            row.ad_id = cleanName; // 추출된 ID 저장
-          } catch (e) {
-            console.warn("ID Extraction failed for:", row.video_name);
-          }
-        }
-        
-        const docRef = db.collection(collectionName).doc();
-        batch.set(docRef, row);
-      });
-      await batch.commit();
+        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
+        // 예: "C:\media\b435345.mp4" -> "b435345" 로 변환하여 ad_id에 저장
+        if (collectionName === 'video_logs' && row.video_name) {
+          try {
+            // 1. 경로 구분자(\ 또는 /) 뒤의 파일명만 추출
+            let cleanName = row.video_name.replace(/^.*[\\\/]/, '');
+            // 2. 확장자(.mp4 등) 제거
+            cleanName = cleanName.replace(/\.[^/.]+$/, "");
+            
+            row.ad_id = cleanName; // 추출된 ID 저장
+          } catch (e) {
+            console.warn("ID Extraction failed for:", row.video_name);
+          }
+        }
+        
+        const docRef = db.collection(collectionName).doc();
+        batch.set(docRef, row);
+      });
+      await batch.commit();
 
-      // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
-      // "YYYY-M-D_MonitorID" 형태의 문서 ID를 사용하여 중복 방지 및 빠른 조회
-      const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
-      const statsDocId = `${dateKey}_${monitorId}`;
-      
-      // 요약 컬렉션(calendar_stats)에 "이 날짜, 이 모니터에 데이터 있음" 기록
-      await db.collection('calendar_stats').doc(statsDocId).set({
-        dateKey: dateKey,
-        monitor_id: monitorId,
-        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
-        has_data: true
-      }, { merge: true });
-    }
-  }
+      // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
+      // "YYYY-M-D_MonitorID" 형태의 문서 ID를 사용하여 중복 방지 및 빠른 조회
+      const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
+      const statsDocId = `${dateKey}_${monitorId}`;
+      
+      // 요약 컬렉션(calendar_stats)에 "이 날짜, 이 모니터에 데이터 있음" 기록
+      await db.collection('calendar_stats').doc(statsDocId).set({
+        dateKey: dateKey,
+        monitor_id: monitorId,
+        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
+        has_data: true
+      }, { merge: true });
+    }
+  }
 /* 7. CALENDAR LOGIC (Real Data Integration) */
-  let currentCalDate = new Date();
-  let selectedDates = []; 
-  let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
+  let currentCalDate = new Date();
+  let selectedDates = []; 
+  let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
 
-  /* [UPGRADE] 데이터 로딩 & 필터링 시스템 */
-  // [임시 기능] 기존의 무거운 데이터를 읽어서 가벼운 요약본(calendar_stats)을 생성하는 함수
-    async function migrateExistingData() {
-      if(!confirm("기존 데이터를 스캔하여 달력 속도를 최적화하시겠습니까? (시간이 조금 걸릴 수 있습니다)")) return;
-      
-      const loader = document.getElementById('calLoader');
-      if(loader) { loader.style.display = 'flex'; loader.querySelector('span').innerText = "Optimizing DB..."; }
-  
-      try {
-        const snap = await db.collection('face_analysis').get();
-        const batch = db.batch();
-        let count = 0;
-        let addedKeys = new Set();
-  
-        snap.forEach(doc => {
-          const d = doc.data();
-          if(d.uploaded_at && d.monitor_id) {
-            const date = d.uploaded_at.toDate();
-            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const statsId = `${dateKey}_${d.monitor_id}`;
-  
-            // 중복 방지 (같은 날짜, 같은 모니터는 한 번만 기록)
-            if(!addedKeys.has(statsId)) {
-              const ref = db.collection('calendar_stats').doc(statsId);
-              batch.set(ref, {
-                dateKey: dateKey,
-                monitor_id: d.monitor_id,
-                uploaded_at: d.uploaded_at,
-                has_data: true
-              }, { merge: true });
-              addedKeys.add(statsId);
-              count++;
-            }
-          }
-        });
-  
-        await batch.commit();
-        alert(`최적화 완료! ${count}개의 날짜 정보가 요약되었습니다.`);
-        checkDataExistence(); // 달력 새로고침
-      } catch(e) {
-        console.error(e);
-        alert("최적화 중 오류 발생");
-      } finally {
-        if(loader) loader.style.display = 'none';
-      }
-    }
-    let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
-    /* [NEW] Filter & Analysis Logic */
-      let currentFilters = { gender: 'ALL', age: 'ALL', attention: 'ALL' };
-    
-      // 필터 칩 선택 함수 (UI 변경)
-      function selectFilter(type, el, value) {
-        // 1. 해당 그룹의 모든 칩에서 active 제거
-        const group = document.getElementById('filter_' + type);
-        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-        
-        // 2. 선택된 칩에 active 추가
-        el.classList.add('active');
-        
-        // 3. 값 저장
-        currentFilters[type] = value;
-      }
-    
-      // 사이드바 광고 목록 불러오기
-      function loadSidebarAds() {
-        const adSel = document.getElementById('sidebarAdSelect');
-        if(!adSel) return;
-    
-        db.collection("ads").get().then(snapshot => {
-          let opts = '<option value="ALL">All Ads</option>';
-          snapshot.forEach(doc => {
-            const d = doc.data();
-            // 삭제되지 않은(active/inactive) 광고만 표시
-            opts += `<option value="${d.ad_id}">${d.name}</option>`;
-          });
-          adSel.innerHTML = opts;
-        });
-      }
-    
-      // [핵심] 분석 버튼 클릭 시 실행
-      function runAnalysis() {
-        // 1. 선택된 조건 수집
-        const monitorId = document.getElementById('sidebarMonitorSelect').value;
-        const adId = document.getElementById('sidebarAdSelect').value;
-        const selectedDateCount = selectedDates.length; // 달력에서 선택된 날짜 수
-    
-        if(selectedDateCount === 0) {
-          return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
-        }
-    
-        // 2. 로딩 표시 (KPI 박스에)
-        document.getElementById("kpi_impressions").innerText = "Analyzing...";
-        document.getElementById("kpi_dwell").innerText = "...";
-    
-        // 3. (여기에 실제 데이터 조회 로직이 들어갈 예정)
-        // 현재는 UI 동작 확인용 알림
-        console.log("Analysis Condition:", {
-          dates: selectedDates,
-          monitor: monitorId,
-          ad: adId,
-          filters: currentFilters
-        });
-    
-        // 4. 임시 결과 표시 (다음 단계에서 실제 DB 연동)
-        setTimeout(() => {
-          loadDashboardStats(); // 기존 함수 재활용하여 화면 갱신
-          alert("분석 조건이 적용되었습니다.\n(실제 필터링 로직은 다음 단계에서 연결합니다)");
-        }, 500);
-      }
-  
-    async function checkDataExistence() {
-      const loader = document.getElementById('calLoader');
-      const monitorSel = document.getElementById('sidebarMonitorSelect');
-      
-      // 1. 로딩 시작 표시
-      if(loader) loader.style.display = 'flex';
-      
-      try {
-        // 2. 모니터 목록 가져와서 드롭다운 채우기 (한 번만 실행)
-        const monitorSnap = await db.collection("monitors").get();
-        let options = '<option value="ALL">All Monitors</option>';
-        monitorSnap.forEach(doc => {
-          const m = doc.data();
-          options += `<option value="${m.monitor_id}">${m.name}</option>`;
-        });
-        if(monitorSel) monitorSel.innerHTML = options;
-  
-        // 3. [최적화됨] 요약 컬렉션(calendar_stats)에서 조회 (속도 100배 향상)
-        // 수만 개의 로그 대신 날짜별 요약본만 가져오므로 매우 빠름
-        const statsSnap = await db.collection('calendar_stats').get();
-        
-        allLogCache = []; // 캐시 초기화
-        statsSnap.forEach(doc => {
-          const d = doc.data();
-          if (d.dateKey && d.monitor_id) {
-            // 이미 요약된 정보이므로 그대로 캐시에 저장
-            allLogCache.push({ dateKey: d.dateKey, monitor_id: d.monitor_id });
-          }
-        });
-  
-        // 4. 초기 필터링 (All Monitors) 실행
-        filterCalendarByMonitor();
-  
-      } catch (err) {
-        console.error("Data Load Error:", err);
-      } finally {
-        // 5. 로딩 종료
-        if(loader) loader.style.display = 'none';
-      }
-    }
-  
-    // 모니터 선택 시 달력 점만 다시 찍는 함수 (서버 통신 X, 즉시 반응)
-    function filterCalendarByMonitor() {
-      const selectedId = document.getElementById('sidebarMonitorSelect').value;
-      
-      // Set 초기화
-      dataDates.clear();
-  
-      // 메모리(allLogCache)에서 필터링
-      allLogCache.forEach(item => {
-        if (selectedId === 'ALL' || item.monitor_id === selectedId) {
-          dataDates.add(item.dateKey);
-        }
-      });
-  
-      // 달력 다시 그리기
-      renderSbCal();
-    }
+  /* [UPGRADE] 데이터 로딩 & 필터링 시스템 */
+  // [임시 기능] 기존의 무거운 데이터를 읽어서 가벼운 요약본(calendar_stats)을 생성하는 함수
+    async function migrateExistingData() {
+      if(!confirm("기존 데이터를 스캔하여 달력 속도를 최적화하시겠습니까? (시간이 조금 걸릴 수 있습니다)")) return;
+      
+      const loader = document.getElementById('calLoader');
+      if(loader) { loader.style.display = 'flex'; loader.querySelector('span').innerText = "Optimizing DB..."; }
+  
+      try {
+        const snap = await db.collection('face_analysis').get();
+        const batch = db.batch();
+        let count = 0;
+        let addedKeys = new Set();
+  
+        snap.forEach(doc => {
+          const d = doc.data();
+          if(d.uploaded_at && d.monitor_id) {
+            const date = d.uploaded_at.toDate();
+            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+            const statsId = `${dateKey}_${d.monitor_id}`;
+  
+            // 중복 방지 (같은 날짜, 같은 모니터는 한 번만 기록)
+            if(!addedKeys.has(statsId)) {
+              const ref = db.collection('calendar_stats').doc(statsId);
+              batch.set(ref, {
+                dateKey: dateKey,
+                monitor_id: d.monitor_id,
+                uploaded_at: d.uploaded_at,
+                has_data: true
+              }, { merge: true });
+              addedKeys.add(statsId);
+              count++;
+            }
+          }
+        });
+  
+        await batch.commit();
+        alert(`최적화 완료! ${count}개의 날짜 정보가 요약되었습니다.`);
+        checkDataExistence(); // 달력 새로고침
+      } catch(e) {
+        console.error(e);
+        alert("최적화 중 오류 발생");
+      } finally {
+        if(loader) loader.style.display = 'none';
+      }
+    }
+    let allLogCache = []; // 전체 데이터를 메모리에 저장 (속도 최적화)
+    /* [NEW] Filter & Analysis Logic */
+      let currentFilters = { gender: 'ALL', age: 'ALL', attention: 'ALL' };
+    
+      // 필터 칩 선택 함수 (UI 변경)
+      function selectFilter(type, el, value) {
+        // 1. 해당 그룹의 모든 칩에서 active 제거
+        const group = document.getElementById('filter_' + type);
+        group.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        
+        // 2. 선택된 칩에 active 추가
+        el.classList.add('active');
+        
+        // 3. 값 저장
+        currentFilters[type] = value;
+      }
+    
+      // 사이드바 광고 목록 불러오기
+      function loadSidebarAds() {
+        const adSel = document.getElementById('sidebarAdSelect');
+        if(!adSel) return;
+    
+        db.collection("ads").get().then(snapshot => {
+          let opts = '<option value="ALL">All Ads</option>';
+          snapshot.forEach(doc => {
+            const d = doc.data();
+            // 삭제되지 않은(active/inactive) 광고만 표시
+            opts += `<option value="${d.ad_id}">${d.name}</option>`;
+          });
+          adSel.innerHTML = opts;
+        });
+      }
+    
+      // [핵심] 분석 버튼 클릭 시 실행
+      function runAnalysis() {
+        // 1. 선택된 조건 수집
+        const monitorId = document.getElementById('sidebarMonitorSelect').value;
+        const adId = document.getElementById('sidebarAdSelect').value;
+        const selectedDateCount = selectedDates.length; // 달력에서 선택된 날짜 수
+    
+        if(selectedDateCount === 0) {
+          return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
+        }
+    
+        // 2. 로딩 표시 (KPI 박스에)
+        document.getElementById("kpi_impressions").innerText = "Analyzing...";
+        document.getElementById("kpi_dwell").innerText = "...";
+    
+        // 3. (여기에 실제 데이터 조회 로직이 들어갈 예정)
+        // 현재는 UI 동작 확인용 알림
+        console.log("Analysis Condition:", {
+          dates: selectedDates,
+          monitor: monitorId,
+          ad: adId,
+          filters: currentFilters
+        });
+    
+        // 4. 임시 결과 표시 (다음 단계에서 실제 DB 연동)
+        setTimeout(() => {
+          loadDashboardStats(); // 기존 함수 재활용하여 화면 갱신
+          alert("분석 조건이 적용되었습니다.\n(실제 필터링 로직은 다음 단계에서 연결합니다)");
+        }, 500);
+      }
+  
+    async function checkDataExistence() {
+      const loader = document.getElementById('calLoader');
+      const monitorSel = document.getElementById('sidebarMonitorSelect');
+      
+      // 1. 로딩 시작 표시
+      if(loader) loader.style.display = 'flex';
+      
+      try {
+        // 2. 모니터 목록 가져와서 드롭다운 채우기 (한 번만 실행)
+        const monitorSnap = await db.collection("monitors").get();
+        let options = '<option value="ALL">All Monitors</option>';
+        monitorSnap.forEach(doc => {
+          const m = doc.data();
+          options += `<option value="${m.monitor_id}">${m.name}</option>`;
+        });
+        if(monitorSel) monitorSel.innerHTML = options;
+  
+        // 3. [최적화됨] 요약 컬렉션(calendar_stats)에서 조회 (속도 100배 향상)
+        // 수만 개의 로그 대신 날짜별 요약본만 가져오므로 매우 빠름
+        const statsSnap = await db.collection('calendar_stats').get();
+        
+        allLogCache = []; // 캐시 초기화
+        statsSnap.forEach(doc => {
+          const d = doc.data();
+          if (d.dateKey && d.monitor_id) {
+            // 이미 요약된 정보이므로 그대로 캐시에 저장
+            allLogCache.push({ dateKey: d.dateKey, monitor_id: d.monitor_id });
+          }
+        });
+  
+        // 4. 초기 필터링 (All Monitors) 실행
+        filterCalendarByMonitor();
+  
+      } catch (err) {
+        console.error("Data Load Error:", err);
+      } finally {
+        // 5. 로딩 종료
+        if(loader) loader.style.display = 'none';
+      }
+    }
+  
+    // 모니터 선택 시 달력 점만 다시 찍는 함수 (서버 통신 X, 즉시 반응)
+    function filterCalendarByMonitor() {
+      const selectedId = document.getElementById('sidebarMonitorSelect').value;
+      
+      // Set 초기화
+      dataDates.clear();
+  
+      // 메모리(allLogCache)에서 필터링
+      allLogCache.forEach(item => {
+        if (selectedId === 'ALL' || item.monitor_id === selectedId) {
+          dataDates.add(item.dateKey);
+        }
+      });
+  
+      // 달력 다시 그리기
+      renderSbCal();
+    }
 
-  function changeMonth(step) {
-    currentCalDate.setDate(1);
-    currentCalDate.setMonth(currentCalDate.getMonth() + step);
-    renderSbCal();
-  }
+  function changeMonth(step) {
+    currentCalDate.setDate(1);
+    currentCalDate.setMonth(currentCalDate.getMonth() + step);
+    renderSbCal();
+  }
 
-  function renderSbCal() {
-    const year = currentCalDate.getFullYear();
-    const month = currentCalDate.getMonth();
+  function renderSbCal() {
+    const year = currentCalDate.getFullYear();
+    const month = currentCalDate.getMonth();
 
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    document.getElementById('calMonthYear').innerText = `${monthNames[month]} ${year}`;
 
-    const firstDay = new Date(year, month, 1).getDay();
-    const lastDate = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
 
-    const grid = document.getElementById('sidebarCalGrid');
-    grid.innerHTML = '';
+    const grid = document.getElementById('sidebarCalGrid');
+    grid.innerHTML = '';
 
-    for (let i = 0; i < firstDay; i++) {
-      grid.innerHTML += `<div></div>`;
-    }
+    for (let i = 0; i < firstDay; i++) {
+      grid.innerHTML += `<div></div>`;
+    }
 
-    for (let d = 1; d <= lastDate; d++) {
-      const dateKey = `${year}-${month+1}-${d}`;
-      const isSelected = selectedDates.includes(dateKey);
-      
-      // [핵심 수정] 실제 데이터가 있는 날짜인지 확인 (Set에 들어있는지 체크)
-      const hasData = dataDates.has(dateKey);
+    for (let d = 1; d <= lastDate; d++) {
+      const dateKey = `${year}-${month+1}-${d}`;
+      const isSelected = selectedDates.includes(dateKey);
+      
+      // [핵심 수정] 실제 데이터가 있는 날짜인지 확인 (Set에 들어있는지 체크)
+      const hasData = dataDates.has(dateKey);
 
-      const cls = `sb-date-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`;
-      
-      grid.innerHTML += `
-        <div class="${cls}" onclick="toggleDate('${dateKey}')">
-          ${d}
-          <div class="sb-dot"></div>
-        </div>`;
-    }
-    
-    document.getElementById('selCount').innerText = selectedDates.length;
-  }
+      const cls = `sb-date-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`;
+      
+      grid.innerHTML += `
+        <div class="${cls}" onclick="toggleDate('${dateKey}')">
+          ${d}
+          <div class="sb-dot"></div>
+        </div>`;
+    }
+    
+    document.getElementById('selCount').innerText = selectedDates.length;
+  }
 
-  window.toggleDate = (dateKey) => {
-    if (selectedDates.includes(dateKey)) {
-      selectedDates = selectedDates.filter(d => d !== dateKey);
-    } else {
-      selectedDates.push(dateKey);
-    }
-    renderSbCal();
-  };
+  window.toggleDate = (dateKey) => {
+    if (selectedDates.includes(dateKey)) {
+      selectedDates = selectedDates.filter(d => d !== dateKey);
+    } else {
+      selectedDates.push(dateKey);
+    }
+    renderSbCal();
+  };
 
-    window.onload = function() {
-        initMaps();
-        loadMonitorList();     // 모니터 목록 불러오기
-        initDragAndDrop();     // 드래그 앤 드롭 설정
-        
-        // [추가됨] 데이터가 있는 날짜 확인 시작
-        checkDataExistence();  
-        
-        renderSbCal();         // 일단 빈 달력 먼저 그리기
-      };
+    window.onload = function() {
+        initMaps();
+        loadMonitorList();     // 모니터 목록 불러오기
+        initDragAndDrop();     // 드래그 앤 드롭 설정
+        
+        // [추가됨] 데이터가 있는 날짜 확인 시작
+        checkDataExistence();  
+        
+        renderSbCal();         // 일단 빈 달력 먼저 그리기
+      };
 
-  const heatGrid = document.getElementById('heatGrid');
-  if(heatGrid) {
-    for(let i=0; i<7*18; i++) {
-      const lv = Math.ceil(Math.random()*4);
-      const div = document.createElement('div');
-      div.className = `hm-cell l${lv}`;
-      heatGrid.appendChild(div);
-    }
-  }
+  const heatGrid = document.getElementById('heatGrid');
+  if(heatGrid) {
+    for(let i=0; i<7*18; i++) {
+      const lv = Math.ceil(Math.random()*4);
+      const div = document.createElement('div');
+      div.className = `hm-cell l${lv}`;
+      heatGrid.appendChild(div);
+    }
+  }
 </script>
 </body>
 </html>
