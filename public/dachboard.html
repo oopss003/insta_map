@@ -664,26 +664,40 @@
       document.getElementById('addAdModal').style.display = 'none';
     }
   
-    function saveNewAd() {
-      const id = document.getElementById('new_ad_id').value;
-      const name = document.getElementById('new_ad_name').value;
-      const client = document.getElementById('new_ad_client').value;
-      const status = document.getElementById('new_ad_status').value;
-  
-      if(!id || !name) return alert("ID와 광고명은 필수입니다.");
-  
-      db.collection("ads").doc(id).set({
-        ad_id: id, 
-        name: name, 
-        client: client, 
-        status: status,
-        updated_at: firebase.firestore.FieldValue.serverTimestamp()
-      }, { merge: true }).then(() => {
-        alert("광고가 등록되었습니다!");
-        closeAddAdModal();
-        loadAdList();
-      });
-    }
+  // [수정됨] 광고 등록: 중복 ID 체크 로직 추가
+  function saveNewAd() {
+    const id = document.getElementById('new_ad_id').value.trim(); // 공백 제거
+    const name = document.getElementById('new_ad_name').value;
+    const client = document.getElementById('new_ad_client').value;
+    const status = document.getElementById('new_ad_status').value;
+
+    if(!id || !name) return alert("ID와 광고명은 필수입니다.");
+
+    // 1. 먼저 해당 ID가 존재하는지 확인 (중복 체크)
+    db.collection("ads").doc(id).get().then((docSnapshot) => {
+      if (docSnapshot.exists) {
+        // 2. 이미 존재하면 경고창 띄우고 중단
+        alert(`[중복 오류] Ad ID '${id}'는 이미 등록된 ID입니다.\n다른 ID를 사용해주세요.`);
+        return; 
+      } else {
+        // 3. 존재하지 않으면 저장 진행
+        db.collection("ads").doc(id).set({
+          ad_id: id, 
+          name: name, 
+          client: client, 
+          status: status,
+          updated_at: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+          alert("광고가 성공적으로 등록되었습니다!");
+          closeAddAdModal();
+          loadAdList();
+        });
+      }
+    }).catch((error) => {
+      console.error("Error checking ID:", error);
+      alert("ID 확인 중 오류가 발생했습니다.");
+    });
+  }
   
     function deleteAd(id) {
       if(confirm("이 광고 정보를 삭제하시겠습니까?")) {
