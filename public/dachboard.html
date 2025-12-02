@@ -1496,7 +1496,55 @@
                  "Avg. Watch Time", avgWatch + "s", `Ad ID: ${adId}`,
                  "High Attention %", attnRatio + "%", "Score > 0.6",
                  "Effective Reach", targetGroup, "Main Viewer Group");
-
+        // ============================================================
+        // ▼▼▼ [새로 추가된 코드] 신규 KPI 5~8번 계산 및 업데이트 ▼▼▼
+        // ============================================================
+    
+        // [KPI 5] Effective Reach (유효 도달: 3초 이상 & 주목도 0.5 이상)
+        const effectiveUsers = filtered.filter(d => (d.duration || 0) >= 3 && (d.attention || 0) >= 0.5).length;
+        document.getElementById('kpi5_val').innerText = effectiveUsers.toLocaleString();
+    
+        // [KPI 6] Target Match Rate (Top Persona가 전체에서 차지하는 비율)
+        let matchRate = "0.0";
+        if (total > 0 && topPersona !== "-") {
+            // topPersona 문자열(예: "30's F")을 분해해서 조건 확인
+            // 주의: getTopPersona 함수가 "30's F" 형태로 리턴한다고 가정
+            const parts = topPersona.split("'s "); 
+            if(parts.length === 2) {
+                const targetAge = parseInt(parts[0]); // 30
+                const targetGenderCode = parts[1];    // F 혹은 M
+                
+                const targetCount = filtered.filter(d => {
+                    const ag = Math.floor(d.age / 10) * 10;
+                    // 데이터의 성별 표기법(남자/Male 등)을 M/F로 통일하여 비교
+                    let g = 'U'; // Unknown
+                    const rawG = String(d.gender).toUpperCase();
+                    if(rawG.includes('남') || rawG === 'MALE' || rawG === 'M') g = 'M';
+                    else if(rawG.includes('여') || rawG === 'FEMALE' || rawG === 'F') g = 'F';
+    
+                    return ag === targetAge && g === targetGenderCode;
+                }).length;
+    
+                matchRate = ((targetCount / total) * 100).toFixed(1);
+            }
+        }
+        document.getElementById('kpi6_val').innerText = matchRate + "%";
+    
+        // [KPI 7] Deep Engagement (10초 이상 체류 비율)
+        const deepCount = filtered.filter(d => (d.duration || 0) >= 10).length;
+        const deepRatio = total > 0 ? ((deepCount / total) * 100).toFixed(1) : 0;
+        document.getElementById('kpi7_val').innerText = deepRatio + "%";
+    
+        // [KPI 8] Total Attention Hours (총 점유 시간)
+        // 전체 체류시간(초) 합계 구하기
+        const totalSeconds = filtered.reduce((acc, cur) => acc + (cur.duration || 0), 0);
+        // 초를 시간 단위로 변환 (소수점 1자리)
+        const totalHours = (totalSeconds / 3600).toFixed(1);
+        document.getElementById('kpi8_val').innerText = totalHours + "h";
+    
+        // ============================================================
+        // ▲▲▲ [추가 코드 끝] ▲▲▲
+        // ============================================================
        // 5. 차트 렌더링
        renderDemographicsBar(filtered);
        renderTimeHeatmap(filtered, 'attention'); // 광고 모드는 '주목도 평균' 기준 히트맵
