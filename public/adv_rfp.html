@@ -494,40 +494,55 @@
                 title: '데이터 리포트 예시',
                 icon: 'pie-chart',
                 content: `
-                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-4 lg:pb-6 overflow-hidden">
-                        <div class="mb-4 shrink-0 flex justify-between items-end">
-                            <div>
-                                <h2 class="text-2xl lg:text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
-                                <p class="text-gray-500 text-sm mt-1">광고주에게 제공되는 실제 리포트 화면입니다. (PC/Mobile 지원)</p>
-                            </div>
-                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold animate-pulse flex items-center gap-1">
-                                <span class="w-2 h-2 bg-green-500 rounded-full"></span> LIVE DATA
-                            </span>
+                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-4 lg:pb-8 overflow-hidden">
+                        <div class="mb-6 shrink-0">
+                            <h2 class="text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
+                            <p class="text-gray-500 text-lg mt-2">광고주에게 제공되는 실제 리포트 화면입니다. (PC/Mobile 지원)</p>
                         </div>
 
-                        <div class="flex-1 bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner relative min-h-0 flex flex-col justify-center items-center">
-                            <div class="w-full h-full bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden flex items-center justify-center">
-                                <img src="images/dash004.jpg" 
-                                     alt="Inwave Analytics Dashboard" 
-                                     class="w-full h-full object-contain bg-white">
+                        <div class="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 relative">
+                            
+                            <div class="lg:flex-[2] bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner relative flex flex-col justify-center items-center min-h-[400px] lg:min-h-0 order-1">
+                                <div class="w-full h-full bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden relative group">
+                                    <img src="images/dash004.jpg" 
+                                         alt="Inwave Analytics Dashboard" 
+                                         class="w-full h-full object-contain bg-white transform transition-transform duration-500 group-hover:scale-[1.02]">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="mt-4 bg-indigo-50 border border-indigo-100 p-4 lg:p-5 rounded-2xl flex items-start gap-4 shrink-0 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                            <div class="bg-white p-2.5 rounded-full shadow-sm text-indigo-600 shrink-0 mt-0.5">
-                                <i data-lucide="sparkles" class="w-5 h-5"></i>
+                            <div class="lg:flex-1 bg-indigo-50 border border-indigo-100 p-6 lg:p-8 rounded-2xl flex flex-col justify-center gap-5 shadow-sm order-2 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-center gap-3 text-indigo-600 mb-2">
+                                    <div class="bg-white p-3 rounded-full shadow-sm shrink-0">
+                                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                                    </div>
+                                    <h5 class="text-xl font-bold text-indigo-800">
+                                        AI Insight Report
+                                    </h5>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Analysis Complete</span>
+                                        <p class="text-slate-700 mt-2 leading-relaxed text-base lg:text-lg">
+                                            데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>의 관여도가 가장 높게 나타났습니다.
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Key Finding</span>
+                                        <p class="text-slate-700 mt-2 leading-relaxed text-base lg:text-lg">
+                                            특히 <span class="font-bold text-indigo-700">오후 6~9시 퇴근 시간대</span>에 트래픽과 주목도가 집중되는 골든타임이 식별되었습니다.
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm ring-2 ring-indigo-200">
+                                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-1">
+                                            <i data-lucide="lightbulb" class="w-4 h-4"></i> Suggestion
+                                        </span>
+                                        <p class="text-slate-800 font-bold mt-2 leading-relaxed text-base lg:text-lg">
+                                            차기 집행 시 해당 시간대 노출 비중을 <span class="text-indigo-600 underline decoration-2 underline-offset-4">15% 상향 조정</span>하여 ROI를 극대화할 것을 제안합니다.
+                                        </p>
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h5 class="text-sm lg:text-base font-bold text-indigo-800 flex items-center gap-2 mb-1">
-                                    AI Insight Report
-                                    <span class="text-[10px] font-normal text-indigo-500 bg-white px-2 py-0.5 rounded-full border border-indigo-100">Analysis Complete</span>
-                                </h5>
-                                <p class="text-slate-700 text-sm lg:text-base leading-snug">
-                                    데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>의 관여도가 가장 높으며, 
-                                    특히 <span class="font-bold text-indigo-700">오후 6~9시 퇴근 시간대</span>에 트래픽이 집중되고 있습니다. 
-                                    차기 집행 시 해당 시간대 노출 비중을 <span class="underline decoration-indigo-400 decoration-2 underline-offset-2">15% 상향 조정</span>하여 ROI를 극대화할 것을 제안합니다.
-                                </p>
-                            </div>
+
                         </div>
                     </div>
                 `
