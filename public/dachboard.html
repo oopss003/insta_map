@@ -1272,10 +1272,14 @@
     }
 
     for (let d = 1; d <= lastDate; d++) {
-      const dateKey = `${year}-${month+1}-${d}`;
+      // [수정됨] DB의 dateKey ("2025-05-09") 포맷과 일치하도록 padStart(2, '0') 적용
+      const mStr = (month + 1).toString().padStart(2, '0');
+      const dStr = d.toString().padStart(2, '0');
+      const dateKey = `${year}-${mStr}-${dStr}`;
+      
       const isSelected = selectedDates.includes(dateKey);
       
-      // [핵심 수정] 실제 데이터가 있는 날짜인지 확인 (Set에 들어있는지 체크)
+      // dataDates Set에는 이미 DB 포맷(YYYY-MM-DD)으로 저장되어 있으므로 이제 매칭됨
       const hasData = dataDates.has(dateKey);
 
       const cls = `sb-date-cell ${hasData ? 'has-data' : ''} ${isSelected ? 'selected' : ''}`;
