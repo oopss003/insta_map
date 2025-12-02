@@ -170,6 +170,40 @@
           border-radius: 50%; border-top-color: var(--primary-color);
           animation: spin 1s ease-in-out infinite; margin-bottom: 20px;
         }
+
+
+   /* [NEW] Dashboard Layout Update */
+    .dashboard-grid { display: grid; grid-template-columns: 240px 1fr; gap: 24px; height: calc(100vh - 150px); min-height: 500px; }
+    
+    /* 좌측 KPI 4칸 */
+    .kpi-column { display: flex; flex-direction: column; gap: 16px; justify-content: space-between; height: 100%; }
+    .kpi-box { flex: 1; display: flex; flex-direction: column; justify-content: center; min-height: 100px; }
+    
+    /* 우측 차트 영역 2분할 */
+    .charts-row { display: flex; gap: 16px; height: 100%; }
+    .chart-half { flex: 1; background: white; border-radius: 16px; border: 1px solid var(--border-color); padding: 20px; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* 심플 바 차트 스타일 */
+    .bar-chart-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding-top: 20px; }
+    .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+    .bar-label { width: 60px; font-size: 12px; font-weight: 600; color: #64748B; text-align: right; }
+    .bar-bg { flex: 1; background: #F1F5F9; height: 24px; border-radius: 6px; overflow: hidden; position: relative; }
+    .bar-fill { height: 100%; background: var(--primary-color); width: 0%; transition: width 1s; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-size: 11px; color: white; font-weight: 700; }
+    
+    /* 히트맵 스타일 보정 */
+    .heatmap-layout { display: flex; flex-direction: column; height: 100%; }
+    .hm-container { display: flex; flex: 1; gap: 8px; margin-top:10px; }
+    .hm-y { display: flex; flex-direction: column; justify-content: space-between; font-size: 11px; color: #94A3B8; font-weight: 600; padding-bottom: 20px; }
+    .hm-grid-box { flex: 1; display: grid; grid-template-rows: repeat(7, 1fr); grid-template-columns: repeat(14, 1fr); gap: 3px; }
+    .hm-cell { background: #F1F5F9; border-radius: 4px; transition: background 0.2s; }
+    .hm-x { display: flex; justify-content: space-between; padding-left: 30px; margin-top: 5px; font-size: 10px; color: #CBD5E1; }
+    
+    /* 히트맵 색상 레벨 */
+    .lv-0 { background: #F1F5F9; }
+    .lv-1 { background: #DBEAFE; }
+    .lv-2 { background: #93C5FD; }
+    .lv-3 { background: #3B82F6; }
+    .lv-4 { background: #1E40AF; } 
   </style>
 </head>
 <body>
@@ -280,38 +314,62 @@
                 </button>
               </div>
             </div>
-      <div class="dashboard-grid">
+<div class="dashboard-grid">
         <div class="kpi-column">
           <div class="kpi-box">
-            <div class="kpi-head">Total Impressions</div>
-            <div class="kpi-val">42,593</div>
-            <div class="kpi-sub">+12.5%</div>
+            <div class="kpi-head" id="kpi1_title">Total Traffic</div>
+            <div class="kpi-val" id="kpi1_val">-</div>
+            <div class="kpi-sub" id="kpi1_sub">Select Dates</div>
           </div>
           <div class="kpi-box">
-            <div class="kpi-head">Avg. Dwell Time</div>
-            <div class="kpi-val">4.8s</div>
-            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+            <div class="kpi-head" id="kpi2_title">Avg. Dwell Time</div>
+            <div class="kpi-val" id="kpi2_val">-</div>
+            <div class="kpi-sub" id="kpi2_sub">Seconds</div>
           </div>
           <div class="kpi-box">
-            <div class="kpi-head">Peak Hour</div>
-            <div class="kpi-val">19:00</div>
-            <div class="kpi-sub" style="color:#6B7280">Fri</div>
+            <div class="kpi-head" id="kpi3_title">Attention Ratio</div>
+            <div class="kpi-val" id="kpi3_val">-</div>
+            <div class="kpi-sub" id="kpi3_sub">High Attention</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi4_title">Top Persona</div>
+            <div class="kpi-val" id="kpi4_val">-</div>
+            <div class="kpi-sub" id="kpi4_sub">Target Group</div>
           </div>
         </div>
-        <div class="chart-box">
-          <div class="chart-header">
-            <div style="font-weight:700;">Weekly Heatmap</div>
-            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+
+        <div class="charts-row">
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart1_title">Demographics</div>
+                <div style="font-size:12px; color:#9CA3AF;">Gender & Age Distribution</div>
+              </div>
+            </div>
+            <div class="bar-chart-container" id="barChartContainer">
+              <div style="text-align:center; color:#CBD5E1; margin-top:40px;">Ready to Analyze</div>
+            </div>
           </div>
-          <div class="heatmap-layout">
-            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
-            <div class="hm-grid" id="heatGrid"></div>
+
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart2_title">Time Analysis</div>
+                <div style="font-size:12px; color:#9CA3AF;">Peak Time Heatmap</div>
+              </div>
+            </div>
+            <div class="heatmap-layout">
+              <div class="hm-container">
+                <div class="hm-y"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                <div class="hm-grid-box" id="analysisHeatGrid">
+                   </div>
+              </div>
+              <div class="hm-x"><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div>
+            </div>
           </div>
-          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
         </div>
       </div>
-    </div>
-
+   </div>
 
     <div id="page-monitors" class="page-view">
       <div class="top-section">
@@ -469,6 +527,7 @@
   var modalMap = null;
   var tempMarker = null;
   var monitorMarkers = []; // [NEW] 모니터 지도 마커 리스트
+  var dashboardMarkers = []; // [추가됨] 대시보드 마커 리스트
 
   function initMaps() {
     // 1. 대시보드 맵
@@ -527,13 +586,25 @@
       }
 
   /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
+  /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
   function loadMonitorList() {
     const listEl = document.getElementById('monitorList');
     listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
     
-    // 기존 마커 제거
+    // 1. 기존 마커들 초기화
     monitorMarkers.forEach(m => m.setMap(null));
     monitorMarkers = [];
+    
+    // 대시보드 마커 초기화 (변수가 없으면 안전하게 생성)
+    if(typeof dashboardMarkers !== 'undefined') {
+        dashboardMarkers.forEach(m => m.setMap(null));
+        dashboardMarkers = [];
+    } else {
+        window.dashboardMarkers = [];
+    }
+
+    // 2. 지도 범위(Bounds) 객체 생성 (자동 줌 조절용)
+    const bounds = new naver.maps.LatLngBounds();
 
     db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
       let html = '';
@@ -551,7 +622,7 @@
           dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
         }
 
-        // 1. 리스트 추가
+        // --- HTML 리스트 생성 ---
         html += `
           <div class="table-row">
             <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
@@ -566,9 +637,14 @@
           </div>
         `;
 
-        // 2. 지도 마커 추가
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(d.location.lat, d.location.lng),
+        const position = new naver.maps.LatLng(d.location.lat, d.location.lng);
+        
+        // [중요] 데이터가 있는 위치로 지도 범위 확장
+        bounds.extend(position);
+
+        // --- A. 모니터 관리 페이지용 마커 (파란색) ---
+        const mMarker = new naver.maps.Marker({
+          position: position,
           map: monitorMap,
           icon: {
             content: `<div style="position:relative; cursor:pointer;">
@@ -578,14 +654,30 @@
             anchor: new naver.maps.Point(6, 6)
           }
         });
-        monitorMarkers.push(marker);
+        monitorMarkers.push(mMarker);
+
+        // --- B. 대시보드용 마커 (빨간색 점) ---
+        if(dashboardMap) {
+            const dMarker = new naver.maps.Marker({
+              position: position,
+              map: dashboardMap,
+              icon: {
+                content: `<div style="background:#EF4444; width:10px; height:10px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);" title="${d.name}"></div>`,
+                anchor: new naver.maps.Point(5, 5)
+              }
+            });
+            dashboardMarkers.push(dMarker);
+        }
       });
       
       listEl.innerHTML = html;
       
-      // 마커가 있다면 첫 번째 마커로 이동
+      // [핵심] 마커들이 모두 보이도록 지도 중심과 줌을 자동 조절
       if(monitorMarkers.length > 0) {
-        monitorMap.panTo(monitorMarkers[0].getPosition());
+        monitorMap.fitBounds(bounds, { padding: 50 }); // 모니터 맵 자동 조절
+        if(dashboardMap) {
+            dashboardMap.fitBounds(bounds, { padding: 30 }); // 대시보드 맵 자동 조절
+        }
       }
     });
   }
@@ -1159,35 +1251,322 @@
       }
     
       // [핵심] 분석 버튼 클릭 시 실행
-      function runAnalysis() {
-        // 1. 선택된 조건 수집
-        const monitorId = document.getElementById('sidebarMonitorSelect').value;
-        const adId = document.getElementById('sidebarAdSelect').value;
-        const selectedDateCount = selectedDates.length; // 달력에서 선택된 날짜 수
-    
-        if(selectedDateCount === 0) {
-          return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
+    // ==========================================
+    // [3. ANALYTICS LOGIC START]
+    // ==========================================
+
+    // [CORE] 분석 실행 함수 (버튼 클릭 시 호출)
+    async function runAnalysis() {
+      const monitorId = document.getElementById('sidebarMonitorSelect').value;
+      const adId = document.getElementById('sidebarAdSelect').value;
+      
+      // 1. 유효성 검사
+      if (selectedDates.length === 0) return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
+      if (monitorId === 'ALL') return alert("분석할 특정 모니터를 선택해주세요.");
+
+      // 2. 로딩 UI 표시
+      document.getElementById('kpi1_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      document.getElementById('kpi2_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      document.getElementById('kpi3_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      document.getElementById('kpi4_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      document.getElementById('barChartContainer').innerHTML = '<div style="text-align:center; padding-top:40px; color:#999;">Loading...</div>';
+      document.getElementById('analysisHeatGrid').innerHTML = ''; // 히트맵 초기화
+      
+      try {
+        // 3. Face Analysis 데이터 가져오기 (선택된 날짜 루프)
+        let rawFaceData = [];
+        for(const date of selectedDates) {
+           // 해당 날짜 + 모니터 데이터 조회
+           const snap = await db.collection('face_analysis')
+             .where('monitor_id', '==', monitorId)
+             .where('date', '==', date)
+             .get();
+           snap.forEach(doc => rawFaceData.push(doc.data()));
         }
-    
-        // 2. 로딩 표시 (KPI 박스에)
-        document.getElementById("kpi_impressions").innerText = "Analyzing...";
-        document.getElementById("kpi_dwell").innerText = "...";
-    
-        // 3. (여기에 실제 데이터 조회 로직이 들어갈 예정)
-        // 현재는 UI 동작 확인용 알림
-        console.log("Analysis Condition:", {
-          dates: selectedDates,
-          monitor: monitorId,
-          ad: adId,
-          filters: currentFilters
-        });
-    
-        // 4. 임시 결과 표시 (다음 단계에서 실제 DB 연동)
-        setTimeout(() => {
-          loadDashboardStats(); // 기존 함수 재활용하여 화면 갱신
-          alert("분석 조건이 적용되었습니다.\n(실제 필터링 로직은 다음 단계에서 연결합니다)");
-        }, 500);
+
+        // 4. 시나리오 분기
+        if (adId === 'ALL') {
+           // --- [Scenario A] 일반 트래픽 분석 ---
+           console.log(`[Analysis] General Traffic Mode: ${rawFaceData.length} rows`);
+           analyzeGeneralTraffic(rawFaceData);
+        } else {
+           // --- [Scenario B] 광고 성과 분석 ---
+           // 광고 로그(Video Logs)도 추가로 가져와야 함
+           let rawAdLogs = [];
+           for(const date of selectedDates) {
+             const snap = await db.collection('video_logs')
+               .where('monitor_id', '==', monitorId)
+               .where('date', '==', date)
+               .where('ad_id', '==', adId) // 특정 광고 ID만 필터링
+               .get();
+             snap.forEach(doc => rawAdLogs.push(doc.data()));
+           }
+           console.log(`[Analysis] Ad Mode: ${rawAdLogs.length} ad plays found`);
+           analyzeAdPerformance(rawFaceData, rawAdLogs, adId);
+        }
+
+      } catch(err) {
+        console.error(err);
+        alert("데이터 분석 중 오류가 발생했습니다. 콘솔을 확인해주세요.");
+        document.getElementById('kpi1_val').innerText = "Error";
       }
+    }
+
+    // --- [Logic 1] 일반 트래픽 분석 함수 ---
+    function analyzeGeneralTraffic(data) {
+       // 1. 필터 적용 (성별/연령/주목도)
+       const filtered = applyFilters(data);
+
+       // 2. KPI 계산
+       const total = filtered.length;
+       
+       // 평균 체류시간 계산
+       const avgDwell = total > 0 ? (filtered.reduce((acc, cur) => acc + (cur.duration || 0), 0) / total).toFixed(1) : 0;
+       
+       // 주목도 비율 (0.5 이상인 사람 수)
+       const highAttn = filtered.filter(d => (d.attention || 0) >= 0.5).length;
+       const attnRatio = total > 0 ? ((highAttn / total) * 100).toFixed(1) : 0;
+       
+       // 주요 방문 페르소나
+       const topPersona = getTopPersona(filtered);
+
+       // 3. KPI 박스 업데이트
+       updateKPI("Total Traffic", total.toLocaleString(), "Visitors", 
+                 "Avg. Dwell Time", avgDwell + "s", "Target: 5.0s",
+                 "Attention Ratio", attnRatio + "%", "High Score > 0.5",
+                 "Top Persona", topPersona, "Most Frequent");
+
+       // 4. 차트 렌더링
+       renderDemographicsBar(filtered);
+       renderTimeHeatmap(filtered, 'count'); // 일반 모드는 '방문자 수' 기준 히트맵
+       
+       // 5. 차트 제목 업데이트
+       document.getElementById('chart1_title').innerText = "Demographics";
+       document.getElementById('chart2_title').innerText = "Hourly Traffic";
+    }
+
+    // --- [Logic 2] 광고 성과 분석 함수 ---
+    function analyzeAdPerformance(faceData, adLogs, adId) {
+       // 1. 시간 매칭 (Time Matching)
+       // 광고가 송출된 시간(Start~End) 사이에 감지된 얼굴 데이터만 추출
+       let matchedFaces = [];
+       
+       // 시간 문자열("12:30:00") -> 분(Minute) 단위 정수로 변환하는 헬퍼
+       const timeToMin = (t) => { 
+           if(!t) return -1; 
+           const p = t.split(':'); 
+           return parseInt(p[0])*60 + parseInt(p[1]); 
+       };
+
+       adLogs.forEach(log => {
+          const logStart = timeToMin(log.start_time);
+          const logEnd = timeToMin(log.end_time);
+          
+          // 같은 날짜의 얼굴 데이터 중 시간이 겹치는 것 찾기
+          const dayFaces = faceData.filter(f => f.date === log.date);
+          
+          dayFaces.forEach(face => {
+             const faceStart = timeToMin(face.start_time);
+             // 얼굴 감지 시간이 광고 송출 시간 범위 내에 있으면 매칭
+             if(faceStart >= logStart && faceStart <= logEnd) {
+                matchedFaces.push(face);
+             }
+          });
+       });
+       
+       // 중복 제거 (한 사람이 같은 광고를 여러 번 본 경우 등 처리)
+       matchedFaces = [...new Set(matchedFaces)];
+
+       // 2. 필터 적용
+       const filtered = applyFilters(matchedFaces);
+
+       // 3. KPI 계산
+       const impressions = filtered.length; // 노출 수
+       const avgWatch = impressions > 0 ? (filtered.reduce((acc, cur) => acc + (cur.duration || 0), 0) / impressions).toFixed(1) : 0;
+       
+       // 광고는 주목도 기준을 조금 높게(0.6) 잡아봄
+       const highAttn = filtered.filter(d => (d.attention || 0) >= 0.6).length;
+       const attnRatio = impressions > 0 ? ((highAttn / impressions) * 100).toFixed(1) : 0;
+       
+       const targetGroup = getTopPersona(filtered);
+
+       // 4. KPI 박스 업데이트
+       updateKPI("Ad Impressions", impressions.toLocaleString(), "Views", 
+                 "Avg. Watch Time", avgWatch + "s", `Ad ID: ${adId}`,
+                 "High Attention %", attnRatio + "%", "Score > 0.6",
+                 "Effective Reach", targetGroup, "Main Viewer Group");
+
+       // 5. 차트 렌더링
+       renderDemographicsBar(filtered);
+       renderTimeHeatmap(filtered, 'attention'); // 광고 모드는 '주목도 평균' 기준 히트맵
+
+       // 6. 차트 제목 업데이트
+       document.getElementById('chart1_title').innerText = "Viewer Demographics";
+       document.getElementById('chart2_title').innerText = "Ad Effectiveness (Attention)";
+    }
+
+    // --- [Helper] 필터링 적용 공통 함수 ---
+    function applyFilters(data) {
+       return data.filter(d => {
+         // 1. 성별 필터
+         if (currentFilters.gender !== 'ALL') {
+            // 데이터엔 '남자'/'여자'로 저장됨 -> Male/Female로 변환해서 비교
+            const g = d.gender === '남자' ? 'Male' : 'Female';
+            if (g !== currentFilters.gender) return false;
+         }
+         // 2. 주목도 필터 (High 선택 시 0.5 미만 제외)
+         if (currentFilters.attention === 'High') {
+            if ((d.attention || 0) < 0.5) return false;
+         }
+         // 3. 연령대 필터 (다중 선택)
+         if (!currentFilters.age.includes('ALL')) {
+            const ageG = Math.floor(d.age / 10) * 10; // 24 -> 20
+            if (!currentFilters.age.includes(String(ageG))) return false;
+         }
+         return true;
+       });
+    }
+
+    // --- [Helper] 가장 많이 등장한 페르소나(나이+성별) 찾기 ---
+    function getTopPersona(data) {
+       if(data.length === 0) return "-";
+       const counts = {};
+       data.forEach(d => {
+          const g = d.gender === '남자' ? 'M' : 'F';
+          const a = Math.floor(d.age / 10) * 10;
+          const key = `${a}'s ${g}`;
+          counts[key] = (counts[key] || 0) + 1;
+       });
+       // 가장 카운트가 높은 키 반환
+       return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+    }
+
+    // --- [Helper] KPI UI 텍스트 업데이트 ---
+    function updateKPI(t1, v1, s1, t2, v2, s2, t3, v3, s3, t4, v4, s4) {
+      document.getElementById('kpi1_title').innerText = t1; 
+      document.getElementById('kpi1_val').innerText = v1; 
+      document.getElementById('kpi1_sub').innerText = s1;
+      
+      document.getElementById('kpi2_title').innerText = t2; 
+      document.getElementById('kpi2_val').innerText = v2; 
+      document.getElementById('kpi2_sub').innerText = s2;
+      
+      document.getElementById('kpi3_title').innerText = t3; 
+      document.getElementById('kpi3_val').innerText = v3; 
+      document.getElementById('kpi3_sub').innerText = s3;
+      
+      document.getElementById('kpi4_title').innerText = t4; 
+      document.getElementById('kpi4_val').innerText = v4; 
+      document.getElementById('kpi4_sub').innerText = s4;
+    }
+
+    // --- [Chart 1] 막대 그래프 그리기 ---
+    function renderDemographicsBar(data) {
+      const container = document.getElementById('barChartContainer');
+      container.innerHTML = '';
+      if(data.length === 0) { 
+          container.innerHTML = '<div style="text-align:center; color:#ccc; margin-top:40px;">No Data Found</div>'; 
+          return; 
+      }
+
+      // 연령대별 카운팅
+      const ageGroups = { '10대':0, '20대':0, '30대':0, '40대':0, '50대':0, '60대+':0 };
+      data.forEach(d => {
+         let ag = Math.floor(d.age / 10) * 10;
+         if(ag < 10) ag = 10; 
+         if(ag > 60) ag = 60;
+         const label = ag === 60 ? '60대+' : ag + '대';
+         if(ageGroups[label] !== undefined) ageGroups[label]++;
+      });
+
+      const maxVal = Math.max(...Object.values(ageGroups)); // 그래프 최대 길이 기준
+      
+      // HTML 생성
+      for(const [label, count] of Object.entries(ageGroups)) {
+         const pct = maxVal > 0 ? (count / maxVal) * 100 : 0;
+         // 바 안쪽에 숫자가 보이도록
+         const barHtml = `
+           <div class="bar-row">
+             <div class="bar-label">${label}</div>
+             <div class="bar-bg">
+               <div class="bar-fill" style="width:${pct}%">${count > 0 ? count : ''}</div>
+             </div>
+           </div>`;
+         container.innerHTML += barHtml;
+      }
+    }
+
+    // --- [Chart 2] 히트맵 그리기 (타입: 방문자수 'count' / 주목도 'attention') ---
+    function renderTimeHeatmap(data, type) {
+       const grid = document.getElementById('analysisHeatGrid');
+       grid.innerHTML = '';
+       
+       // 7일(월~일) x 14시간(09~22시) 매트릭스 생성
+       const matrix = Array.from({ length: 7 }, () => Array(14).fill(0)); 
+       const counts = Array.from({ length: 7 }, () => Array(14).fill(0)); // 평균 계산용 분모
+
+       data.forEach(d => {
+          if(!d.date || !d.start_time) return;
+          
+          // 요일 계산 (월요일=0, 일요일=6 으로 맞춤)
+          const dateObj = new Date(d.date);
+          let day = dateObj.getDay() - 1; 
+          if(day === -1) day = 6; // 일요일 처리
+
+          // 시간 계산 (09시=0, 22시=13)
+          const hour = parseInt(d.start_time.split(':')[0]);
+          const colIdx = hour - 9; // 9시부터 시작
+
+          if(colIdx >= 0 && colIdx < 14) {
+             if(type === 'count') {
+                matrix[day][colIdx]++;
+             } else {
+                // 주목도 모드일 경우 합계 누적
+                matrix[day][colIdx] += (d.attention || 0);
+                counts[day][colIdx]++;
+             }
+          }
+       });
+
+       // 주목도 모드라면 평균값 계산 (총합 / 인원수)
+       if(type === 'attention') {
+          for(let r=0; r<7; r++) {
+             for(let c=0; c<14; c++) {
+                if(counts[r][c] > 0) matrix[r][c] = matrix[r][c] / counts[r][c];
+             }
+          }
+       }
+
+       // 최대값 찾기 (색상 레벨 정규화용)
+       let max = 0;
+       matrix.forEach(row => row.forEach(v => { if(v > max) max = v; }));
+
+       // 그리드 돔 생성
+       const days = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+       for(let r=0; r<7; r++) {
+          for(let c=0; c<14; c++) {
+             const val = matrix[r][c];
+             let lv = 0;
+             if(val > 0) {
+                const ratio = val / (max || 1);
+                // 4단계 색상 지정
+                if(ratio < 0.25) lv = 1;
+                else if(ratio < 0.5) lv = 2;
+                else if(ratio < 0.75) lv = 3;
+                else lv = 4;
+             }
+             
+             const cell = document.createElement('div');
+             cell.className = `hm-cell lv-${lv}`;
+             // 마우스 올리면 상세 수치 표시
+             cell.title = `${days[r]} ${c+9}H: ${val.toFixed(1)}`;
+             grid.appendChild(cell);
+          }
+       }
+    }
+    // ==========================================
+    // [3. ANALYTICS LOGIC END]
+    // ==========================================
   
     async function checkDataExistence() {
       const loader = document.getElementById('calLoader');
@@ -1307,6 +1686,8 @@
         initMaps();
         loadMonitorList();     // 모니터 목록 불러오기
         initDragAndDrop();     // 드래그 앤 드롭 설정
+
+        loadSidebarAds();      // [★여기에 추가] 사이드바 광고 목록 불러오기 함수 실행
         
         // [추가됨] 데이터가 있는 날짜 확인 시작
         checkDataExistence();  
