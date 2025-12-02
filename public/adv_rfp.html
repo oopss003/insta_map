@@ -494,98 +494,37 @@
                 title: '데이터 리포트 예시',
                 icon: 'pie-chart',
                 content: `
-                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-10">
-                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+                    <div class="max-w-7xl mx-auto slide-enter pb-6 h-full flex flex-col">
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 shrink-0">
                             <div>
-                                <h2 class="text-2xl lg:text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
-                                <p class="text-gray-500 text-sm mt-1">광고주에게 제공되는 실제 리포트 화면 예시입니다. (실시간 업데이트)</p>
+                                <h2 class="text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
+                                <p class="text-gray-500 text-sm mt-2">광고주에게 제공되는 실제 리포트 화면입니다. (PC/Mobile 지원)</p>
                             </div>
-                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold animate-pulse">● LIVE DATA</span>
+                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold animate-pulse flex items-center gap-1">
+                                <span class="w-2 h-2 bg-green-500 rounded-full"></span> LIVE DATA
+                            </span>
                         </div>
 
-                        <div class="bg-slate-100 rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-inner flex-1 flex flex-col gap-6">
-                            
-                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Total Traffic</p>
-                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">124,500</p>
-                                    <div class="mt-2 flex items-center text-xs font-medium text-green-500">
-                                        <span class="bg-green-50 px-1.5 py-0.5 rounded mr-1">↑ 12%</span> vs last week
-                                    </div>
-                                </div>
-                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition-shadow relative overflow-hidden">
-                                    <div class="absolute right-0 top-0 p-3 opacity-10"><i data-lucide="eye" class="w-12 h-12 text-blue-500"></i></div>
-                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Actual Views (실시청)</p>
-                                    <p class="text-2xl lg:text-3xl font-bold text-blue-600">45,230</p>
-                                    <span class="text-xs text-gray-500 mt-2 block">CPV 과금 기준 데이터</span>
-                                </div>
-                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Attention Rate</p>
-                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">36.5%</p>
-                                    <div class="mt-2 flex items-center text-xs font-medium text-green-500">
-                                        <span class="bg-green-50 px-1.5 py-0.5 rounded mr-1">↑ 5%</span> Industry Avg
-                                    </div>
-                                </div>
-                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Avg. Dwell Time</p>
-                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">4.8s</p>
-                                    <span class="text-xs text-gray-500 mt-2 block">Target: 3.0s (달성)</span>
-                                </div>
+                        <div class="flex-1 bg-slate-100 rounded-2xl p-1 lg:p-2 border border-slate-200 shadow-inner overflow-hidden relative flex flex-col min-h-0">
+                            <div class="flex-1 overflow-y-auto rounded-xl bg-white shadow-lg border border-gray-300 custom-scrollbar">
+                                <img src="images/dash004.jpg" alt="Inwave Analytics Dashboard" class="w-full h-auto object-cover">
                             </div>
+                        </div>
 
-                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[300px]">
-                                <div class="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2 flex flex-col">
-                                    <div class="flex justify-between items-center mb-6">
-                                        <h4 class="text-base font-bold text-gray-800">Demographics (성별/연령별 시청 분포)</h4>
-                                        <div class="flex gap-3 text-xs">
-                                            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 남성</div>
-                                            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-pink-400 rounded-sm"></span> 여성</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <div class="flex-1 flex items-end gap-2 sm:gap-4 px-2 pb-2 border-b border-gray-100">
-                                        ${['10대','20대','30대','40대','50대+'].map((age, i) => {
-                                            const hM = [20, 60, 80, 40, 20][i];
-                                            const hF = [15, 75, 65, 35, 10][i];
-                                            return `
-                                                <div class="flex flex-col items-center gap-1 flex-1 h-full justify-end group cursor-pointer">
-                                                    <div class="w-full flex items-end justify-center gap-1 h-full">
-                                                        <div style="height: ${hM}%" class="w-1/2 bg-blue-500 rounded-t-sm relative transition-all group-hover:bg-blue-600"></div>
-                                                        <div style="height: ${hF}%" class="w-1/2 bg-pink-400 rounded-t-sm relative transition-all group-hover:bg-pink-500"></div>
-                                                    </div>
-                                                    <span class="text-xs text-gray-400 mt-2 font-medium">${age}</span>
-                                                </div>
-                                            `
-                                        }).join('')}
-                                    </div>
-                                </div>
-
-                                <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col">
-                                    <h4 class="text-base font-bold text-gray-800 mb-4">Peak Time (시간대별 집중도)</h4>
-                                    <div class="flex-1 grid grid-cols-7 gap-1 content-center">
-                                        <div class="col-span-7 flex justify-between text-xs text-gray-400 mb-1 px-1">
-                                            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                                        </div>
-                                        ${Array(28).fill(0).map(() => {
-                                            const opacity = Math.random();
-                                            const colorClass = opacity > 0.7 ? 'bg-blue-600' : opacity > 0.4 ? 'bg-blue-400' : 'bg-blue-100';
-                                            return `<div class="${colorClass} rounded-sm w-full pt-[100%] transition-colors hover:opacity-80 cursor-pointer" title="Traffic Intensity"></div>`;
-                                        }).join('')}
-                                    </div>
-                                    <div class="mt-4 text-xs text-gray-400 text-center">Time (09:00 - 22:00)</div>
-                                </div>
+                        <div class="mt-6 bg-indigo-50 border border-indigo-100 p-6 rounded-2xl flex items-start gap-5 shrink-0 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+                            <div class="bg-white p-3 rounded-full shadow-sm text-indigo-600 shrink-0">
+                                <i data-lucide="sparkles" class="w-6 h-6"></i>
                             </div>
-                            
-                            <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl flex items-start gap-4">
-                                <div class="bg-white p-2 rounded-full shadow-sm">
-                                    <i data-lucide="lightbulb" class="text-blue-600 w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <h5 class="text-sm font-bold text-blue-800">AI Insight</h5>
-                                    <p class="text-sm text-blue-700 mt-1 leading-relaxed">
-                                        이번 캠페인은 <strong>20-30대 여성</strong>의 시청 비율이 가장 높았으며, 특히 <strong>평일 점심시간(12:00~13:30)</strong>에 가장 높은 주목도를 기록했습니다. 다음 캠페인 시 해당 시간대 노출 비중을 15% 상향하는 것을 제안합니다.
-                                    </p>
-                                </div>
+                            <div>
+                                <h5 class="text-base font-bold text-indigo-800 flex items-center gap-2">
+                                    AI Insight Report
+                                    <span class="text-[10px] font-normal text-indigo-500 bg-white px-2 py-0.5 rounded-full border border-indigo-100">Analysis Complete</span>
+                                </h5>
+                                <p class="text-slate-700 mt-2 leading-relaxed text-sm lg:text-base">
+                                    현재 데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>이 가장 높은 관여도(Top Persona)를 보이고 있습니다.
+                                    특히 <span class="font-bold text-indigo-700">오후 시간대</span>에 트래픽과 주목도가 집중되는 패턴이 식별되었습니다.
+                                    차기 집행 시 해당 시간대 노출 비중을 <span class="underline decoration-indigo-400 decoration-2 underline-offset-2">20% 상향 조정</span>하여 ROI를 극대화할 것을 제안합니다.
+                                </p>
                             </div>
                         </div>
                     </div>
