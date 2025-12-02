@@ -314,37 +314,61 @@
                 </button>
               </div>
             </div>
-      <div class="dashboard-grid">
+<div class="dashboard-grid">
         <div class="kpi-column">
           <div class="kpi-box">
-            <div class="kpi-head">Total Impressions</div>
-            <div class="kpi-val">42,593</div>
-            <div class="kpi-sub">+12.5%</div>
+            <div class="kpi-head" id="kpi1_title">Total Traffic</div>
+            <div class="kpi-val" id="kpi1_val">-</div>
+            <div class="kpi-sub" id="kpi1_sub">Select Dates</div>
           </div>
           <div class="kpi-box">
-            <div class="kpi-head">Avg. Dwell Time</div>
-            <div class="kpi-val">4.8s</div>
-            <div class="kpi-sub" style="color:#6B7280">Target: 5.0s</div>
+            <div class="kpi-head" id="kpi2_title">Avg. Dwell Time</div>
+            <div class="kpi-val" id="kpi2_val">-</div>
+            <div class="kpi-sub" id="kpi2_sub">Seconds</div>
           </div>
           <div class="kpi-box">
-            <div class="kpi-head">Peak Hour</div>
-            <div class="kpi-val">19:00</div>
-            <div class="kpi-sub" style="color:#6B7280">Fri</div>
+            <div class="kpi-head" id="kpi3_title">Attention Ratio</div>
+            <div class="kpi-val" id="kpi3_val">-</div>
+            <div class="kpi-sub" id="kpi3_sub">High Attention</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi4_title">Top Persona</div>
+            <div class="kpi-val" id="kpi4_val">-</div>
+            <div class="kpi-sub" id="kpi4_sub">Target Group</div>
           </div>
         </div>
-        <div class="chart-box">
-          <div class="chart-header">
-            <div style="font-weight:700;">Weekly Heatmap</div>
-            <div style="font-size:12px; color:#9CA3AF;">Low ■ ■ ■ ■ High</div>
+
+        <div class="charts-row">
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart1_title">Demographics</div>
+                <div style="font-size:12px; color:#9CA3AF;">Gender & Age Distribution</div>
+              </div>
+            </div>
+            <div class="bar-chart-container" id="barChartContainer">
+              <div style="text-align:center; color:#CBD5E1; margin-top:40px;">Ready to Analyze</div>
+            </div>
           </div>
-          <div class="heatmap-layout">
-            <div class="hm-y-axis"><div class="hm-row-label">Mon</div><div class="hm-row-label">Tue</div><div class="hm-row-label">Wed</div><div class="hm-row-label">Thu</div><div class="hm-row-label">Fri</div><div class="hm-row-label">Sat</div><div class="hm-row-label">Sun</div></div>
-            <div class="hm-grid" id="heatGrid"></div>
+
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart2_title">Time Analysis</div>
+                <div style="font-size:12px; color:#9CA3AF;">Peak Time Heatmap</div>
+              </div>
+            </div>
+            <div class="heatmap-layout">
+              <div class="hm-container">
+                <div class="hm-y"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                <div class="hm-grid-box" id="analysisHeatGrid">
+                   </div>
+              </div>
+              <div class="hm-x"><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div>
+            </div>
           </div>
-          <div class="hm-x-axis"><span class="hm-col-label">06</span><span class="hm-col-label">09</span><span class="hm-col-label">12</span><span class="hm-col-label">15</span><span class="hm-col-label">18</span><span class="hm-col-label">21</span></div>
         </div>
       </div>
-    </div>
 
 
     <div id="page-monitors" class="page-view">
