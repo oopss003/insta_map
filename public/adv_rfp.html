@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inwave B2B Partnership Proposal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icon Script: Changed to unpkg for better stability -->
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
@@ -15,7 +14,7 @@
             font-family: 'Pretendard', sans-serif;
         }
 
-        /* Custom Scrollbar for Sidebar */
+        /* Custom Scrollbar for Sidebar & Main Content */
         .scrollbar-hide::-webkit-scrollbar {
             display: none;
         }
@@ -24,24 +23,34 @@
             scrollbar-width: none;
         }
 
+        /* Custom Scrollbar styling for better look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
         .slide-enter {
-            animation: slideIn 0.3s ease-out forwards;
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
         @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
         }
     </style>
 </head>
 <body class="bg-gray-50 h-screen flex overflow-hidden text-gray-800">
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col shadow-xl z-20">
         <div class="p-6 border-b border-slate-700 flex items-center gap-3">
             <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
@@ -55,8 +64,7 @@
 
         <nav class="flex-1 overflow-y-auto py-4 scrollbar-hide">
             <ul id="sidebar-menu" class="space-y-1 px-3">
-                <!-- Javascript will populate this -->
-            </ul>
+                </ul>
         </nav>
 
         <div class="p-4 border-t border-slate-700 bg-slate-800">
@@ -72,17 +80,15 @@
         </div>
     </aside>
 
-    <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col relative overflow-hidden">
-        <!-- Top Header -->
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 shadow-sm z-10">
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-slate-50">
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-8 shadow-sm z-10 flex-shrink-0">
             <div class="flex items-center gap-2 text-sm text-gray-500">
                 <span>Proposal</span>
                 <i data-lucide="chevron-right" class="w-4 h-4"></i>
                 <span id="header-title" class="font-semibold text-blue-600">Cover</span>
             </div>
-            <div class="flex items-center gap-4">
-                <button class="px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors" onclick="alert('PDF 다운로드 기능은 준비중입니다.')">
+            <div class="flex items-center gap-3">
+                <button class="px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors hidden sm:flex items-center" onclick="alert('PDF 다운로드 기능은 준비중입니다.')">
                     <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>PDF Download
                 </button>
                 <button class="px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow transition-colors" onclick="alert('문의 메일이 발송됩니다.')">
@@ -91,10 +97,8 @@
             </div>
         </header>
 
-        <!-- Slide Content Container -->
-        <div id="content-area" class="flex-1 overflow-y-auto p-8 bg-slate-50 relative">
-            <!-- Content will be injected here -->
-        </div>
+        <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden p-6 lg:p-10 relative scroll-smooth">
+            </div>
     </main>
 
     <script>
@@ -105,72 +109,64 @@
                 title: '표지',
                 icon: 'layout-template',
                 content: `
-                    <!-- Cover Slide Container -->
-                    <div class="relative h-full w-full flex items-center justify-center overflow-hidden slide-enter bg-slate-900">
-                        
-                        <!-- Background Image with Overlay -->
+                    <div class="absolute inset-0 bg-slate-900 slide-enter overflow-hidden">
                         <div class="absolute inset-0 z-0">
-                            <!-- 사용자가 준비한 이미지가 있다면 src="images/cover_bg.jpg"로 변경하세요 -->
                             <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
                                  alt="AI Technology Background" 
                                  class="w-full h-full object-cover opacity-40">
-                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-blue-900/40"></div>
+                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-blue-900/30"></div>
                         </div>
 
-                        <!-- Content Card -->
-                        <div class="relative z-10 max-w-5xl w-full px-8">
-                            <div class="border-l-4 border-blue-500 pl-8 mb-8">
-                                <p class="text-blue-400 font-bold tracking-widest text-sm uppercase mb-2">B2B Partnership Proposal</p>
-                                <h1 class="text-6xl font-bold text-white leading-tight">
+                        <div class="relative z-10 h-full flex flex-col justify-center px-10 lg:px-20 max-w-7xl mx-auto">
+                            <div class="border-l-4 border-blue-500 pl-6 lg:pl-10 mb-8 lg:mb-12">
+                                <p class="text-blue-400 font-bold tracking-widest text-sm lg:text-base uppercase mb-3">B2B Partnership Proposal</p>
+                                <h1 class="text-5xl lg:text-7xl font-bold text-white leading-tight">
                                     귀사의 제안서에<br>
                                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">'데이터의 확신'</span>을<br>
                                     더해드립니다.
                                 </h1>
                             </div>
 
-                            <p class="text-xl text-gray-300 font-light max-w-2xl leading-relaxed mb-12">
+                            <p class="text-lg lg:text-2xl text-gray-300 font-light max-w-2xl leading-relaxed mb-10 lg:mb-16">
                                 국내 최초 AI 시선 인식 기반, 성과형 OOH 플랫폼<br>
                                 <strong>INWAVE</strong>가 에이전시의 강력한 파트너가 되어드리겠습니다.
                             </p>
 
-                            <!-- Key Feature Tags -->
-                            <div class="flex flex-wrap gap-4 mb-16">
-                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                            <div class="flex flex-wrap gap-3 lg:gap-4 mb-16 lg:mb-24">
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
                                     <i data-lucide="eye" class="w-4 h-4 text-blue-400"></i>
                                     <span>AI 시선 추적</span>
                                 </div>
-                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
                                     <i data-lucide="bar-chart-2" class="w-4 h-4 text-green-400"></i>
                                     <span>실제 시청 성과 데이터</span>
                                 </div>
-                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
                                     <i data-lucide="coins" class="w-4 h-4 text-yellow-400"></i>
                                     <span>CPV 합리적 과금</span>
                                 </div>
                             </div>
 
-                            <!-- Footer Info -->
-                            <div class="flex items-center gap-8 text-sm text-gray-400 border-t border-white/10 pt-8">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10 text-sm text-gray-400 border-t border-white/10 pt-8">
                                 <div>
                                     <span class="block text-gray-500 text-xs mb-1">To.</span>
-                                    <span class="text-white font-medium">광고 에이전시 및 미디어 렙사 귀중</span>
+                                    <span class="text-white font-medium text-base">광고 에이전시 및 미디어 렙사 귀중</span>
                                 </div>
-                                <div class="h-8 w-px bg-white/10"></div>
+                                <div class="hidden sm:block h-8 w-px bg-white/10"></div>
                                 <div>
                                     <span class="block text-gray-500 text-xs mb-1">From.</span>
-                                    <span class="text-white font-medium">(주)인웨이브 전략사업본부</span>
+                                    <span class="text-white font-medium text-base">(주)인웨이브 전략사업본부</span>
                                 </div>
-                                <div class="h-8 w-px bg-white/10"></div>
+                                <div class="hidden sm:block h-8 w-px bg-white/10"></div>
                                 <div>
                                     <span class="block text-gray-500 text-xs mb-1">Date.</span>
-                                    <span class="text-white font-medium">2025. 05</span>
+                                    <span class="text-white font-medium text-base">2025. 05</span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Decorative Elements -->
-                        <div class="absolute right-0 bottom-0 p-12 opacity-20">
-                             <i data-lucide="waves" class="w-64 h-64 text-white"></i>
+                        <div class="absolute right-0 bottom-0 p-12 opacity-10 pointer-events-none">
+                             <i data-lucide="waves" class="w-64 h-64 lg:w-96 lg:h-96 text-white"></i>
                         </div>
                     </div>
                 `
@@ -180,50 +176,71 @@
                 title: '시장의 변화와 고민',
                 icon: 'help-circle',
                 content: `
-                    <div class="max-w-5xl mx-auto slide-enter">
-                        <div class="mb-8">
-                            <h2 class="text-3xl font-bold text-slate-900 mb-2">Agency Pain Point</h2>
-                            <p class="text-lg text-gray-600">광고주는 이제 OOH에서도 온라인 수준의 '성과 데이터'를 요구합니다.</p>
+                    <div class="max-w-7xl mx-auto slide-enter pb-10">
+                        <div class="mb-10 text-center lg:text-left">
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">Agency Pain Point</h2>
+                            <p class="text-lg text-gray-600">광고주는 이제 OOH에서도 온라인 수준의 <span class="text-blue-600 font-semibold">'성과 데이터'</span>를 요구합니다.</p>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <!-- Left: The Problem -->
-                            <div class="bg-white p-8 rounded-2xl shadow-lg border-l-4 border-red-500">
-                                <h3 class="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                    <i data-lucide="x-circle" class="text-red-500"></i> 기존 옥외광고의 한계
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+                            <div class="bg-white p-6 lg:p-8 rounded-3xl shadow-lg border-l-4 border-red-500 h-full">
+                                <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                                    <i data-lucide="x-circle" class="text-red-500 w-6 h-6 lg:w-8 lg:h-8"></i> 
+                                    기존 옥외광고의 한계
                                 </h3>
-                                <div class="space-y-6">
-                                    <div class="bg-red-50 p-4 rounded-xl">
-                                        <p class="font-semibold text-red-800 mb-1">"정말 효과가 있었나요?"</p>
-                                        <p class="text-sm text-gray-600">유동인구 추정치 외에는 광고주에게 제시할 명확한 근거가 부족합니다.</p>
+                                <div class="space-y-4 lg:space-y-6">
+                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
+                                        <p class="font-bold text-red-800 text-lg mb-1">"정말 효과가 있었나요?"</p>
+                                        <p class="text-gray-600 leading-relaxed">유동인구 추정치 외에는 광고주에게 제시할 <br class="hidden lg:block">명확한 근거가 부족합니다.</p>
                                     </div>
-                                    <div class="bg-red-50 p-4 rounded-xl">
-                                        <p class="font-semibold text-red-800 mb-1">"누가 봤나요?"</p>
-                                        <p class="text-sm text-gray-600">타겟팅이 불가능하여 2030 여성 타겟 브랜드에게도 불특정 다수 노출 데이터만 제공해야 합니다.</p>
+                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
+                                        <p class="font-bold text-red-800 text-lg mb-1">"누가 봤나요?"</p>
+                                        <p class="text-gray-600 leading-relaxed">타겟팅이 불가능하여 2030 여성 타겟 브랜드에게도 <br class="hidden lg:block">불특정 다수 노출 데이터만 제공해야 합니다.</p>
                                     </div>
-                                    <div class="bg-red-50 p-4 rounded-xl">
-                                        <p class="font-semibold text-red-800 mb-1">"비용 효율이 떨어져요"</p>
-                                        <p class="text-sm text-gray-600">보지 않은 사람에게도 광고비가 집행되는 비효율적인 과금 구조에 대한 저항감이 큽니다.</p>
+                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
+                                        <p class="font-bold text-red-800 text-lg mb-1">"비용 효율이 떨어져요"</p>
+                                        <p class="text-gray-600 leading-relaxed">보지 않은 사람에게도 광고비가 집행되는 <br class="hidden lg:block">비효율적인 과금 구조에 대한 저항감이 큽니다.</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Right: The Need -->
-                            <div class="flex flex-col justify-center space-y-6">
-                                <div class="bg-blue-600 text-white p-8 rounded-2xl shadow-xl transform hover:-translate-y-1 transition-transform">
-                                    <i data-lucide="target" class="w-10 h-10 mb-4 text-blue-200"></i>
-                                    <h3 class="text-2xl font-bold mb-2">경쟁 PT의 승리 공식</h3>
-                                    <p class="text-blue-100">
-                                        "감"이 아닌 "데이터"로 설득해야 합니다.<br>
-                                        클라이언트가 납득할 수 있는 <strong>ROI(투자 수익률)</strong> 증명이 필요합니다.
+                            <div class="flex flex-col gap-6 lg:gap-8 justify-center">
+                                <div class="bg-blue-600 text-white p-8 lg:p-10 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-all duration-300">
+                                    <div class="flex items-start justify-between mb-6">
+                                        <div class="p-3 bg-white/20 rounded-2xl">
+                                            <i data-lucide="target" class="w-8 h-8 lg:w-10 lg:h-10 text-white"></i>
+                                        </div>
+                                        <div class="text-blue-200 text-sm font-semibold tracking-wider uppercase">Solution Key</div>
+                                    </div>
+                                    <h3 class="text-2xl lg:text-3xl font-bold mb-4">경쟁 PT의 승리 공식</h3>
+                                    <p class="text-blue-50 text-lg lg:text-xl leading-relaxed">
+                                        "감"이 아닌 <span class="bg-white/20 px-2 rounded font-bold">데이터</span>로 설득해야 합니다.<br>
+                                        클라이언트가 납득할 수 있는<br>
+                                        <strong>ROI(투자 수익률)</strong> 증명이 필요합니다.
                                     </p>
                                 </div>
-                                <div class="bg-white p-6 rounded-2xl shadow border border-gray-100">
-                                    <h4 class="font-bold text-gray-800 mb-2">필요한 솔루션</h4>
-                                    <ul class="space-y-2 text-gray-600 text-sm">
-                                        <li class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> 실제 시청자 수 측정</li>
-                                        <li class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> 타겟 오디언스(성별/연령) 분석</li>
-                                        <li class="flex items-center gap-2"><i data-lucide="check" class="text-green-500 w-4 h-4"></i> 합리적인 과금 체계</li>
+
+                                <div class="bg-white p-8 rounded-3xl shadow border border-gray-100 flex-1 flex flex-col justify-center">
+                                    <h4 class="font-bold text-gray-800 text-lg lg:text-xl mb-4">필요한 솔루션 체크리스트</h4>
+                                    <ul class="space-y-4 text-gray-600">
+                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                            </div>
+                                            <span class="text-base lg:text-lg">실제 시청자 수(Impressions) 측정</span>
+                                        </li>
+                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                            </div>
+                                            <span class="text-base lg:text-lg">타겟 오디언스(성별/연령) 실시간 분석</span>
+                                        </li>
+                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                            </div>
+                                            <span class="text-base lg:text-lg">합리적인 과금 체계 (CPV)</span>
+                                        </li>
                                     </ul>
                                 </div>
                             </div>
@@ -236,64 +253,71 @@
                 title: '솔루션: 시선 인식 기술',
                 icon: 'scan-face',
                 content: `
-                    <div class="max-w-5xl mx-auto slide-enter">
-                        <div class="text-center mb-10">
-                            <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold tracking-wide uppercase">Our Technology</span>
-                            <h2 class="text-3xl font-bold text-slate-900 mt-3">지나가는 사람이 아니라<br><span class="text-blue-600">'실제로 본 사람'</span>만 카운팅합니다.</h2>
+                    <div class="max-w-7xl mx-auto slide-enter pb-10">
+                        <div class="text-center mb-12 lg:mb-16">
+                            <span class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-xs lg:text-sm font-bold tracking-wide uppercase">Our Technology</span>
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mt-4 leading-tight">
+                                지나가는 사람이 아니라<br>
+                                <span class="relative inline-block mt-1">
+                                    <span class="relative z-10 text-blue-600">'실제로 본 사람'</span>
+                                    <span class="absolute bottom-1 left-0 w-full h-3 bg-blue-100 z-0"></span>
+                                </span>만 카운팅합니다.
+                            </h2>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
-                                <div class="w-16 h-16 bg-indigo-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i data-lucide="eye" class="w-8 h-8 text-indigo-600"></i>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-16">
+                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                                <div class="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+                                    <i data-lucide="eye" class="w-10 h-10 text-indigo-600"></i>
                                 </div>
-                                <h3 class="text-lg font-bold mb-2">AI 시선 추적</h3>
-                                <p class="text-sm text-gray-500">자체 개발 AI가 보행자의 얼굴 각도와 눈동자를 분석하여 실제 광고를 시청했는지 99% 정확도로 판별합니다.</p>
+                                <h3 class="text-xl font-bold mb-3 text-slate-900">AI 시선 추적</h3>
+                                <p class="text-gray-500 leading-relaxed">자체 개발 AI가 보행자의 얼굴 각도와 눈동자를 정밀 분석하여 실제 광고를 시청했는지 99% 정확도로 판별합니다.</p>
                             </div>
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
-                                <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i data-lucide="users" class="w-8 h-8 text-blue-600"></i>
+                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                                <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 transform -rotate-3">
+                                    <i data-lucide="users" class="w-10 h-10 text-blue-600"></i>
                                 </div>
-                                <h3 class="text-lg font-bold mb-2">데모그래픽 분석</h3>
-                                <p class="text-sm text-gray-500">시청자의 성별과 연령대를 실시간으로 분석하여, 어떤 타겟이 반응했는지 데이터를 생성합니다.</p>
+                                <h3 class="text-xl font-bold mb-3 text-slate-900">데모그래픽 분석</h3>
+                                <p class="text-gray-500 leading-relaxed">시청자의 성별과 연령대를 실시간으로 분석하여, 어떤 타겟이 언제 가장 많이 반응했는지 데이터를 생성합니다.</p>
                             </div>
-                            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center hover:shadow-md transition-shadow">
-                                <div class="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i data-lucide="shield-check" class="w-8 h-8 text-green-600"></i>
+                            <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center hover:shadow-xl hover:-translate-y-1 transition-all duration-300 md:col-span-2 lg:col-span-1">
+                                <div class="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6 transform rotate-3">
+                                    <i data-lucide="shield-check" class="w-10 h-10 text-green-600"></i>
                                 </div>
-                                <h3 class="text-lg font-bold mb-2">프라이버시 보호</h3>
-                                <p class="text-sm text-gray-500">영상은 저장되지 않으며, 비식별 통계 데이터(성별, 연령, 시청시간)만 추출 후 즉시 파기됩니다.</p>
+                                <h3 class="text-xl font-bold mb-3 text-slate-900">프라이버시 보호</h3>
+                                <p class="text-gray-500 leading-relaxed">영상은 저장되지 않으며, 비식별 통계 데이터(성별, 연령, 시청시간)만 엣지 디바이스에서 추출 후 즉시 파기됩니다.</p>
                             </div>
                         </div>
 
-                        <!-- Comparison Table -->
-                        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                            <table class="w-full text-sm text-left">
-                                <thead class="bg-gray-50 text-gray-700 font-bold uppercase text-xs border-b">
-                                    <tr>
-                                        <th class="px-6 py-4">구분</th>
-                                        <th class="px-6 py-4 text-center">기존 OOH (엘리베이터TV 등)</th>
-                                        <th class="px-6 py-4 text-center text-blue-600 bg-blue-50">INWAVE (AI OOH)</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100">
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 font-medium text-gray-900">측정 기준</td>
-                                        <td class="px-6 py-4 text-center text-gray-500">단순 노출 횟수 / 거주 세대수 추정</td>
-                                        <td class="px-6 py-4 text-center font-bold text-blue-600 bg-blue-50/30">실제 시청자 수 (시선 감지)</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 font-medium text-gray-900">타겟 분석</td>
-                                        <td class="px-6 py-4 text-center text-gray-500">특정 아파트 주민 (고정)</td>
-                                        <td class="px-6 py-4 text-center font-bold text-blue-600 bg-blue-50/30">실시간 유동인구 성별/연령 분석</td>
-                                    </tr>
-                                    <tr class="hover:bg-gray-50">
-                                        <td class="px-6 py-4 font-medium text-gray-900">과금 방식</td>
-                                        <td class="px-6 py-4 text-center text-gray-500">구좌제 (시간당 과금)</td>
-                                        <td class="px-6 py-4 text-center font-bold text-blue-600 bg-blue-50/30">CPV (시청당 과금) *합리적</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm lg:text-base text-left min-w-[600px]">
+                                    <thead class="bg-gray-50 text-gray-700 font-bold uppercase text-xs border-b">
+                                        <tr>
+                                            <th class="px-8 py-5">구분</th>
+                                            <th class="px-8 py-5 text-center">기존 OOH (엘리베이터TV 등)</th>
+                                            <th class="px-8 py-5 text-center text-blue-600 bg-blue-50">INWAVE (AI OOH)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100">
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-8 py-5 font-medium text-gray-900">측정 기준</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">단순 노출 횟수 / 거주 세대수 추정</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">실제 시청자 수 (시선 감지)</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-8 py-5 font-medium text-gray-900">타겟 분석</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">특정 아파트 주민 (고정)</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">실시간 유동인구 성별/연령 분석</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50 transition-colors">
+                                            <td class="px-8 py-5 font-medium text-gray-900">과금 방식</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">구좌제 (시간당 과금)</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">CPV (시청당 과금) <span class="text-xs bg-blue-100 text-blue-600 px-2 py-0.5 rounded ml-1">합리적</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 `
@@ -303,53 +327,57 @@
                 title: '에이전시 파트너 베네핏',
                 icon: 'thumbs-up',
                 content: `
-                    <div class="max-w-6xl mx-auto slide-enter">
-                        <h2 class="text-3xl font-bold text-slate-900 mb-8">Why Partner with Us?</h2>
+                    <div class="max-w-7xl mx-auto slide-enter pb-10">
+                        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+                            <div>
+                                <h2 class="text-3xl lg:text-4xl font-bold text-slate-900">Why Partner with Us?</h2>
+                                <p class="text-gray-500 mt-2 text-lg">에이전시의 성공이 곧 인웨이브의 성공입니다.</p>
+                            </div>
+                        </div>
                         
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                            <!-- Benefit 1 -->
-                            <div class="group bg-gradient-to-b from-white to-blue-50 p-8 rounded-3xl shadow-xl border border-blue-100 hover:border-blue-300 transition-all">
-                                <div class="bg-blue-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
-                                    <i data-lucide="briefcase" class="text-white w-7 h-7"></i>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-10">
+                            <div class="group bg-gradient-to-b from-white to-blue-50 p-8 lg:p-10 rounded-3xl shadow-lg border border-blue-100 hover:border-blue-300 hover:shadow-2xl transition-all duration-300">
+                                <div class="bg-blue-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                                    <i data-lucide="briefcase" class="text-white w-8 h-8"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-slate-900 mb-3">강력한 세일즈 무기 제공</h3>
-                                <p class="text-gray-600 leading-relaxed mb-4">
-                                    "광고주님, 저희는 본 사람에게만 과금합니다."
+                                <h3 class="text-2xl font-bold text-slate-900 mb-4">강력한 세일즈 무기</h3>
+                                <p class="text-gray-600 leading-relaxed mb-6 h-16">
+                                    "광고주님, 저희는 <span class="font-bold text-blue-600">본 사람에게만 과금</span>합니다."<br>
+                                    가장 강력한 설득 논리를 제공합니다.
                                 </p>
-                                <ul class="text-sm text-gray-500 space-y-2">
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> CPV 과금으로 광고주 설득 용이</li>
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-blue-500 rounded-full"></span> 데이터 기반 전략 에이전시 브랜딩 강화</li>
+                                <ul class="text-sm text-gray-500 space-y-3 bg-white/50 p-4 rounded-xl">
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div> CPV 과금으로 광고주 설득 용이</li>
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-blue-500 rounded-full"></div> 데이터 기반 전략 에이전시 브랜딩</li>
                                 </ul>
                             </div>
 
-                            <!-- Benefit 2 -->
-                            <div class="group bg-gradient-to-b from-white to-purple-50 p-8 rounded-3xl shadow-xl border border-purple-100 hover:border-purple-300 transition-all">
-                                <div class="bg-purple-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
-                                    <i data-lucide="file-bar-chart-2" class="text-white w-7 h-7"></i>
+                            <div class="group bg-gradient-to-b from-white to-purple-50 p-8 lg:p-10 rounded-3xl shadow-lg border border-purple-100 hover:border-purple-300 hover:shadow-2xl transition-all duration-300">
+                                <div class="bg-purple-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                                    <i data-lucide="file-bar-chart-2" class="text-white w-8 h-8"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-slate-900 mb-3">리소스 제로, 자동 리포팅</h3>
-                                <p class="text-gray-600 leading-relaxed mb-4">
-                                    보고서 작성에 시간을 낭비하지 마세요.
+                                <h3 class="text-2xl font-bold text-slate-900 mb-4">리소스 제로 리포팅</h3>
+                                <p class="text-gray-600 leading-relaxed mb-6 h-16">
+                                    보고서 작성에 시간을 낭비하지 마세요.<br>
+                                    데이터 수집부터 보고서 생성까지 자동입니다.
                                 </p>
-                                <ul class="text-sm text-gray-500 space-y-2">
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span> 캠페인 종료 즉시 데이터 리포트 생성</li>
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span> 성별/연령/시간대별 상세 분석 제공</li>
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-purple-500 rounded-full"></span> 광고주용 PDF 자동 변환 지원</li>
+                                <ul class="text-sm text-gray-500 space-y-3 bg-white/50 p-4 rounded-xl">
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div> 캠페인 종료 즉시 데이터 리포트 생성</li>
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-purple-500 rounded-full"></div> 성별/연령/시간대별 상세 분석 제공</li>
                                 </ul>
                             </div>
 
-                            <!-- Benefit 3 -->
-                            <div class="group bg-gradient-to-b from-white to-emerald-50 p-8 rounded-3xl shadow-xl border border-emerald-100 hover:border-emerald-300 transition-all">
-                                <div class="bg-emerald-600 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 shadow-lg group-hover:scale-110 transition-transform">
-                                    <i data-lucide="coins" class="text-white w-7 h-7"></i>
+                            <div class="group bg-gradient-to-b from-white to-emerald-50 p-8 lg:p-10 rounded-3xl shadow-lg border border-emerald-100 hover:border-emerald-300 hover:shadow-2xl transition-all duration-300">
+                                <div class="bg-emerald-600 w-16 h-16 rounded-2xl flex items-center justify-center mb-8 shadow-lg group-hover:scale-110 group-hover:rotate-3 transition-transform duration-300">
+                                    <i data-lucide="coins" class="text-white w-8 h-8"></i>
                                 </div>
-                                <h3 class="text-xl font-bold text-slate-900 mb-3">업계 최고 수익성</h3>
-                                <p class="text-gray-600 leading-relaxed mb-4">
-                                    파트너사를 위한 확실한 마진을 보장합니다.
+                                <h3 class="text-2xl font-bold text-slate-900 mb-4">업계 최고 수익성</h3>
+                                <p class="text-gray-600 leading-relaxed mb-6 h-16">
+                                    파트너사를 위한 확실한 마진을 보장합니다.<br>
+                                    함께 성장하는 구조를 만듭니다.
                                 </p>
-                                <ul class="text-sm text-gray-500 space-y-2">
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> Media Rep 권한 및 높은 수수료율</li>
-                                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></span> 초기 진입 파트너 대상 추가 인센티브</li>
+                                <ul class="text-sm text-gray-500 space-y-3 bg-white/50 p-4 rounded-xl">
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> Media Rep 권한 및 높은 수수료율</li>
+                                    <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 bg-emerald-500 rounded-full"></div> 초기 진입 파트너 대상 추가 인센티브</li>
                                 </ul>
                             </div>
                         </div>
@@ -361,106 +389,96 @@
                 title: '데이터 리포트 예시',
                 icon: 'pie-chart',
                 content: `
-                    <div class="max-w-6xl mx-auto h-full flex flex-col slide-enter">
-                        <div class="mb-6 flex justify-between items-end">
+                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-10">
+                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                             <div>
-                                <h2 class="text-2xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
-                                <p class="text-gray-500 text-sm">광고주에게 제공되는 실제 리포트 화면 예시입니다.</p>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
+                                <p class="text-gray-500 text-sm mt-1">광고주에게 제공되는 실제 리포트 화면 예시입니다. (실시간 업데이트)</p>
                             </div>
-                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold">LIVE DATA</span>
+                            <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold animate-pulse">● LIVE DATA</span>
                         </div>
 
-                        <!-- Dashboard Mockup -->
-                        <div class="bg-slate-100 rounded-xl p-4 border border-slate-200 shadow-inner flex-1 overflow-y-auto">
-                            <!-- Stats Row -->
-                            <div class="grid grid-cols-4 gap-4 mb-4">
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-xs text-gray-400 uppercase font-bold">Total Traffic (유동인구)</p>
-                                    <p class="text-2xl font-bold text-slate-800">124,500</p>
-                                    <span class="text-xs text-green-500 flex items-center">↑ 12% vs last week</span>
+                        <div class="bg-slate-100 rounded-3xl p-6 lg:p-8 border border-slate-200 shadow-inner flex-1 flex flex-col gap-6">
+                            
+                            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Total Traffic</p>
+                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">124,500</p>
+                                    <div class="mt-2 flex items-center text-xs font-medium text-green-500">
+                                        <span class="bg-green-50 px-1.5 py-0.5 rounded mr-1">↑ 12%</span> vs last week
+                                    </div>
                                 </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-blue-500">
-                                    <p class="text-xs text-gray-400 uppercase font-bold">Actual Views (실시청자)</p>
-                                    <p class="text-2xl font-bold text-blue-600">45,230</p>
-                                    <span class="text-xs text-gray-500">CPV 과금 기준</span>
+                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm border-l-4 border-blue-500 hover:shadow-md transition-shadow relative overflow-hidden">
+                                    <div class="absolute right-0 top-0 p-3 opacity-10"><i data-lucide="eye" class="w-12 h-12 text-blue-500"></i></div>
+                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Actual Views (실시청)</p>
+                                    <p class="text-2xl lg:text-3xl font-bold text-blue-600">45,230</p>
+                                    <span class="text-xs text-gray-500 mt-2 block">CPV 과금 기준 데이터</span>
                                 </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-xs text-gray-400 uppercase font-bold">Attention Rate (주목도)</p>
-                                    <p class="text-2xl font-bold text-slate-800">36.5%</p>
-                                    <span class="text-xs text-green-500">↑ 5% Industry Avg</span>
+                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Attention Rate</p>
+                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">36.5%</p>
+                                    <div class="mt-2 flex items-center text-xs font-medium text-green-500">
+                                        <span class="bg-green-50 px-1.5 py-0.5 rounded mr-1">↑ 5%</span> Industry Avg
+                                    </div>
                                 </div>
-                                <div class="bg-white p-4 rounded-lg shadow-sm">
-                                    <p class="text-xs text-gray-400 uppercase font-bold">Avg. Dwell Time</p>
-                                    <p class="text-2xl font-bold text-slate-800">4.8s</p>
-                                    <span class="text-xs text-gray-500">Target: 3.0s</span>
+                                <div class="bg-white p-5 lg:p-6 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                                    <p class="text-xs text-gray-400 uppercase font-bold tracking-wider mb-2">Avg. Dwell Time</p>
+                                    <p class="text-2xl lg:text-3xl font-bold text-slate-800">4.8s</p>
+                                    <span class="text-xs text-gray-500 mt-2 block">Target: 3.0s (달성)</span>
                                 </div>
                             </div>
 
-                            <!-- Charts Row -->
-                            <div class="grid grid-cols-3 gap-4 h-64">
-                                <!-- Age/Gender Chart -->
-                                <div class="bg-white p-4 rounded-lg shadow-sm col-span-2 flex flex-col">
-                                    <h4 class="text-sm font-bold text-gray-700 mb-4">Demographics (성별/연령별 시청 분포)</h4>
-                                    <div class="flex-1 flex items-end gap-4 px-4 pb-2 border-b border-gray-100 relative">
-                                        <!-- Mock Bars -->
-                                        <div class="w-full flex justify-between items-end h-full gap-2">
-                                            <div class="flex flex-col items-center gap-1 w-1/6 h-full justify-end">
-                                                <div class="w-full bg-blue-200 rounded-t h-[20%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">20%</div></div>
-                                                <div class="w-full bg-pink-200 rounded-t h-[15%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">15%</div></div>
-                                                <span class="text-xs text-gray-400">10대</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 w-1/6 h-full justify-end">
-                                                <div class="w-full bg-blue-500 rounded-t h-[60%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">60%</div></div>
-                                                <div class="w-full bg-pink-400 rounded-t h-[75%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">75%</div></div>
-                                                <span class="text-xs text-gray-400 font-bold">20대</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 w-1/6 h-full justify-end">
-                                                <div class="w-full bg-blue-500 rounded-t h-[80%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">80%</div></div>
-                                                <div class="w-full bg-pink-400 rounded-t h-[65%] relative group"><div class="hidden group-hover:block absolute -top-8 left-1/2 -translate-x-1/2 bg-black text-white text-xs px-2 py-1 rounded">65%</div></div>
-                                                <span class="text-xs text-gray-400 font-bold">30대</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 w-1/6 h-full justify-end">
-                                                <div class="w-full bg-blue-300 rounded-t h-[40%]"></div>
-                                                <div class="w-full bg-pink-300 rounded-t h-[35%]"></div>
-                                                <span class="text-xs text-gray-400">40대</span>
-                                            </div>
-                                            <div class="flex flex-col items-center gap-1 w-1/6 h-full justify-end">
-                                                <div class="w-full bg-blue-200 rounded-t h-[20%]"></div>
-                                                <div class="w-full bg-pink-200 rounded-t h-[10%]"></div>
-                                                <span class="text-xs text-gray-400">50대+</span>
-                                            </div>
+                            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-[300px]">
+                                <div class="bg-white p-6 rounded-2xl shadow-sm lg:col-span-2 flex flex-col">
+                                    <div class="flex justify-between items-center mb-6">
+                                        <h4 class="text-base font-bold text-gray-800">Demographics (성별/연령별 시청 분포)</h4>
+                                        <div class="flex gap-3 text-xs">
+                                            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 남성</div>
+                                            <div class="flex items-center gap-1"><span class="w-3 h-3 bg-pink-400 rounded-sm"></span> 여성</div>
                                         </div>
                                     </div>
-                                    <div class="flex justify-center gap-4 mt-2 text-xs text-gray-500">
-                                        <div class="flex items-center gap-1"><span class="w-3 h-3 bg-blue-500 rounded-sm"></span> 남성</div>
-                                        <div class="flex items-center gap-1"><span class="w-3 h-3 bg-pink-400 rounded-sm"></span> 여성</div>
+                                    
+                                    <div class="flex-1 flex items-end gap-2 sm:gap-4 px-2 pb-2 border-b border-gray-100">
+                                        ${['10대','20대','30대','40대','50대+'].map((age, i) => {
+                                            const hM = [20, 60, 80, 40, 20][i];
+                                            const hF = [15, 75, 65, 35, 10][i];
+                                            return `
+                                                <div class="flex flex-col items-center gap-1 flex-1 h-full justify-end group cursor-pointer">
+                                                    <div class="w-full flex items-end justify-center gap-1 h-full">
+                                                        <div style="height: ${hM}%" class="w-1/2 bg-blue-500 rounded-t-sm relative transition-all group-hover:bg-blue-600"></div>
+                                                        <div style="height: ${hF}%" class="w-1/2 bg-pink-400 rounded-t-sm relative transition-all group-hover:bg-pink-500"></div>
+                                                    </div>
+                                                    <span class="text-xs text-gray-400 mt-2 font-medium">${age}</span>
+                                                </div>
+                                            `
+                                        }).join('')}
                                     </div>
                                 </div>
 
-                                <!-- Heatmap Mockup -->
-                                <div class="bg-white p-4 rounded-lg shadow-sm flex flex-col">
-                                    <h4 class="text-sm font-bold text-gray-700 mb-4">Peak Time (시간대별 집중도)</h4>
+                                <div class="bg-white p-6 rounded-2xl shadow-sm flex flex-col">
+                                    <h4 class="text-base font-bold text-gray-800 mb-4">Peak Time (시간대별 집중도)</h4>
                                     <div class="flex-1 grid grid-cols-7 gap-1 content-center">
-                                        <!-- Generating simple heatmap cells -->
+                                        <div class="col-span-7 flex justify-between text-xs text-gray-400 mb-1 px-1">
+                                            <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                                        </div>
                                         ${Array(28).fill(0).map(() => {
                                             const opacity = Math.random();
                                             const colorClass = opacity > 0.7 ? 'bg-blue-600' : opacity > 0.4 ? 'bg-blue-400' : 'bg-blue-100';
-                                            return `<div class="${colorClass} rounded-sm w-full h-full opacity-90"></div>`;
+                                            return `<div class="${colorClass} rounded-sm w-full pt-[100%] transition-colors hover:opacity-80 cursor-pointer" title="Traffic Intensity"></div>`;
                                         }).join('')}
                                     </div>
-                                    <div class="flex justify-between mt-2 text-xs text-gray-400">
-                                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-                                    </div>
+                                    <div class="mt-4 text-xs text-gray-400 text-center">Time (09:00 - 22:00)</div>
                                 </div>
                             </div>
                             
-                            <!-- Insight Text -->
-                            <div class="mt-4 bg-blue-50 border border-blue-200 p-4 rounded-lg flex items-start gap-3">
-                                <i data-lucide="lightbulb" class="text-blue-600 w-5 h-5 flex-shrink-0 mt-0.5"></i>
+                            <div class="bg-blue-50 border border-blue-100 p-5 rounded-xl flex items-start gap-4">
+                                <div class="bg-white p-2 rounded-full shadow-sm">
+                                    <i data-lucide="lightbulb" class="text-blue-600 w-5 h-5"></i>
+                                </div>
                                 <div>
                                     <h5 class="text-sm font-bold text-blue-800">AI Insight</h5>
-                                    <p class="text-xs text-blue-700 mt-1">
-                                        이번 캠페인은 <strong>20-30대 여성</strong>의 시청 비율이 가장 높았으며, 특히 <strong>평일 점심시간(12:00~13:30)</strong>에 가장 높은 주목도를 기록했습니다. 다음 캠페인 시 해당 시간대 노출 비중을 높이는 것을 제안합니다.
+                                    <p class="text-sm text-blue-700 mt-1 leading-relaxed">
+                                        이번 캠페인은 <strong>20-30대 여성</strong>의 시청 비율이 가장 높았으며, 특히 <strong>평일 점심시간(12:00~13:30)</strong>에 가장 높은 주목도를 기록했습니다. 다음 캠페인 시 해당 시간대 노출 비중을 15% 상향하는 것을 제안합니다.
                                     </p>
                                 </div>
                             </div>
@@ -473,61 +491,58 @@
                 title: '협업 프로세스',
                 icon: 'git-merge',
                 content: `
-                    <div class="max-w-4xl mx-auto slide-enter">
-                        <div class="text-center mb-12">
-                            <h2 class="text-3xl font-bold text-slate-900">Seamless Workflow</h2>
-                            <p class="text-gray-500 mt-2">복잡한 과정 없이, 소재만 전달주시면 나머지는 AI가 처리합니다.</p>
+                    <div class="max-w-5xl mx-auto slide-enter pb-10">
+                        <div class="text-center mb-16">
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900">Seamless Workflow</h2>
+                            <p class="text-gray-500 mt-3 text-lg">복잡한 과정 없이, 소재만 전달주시면 나머지는 AI가 처리합니다.</p>
                         </div>
 
                         <div class="relative">
-                            <!-- Connecting Line -->
-                            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 z-0"></div>
+                            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 z-0 hidden md:block"></div>
+                            
+                            <div class="space-y-12 md:space-y-0">
+                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
+                                    <div class="w-full md:w-5/12 text-center md:text-right md:pr-10 order-2 md:order-1 mt-4 md:mt-0">
+                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">01. 제안 및 수주</h3>
+                                        <p class="text-gray-600 mt-2">귀사가 광고주에게 인웨이브 매체를 포함하여 제안합니다.<br>(제안용 고해상도 자료 키트 제공)</p>
+                                    </div>
+                                    <div class="w-16 h-16 bg-white border-4 border-blue-600 rounded-full flex items-center justify-center shadow-lg order-1 md:order-2 z-10 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="file-text" class="text-blue-600 w-7 h-7"></i>
+                                    </div>
+                                    <div class="w-full md:w-5/12 pl-0 md:pl-10 order-3 hidden md:block"></div>
+                                </div>
 
-                            <!-- Step 1 -->
-                            <div class="relative z-10 flex items-center justify-between mb-12">
-                                <div class="w-5/12 text-right pr-8">
-                                    <h3 class="text-xl font-bold text-slate-800">01. 제안 및 수주</h3>
-                                    <p class="text-gray-600 text-sm mt-1">귀사가 광고주에게 인웨이브 매체를 포함하여 제안합니다. (제안용 자료 인웨이브 제공)</p>
+                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
+                                    <div class="w-full md:w-5/12 text-right pr-10 hidden md:block"></div>
+                                    <div class="w-16 h-16 bg-white border-4 border-indigo-600 rounded-full flex items-center justify-center shadow-lg z-10 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="upload" class="text-indigo-600 w-7 h-7"></i>
+                                    </div>
+                                    <div class="w-full md:w-5/12 text-center md:text-left md:pl-10 mt-4 md:mt-0">
+                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">02. 소재 전달</h3>
+                                        <p class="text-gray-600 mt-2">영상 또는 이미지 소재를 전달합니다.<br>(클라우드 원격 송출로 10분 내 반영 가능)</p>
+                                    </div>
                                 </div>
-                                <div class="w-12 h-12 bg-white border-4 border-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                                    <i data-lucide="file-text" class="text-blue-600 w-5 h-5"></i>
-                                </div>
-                                <div class="w-5/12 pl-8"></div>
-                            </div>
 
-                            <!-- Step 2 -->
-                            <div class="relative z-10 flex items-center justify-between mb-12">
-                                <div class="w-5/12"></div>
-                                <div class="w-12 h-12 bg-white border-4 border-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-                                    <i data-lucide="upload" class="text-indigo-600 w-5 h-5"></i>
+                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
+                                    <div class="w-full md:w-5/12 text-center md:text-right md:pr-10 order-2 md:order-1 mt-4 md:mt-0">
+                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-purple-600 transition-colors">03. AI 송출 및 최적화</h3>
+                                        <p class="text-gray-600 mt-2">AI가 타겟 인구 밀집 시간대를 분석하여<br>가장 효과적인 타이밍에 광고를 노출합니다.</p>
+                                    </div>
+                                    <div class="w-16 h-16 bg-white border-4 border-purple-600 rounded-full flex items-center justify-center shadow-lg order-1 md:order-2 z-10 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="cpu" class="text-purple-600 w-7 h-7"></i>
+                                    </div>
+                                    <div class="w-full md:w-5/12 pl-0 md:pl-10 order-3 hidden md:block"></div>
                                 </div>
-                                <div class="w-5/12 pl-8">
-                                    <h3 class="text-xl font-bold text-slate-800">02. 소재 전달</h3>
-                                    <p class="text-gray-600 text-sm mt-1">영상 또는 이미지 소재를 전달합니다. (원격 송출 시스템으로 즉시 반영 가능)</p>
-                                </div>
-                            </div>
 
-                            <!-- Step 3 -->
-                            <div class="relative z-10 flex items-center justify-between mb-12">
-                                <div class="w-5/12 text-right pr-8">
-                                    <h3 class="text-xl font-bold text-slate-800">03. AI 송출 및 최적화</h3>
-                                    <p class="text-gray-600 text-sm mt-1">AI가 타겟 인구 밀집 시간대를 분석하여 최적의 타이밍에 광고를 노출합니다.</p>
-                                </div>
-                                <div class="w-12 h-12 bg-white border-4 border-purple-600 rounded-full flex items-center justify-center shadow-lg">
-                                    <i data-lucide="cpu" class="text-purple-600 w-5 h-5"></i>
-                                </div>
-                                <div class="w-5/12 pl-8"></div>
-                            </div>
-
-                            <!-- Step 4 -->
-                            <div class="relative z-10 flex items-center justify-between">
-                                <div class="w-5/12"></div>
-                                <div class="w-12 h-12 bg-white border-4 border-green-600 rounded-full flex items-center justify-center shadow-lg">
-                                    <i data-lucide="check-circle" class="text-green-600 w-5 h-5"></i>
-                                </div>
-                                <div class="w-5/12 pl-8">
-                                    <h3 class="text-xl font-bold text-slate-800">04. 리포트 발송</h3>
-                                    <p class="text-gray-600 text-sm mt-1">캠페인 종료 즉시 데이터 리포트가 발송되며, 정산이 진행됩니다.</p>
+                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between group">
+                                    <div class="w-full md:w-5/12 text-right pr-10 hidden md:block"></div>
+                                    <div class="w-16 h-16 bg-white border-4 border-green-600 rounded-full flex items-center justify-center shadow-lg z-10 group-hover:scale-110 transition-transform">
+                                        <i data-lucide="check-circle" class="text-green-600 w-7 h-7"></i>
+                                    </div>
+                                    <div class="w-full md:w-5/12 text-center md:text-left md:pl-10 mt-4 md:mt-0">
+                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-green-600 transition-colors">04. 리포트 발송 및 정산</h3>
+                                        <p class="text-gray-600 mt-2">캠페인 종료 즉시 데이터 리포트가 발송되며,<br>약정된 수익 쉐어 정산이 진행됩니다.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -539,51 +554,48 @@
                 title: '제휴 제안',
                 icon: 'handshake',
                 content: `
-                    <div class="h-full flex flex-col justify-center items-center slide-enter">
-                        <div class="bg-white p-10 rounded-3xl shadow-2xl border border-gray-100 max-w-3xl w-full text-center relative overflow-hidden">
+                    <div class="h-full flex flex-col justify-center items-center slide-enter pb-10">
+                        <div class="bg-white p-8 lg:p-12 rounded-[2rem] shadow-2xl border border-gray-100 max-w-4xl w-full text-center relative overflow-hidden">
                             <div class="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-blue-600 to-indigo-600"></div>
                             
-                            <h2 class="text-3xl font-bold text-slate-900 mb-6">귀사의 성공적인 캠페인 파트너가 되겠습니다.</h2>
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-8 leading-tight">귀사의 성공적인<br>캠페인 파트너가 되겠습니다.</h2>
                             
-                            <div class="space-y-6 text-left max-w-lg mx-auto mb-10">
-                                <div class="flex items-start gap-4">
-                                    <div class="bg-blue-100 p-2 rounded-lg text-blue-600 mt-1">
-                                        <i data-lucide="award" class="w-6 h-6"></i>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 text-left">
+                                <div class="bg-slate-50 p-6 rounded-2xl hover:bg-blue-50 transition-colors group">
+                                    <div class="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                        <i data-lucide="award" class="w-6 h-6 text-blue-600"></i>
                                     </div>
-                                    <div>
-                                        <h3 class="font-bold text-lg text-gray-800">Media Rep 권한 부여</h3>
-                                        <p class="text-gray-600 text-sm">인웨이브 매체에 대한 공식 판매 대행 권한을 부여합니다.</p>
-                                    </div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">Media Rep 권한</h3>
+                                    <p class="text-gray-500 text-sm">인웨이브 매체에 대한 공식 판매 대행 권한을 부여합니다.</p>
                                 </div>
-                                <div class="flex items-start gap-4">
-                                    <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600 mt-1">
-                                        <i data-lucide="percent" class="w-6 h-6"></i>
+                                <div class="bg-slate-50 p-6 rounded-2xl hover:bg-indigo-50 transition-colors group">
+                                    <div class="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                        <i data-lucide="percent" class="w-6 h-6 text-indigo-600"></i>
                                     </div>
-                                    <div>
-                                        <h3 class="font-bold text-lg text-gray-800">Agency Commission 보장</h3>
-                                        <p class="text-gray-600 text-sm">업계 최고 수준의 대행 수수료(Margin)를 책정하여 귀사의 수익성을 보장합니다.</p>
-                                    </div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">High Commission</h3>
+                                    <p class="text-gray-500 text-sm">업계 최고 수준의 대행 수수료(Margin)를 책정하여 수익성을 보장합니다.</p>
                                 </div>
-                                <div class="flex items-start gap-4">
-                                    <div class="bg-purple-100 p-2 rounded-lg text-purple-600 mt-1">
-                                        <i data-lucide="flask-conical" class="w-6 h-6"></i>
+                                <div class="bg-slate-50 p-6 rounded-2xl hover:bg-purple-50 transition-colors group">
+                                    <div class="bg-white w-12 h-12 rounded-xl flex items-center justify-center mb-4 shadow-sm group-hover:scale-110 transition-transform">
+                                        <i data-lucide="flask-conical" class="w-6 h-6 text-purple-600"></i>
                                     </div>
-                                    <div>
-                                        <h3 class="font-bold text-lg text-gray-800">Pilot Test 지원</h3>
-                                        <p class="text-gray-600 text-sm">신규 광고주 설득을 위한 파일럿 테스트(단기 집행)를 전폭 지원합니다.</p>
-                                    </div>
+                                    <h3 class="font-bold text-lg text-gray-800 mb-2">Pilot Test 지원</h3>
+                                    <p class="text-gray-500 text-sm">신규 광고주 설득을 위한 파일럿 테스트(단기 집행)를 전폭 지원합니다.</p>
                                 </div>
                             </div>
 
-                            <div class="bg-slate-50 p-6 rounded-xl border border-slate-200">
-                                <p class="text-slate-600 font-medium mb-4">지금 바로 파트너십 논의를 시작해보세요.</p>
-                                <div class="flex justify-center gap-4">
-                                    <button class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
-                                        <i data-lucide="mail"></i> 미팅 요청하기
-                                    </button>
-                                    <button class="bg-white hover:bg-gray-50 text-slate-700 border border-slate-300 px-8 py-3 rounded-xl font-bold shadow-sm transition-transform hover:scale-105">
-                                        매체소개서 다운로드
-                                    </button>
+                            <div class="bg-slate-900 p-8 rounded-2xl relative overflow-hidden">
+                                <div class="absolute inset-0 bg-blue-600 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]"></div>
+                                <div class="relative z-10">
+                                    <p class="text-blue-200 font-medium mb-6">지금 바로 파트너십 논의를 시작해보세요.</p>
+                                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                                        <button class="bg-blue-600 hover:bg-blue-500 text-white px-8 py-4 rounded-xl font-bold shadow-lg transition-transform hover:scale-105 flex items-center justify-center gap-2">
+                                            <i data-lucide="mail" class="w-5 h-5"></i> 미팅 요청하기
+                                        </button>
+                                        <button class="bg-white hover:bg-gray-100 text-slate-900 px-8 py-4 rounded-xl font-bold shadow-lg transition-transform hover:scale-105">
+                                            매체소개서 다운로드
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -606,15 +618,14 @@
                 <li class="cursor-pointer">
                     <div 
                         onclick="changeSlide('${slide.id}')"
-                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-colors duration-200 ${slide.id === currentSlideId ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${slide.id === currentSlideId ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}"
                     >
-                        <i data-lucide="${slide.icon}" class="w-5 h-5"></i>
+                        <i data-lucide="${slide.icon}" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
                         <span class="text-sm font-medium">${slide.title}</span>
                     </div>
                 </li>
             `).join('');
             
-            // Check if lucide is defined before using it
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
                 lucide.createIcons();
             }
@@ -633,13 +644,13 @@
             // Render Content
             contentArea.innerHTML = slide.content;
             
+            // Reset Scroll
+            contentArea.scrollTop = 0;
+            
             // Check if lucide is defined before using it
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
                 lucide.createIcons();
             }
-            
-            // Re-render charts if on report slide (In a real app, use Chart.js properly here)
-            // Currently using CSS mockups for simplicity in one file
         }
 
         // Initialize
