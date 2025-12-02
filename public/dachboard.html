@@ -379,65 +379,67 @@
           </div>
         </div>
 
-        <div class="charts-row">
-          <div class="chart-half">
-            <div class="chart-header">
-              <div>
-                <div style="font-weight:700;" id="chart1_title">Demographics</div>
-                <div style="font-size:12px; color:#9CA3AF;">Gender & Age Distribution</div>
-              </div>
-            </div>
-            <div class="bar-chart-container" id="barChartContainer">
-              <div style="text-align:center; color:#CBD5E1; margin-top:40px;">Ready to Analyze</div>
-            </div>
+        <div class="charts-wrapper" style="display: flex; flex-direction: column; gap: 24px;">
+
+          <div class="charts-row">
+             <div class="chart-half">
+               <div class="chart-header">
+                 <div>
+                   <div style="font-weight:700;" id="chart1_title">Demographics</div>
+                   <div style="font-size:12px; color:#9CA3AF;">Gender & Age Distribution</div>
+                 </div>
+               </div>
+               <div class="bar-chart-container" id="barChartContainer">
+                 <div style="text-align:center; color:#CBD5E1; margin-top:40px;">Ready to Analyze</div>
+               </div>
+             </div>
+
+             <div class="chart-half">
+               <div class="chart-header">
+                 <div>
+                   <div style="font-weight:700;" id="chart2_title">Time Analysis</div>
+                   <div style="font-size:12px; color:#9CA3AF;">Peak Time Heatmap</div>
+                 </div>
+               </div>
+               <div class="heatmap-layout">
+                 <div class="hm-container">
+                   <div class="hm-y"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                   <div class="hm-grid-box" id="analysisHeatGrid"></div>
+                 </div>
+                 <div class="hm-x"><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div>
+               </div>
+             </div>
           </div>
 
-          <div class="chart-half">
-            <div class="chart-header">
-              <div>
-                <div style="font-weight:700;" id="chart2_title">Time Analysis</div>
-                <div style="font-size:12px; color:#9CA3AF;">Peak Time Heatmap</div>
+          <div class="charts-row">
+            <div class="chart-half">
+              <div class="chart-header">
+                <div>
+                  <div style="font-weight:700;">Audience Pattern</div>
+                  <div style="font-size:12px; color:#9CA3AF;">Time(X) vs Age(Y) • Size: Attention</div>
+                </div>
+                <div style="font-size:10px; display:flex; gap:8px;">
+                  <span style="color:#3B82F6">● Male</span>
+                  <span style="color:#EF4444">● Female</span>
+                </div>
+              </div>
+              <div style="flex:1; padding: 10px 20px 20px 10px;">
+                <div class="scatter-container" id="scatterChart">
+                   <div style="text-align:center; padding-top:60px; color:#ddd;">Select Date & Analyze</div>
+                </div>
               </div>
             </div>
-            <div class="heatmap-layout">
-              <div class="hm-container">
-                <div class="hm-y"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
-                <div class="hm-grid-box" id="analysisHeatGrid">
-                   </div>
-              </div>
-              <div class="hm-x"><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div>
-            </div>
-          </div>
-        </div>
-    <div class="charts-row" style="margin-top: 16px; grid-column: 2;">
-          <div class="chart-half">
-            <div class="chart-header">
-              <div>
-                <div style="font-weight:700;">Audience Pattern</div>
-                <div style="font-size:12px; color:#9CA3AF;">Time(X) vs Age(Y) • Size: Attention</div>
-              </div>
-              <div style="font-size:10px; display:flex; gap:8px;">
-                <span style="color:#3B82F6">● Male</span>
-                <span style="color:#EF4444">● Female</span>
-              </div>
-            </div>
-            <div style="flex:1; padding: 10px 20px 20px 10px;">
-              <div class="scatter-container" id="scatterChart">
-                 <div style="text-align:center; padding-top:60px; color:#ddd;">Select Date & Analyze</div>
-              </div>
-            </div>
-          </div>
 
-          <div class="chart-half">
-            <div class="chart-header">
-              <div>
-                <div style="font-weight:700;">Engagement Quality</div>
-                <div style="font-size:12px; color:#9CA3AF;">Dwell Time Distribution</div>
+            <div class="chart-half">
+              <div class="chart-header">
+                <div>
+                  <div style="font-weight:700;">Engagement Quality</div>
+                  <div style="font-size:12px; color:#9CA3AF;">Dwell Time Distribution</div>
+                </div>
               </div>
-            </div>
-            <div style="flex:1; padding: 10px;">
-              <div class="v-bar-container" id="dwellChart">
-                 <div style="text-align:center; width:100%; padding-top:60px; color:#ddd;">No Data</div>
+              <div style="flex:1; padding: 10px;">
+                <div class="v-bar-container" id="dwellChart">
+                   <div style="text-align:center; width:100%; padding-top:60px; color:#ddd;">No Data</div>
               </div>
             </div>
           </div>
