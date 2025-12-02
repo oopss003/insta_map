@@ -711,7 +711,168 @@
             renderSidebar();
             changeSlide('cover'); // Start with cover
         });
+// --- Modal & Popup Logic ---
+        
+        // Modal State
+        let autoSlideInterval;
 
+        function openModal(type) {
+            // Create Modal HTML Structure Dynamically
+            const modalHtml = `
+                <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeModal()"></div>
+                    
+                    <div class="relative bg-white w-full max-w-5xl rounded-3xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 overflow-hidden flex flex-col max-h-[90vh]" id="modal-panel">
+                        
+                        <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50">
+                            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2" id="modal-title">
+                                </h3>
+                            <button onclick="closeModal()" class="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500 hover:text-red-500">
+                                <i data-lucide="x" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-0 overflow-y-auto bg-slate-50 flex-1" id="modal-body">
+                            </div>
+                    </div>
+                </div>
+            `;
+
+            // Append to body
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            // Re-initialize Icons
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            // Animate In
+            requestAnimationFrame(() => {
+                document.getElementById('modal-backdrop').classList.remove('opacity-0');
+                document.getElementById('modal-panel').classList.remove('scale-95', 'opacity-0');
+            });
+
+            // Inject Content based on Type
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+
+            if (type === 'eye') {
+                modalTitle.innerHTML = `<i data-lucide="eye" class="text-indigo-600"></i> AI 시선 추적 데모`;
+                modalBody.innerHTML = `
+                    <div class="aspect-video w-full bg-black relative flex items-center justify-center group">
+                        <iframe src="https://player.vimeo.com/video/808686616?autoplay=1&loop=1&title=0&byline=0&portrait=0" 
+                                class="absolute top-0 left-0 w-full h-full" 
+                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="p-8 text-center">
+                        <p class="text-gray-600 text-lg">Inwave의 AI는 <span class="text-indigo-600 font-bold">눈동자의 움직임(Gaze)</span>을 0.01초 단위로 추적하여<br>단순히 앞을 보는 것과 실제 광고를 응시하는 것을 정확히 구분합니다.</p>
+                    </div>
+                `;
+            } else if (type === 'demo') {
+                modalTitle.innerHTML = `<i data-lucide="bar-chart-2" class="text-blue-600"></i> 실시간 데이터 분석 대시보드`;
+                modalBody.innerHTML = `
+                    <div class="relative w-full h-[500px] bg-slate-900 overflow-hidden group">
+                        <div id="slider-track" class="flex h-full transition-transform duration-700 ease-in-out">
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800 relative">
+                                <div class="text-center">
+                                    <div class="text-blue-400 font-bold text-xl mb-4 animate-pulse">LIVE DASHBOARD - VIEW 01</div>
+                                    <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2070&auto=format&fit=crop" class="rounded-lg shadow-2xl border border-slate-600 max-w-[80%] mx-auto opacity-80">
+                                </div>
+                            </div>
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800">
+                                <div class="text-center">
+                                    <div class="text-green-400 font-bold text-xl mb-4 animate-pulse">DEMOGRAPHIC ANALYSIS - VIEW 02</div>
+                                    <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=2015&auto=format&fit=crop" class="rounded-lg shadow-2xl border border-slate-600 max-w-[80%] mx-auto opacity-80">
+                                </div>
+                            </div>
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800">
+                                <div class="text-center">
+                                    <div class="text-purple-400 font-bold text-xl mb-4 animate-pulse">HEATMAP & TRAFFIC - VIEW 03</div>
+                                    <img src="https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?q=80&w=2076&auto=format&fit=crop" class="rounded-lg shadow-2xl border border-slate-600 max-w-[80%] mx-auto opacity-80">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="absolute bottom-6 left-0 w-full flex justify-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-white opacity-100"></span>
+                            <span class="w-3 h-3 rounded-full bg-white opacity-50"></span>
+                            <span class="w-3 h-3 rounded-full bg-white opacity-50"></span>
+                        </div>
+                    </div>
+                `;
+                
+                // Auto Slide Logic
+                let slideIndex = 0;
+                const track = document.getElementById('slider-track');
+                const indicators = document.querySelectorAll('.absolute.bottom-6 span');
+                
+                autoSlideInterval = setInterval(() => {
+                    slideIndex = (slideIndex + 1) % 3;
+                    track.style.transform = `translateX(-${slideIndex * 100}%)`;
+                    // Update dots
+                    indicators.forEach((dot, i) => {
+                        dot.style.opacity = i === slideIndex ? '1' : '0.5';
+                    });
+                }, 3000); // 3 seconds
+                
+            } else if (type === 'privacy') {
+                modalTitle.innerHTML = `<i data-lucide="shield-check" class="text-green-600"></i> AI 윤리·법적 리스크 대응 전략`;
+                modalBody.innerHTML = `
+                    <div class="p-8 lg:p-12">
+                        <div class="bg-green-50 border border-green-200 rounded-2xl p-6 text-center mb-10">
+                            <h4 class="text-xl font-bold text-green-800 mb-2">Privacy-by-Design</h4>
+                            <p class="text-green-700">인웨이브는 개인정보보호법 및 AI 윤리 기준을 <span class="bg-white px-2 py-0.5 rounded font-bold shadow-sm">100% 준수</span>하는 구조로 설계되었습니다.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">1</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">법적 문제 없음</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    인웨이브 AI는 <span class="text-red-500 font-bold">영상을 저장하지 않고</span>, 실시간으로 분석된 비식별 통계 데이터만 저장하므로 개인정보보호법 상 위법 소지가 없습니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">2</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">법령상 예외 조항</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    개인정보보호법 시행령 제22조에 따라, <span class="bg-gray-100 px-1 rounded font-medium">"통계 산출을 위한 일시적 영상처리"</span>는 합법으로 인정됩니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">3</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">2차 활용 가능</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    수집된 정보는 개인을 식별할 수 없는 <span class="text-blue-600 font-bold">통계값 형태</span>이므로, 2차 가공 및 분석 활용도 법적 제약 없이 가능합니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 text-right text-gray-400 text-xs border-t pt-4">
+                            법률 자문: 구태언 변호사 / 테크앤로 법률사무소
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Re-initialize Icons in Modal
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            if (modal) {
+                // Clear Interval if exists
+                if (autoSlideInterval) clearInterval(autoSlideInterval);
+                
+                // Animate Out
+                document.getElementById('modal-backdrop').classList.add('opacity-0');
+                document.getElementById('modal-panel').classList.add('scale-95', 'opacity-0');
+                
+                // Remove from DOM after animation
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
     </script>
 </body>
 </html>
