@@ -1732,7 +1732,97 @@
     }
     renderSbCal();
   };
+// [NEW] 하단 차트 2개 렌더링 함수 (산점도 + 체류시간)
+ function renderBottomCharts(data) {
+    // --- 1. 산점도 (Audience Pattern) ---
+    const scContainer = document.getElementById('scatterChart');
+    if(scContainer) {
+       scContainer.innerHTML = '';
+       
+        if(data.length === 0) {
+           scContainer.innerHTML = '<div style="text-align:center; padding-top:60px; color:#ccc;">No Data</div>';
+       } else {
+          // Y축 라벨 (나이 10~70)
+           for(let i=10; i<=70; i+=20) {
+             scContainer.innerHTML += `<div class="sc-y-label" style="bottom:${((i-10)/60)*100}%">${i}</div>`;
+           }
+          // X축 라벨 (시간 09~22)
+           [9, 12, 15, 18, 21].forEach(h => {
+              const pct = ((h-9)/13)*100;
+              if(pct>=0 && pct<=100) scContainer.innerHTML += `<div class="sc-x-label" style="left:${pct}%">${h}h</div>`;
+           });
 
+          // 점(Dot) 찍기
+           data.forEach(d => {
+             if(!d.start_time || !d.age) return;
+                 
+             // X좌표: 시간 (09:00 ~ 22:00 기준)
+             const timeParts = d.start_time.split(':');
+             const hour = parseInt(timeParts[0]) + parseInt(timeParts[1])/60;
+             let xPct = ((hour - 9) / 13) * 100;
+                 
+             // Y좌표: 나이 (10세 ~ 70세 기준)
+             let age = d.age;
+             if(age < 10) age = 10; if(age > 70) age = 70;
+             let yPct = ((age - 10) / 60) * 100;
+
+              if(xPct < 0 || xPct > 100) return; 
+
+             // 스타일: 성별 색상 & 주목도 크기
+             // 데이터에 '남자'/'여자' 또는 'Male'/'Female' 모두 대응
+             const isMale = (d.gender === '남자' || d.gender === 'Male');
+             const colorClass = isMale ? 'male' : 'female';
+             const size = 4 + (d.attention || 0) * 8; // 최소 4px ~ 최대 12px
+
+             const dot = document.createElement('div');
+             dot.className = `scatter-dot ${colorClass}`;
+             dot.style.left = `${xPct}%`;
+             dot.style.bottom = `${yPct}%`;
+             dot.style.width = `${size}px`;
+             dot.style.height = `${size}px`;
+             dot.title = `${d.gender}, ${d.age}세, ${d.start_time} (Attn: ${d.attention})`;
+                 
+             scContainer.appendChild(dot);
+          });
+        }
+   }
+
+    // --- 2. 체류 시간 분포 (Engagement Quality) ---
+    const dwContainer = document.getElementById('dwellChart');
+   if(dwContainer) {
+        dwContainer.innerHTML = '';
+       
+       if(data.length === 0) {
+          dwContainer.innerHTML = '<div style="text-align:center; width:100%; padding-top:60px; color:#ccc;">No Data</div>';
+         } else {
+           // 구간별 카운트
+           const bins = { 'Pass (<3s)':0, 'Short (3-5s)':0, 'Engaged (5-10s)':0, 'Deep (10s+)':0 };
+           data.forEach(d => {
+              const t = d.duration || 0;
+             if(t < 3) bins['Pass (<3s)']++;
+             else if(t < 5) bins['Short (3-5s)']++;
+             else if(t < 10) bins['Engaged (5-10s)']++;
+             else bins['Deep (10s+)']++;
+          });
+
+           const maxVal = Math.max(...Object.values(bins)) || 1;
+
+           for(const [label, count] of Object.entries(bins)) {
+              const heightPct = (count / maxVal) * 80; // 최대 높이 80%로 제한
+             const isHigh = label.includes('Engaged') || label.includes('Deep'); 
+                 
+             const html = `
+               <div class="v-bar-group">
+                  <div class="v-bar-val">${count}</div>
+                  <div class="v-bar ${isHigh ? 'high' : ''}" style="height:${heightPct}%"></div>
+                 <div class="v-bar-lbl">${label.split(' ')[0]}</div>
+               </div>
+              `;
+              dwContainer.innerHTML += html;
+             }
+         }
+      }
+   }
     window.onload = function() {
         initMaps();
         loadMonitorList();     // 모니터 목록 불러오기
