@@ -1347,8 +1347,9 @@
           }
           return 0;
         }
+//===================================================================
+// [CORE] 분석 실행 함수 (버튼 클릭 시 호출)
 
-    // [CORE] 분석 실행 함수 (버튼 클릭 시 호출)
     async function runAnalysis() {
       const monitorId = document.getElementById('sidebarMonitorSelect').value;
       const adId = document.getElementById('sidebarAdSelect').value;
@@ -1357,14 +1358,33 @@
       if (selectedDates.length === 0) return alert("분석할 날짜를 달력에서 최소 하루 이상 선택해주세요.");
       if (monitorId === 'ALL') return alert("분석할 특정 모니터를 선택해주세요.");
 
-      // 2. 로딩 UI 표시
-      document.getElementById('kpi1_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      document.getElementById('kpi2_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      document.getElementById('kpi3_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      document.getElementById('kpi4_val').innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i>';
-      document.getElementById('barChartContainer').innerHTML = '<div style="text-align:center; padding-top:40px; color:#999;">Loading...</div>';
-      document.getElementById('analysisHeatGrid').innerHTML = ''; // 히트맵 초기화
-      
+      // ============================================================
+      // ▼▼▼ [수정됨] 2. 모든 KPI와 차트에 로딩 UI 표시 ▼▼▼
+      // ============================================================
+      const loadingSpinner = '<i class="fa-solid fa-spinner fa-spin"></i>';
+      const loadingText = '<div style="text-align:center; padding-top:60px; color:#CBD5E1;">Loading...</div>';
+
+      // (1) 상단 KPI 4개 초기화
+      document.getElementById('kpi1_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi2_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi3_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi4_val').innerHTML = loadingSpinner;
+
+      // (2) 하단 KPI 4개 초기화 (추가됨)
+      document.getElementById('kpi5_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi6_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi7_val').innerHTML = loadingSpinner;
+      document.getElementById('kpi8_val').innerHTML = loadingSpinner;
+
+      // (3) 상단 차트 초기화
+      document.getElementById('barChartContainer').innerHTML = loadingText;
+      document.getElementById('analysisHeatGrid').innerHTML = ''; // 히트맵은 그냥 비우기
+
+      // (4) 하단 차트 초기화 (추가됨)
+      document.getElementById('scatterChart').innerHTML = loadingText;
+      document.getElementById('dwellChart').innerHTML = loadingText;
+      // ============================================================
+
       try {
         // 3. Face Analysis 데이터 가져오기 (선택된 날짜 루프)
         let rawFaceData = [];
@@ -2010,3 +2030,4 @@
   </div>
 </body>
 </html>
+
