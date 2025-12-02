@@ -171,75 +171,110 @@
                     </div>
                 `
             },
-            {
+{
                 id: 'problem',
                 title: '시장의 변화와 고민',
                 icon: 'help-circle',
                 content: `
                     <div class="max-w-7xl mx-auto slide-enter pb-10">
                         <div class="mb-10 text-center lg:text-left">
-                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mb-3">Agency Pain Point</h2>
-                            <p class="text-lg text-gray-600">광고주는 이제 OOH에서도 온라인 수준의 <span class="text-blue-600 font-semibold">'성과 데이터'</span>를 요구합니다.</p>
+                            <span class="text-blue-600 font-bold tracking-wider text-sm uppercase">Market Shift</span>
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mt-2 mb-3">이제 '감(Feeling)'으로 파는 시대는 끝났습니다.</h2>
+                            <p class="text-lg text-gray-600">광고주는 더 이상 '유동인구'를 믿지 않습니다. 그들이 원하는 건 <span class="bg-blue-100 text-blue-700 font-bold px-1">실제 성과 데이터</span>입니다.</p>
                         </div>
 
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-                            <div class="bg-white p-6 lg:p-8 rounded-3xl shadow-lg border-l-4 border-red-500 h-full">
+                            <div class="bg-white p-6 lg:p-8 rounded-3xl shadow-lg border-l-4 border-red-400 h-full relative overflow-hidden">
+                                <div class="absolute right-0 top-0 p-6 opacity-5 pointer-events-none">
+                                    <i data-lucide="alert-triangle" class="w-32 h-32 text-red-500"></i>
+                                </div>
+
                                 <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
-                                    <i data-lucide="x-circle" class="text-red-500 w-6 h-6 lg:w-8 lg:h-8"></i> 
-                                    기존 옥외광고의 한계
+                                    <span class="bg-red-100 p-2 rounded-lg"><i data-lucide="message-square-warning" class="text-red-500 w-6 h-6"></i></span>
+                                    광고주의 날카로운 질문들
                                 </h3>
-                                <div class="space-y-4 lg:space-y-6">
-                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
-                                        <p class="font-bold text-red-800 text-lg mb-1">"정말 효과가 있었나요?"</p>
-                                        <p class="text-gray-600 leading-relaxed">유동인구 추정치 외에는 광고주에게 제시할 <br class="hidden lg:block">명확한 근거가 부족합니다.</p>
+                                
+                                <div class="space-y-5">
+                                    <div class="bg-red-50 p-5 rounded-2xl border border-red-100">
+                                        <div class="flex gap-3 mb-2">
+                                            <span class="font-bold text-red-600 text-xs bg-white px-2 py-1 rounded border border-red-100">성과 입증</span>
+                                            <span class="text-xs text-red-400">광고주 A사 마케팅 팀장</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-lg">"그래서, 우리 광고를 몇 명이 '실제로' 봤나요?"</p>
+                                        <p class="text-gray-500 text-sm mt-1">단순 노출량이 아닌, 실제 시청 도달률(Reach)에 대한 답변을 못하고 계신가요?</p>
                                     </div>
-                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
-                                        <p class="font-bold text-red-800 text-lg mb-1">"누가 봤나요?"</p>
-                                        <p class="text-gray-600 leading-relaxed">타겟팅이 불가능하여 2030 여성 타겟 브랜드에게도 <br class="hidden lg:block">불특정 다수 노출 데이터만 제공해야 합니다.</p>
-                                    </div>
-                                    <div class="bg-red-50 p-5 rounded-2xl transition-transform hover:scale-[1.02]">
-                                        <p class="font-bold text-red-800 text-lg mb-1">"비용 효율이 떨어져요"</p>
-                                        <p class="text-gray-600 leading-relaxed">보지 않은 사람에게도 광고비가 집행되는 <br class="hidden lg:block">비효율적인 과금 구조에 대한 저항감이 큽니다.</p>
+
+                                    <div class="bg-red-50 p-5 rounded-2xl border border-red-100">
+                                        <div class="flex gap-3 mb-2">
+                                            <span class="font-bold text-red-600 text-xs bg-white px-2 py-1 rounded border border-red-100">타겟팅</span>
+                                            <span class="text-xs text-red-400">광고주 B사 브랜드 매니저</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-lg">"2030 여성 타겟인데, 왜 불특정 다수에게 뿌리죠?"</p>
+                                        <p class="text-gray-500 text-sm mt-1">타겟이 없는 곳에 예산을 태우는 비효율을 방어하기 어렵지 않으신가요?</p>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="flex flex-col gap-6 lg:gap-8 justify-center">
-                                <div class="bg-blue-600 text-white p-8 lg:p-10 rounded-3xl shadow-xl transform hover:-translate-y-2 transition-all duration-300">
-                                    <div class="flex items-start justify-between mb-6">
-                                        <div class="p-3 bg-white/20 rounded-2xl">
-                                            <i data-lucide="target" class="w-8 h-8 lg:w-10 lg:h-10 text-white"></i>
+                            <div class="flex flex-col gap-6">
+                                <div class="bg-blue-600 text-white p-8 lg:p-10 rounded-3xl shadow-xl relative overflow-hidden group">
+                                    <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-125 transition-transform duration-700"></div>
+                                    
+                                    <div class="relative z-10">
+                                        <div class="flex items-center gap-3 mb-6">
+                                            <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                                                <i data-lucide="trophy" class="w-8 h-8 text-yellow-300"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-blue-200 text-xs font-bold tracking-wider uppercase">Proposal Strategy</div>
+                                                <h3 class="text-2xl font-bold">경쟁 PT 필승 전략</h3>
+                                            </div>
                                         </div>
-                                        <div class="text-blue-200 text-sm font-semibold tracking-wider uppercase">Solution Key</div>
+                                        
+                                        <div class="space-y-4">
+                                            <p class="text-blue-50 text-lg leading-relaxed border-l-2 border-blue-400 pl-4">
+                                                "다른 대행사는 '예상치'를 가져올 때,<br>
+                                                귀사는 <span class="text-white font-bold bg-blue-500/50 px-1">검증된 데이터</span>를 제시하십시오."
+                                            </p>
+                                            <p class="text-sm text-blue-200 mt-4">
+                                                클라이언트를 설득하는 가장 강력한 언어는<br>
+                                                결국 <strong>ROI(투자 대비 수익)</strong> 입니다.
+                                            </p>
+                                        </div>
                                     </div>
-                                    <h3 class="text-2xl lg:text-3xl font-bold mb-4">경쟁 PT의 승리 공식</h3>
-                                    <p class="text-blue-50 text-lg lg:text-xl leading-relaxed">
-                                        "감"이 아닌 <span class="bg-white/20 px-2 rounded font-bold">데이터</span>로 설득해야 합니다.<br>
-                                        클라이언트가 납득할 수 있는<br>
-                                        <strong>ROI(투자 수익률)</strong> 증명이 필요합니다.
-                                    </p>
                                 </div>
 
                                 <div class="bg-white p-8 rounded-3xl shadow border border-gray-100 flex-1 flex flex-col justify-center">
-                                    <h4 class="font-bold text-gray-800 text-lg lg:text-xl mb-4">필요한 솔루션 체크리스트</h4>
-                                    <ul class="space-y-4 text-gray-600">
-                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                    <div class="flex justify-between items-center mb-5">
+                                        <h4 class="font-bold text-gray-800 text-lg">Inwave가 제공하는 3가지 무기</h4>
+                                        <i data-lucide="check-circle-2" class="text-green-500 w-6 h-6"></i>
+                                    </div>
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">1</span>
                                             </div>
-                                            <span class="text-base lg:text-lg">실제 시청자 수(Impressions) 측정</span>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">정확한 성과 측정 (Measurement)</span>
+                                                <span class="text-sm text-gray-500">AI가 '실제 본 사람'만 카운팅하여 리포트 제공</span>
+                                            </div>
                                         </li>
-                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">2</span>
                                             </div>
-                                            <span class="text-base lg:text-lg">타겟 오디언스(성별/연령) 실시간 분석</span>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">초정밀 타겟팅 (Targeting)</span>
+                                                <span class="text-sm text-gray-500">성별/연령 분석을 통한 타겟 집중 노출</span>
+                                            </div>
                                         </li>
-                                        <li class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                                                <i data-lucide="check" class="text-green-600 w-4 h-4"></i>
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">3</span>
                                             </div>
-                                            <span class="text-base lg:text-lg">합리적인 과금 체계 (CPV)</span>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">합리적 예산 집행 (Efficiency)</span>
+                                                <span class="text-sm text-gray-500">노출당 과금(CPM)이 아닌 시청당 과금(CPV)</span>
+                                            </div>
                                         </li>
                                     </ul>
                                 </div>
