@@ -1305,6 +1305,23 @@
     // ==========================================
     // [3. ANALYTICS LOGIC START]
     // ==========================================
+    // [NEW] 서버의 시간 문자열(HH:MM:SS.ms)을 초(Seconds) 단위 숫자로 변환하는 함수
+        function parseServerDuration(raw) {
+          if (typeof raw === 'number') return raw; 
+          if (typeof raw === 'string') {
+            if (raw.includes(':')) {
+              const parts = raw.split(':');
+              if (parts.length === 3) {
+                const h = parseFloat(parts[0]) || 0;
+                const m = parseFloat(parts[1]) || 0;
+                const s = parseFloat(parts[2]) || 0; 
+                return (h * 3600) + (m * 60) + s;
+              }
+            }
+            return parseFloat(raw) || 0;
+          }
+          return 0;
+        }
 
     // [CORE] 분석 실행 함수 (버튼 클릭 시 호출)
     async function runAnalysis() {
@@ -1332,8 +1349,16 @@
              .where('monitor_id', '==', monitorId)
              .where('date', '==', date)
              .get();
-           snap.forEach(doc => rawFaceData.push(doc.data()));
+
+                      
+           // [수정됨] 데이터를 가져올 때 시간 변환 적용
+           snap.forEach(doc => {
+               let data = doc.data();
+               data.duration = parseServerDuration(data.duration); // 변환 함수 실행
+               rawFaceData.push(data);
+           });
         }
+           
 
         // 4. 시나리오 분기
         if (adId === 'ALL') {
