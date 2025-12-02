@@ -929,66 +929,105 @@
     });
   }
 
-  // [수정됨] 배치 업로드 (파일명 기반 날짜 저장)
+  // [수정됨] 배치 업로드 (한글 컬럼 -> 영문 필드 변환 및 데이터 가공)
   async function uploadInBatches(data, collectionName, monitorId, fileName) {
     const BATCH_SIZE = 450;
     const total = data.length;
     
-    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD_HHMMSS)
-    const dateRegex = /(\d{4})-(\d{2})-(\d{2})_(\d{2})(\d{2})(\d{2})/;
+    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD)
+    // 예: face_analysis_2025-09-14_... -> 2025-09-14
+    const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
     const match = fileName.match(dateRegex);
-    let fileDate;
+    
+    let fileDateObj = new Date();
+    let dateStr = ""; 
     
     if (match) {
-      fileDate = new Date(match[1], match[2] - 1, match[3], match[4], match[5], match[6]);
+      // 날짜 문자열 (분석 필터링용)
+      dateStr = `${match[1]}-${match[2]}-${match[3]}`; // "2025-09-14"
+      // Date 객체 (Firestore 타임스탬프용)
+      fileDateObj = new Date(match[1], match[2] - 1, match[3]);
     } else {
-      fileDate = new Date(); // 실패 시 현재 시간
+      // 추출 실패 시 오늘 날짜 사용
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth() + 1).padStart(2, '0');
+      const d = String(now.getDate()).padStart(2, '0');
+      dateStr = `${y}-${m}-${d}`;
+      fileDateObj = now;
     }
     
-    // 2. Firestore 저장
+    // 2. 데이터 가공 및 배치 업로드 시작
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = db.batch();
       const chunk = data.slice(i, i + BATCH_SIZE);
       
       chunk.forEach((row) => {
-        row.monitor_id = monitorId;
-        row.uploaded_at = firebase.firestore.Timestamp.fromDate(fileDate);
-        row.source_filename = fileName;
+        const docRef = db.collection(collectionName).doc();
+        
+        // 공통 기본 데이터
+        let newRow = {
+          monitor_id: monitorId,
+          uploaded_at: firebase.firestore.Timestamp.fromDate(new Date()), // 실제 업로드된 시각
+          file_date: firebase.firestore.Timestamp.fromDate(fileDateObj),  // 파일 해당 날짜(Date객체)
+          date: dateStr, // 날짜 필터링용 문자열 (YYYY-MM-DD)
+          source_filename: fileName
+        };
 
-        // [NEW] 비디오 로그일 경우, 파일 경로에서 ID(파일명) 자동 추출
-        // [수정됨] 엑셀의 '영상이름' 컬럼을 확인하여 .mp4 제거 후 ad_id로 저장
-        if (collectionName === 'video_logs' && row['영상이름']) {
-          try {
-            let rawName = row['영상이름']; // 예: "b64563.mp4"
-            
-            // 정규식: 대소문자 구분없이 .mp4로 끝나는 부분 제거
-            let cleanId = rawName.replace(/\.mp4$/i, '').trim(); 
-            
-            // DB에는 ad_id라는 필드명으로 저장 (예: "b64563")
-            row.ad_id = cleanId; 
-            
-            // (선택사항) 원본 '영상이름' 필드가 굳이 DB에 필요 없다면 아래 주석 해제
-            // delete row['영상이름']; 
-          } catch (e) {
-            console.warn("ID Extraction failed for:", row['영상이름']);
+        // 컬렉션별 필드 매핑 및 데이터 가공
+        if (collectionName === 'face_analysis') {
+          // [Face Analysis] 한글 -> 영문 변환
+          
+          // 1. 나이 & 연령대
+          const ageVal = Number(row['평균 나이']) || 0;
+          newRow.age = ageVal;
+          // 연령대 계산: 23 -> 20, 38 -> 30 (10단위 내림)
+          newRow.age_group = Math.floor(ageVal / 10) * 10;
+          
+          // 2. 성별
+          newRow.gender = row['성별'] || 'Unknown';
+          
+          // 3. 집중도 (숫자 그대로 저장)
+          newRow.attention = Number(row['정면 점수']) || 0;
+          
+          // 4. 시간 정보
+          newRow.start_time = row['처음 발견된 시간'] || '';
+          newRow.end_time = row['없어진 시간'] || '';
+          newRow.duration = row['지속 시간'] || '';
+          
+          // (옵션) 원본 데이터도 보존하고 싶다면 아래 주석 해제
+          // newRow.original_data = row;
+
+        } else if (collectionName === 'video_logs') {
+          // [Video Logs] 한글 -> 영문 변환
+          
+          // 1. 시간 정보
+          newRow.start_time = row['송출시작 시간'] || '';
+          newRow.end_time = row['송출 끝난시간'] || '';
+          
+          // 2. 광고 ID 추출 (.mp4 제거)
+          if (row['영상이름']) {
+            newRow.ad_id = row['영상이름'].replace(/\.mp4$/i, '').trim();
+          } else {
+            newRow.ad_id = 'UNKNOWN';
           }
         }
-        
-        const docRef = db.collection(collectionName).doc();
-        batch.set(docRef, row);
+
+        // Firestore 배치에 추가
+        batch.set(docRef, newRow);
       });
+
+      // 배치 커밋 (DB 저장)
       await batch.commit();
 
-      // [NEW] 달력용 요약 데이터 저장 (속도 최적화 핵심)
-      // "YYYY-M-D_MonitorID" 형태의 문서 ID를 사용하여 중복 방지 및 빠른 조회
-      const dateKey = `${fileDate.getFullYear()}-${fileDate.getMonth() + 1}-${fileDate.getDate()}`;
+      // [달력 통계용] 요약 데이터 저장 (캘린더 속도 최적화)
+      const dateKey = dateStr; // YYYY-MM-DD
       const statsDocId = `${dateKey}_${monitorId}`;
       
-      // 요약 컬렉션(calendar_stats)에 "이 날짜, 이 모니터에 데이터 있음" 기록
       await db.collection('calendar_stats').doc(statsDocId).set({
         dateKey: dateKey,
         monitor_id: monitorId,
-        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDate),
+        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDateObj),
         has_data: true
       }, { merge: true });
     }
