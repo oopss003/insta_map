@@ -1014,15 +1014,23 @@
   let selectedDates = []; 
   let dataDates = new Set(); // [NEW] 데이터가 존재하는 날짜들을 저장하는 집합
 
-  /* [UPGRADE] 데이터 로딩 & 필터링 시스템 */
-  // [임시 기능] 기존의 무거운 데이터를 읽어서 가벼운 요약본(calendar_stats)을 생성하는 함수
+
+    // [수정됨] 2. 잘못된 날짜(오늘) 데이터를 삭제하고, 파일 원본 날짜만 달력에 표시
     async function migrateExistingData() {
-      if(!confirm("기존 데이터를 스캔하여 달력 속도를 최적화하시겠습니까? (시간이 조금 걸릴 수 있습니다)")) return;
+      if(!confirm("달력 데이터를 '파일 날짜' 기준으로 재설정하시겠습니까?\n(잘못된 오늘 날짜 데이터는 달력에서 사라집니다)")) return;
       
       const loader = document.getElementById('calLoader');
-      if(loader) { loader.style.display = 'flex'; loader.querySelector('span').innerText = "Optimizing DB..."; }
+      if(loader) { loader.style.display = 'flex'; loader.querySelector('span').innerText = "Fixing Calendar..."; }
   
       try {
+        // A. 기존 달력 정보(calendar_stats) 전체 삭제 (초기화)
+        const oldStats = await db.collection('calendar_stats').get();
+        const deleteBatch = db.batch();
+        oldStats.forEach(doc => deleteBatch.delete(doc.ref));
+        await deleteBatch.commit();
+        console.log("기존 달력 데이터 초기화 완료");
+
+        // B. Face Analysis 데이터 전수 조사
         const snap = await db.collection('face_analysis').get();
         const batch = db.batch();
         let count = 0;
@@ -1030,20 +1038,36 @@
   
         snap.forEach(doc => {
           const d = doc.data();
-          if(d.uploaded_at && d.monitor_id) {
-            const date = d.uploaded_at.toDate();
-            const dateKey = `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
-            const statsId = `${dateKey}_${d.monitor_id}`;
+          
+          let targetDateKey = null;
+
+          // [핵심] 오직 'date' 필드나 'file_date' 필드가 있을 때만 달력에 추가
+          // uploaded_at(업로드 시간)은 절대 참조하지 않음 -> 12월 2일 문제 해결
+          if (d.date && d.date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            targetDateKey = d.date; 
+          } 
+          else if (d.file_date) {
+            const dateObj = d.file_date.toDate();
+            const y = dateObj.getFullYear();
+            const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            targetDateKey = `${y}-${m}-${day}`;
+          }
+          
+          // 유효한 날짜가 없으면 건너뜀 (오늘 날짜로 찍히는 것 방지)
+          if (!targetDateKey) return;
+
+          if(d.monitor_id) {
+            const statsId = `${targetDateKey}_${d.monitor_id}`;
   
-            // 중복 방지 (같은 날짜, 같은 모니터는 한 번만 기록)
             if(!addedKeys.has(statsId)) {
               const ref = db.collection('calendar_stats').doc(statsId);
               batch.set(ref, {
-                dateKey: dateKey,
+                dateKey: targetDateKey, // 예: "2025-05-09"
                 monitor_id: d.monitor_id,
-                uploaded_at: d.uploaded_at,
                 has_data: true
               }, { merge: true });
+              
               addedKeys.add(statsId);
               count++;
             }
@@ -1051,11 +1075,14 @@
         });
   
         await batch.commit();
-        alert(`최적화 완료! ${count}개의 날짜 정보가 요약되었습니다.`);
-        checkDataExistence(); // 달력 새로고침
+        alert(`달력 복구가 완료되었습니다.\n총 ${count}일의 유효한 데이터가 복구되었습니다.`);
+        
+        // C. 달력 새로고침
+        checkDataExistence(); 
+        
       } catch(e) {
         console.error(e);
-        alert("최적화 중 오류 발생");
+        alert("복구 중 오류 발생: " + e.message);
       } finally {
         if(loader) loader.style.display = 'none';
       }
