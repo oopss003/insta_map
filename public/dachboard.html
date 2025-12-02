@@ -929,35 +929,38 @@
     });
   }
 
-  // [수정됨] 배치 업로드 (한글 컬럼 -> 영문 필드 변환 및 데이터 가공)
+
+  // [수정됨] 1. 파일명에 날짜가 없으면 절대 저장하지 않도록 강제 (12월 2일 데이터 생성 방지)
   async function uploadInBatches(data, collectionName, monitorId, fileName) {
     const BATCH_SIZE = 450;
     const total = data.length;
     
-    // 1. 파일명에서 날짜 추출 (YYYY-MM-DD)
-    // 예: face_analysis_2025-09-14_... -> 2025-09-14
-    const dateRegex = /(\d{4})-(\d{2})-(\d{2})/;
+    // 날짜 포맷 허용 범위 확장 (2025-05-09, 2025.05.09, 2025_05_09 모두 허용)
+    const dateRegex = /(\d{4})[-_.](\d{2})[-_.](\d{2})/;
     const match = fileName.match(dateRegex);
     
-    let fileDateObj = new Date();
+    let fileDateObj = null;
     let dateStr = ""; 
     
     if (match) {
-      // 날짜 문자열 (분석 필터링용)
-      dateStr = `${match[1]}-${match[2]}-${match[3]}`; // "2025-09-14"
-      // Date 객체 (Firestore 타임스탬프용)
-      fileDateObj = new Date(match[1], match[2] - 1, match[3]);
+      const year = parseInt(match[1]);
+      const month = parseInt(match[2]);
+      const day = parseInt(match[3]);
+      
+      // DB 검색용 문자열 (YYYY-MM-DD 통일)
+      dateStr = `${year}-${String(month).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      
+      // 날짜 객체 (시간은 낮 12시로 고정하여 타임존 이슈 방지)
+      fileDateObj = new Date(year, month - 1, day, 12, 0, 0);
+      
+      console.log(`[Date Detected] ${fileName} -> ${dateStr}`);
     } else {
-      // 추출 실패 시 오늘 날짜 사용
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth() + 1).padStart(2, '0');
-      const d = String(now.getDate()).padStart(2, '0');
-      dateStr = `${y}-${m}-${d}`;
-      fileDateObj = now;
+      // [핵심 수정] 날짜를 못 찾으면 오늘 날짜로 대체하지 않고, 경고 후 중단합니다.
+      alert(`[업로드 실패] 파일명에서 날짜를 찾을 수 없습니다.\n\n파일명: ${fileName}\n\n데이터 오염을 방지하기 위해 업로드를 중단합니다.\n파일명에 '2025-05-09'와 같은 날짜를 포함해주세요.`);
+      throw new Error("Date extraction failed. Upload aborted to prevent bad data."); 
     }
     
-    // 2. 데이터 가공 및 배치 업로드 시작
+    // 데이터 저장 시작
     for (let i = 0; i < total; i += BATCH_SIZE) {
       const batch = db.batch();
       const chunk = data.slice(i, i + BATCH_SIZE);
@@ -965,69 +968,43 @@
       chunk.forEach((row) => {
         const docRef = db.collection(collectionName).doc();
         
-        // 공통 기본 데이터
         let newRow = {
           monitor_id: monitorId,
-          uploaded_at: firebase.firestore.Timestamp.fromDate(new Date()), // 실제 업로드된 시각
-          file_date: firebase.firestore.Timestamp.fromDate(fileDateObj),  // 파일 해당 날짜(Date객체)
-          date: dateStr, // 날짜 필터링용 문자열 (YYYY-MM-DD)
+          // uploaded_at은 '데이터가 DB에 들어온 시각' 기록용으로만 남김 (달력 표시용 아님)
+          uploaded_at: firebase.firestore.Timestamp.now(), 
+          
+          // ★ 달력과 분석에는 무조건 아래 두 필드만 사용됨
+          file_date: firebase.firestore.Timestamp.fromDate(fileDateObj), 
+          date: dateStr, 
+          
           source_filename: fileName
         };
 
-        // 컬렉션별 필드 매핑 및 데이터 가공
+        // 데이터 매핑 (기존과 동일)
         if (collectionName === 'face_analysis') {
-          // [Face Analysis] 한글 -> 영문 변환
-          
-          // 1. 나이 & 연령대
-          const ageVal = Number(row['평균 나이']) || 0;
-          newRow.age = ageVal;
-          // 연령대 계산: 23 -> 20, 38 -> 30 (10단위 내림)
-          newRow.age_group = Math.floor(ageVal / 10) * 10;
-          
-          // 2. 성별
-          newRow.gender = row['성별'] || 'Unknown';
-          
-          // 3. 집중도 (숫자 그대로 저장)
-          newRow.attention = Number(row['정면 점수']) || 0;
-          
-          // 4. 시간 정보
-          newRow.start_time = row['처음 발견된 시간'] || '';
-          newRow.end_time = row['없어진 시간'] || '';
-          newRow.duration = row['지속 시간'] || '';
-          
-          // (옵션) 원본 데이터도 보존하고 싶다면 아래 주석 해제
-          // newRow.original_data = row;
-
+            newRow.age = Number(row['평균 나이']) || 0;
+            newRow.age_group = Math.floor(newRow.age / 10) * 10;
+            newRow.gender = row['성별'] || 'Unknown';
+            newRow.attention = Number(row['정면 점수']) || 0;
+            newRow.start_time = row['처음 발견된 시간'] || '';
+            newRow.end_time = row['없어진 시간'] || '';
+            newRow.duration = row['지속 시간'] || '';
         } else if (collectionName === 'video_logs') {
-          // [Video Logs] 한글 -> 영문 변환
-          
-          // 1. 시간 정보
-          newRow.start_time = row['송출시작 시간'] || '';
-          newRow.end_time = row['송출 끝난시간'] || '';
-          
-          // 2. 광고 ID 추출 (.mp4 제거)
-          if (row['영상이름']) {
-            newRow.ad_id = row['영상이름'].replace(/\.mp4$/i, '').trim();
-          } else {
-            newRow.ad_id = 'UNKNOWN';
-          }
+            newRow.start_time = row['송출시작 시간'] || '';
+            newRow.end_time = row['송출 끝난시간'] || '';
+            newRow.ad_id = row['영상이름'] ? row['영상이름'].replace(/\.mp4$/i, '').trim() : 'UNKNOWN';
         }
 
-        // Firestore 배치에 추가
         batch.set(docRef, newRow);
       });
 
-      // 배치 커밋 (DB 저장)
       await batch.commit();
 
-      // [달력 통계용] 요약 데이터 저장 (캘린더 속도 최적화)
-      const dateKey = dateStr; // YYYY-MM-DD
-      const statsDocId = `${dateKey}_${monitorId}`;
-      
+      // [달력 데이터 갱신] 반드시 추출된 파일 날짜(dateStr)를 키로 사용
+      const statsDocId = `${dateStr}_${monitorId}`;
       await db.collection('calendar_stats').doc(statsDocId).set({
-        dateKey: dateKey,
+        dateKey: dateStr, 
         monitor_id: monitorId,
-        uploaded_at: firebase.firestore.Timestamp.fromDate(fileDateObj),
         has_data: true
       }, { merge: true });
     }
