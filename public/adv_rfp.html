@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inwave B2B Partnership Proposal</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.263.1/umd/lucide.min.js"></script>
+    <!-- Lucide Icon Script: Changed to unpkg for better stability -->
+    <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap');
@@ -579,7 +580,11 @@
                     </div>
                 </li>
             `).join('');
-            lucide.createIcons();
+            
+            // Check if lucide is defined before using it
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
         }
 
         function changeSlide(id) {
@@ -594,7 +599,11 @@
 
             // Render Content
             contentArea.innerHTML = slide.content;
-            lucide.createIcons();
+            
+            // Check if lucide is defined before using it
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
             
             // Re-render charts if on report slide (In a real app, use Chart.js properly here)
             // Currently using CSS mockups for simplicity in one file
