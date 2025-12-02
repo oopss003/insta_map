@@ -204,6 +204,24 @@
     .lv-2 { background: #93C5FD; }
     .lv-3 { background: #3B82F6; }
     .lv-4 { background: #1E40AF; } 
+
+
+    /* [NEW] 2열 그래프 스타일 */
+    .scatter-container { position: relative; width: 100%; height: 100%; border-left: 1px solid #E2E8F0; border-bottom: 1px solid #E2E8F0; margin: 10px 0 20px 20px; }
+    .scatter-dot { position: absolute; border-radius: 50%; opacity: 0.7; transition: transform 0.2s; cursor: pointer; }
+    .scatter-dot:hover { transform: scale(1.5); opacity: 1; z-index: 10; border: 1px solid #333; }
+    .scatter-dot.male { background: rgba(59, 130, 246, 0.6); } /* Blue */
+    .scatter-dot.female { background: rgba(239, 68, 68, 0.6); } /* Red */
+    .sc-x-label { position: absolute; bottom: -20px; font-size: 10px; color: #94A3B8; transform: translateX(-50%); }
+    .sc-y-label { position: absolute; left: -25px; font-size: 10px; color: #94A3B8; transform: translateY(50%); }
+
+    /* 세로 막대 그래프 (Dwell Time) */
+    .v-bar-container { display: flex; align-items: flex-end; justify-content: space-around; height: 100%; padding-bottom: 20px; border-bottom: 1px solid #E2E8F0; }
+    .v-bar-group { display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; width: 40px; }
+    .v-bar { width: 100%; background: #CBD5E1; border-radius: 4px 4px 0 0; transition: height 1s; position: relative; }
+    .v-bar.high { background: var(--primary-color); }
+    .v-bar-val { font-size: 11px; font-weight: 700; color: #64748B; margin-bottom: 4px; }
+    .v-bar-lbl { font-size: 11px; color: #94A3B8; font-weight: 600; }
   </style>
 </head>
 <body>
