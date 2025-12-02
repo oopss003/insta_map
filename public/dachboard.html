@@ -314,91 +314,62 @@
                 </button>
               </div>
             </div>
-/* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
-  function loadMonitorList() {
-    const listEl = document.getElementById('monitorList');
-    listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
-    
-    // 1. 기존 마커들 초기화 (모니터 관리 맵 & 대시보드 맵)
-    monitorMarkers.forEach(m => m.setMap(null));
-    monitorMarkers = [];
-    
-    // [추가됨] 대시보드 마커 초기화
-    dashboardMarkers.forEach(m => m.setMap(null));
-    dashboardMarkers = [];
+<div class="dashboard-grid">
+        <div class="kpi-column">
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi1_title">Total Traffic</div>
+            <div class="kpi-val" id="kpi1_val">-</div>
+            <div class="kpi-sub" id="kpi1_sub">Select Dates</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi2_title">Avg. Dwell Time</div>
+            <div class="kpi-val" id="kpi2_val">-</div>
+            <div class="kpi-sub" id="kpi2_sub">Seconds</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi3_title">Attention Ratio</div>
+            <div class="kpi-val" id="kpi3_val">-</div>
+            <div class="kpi-sub" id="kpi3_sub">High Attention</div>
+          </div>
+          <div class="kpi-box">
+            <div class="kpi-head" id="kpi4_title">Top Persona</div>
+            <div class="kpi-val" id="kpi4_val">-</div>
+            <div class="kpi-sub" id="kpi4_sub">Target Group</div>
+          </div>
+        </div>
 
-    db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
-      let html = '';
-      if (snapshot.empty) {
-        listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">등록된 모니터가 없습니다.</div>';
-        return;
-      }
-
-      snapshot.forEach((doc) => {
-        const d = doc.data();
-        const badgeClass = d.status === 'active' ? 'st-active' : 'st-inactive';
-        let dateStr = '-';
-        if(d.updated_at) {
-          const date = d.updated_at.toDate();
-          dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
-        }
-
-        // --- HTML 리스트 생성 ---
-        html += `
-          <div class="table-row">
-            <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
-            <div style="font-weight:600;">${d.name}</div>
-            <div style="color:#6B7280; font-size:13px;">${d.location.lat.toFixed(4)}, ${d.location.lng.toFixed(4)}</div>
-            <div><span class="status-badge ${badgeClass}"><span class="st-dot"></span> ${d.status.toUpperCase()}</span></div>
-            <div style="color:#6B7280; font-size:13px;">${dateStr}</div>
-            <div style="text-align:right; display:flex; justify-content:flex-end; gap:8px;">
-              <button class="action-btn" onclick="openEditModal('${d.monitor_id}', '${d.name}', ${d.location.lat}, ${d.location.lng})"><i class="fa-solid fa-pen"></i></button>
-              <button class="action-btn" onclick="deleteMonitor('${d.monitor_id}')"><i class="fa-solid fa-trash"></i></button>
+        <div class="charts-row">
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart1_title">Demographics</div>
+                <div style="font-size:12px; color:#9CA3AF;">Gender & Age Distribution</div>
+              </div>
+            </div>
+            <div class="bar-chart-container" id="barChartContainer">
+              <div style="text-align:center; color:#CBD5E1; margin-top:40px;">Ready to Analyze</div>
             </div>
           </div>
-        `;
 
-        const position = new naver.maps.LatLng(d.location.lat, d.location.lng);
+          <div class="chart-half">
+            <div class="chart-header">
+              <div>
+                <div style="font-weight:700;" id="chart2_title">Time Analysis</div>
+                <div style="font-size:12px; color:#9CA3AF;">Peak Time Heatmap</div>
+              </div>
+            </div>
+            <div class="heatmap-layout">
+              <div class="hm-container">
+                <div class="hm-y"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+                <div class="hm-grid-box" id="analysisHeatGrid">
+                   </div>
+              </div>
+              <div class="hm-x"><span>09</span><span>12</span><span>15</span><span>18</span><span>21</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-        // --- [기존] 모니터 관리 맵 마커 생성 ---
-        const mMarker = new naver.maps.Marker({
-          position: position,
-          map: monitorMap,
-          icon: {
-            content: `<div style="position:relative; cursor:pointer;">
-              <div style="background:#3B82F6; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
-              <div style="position:absolute; top:-25px; left:50%; transform:translateX(-50%); background:white; padding:3px 6px; border-radius:6px; font-size:10px; font-weight:700; box-shadow:0 1px 3px rgba(0,0,0,0.2); white-space:nowrap;">${d.name}</div>
-            </div>`,
-            anchor: new naver.maps.Point(6, 6)
-          }
-        });
-        monitorMarkers.push(mMarker);
-
-        // --- [추가됨] 대시보드 맵 마커 생성 ---
-        const dMarker = new naver.maps.Marker({
-          position: position,
-          map: dashboardMap, // 대시보드 맵에 추가
-          icon: {
-            // 대시보드는 조금 더 심플하게(빨간색 포인트 등) 표현하거나 동일하게 사용 가능
-            content: `<div style="position:relative; cursor:pointer;" title="${d.name}">
-              <div style="background:#EF4444; width:10px; height:10px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);"></div>
-            </div>`,
-            anchor: new naver.maps.Point(5, 5)
-          }
-        });
-        dashboardMarkers.push(dMarker);
-      });
-      
-      listEl.innerHTML = html;
-      
-      // 마커가 있다면 첫 번째 마커로 지도 이동
-      if(monitorMarkers.length > 0) {
-        const firstPos = monitorMarkers[0].getPosition();
-        monitorMap.panTo(firstPos);
-        dashboardMap.panTo(firstPos); // 대시보드 맵도 이동
-      }
-    });
-  }
 
     <div id="page-monitors" class="page-view">
       <div class="top-section">
@@ -615,13 +586,25 @@
       }
 
   /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
+  /* 5. MONITOR MANAGEMENT (리스트 + 지도 마커) */
   function loadMonitorList() {
     const listEl = document.getElementById('monitorList');
     listEl.innerHTML = '<div style="padding:40px; text-align:center; color:#999;">Loading...</div>';
     
-    // 기존 마커 제거
+    // 1. 기존 마커들 초기화
     monitorMarkers.forEach(m => m.setMap(null));
     monitorMarkers = [];
+    
+    // 대시보드 마커 초기화 (변수가 없으면 안전하게 생성)
+    if(typeof dashboardMarkers !== 'undefined') {
+        dashboardMarkers.forEach(m => m.setMap(null));
+        dashboardMarkers = [];
+    } else {
+        window.dashboardMarkers = [];
+    }
+
+    // 2. 지도 범위(Bounds) 객체 생성 (자동 줌 조절용)
+    const bounds = new naver.maps.LatLngBounds();
 
     db.collection("monitors").orderBy("updated_at", "desc").get().then((snapshot) => {
       let html = '';
@@ -639,7 +622,7 @@
           dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2,'0')}-${date.getDate().toString().padStart(2,'0')}`;
         }
 
-        // 1. 리스트 추가
+        // --- HTML 리스트 생성 ---
         html += `
           <div class="table-row">
             <div style="font-weight:700; color:#3B82F6;">#${d.monitor_id}</div>
@@ -654,9 +637,14 @@
           </div>
         `;
 
-        // 2. 지도 마커 추가
-        const marker = new naver.maps.Marker({
-          position: new naver.maps.LatLng(d.location.lat, d.location.lng),
+        const position = new naver.maps.LatLng(d.location.lat, d.location.lng);
+        
+        // [중요] 데이터가 있는 위치로 지도 범위 확장
+        bounds.extend(position);
+
+        // --- A. 모니터 관리 페이지용 마커 (파란색) ---
+        const mMarker = new naver.maps.Marker({
+          position: position,
           map: monitorMap,
           icon: {
             content: `<div style="position:relative; cursor:pointer;">
@@ -666,14 +654,30 @@
             anchor: new naver.maps.Point(6, 6)
           }
         });
-        monitorMarkers.push(marker);
+        monitorMarkers.push(mMarker);
+
+        // --- B. 대시보드용 마커 (빨간색 점) ---
+        if(dashboardMap) {
+            const dMarker = new naver.maps.Marker({
+              position: position,
+              map: dashboardMap,
+              icon: {
+                content: `<div style="background:#EF4444; width:10px; height:10px; border:2px solid white; border-radius:50%; box-shadow:0 2px 4px rgba(0,0,0,0.3);" title="${d.name}"></div>`,
+                anchor: new naver.maps.Point(5, 5)
+              }
+            });
+            dashboardMarkers.push(dMarker);
+        }
       });
       
       listEl.innerHTML = html;
       
-      // 마커가 있다면 첫 번째 마커로 이동
+      // [핵심] 마커들이 모두 보이도록 지도 중심과 줌을 자동 조절
       if(monitorMarkers.length > 0) {
-        monitorMap.panTo(monitorMarkers[0].getPosition());
+        monitorMap.fitBounds(bounds, { padding: 50 }); // 모니터 맵 자동 조절
+        if(dashboardMap) {
+            dashboardMap.fitBounds(bounds, { padding: 30 }); // 대시보드 맵 자동 조절
+        }
       }
     });
   }
