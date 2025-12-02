@@ -102,42 +102,75 @@
         const slides = [
             {
                 id: 'cover',
-                title: '표지: 제안의 시작',
+                title: '표지',
                 icon: 'layout-template',
                 content: `
-                    <div class="h-full flex flex-col items-center justify-center text-center slide-enter">
-                        <div class="w-full max-w-4xl bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 p-12 relative">
-                            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500"></div>
-                            
-                            <div class="mb-8 inline-block p-4 rounded-full bg-blue-50 text-blue-600">
-                                <i data-lucide="bar-chart-big" class="w-12 h-12"></i>
+                    <!-- Cover Slide Container -->
+                    <div class="relative h-full w-full flex items-center justify-center overflow-hidden slide-enter bg-slate-900">
+                        
+                        <!-- Background Image with Overlay -->
+                        <div class="absolute inset-0 z-0">
+                            <!-- 사용자가 준비한 이미지가 있다면 src="images/cover_bg.jpg"로 변경하세요 -->
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
+                                 alt="AI Technology Background" 
+                                 class="w-full h-full object-cover opacity-40">
+                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/90 to-blue-900/40"></div>
+                        </div>
+
+                        <!-- Content Card -->
+                        <div class="relative z-10 max-w-5xl w-full px-8">
+                            <div class="border-l-4 border-blue-500 pl-8 mb-8">
+                                <p class="text-blue-400 font-bold tracking-widest text-sm uppercase mb-2">B2B Partnership Proposal</p>
+                                <h1 class="text-6xl font-bold text-white leading-tight">
+                                    귀사의 제안서에<br>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">'데이터의 확신'</span>을<br>
+                                    더해드립니다.
+                                </h1>
                             </div>
-                            
-                            <h1 class="text-5xl font-bold text-slate-900 mb-6 leading-tight">
-                                귀사의 제안에<br>
-                                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">'확실한 데이터'</span>라는<br>
-                                무기를 더해드립니다.
-                            </h1>
-                            
-                            <p class="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+
+                            <p class="text-xl text-gray-300 font-light max-w-2xl leading-relaxed mb-12">
                                 국내 최초 AI 시선 인식 기반, 성과형 OOH 플랫폼<br>
-                                <strong>INWAVE</strong> 파트너십 제안서
+                                <strong>INWAVE</strong>가 에이전시의 강력한 파트너가 되어드리겠습니다.
                             </p>
 
-                            <div class="flex justify-center gap-8 text-left text-sm text-gray-500 border-t border-gray-100 pt-8">
-                                <div>
-                                    <p class="font-bold text-gray-900">수신</p>
-                                    <p>광고 에이전시 및 미디어 렙사</p>
+                            <!-- Key Feature Tags -->
+                            <div class="flex flex-wrap gap-4 mb-16">
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                                    <i data-lucide="eye" class="w-4 h-4 text-blue-400"></i>
+                                    <span>AI 시선 추적</span>
                                 </div>
-                                <div>
-                                    <p class="font-bold text-gray-900">발신</p>
-                                    <p>(주)인웨이브 전략사업본부</p>
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-green-400"></i>
+                                    <span>실제 시청 성과 데이터</span>
                                 </div>
-                                <div>
-                                    <p class="font-bold text-gray-900">날짜</p>
-                                    <p>2025. 05</p>
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-white text-sm">
+                                    <i data-lucide="coins" class="w-4 h-4 text-yellow-400"></i>
+                                    <span>CPV 합리적 과금</span>
                                 </div>
                             </div>
+
+                            <!-- Footer Info -->
+                            <div class="flex items-center gap-8 text-sm text-gray-400 border-t border-white/10 pt-8">
+                                <div>
+                                    <span class="block text-gray-500 text-xs mb-1">To.</span>
+                                    <span class="text-white font-medium">광고 에이전시 및 미디어 렙사 귀중</span>
+                                </div>
+                                <div class="h-8 w-px bg-white/10"></div>
+                                <div>
+                                    <span class="block text-gray-500 text-xs mb-1">From.</span>
+                                    <span class="text-white font-medium">(주)인웨이브 전략사업본부</span>
+                                </div>
+                                <div class="h-8 w-px bg-white/10"></div>
+                                <div>
+                                    <span class="block text-gray-500 text-xs mb-1">Date.</span>
+                                    <span class="text-white font-medium">2025. 05</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Decorative Elements -->
+                        <div class="absolute right-0 bottom-0 p-12 opacity-20">
+                             <i data-lucide="waves" class="w-64 h-64 text-white"></i>
                         </div>
                     </div>
                 `
