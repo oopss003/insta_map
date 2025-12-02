@@ -1394,6 +1394,8 @@
        // 5. 차트 제목 업데이트
        document.getElementById('chart1_title').innerText = "Demographics";
        document.getElementById('chart2_title').innerText = "Hourly Traffic";
+       
+       renderBottomCharts(filtered);
     }
 
     // --- [Logic 2] 광고 성과 분석 함수 ---
@@ -1454,6 +1456,7 @@
        // 6. 차트 제목 업데이트
        document.getElementById('chart1_title').innerText = "Viewer Demographics";
        document.getElementById('chart2_title').innerText = "Ad Effectiveness (Attention)";
+       renderBottomCharts(filtered);
     }
 
     // --- [Helper] 필터링 적용 공통 함수 ---
