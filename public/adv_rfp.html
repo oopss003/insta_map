@@ -494,100 +494,39 @@
                 title: '데이터 리포트 예시',
                 icon: 'pie-chart',
                 content: `
-                    <div class="max-w-7xl mx-auto slide-enter pb-6 h-full flex flex-col">
-                        <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 shrink-0">
+                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-4 lg:pb-6 overflow-hidden">
+                        <div class="mb-4 shrink-0 flex justify-between items-end">
                             <div>
-                                <h2 class="text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
-                                <p class="text-gray-500 text-sm mt-2">광고주에게 제공되는 실제 리포트 화면입니다. (PC/Mobile 지원)</p>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-slate-900">Campaign Analytics Dashboard</h2>
+                                <p class="text-gray-500 text-sm mt-1">광고주에게 제공되는 실제 리포트 화면입니다. (PC/Mobile 지원)</p>
                             </div>
                             <span class="bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full font-bold animate-pulse flex items-center gap-1">
                                 <span class="w-2 h-2 bg-green-500 rounded-full"></span> LIVE DATA
                             </span>
                         </div>
 
-                        <div class="flex-1 bg-slate-100 rounded-2xl p-1 lg:p-2 border border-slate-200 shadow-inner overflow-hidden relative flex flex-col min-h-0">
-                            <div class="flex-1 overflow-y-auto rounded-xl bg-white shadow-lg border border-gray-300 custom-scrollbar">
-                                <img src="images/dash004.jpg" alt="Inwave Analytics Dashboard" class="w-full h-auto object-cover">
+                        <div class="flex-1 bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner relative min-h-0 flex flex-col justify-center items-center">
+                            <div class="w-full h-full bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden flex items-center justify-center">
+                                <img src="images/dash004.jpg" 
+                                     alt="Inwave Analytics Dashboard" 
+                                     class="w-full h-full object-contain bg-white">
                             </div>
                         </div>
 
-                        <div class="mt-6 bg-indigo-50 border border-indigo-100 p-6 rounded-2xl flex items-start gap-5 shrink-0 shadow-sm transition-transform hover:-translate-y-1 duration-300">
-                            <div class="bg-white p-3 rounded-full shadow-sm text-indigo-600 shrink-0">
-                                <i data-lucide="sparkles" class="w-6 h-6"></i>
+                        <div class="mt-4 bg-indigo-50 border border-indigo-100 p-4 lg:p-5 rounded-2xl flex items-start gap-4 shrink-0 shadow-sm transition-transform hover:-translate-y-1 duration-300">
+                            <div class="bg-white p-2.5 rounded-full shadow-sm text-indigo-600 shrink-0 mt-0.5">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
                             </div>
                             <div>
-                                <h5 class="text-base font-bold text-indigo-800 flex items-center gap-2">
+                                <h5 class="text-sm lg:text-base font-bold text-indigo-800 flex items-center gap-2 mb-1">
                                     AI Insight Report
                                     <span class="text-[10px] font-normal text-indigo-500 bg-white px-2 py-0.5 rounded-full border border-indigo-100">Analysis Complete</span>
                                 </h5>
-                                <p class="text-slate-700 mt-2 leading-relaxed text-sm lg:text-base">
-                                    현재 데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>이 가장 높은 관여도(Top Persona)를 보이고 있습니다.
-                                    특히 <span class="font-bold text-indigo-700">오후 시간대</span>에 트래픽과 주목도가 집중되는 패턴이 식별되었습니다.
-                                    차기 집행 시 해당 시간대 노출 비중을 <span class="underline decoration-indigo-400 decoration-2 underline-offset-2">20% 상향 조정</span>하여 ROI를 극대화할 것을 제안합니다.
+                                <p class="text-slate-700 text-sm lg:text-base leading-snug">
+                                    데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>의 관여도가 가장 높으며, 
+                                    특히 <span class="font-bold text-indigo-700">오후 6~9시 퇴근 시간대</span>에 트래픽이 집중되고 있습니다. 
+                                    차기 집행 시 해당 시간대 노출 비중을 <span class="underline decoration-indigo-400 decoration-2 underline-offset-2">15% 상향 조정</span>하여 ROI를 극대화할 것을 제안합니다.
                                 </p>
-                            </div>
-                        </div>
-                    </div>
-                `
-            },
-            {
-                id: 'process',
-                title: '협업 프로세스',
-                icon: 'git-merge',
-                content: `
-                    <div class="max-w-5xl mx-auto slide-enter pb-10">
-                        <div class="text-center mb-16">
-                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900">Seamless Workflow</h2>
-                            <p class="text-gray-500 mt-3 text-lg">복잡한 과정 없이, 소재만 전달주시면 나머지는 AI가 처리합니다.</p>
-                        </div>
-
-                        <div class="relative">
-                            <div class="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-gray-200 z-0 hidden md:block"></div>
-                            
-                            <div class="space-y-12 md:space-y-0">
-                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
-                                    <div class="w-full md:w-5/12 text-center md:text-right md:pr-10 order-2 md:order-1 mt-4 md:mt-0">
-                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition-colors">01. 제안 및 수주</h3>
-                                        <p class="text-gray-600 mt-2">귀사가 광고주에게 인웨이브 매체를 포함하여 제안합니다.<br>(제안용 고해상도 자료 키트 제공)</p>
-                                    </div>
-                                    <div class="w-16 h-16 bg-white border-4 border-blue-600 rounded-full flex items-center justify-center shadow-lg order-1 md:order-2 z-10 group-hover:scale-110 transition-transform">
-                                        <i data-lucide="file-text" class="text-blue-600 w-7 h-7"></i>
-                                    </div>
-                                    <div class="w-full md:w-5/12 pl-0 md:pl-10 order-3 hidden md:block"></div>
-                                </div>
-
-                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
-                                    <div class="w-full md:w-5/12 text-right pr-10 hidden md:block"></div>
-                                    <div class="w-16 h-16 bg-white border-4 border-indigo-600 rounded-full flex items-center justify-center shadow-lg z-10 group-hover:scale-110 transition-transform">
-                                        <i data-lucide="upload" class="text-indigo-600 w-7 h-7"></i>
-                                    </div>
-                                    <div class="w-full md:w-5/12 text-center md:text-left md:pl-10 mt-4 md:mt-0">
-                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">02. 소재 전달</h3>
-                                        <p class="text-gray-600 mt-2">영상 또는 이미지 소재를 전달합니다.<br>(클라우드 원격 송출로 10분 내 반영 가능)</p>
-                                    </div>
-                                </div>
-
-                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between mb-0 md:mb-20 group">
-                                    <div class="w-full md:w-5/12 text-center md:text-right md:pr-10 order-2 md:order-1 mt-4 md:mt-0">
-                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-purple-600 transition-colors">03. AI 송출 및 최적화</h3>
-                                        <p class="text-gray-600 mt-2">AI가 타겟 인구 밀집 시간대를 분석하여<br>가장 효과적인 타이밍에 광고를 노출합니다.</p>
-                                    </div>
-                                    <div class="w-16 h-16 bg-white border-4 border-purple-600 rounded-full flex items-center justify-center shadow-lg order-1 md:order-2 z-10 group-hover:scale-110 transition-transform">
-                                        <i data-lucide="cpu" class="text-purple-600 w-7 h-7"></i>
-                                    </div>
-                                    <div class="w-full md:w-5/12 pl-0 md:pl-10 order-3 hidden md:block"></div>
-                                </div>
-
-                                <div class="relative z-10 flex flex-col md:flex-row items-center md:justify-between group">
-                                    <div class="w-full md:w-5/12 text-right pr-10 hidden md:block"></div>
-                                    <div class="w-16 h-16 bg-white border-4 border-green-600 rounded-full flex items-center justify-center shadow-lg z-10 group-hover:scale-110 transition-transform">
-                                        <i data-lucide="check-circle" class="text-green-600 w-7 h-7"></i>
-                                    </div>
-                                    <div class="w-full md:w-5/12 text-center md:text-left md:pl-10 mt-4 md:mt-0">
-                                        <h3 class="text-xl font-bold text-slate-800 group-hover:text-green-600 transition-colors">04. 리포트 발송 및 정산</h3>
-                                        <p class="text-gray-600 mt-2">캠페인 종료 즉시 데이터 리포트가 발송되며,<br>약정된 수익 쉐어 정산이 진행됩니다.</p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>
