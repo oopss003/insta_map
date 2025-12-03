@@ -642,10 +642,10 @@
                                 <div class="relative border-l-2 border-slate-200 ml-3 space-y-10">
                                     
                                     <div class="relative pl-8 slide-enter" style="animation-delay: 0.1s;">
-                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-blue-600 ring-4 ring-white"></span>
-                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8">
-                                            <span class="font-bold text-blue-600 text-lg w-24 shrink-0">2025. 11</span>
-                                            <div>
+                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-blue-600 ring-4 ring-white"></span>
+                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 **cursor-pointer**" **onclick="openModal('installation')"**>
+                                            <span class="font-bold text-blue-600 text-lg w-24 shrink-0">2025. 11</span>
+                                            <div>
                                                 <h4 class="font-bold text-slate-800 text-lg">두산위브 시선분석 광고 사이니지 송출</h4>
                                                 <p class="text-gray-500 text-sm mt-1">실제 거주 공간 기반 타겟팅 광고 상용화 개시</p>
                                             </div>
@@ -894,6 +894,20 @@ function openModal(type) {
                     </div>
                 `;
             }
+
+            // [4] 설치 이미지 갤러리 (신규 추가)
+            else if (type === 'installation') {
+                modalTitle.innerHTML = `<i data-lucide="monitor" class="text-blue-600"></i> 두산위브 설치 사례 이미지`;
+                modalBody.innerHTML = `
+                    <div class="p-4 lg:p-8 bg-white overflow-y-auto">
+                        <div class="text-center mb-6">
+                            <p class="text-lg text-gray-700 font-medium">AI OOH 솔루션 설치 실제 모습</p>
+                            <p class="text-sm text-gray-500 mt-1">첨부된 이미지 파일명: image_39333a.jpg</p>
+                        </div>
+                        <img src="image_39333a.jpg" alt="두산위브 설치 사례" class="w-full h-auto rounded-xl shadow-2xl border-4 border-blue-500/50 object-contain">
+                    </div>
+                `;
+            }
 
             if (typeof lucide !== 'undefined') lucide.createIcons();
         }
