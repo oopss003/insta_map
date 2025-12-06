@@ -1,1 +1,973 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inwave AI Advertising Proposal for Advertisers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Pretendard', sans-serif;
+        }
 
+        /* Custom Scrollbar for Sidebar & Main Content */
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        /* Custom Scrollbar styling for better look */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+
+        .slide-enter {
+            animation: slideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 h-screen flex overflow-hidden text-gray-800">
+
+    <aside class="w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col shadow-xl z-20">
+        <div class="p-6 border-b border-slate-700 flex items-center gap-3">
+            <div class="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                <i data-lucide="waves" class="text-white w-5 h-5"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">INWAVE</h1>
+                <p class="text-xs text-slate-400">AI Advertising Proposal</p>
+            </div>
+        </div>
+
+        <nav class="flex-1 overflow-y-auto py-4 scrollbar-hide">
+            <ul id="sidebar-menu" class="space-y-1 px-3">
+            </ul>
+        </nav>
+
+        <div class="p-4 border-t border-slate-700 bg-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-indigo-600 flex items-center justify-center text-sm font-bold">
+                    IW
+                </div>
+                <div>
+                    <p class="text-sm font-medium">Inwave Team</p>
+                    <p class="text-xs text-slate-400">jhpark8271@gmail.com</p>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="flex-1 flex flex-col relative overflow-hidden bg-slate-50">
+        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-8 shadow-sm z-10 flex-shrink-0">
+            <div class="flex items-center gap-2 text-sm text-gray-500">
+                <span>Campaign</span>
+                <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                <span id="header-title" class="font-semibold text-blue-600">Cover</span>
+            </div>
+            <div class="flex items-center gap-3">
+                
+                <a href="Inwave_Media_Introduction.pdf" download class="px-3 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 rounded-lg transition-colors hidden sm:flex items-center cursor-pointer text-decoration-none">
+                    <i data-lucide="download" class="w-4 h-4 inline mr-2"></i>PDF Download
+                </a>
+
+                <button class="px-4 py-2 text-sm font-medium bg-blue-600 text-white hover:bg-blue-700 rounded-lg shadow transition-colors" onclick="changeSlide('offer')">
+                    광고 문의하기
+                </button>
+            </div>
+        </header>
+
+        <div id="content-area" class="flex-1 overflow-y-auto overflow-x-hidden p-6 lg:p-10 relative scroll-smooth">
+        </div>
+    </main>
+
+    <script>
+        // Data for Slides
+        const slides = [
+            {
+                id: 'cover',
+                title: '광고 투자의 확신',
+                icon: 'layout-template',
+                content: `
+                    <div class="absolute inset-0 bg-slate-900 slide-enter overflow-hidden">
+                        <div class="absolute inset-0 z-0">
+                            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop"
+                                alt="AI Technology Background"
+                                class="w-full h-full object-cover opacity-40">
+                            <div class="absolute inset-0 bg-gradient-to-r from-slate-900 via-slate-900/95 to-blue-900/30"></div>
+                        </div>
+
+                        <div class="relative z-10 h-full flex flex-col justify-center px-10 lg:px-20 max-w-7xl mx-auto">
+                            <div class="border-l-4 border-blue-500 pl-6 lg:pl-10 mb-8 lg:mb-12">
+                                <p class="text-blue-400 font-bold tracking-widest text-sm lg:text-base uppercase mb-3">Performance OOH Platform</p>
+                                <h1 class="text-5xl lg:text-7xl font-bold text-white leading-tight">
+                                    광고 투자의 모든 순간에<br>
+                                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-300">'데이터의 확신'</span>을<br>
+                                    더해드립니다.
+                                </h1>
+                            </div>
+
+                            <p class="text-lg lg:text-2xl text-gray-300 font-light max-w-2xl leading-relaxed mb-10 lg:mb-16">
+                                국내 최초 AI 시선 인식 기반, 오직 **실제 시청 성과**에만 과금하는<br>
+                                새로운 아웃도어 광고 플랫폼, <strong>INWAVE</strong>입니다.
+                            </p>
+
+                            <div class="flex flex-wrap gap-3 lg:gap-4 mb-16 lg:mb-24">
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
+                                    <i data-lucide="eye" class="w-4 h-4 text-blue-400"></i>
+                                    <span>실제 시청자만 카운트</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
+                                    <i data-lucide="bar-chart-2" class="w-4 h-4 text-green-400"></i>
+                                    <span>정밀 타겟팅 및 리포팅</span>
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 lg:px-5 lg:py-3 rounded-full border border-white/10 text-white text-sm lg:text-base">
+                                    <i data-lucide="coins" class="w-4 h-4 text-yellow-400"></i>
+                                    <span>**CPV (시청당 과금)**</span>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-6 sm:gap-10 text-sm text-gray-400 border-t border-white/10 pt-8">
+                                <div>
+                                    <span class="block text-gray-500 text-xs mb-1">문의 대상</span>
+                                    <span class="text-white font-medium text-base">광고주, 마케팅/브랜드 담당자 귀중</span>
+                                </div>
+                                <div class="hidden sm:block h-8 w-px bg-white/10"></div>
+                                <div>
+                                    <span class="block text-gray-500 text-xs mb-1">문의처</span>
+                                    <span class="text-white font-medium text-base">(주)인웨이브 광고사업본부</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute right-0 bottom-0 p-12 opacity-10 pointer-events-none">
+                            <i data-lucide="waves" class="w-64 h-64 lg:w-96 lg:h-96 text-white"></i>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'problem',
+                title: '광고주의 고민',
+                icon: 'help-circle',
+                content: `
+                    <div class="max-w-7xl mx-auto slide-enter pb-10">
+                        <div class="mb-10 text-center lg:text-left">
+                            <span class="text-red-600 font-bold tracking-wider text-sm uppercase">Advertiser Pain Point</span>
+                            <h2 class="text-3xl lg:text-4xl font-bold text-slate-900 mt-2 mb-3">광고비 낭비의 시대, 확신이 부족한 OOH 투자는 이제 멈추세요.</h2>
+                            <p class="text-lg text-gray-600">불확실한 '유동인구' 대신, **ROI(투자 대비 수익)**를 증명하는 광고를 집행해야 합니다.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+                            <div class="bg-white p-6 lg:p-8 rounded-3xl shadow-lg border-l-4 border-red-400 h-full relative overflow-hidden">
+                                <div class="absolute right-0 top-0 p-6 opacity-5 pointer-events-none">
+                                    <i data-lucide="alert-triangle" class="w-32 h-32 text-red-500"></i>
+                                </div>
+
+                                <h3 class="text-xl lg:text-2xl font-bold text-gray-800 mb-6 flex items-center gap-3">
+                                    <span class="bg-red-100 p-2 rounded-lg"><i data-lucide="message-square-warning" class="text-red-500 w-6 h-6"></i></span>
+                                    기존 OOH 광고의 3가지 문제점
+                                </h3>
+                                
+                                <div class="space-y-4"> 
+                                    <div class="bg-red-50 p-4 lg:p-5 rounded-2xl border border-red-100">
+                                        <div class="flex gap-3 mb-2">
+                                            <span class="font-bold text-red-600 text-xs bg-white px-2 py-1 rounded border border-red-100">불투명한 성과</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-lg">"우리 광고를 **'실제로' 본 사람**은 몇 명인가요?"</p>
+                                        <p class="text-gray-500 text-sm mt-1">단순 설치 위치나 유동인구 '추정치'만으로 캠페인 성과를 보고해야 하는 상황.</p>
+                                    </div>
+
+                                    <div class="bg-red-50 p-4 lg:p-5 rounded-2xl border border-red-100">
+                                        <div class="flex gap-3 mb-2">
+                                            <span class="font-bold text-red-600 text-xs bg-white px-2 py-1 rounded border border-red-100">예산 낭비</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-lg">"타겟층이 아닌 불특정 다수에게 **광고비가 낭비**되고 있진 않나요?"</p>
+                                        <p class="text-gray-500 text-sm mt-1">타겟팅 없이 송출되는 광고로 인해 예산 효율성이 극도로 낮아지는 문제.</p>
+                                    </div>
+
+                                    <div class="bg-red-50 p-4 lg:p-5 rounded-2xl border border-red-100">
+                                        <div class="flex gap-3 mb-2">
+                                            <span class="font-bold text-red-600 text-xs bg-white px-2 py-1 rounded border border-red-100">피드백 부재</span>
+                                        </div>
+                                        <p class="font-bold text-slate-800 text-lg">"다음 광고를 개선할 **데이터**가 전혀 없어요."</p>
+                                        <p class="text-gray-500 text-sm mt-1">설치 인증샷 외에 마땅한 분석 데이터가 없어 캠페인 최적화가 불가능합니다.</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex flex-col gap-6">
+                                <div class="bg-blue-600 text-white p-8 lg:p-10 rounded-3xl shadow-xl relative overflow-hidden group">
+                                    <div class="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2 group-hover:scale-125 transition-transform duration-700"></div>
+                                    
+                                    <div class="relative z-10">
+                                        <div class="flex items-center gap-3 mb-6">
+                                            <div class="p-3 bg-white/20 rounded-2xl backdrop-blur-sm">
+                                                <i data-lucide="rocket" class="w-8 h-8 text-yellow-300"></i>
+                                            </div>
+                                            <div>
+                                                <div class="text-blue-200 text-xs font-bold tracking-wider uppercase">INWAVE SOLUTION</div>
+                                                <h3 class="text-2xl font-bold">인웨이브의 약속</h3>
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="space-y-4">
+                                            <p class="text-blue-50 text-lg leading-relaxed border-l-2 border-blue-400 pl-4">
+                                                광고주는 오직 **검증된 성과**에만 투자해야 합니다.<br>
+                                                인웨이브는 AI 기술로 **투명한 ROI**를 제공합니다.
+                                            </p>
+                                            <p class="text-sm text-blue-200 mt-4">
+                                                이것이 바로 OOH 시장의 새로운 기준, **성과형 광고(Performance OOH)**입니다.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-8 rounded-3xl shadow border border-gray-100 flex-1 flex flex-col justify-center">
+                                    <div class="flex justify-between items-center mb-5">
+                                        <h4 class="font-bold text-gray-800 text-lg">INWAVE가 드리는 3가지 가치</h4>
+                                        <i data-lucide="check-circle-2" class="text-green-500 w-6 h-6"></i>
+                                    </div>
+                                    <ul class="space-y-4">
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">1</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">정확한 성과 측정 (True Reach)</span>
+                                                <span class="text-sm text-gray-500">AI 시선 분석으로 '실제 시청자 수'만 리포트</span>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">2</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">합리적인 비용 집행 (Cost Efficiency)</span>
+                                                <span class="text-sm text-gray-500">노출당 과금(CPM)이 아닌 시청당 과금(**CPV**)</span>
+                                            </div>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0 mt-0.5">
+                                                <span class="text-green-600 font-bold text-xs">3</span>
+                                            </div>
+                                            <div>
+                                                <span class="font-bold text-gray-800 block">캠페인 최적화 데이터 (Optimization)</span>
+                                                <span class="text-sm text-gray-500">성별/연령/시간대별 분석으로 **다음 광고 개선**</span>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'solution',
+                title: '솔루션: 시선 인식 기술',
+                icon: 'scan-face',
+                content: `
+                    <div class="max-w-7xl mx-auto slide-enter pb-10 relative">
+                        <div class="text-center mb-12">
+                            <span class="bg-blue-100 text-blue-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">Our Technology: Eye-Tracking AI</span>
+                            <h2 class="text-4xl font-bold text-slate-900 mt-5 leading-tight">
+                                허수가 없는, 투명하고 정확한<br>
+                                <span class="text-blue-600 relative inline-block">
+                                    '진짜 시청률'
+                                    <svg class="absolute w-full h-3 -bottom-1 left-0 text-blue-200 -z-10" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5" stroke="currentColor" stroke-width="8" fill="none" /></svg>
+                                </span>을 약속드립니다.
+                            </h2>
+                            <p class="text-gray-500 mt-4 text-lg">카드를 클릭하여 AI 기술의 정확성과 안전성을 확인해보세요.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                            <div onclick="openModal('eye')" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 text-center cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-blue-200 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-indigo-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                                <div class="w-20 h-20 bg-indigo-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-indigo-600 transition-colors duration-300">
+                                    <i data-lucide="eye" class="w-10 h-10 text-indigo-600 group-hover:text-white transition-colors"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-slate-900">AI 시선 분석 (핵심 기술)</h3>
+                                <p class="text-gray-500 text-sm break-keep">자체 개발 AI가 얼굴 각도와 **눈동자 움직임**을 분석해 실제 광고 시청 여부만 판별합니다.</p>
+                                <div class="mt-6 text-indigo-600 text-sm font-bold flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                    <i data-lucide="play-circle" class="w-4 h-4"></i> 데모 영상 보기
+                                </div>
+                            </div>
+
+                            <div onclick="openModal('demo')" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 text-center cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-blue-200 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 to-cyan-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                                <div class="w-20 h-20 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-600 transition-colors duration-300">
+                                    <i data-lucide="bar-chart-2" class="w-10 h-10 text-blue-600 group-hover:text-white transition-colors"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-slate-900">타겟 효율 증대</h3>
+                                <p class="text-gray-500 text-sm break-keep">실시간 성별/연령대 분석으로 타겟층에게 더 많이 노출하고, 리포트로 성과를 확인합니다.</p>
+                                <div class="mt-6 text-blue-600 text-sm font-bold flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                    <i data-lucide="images" class="w-4 h-4"></i> 분석 대시보드 보기
+                                </div>
+                            </div>
+
+                            <div onclick="openModal('privacy')" class="group bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 text-center cursor-pointer transition-all duration-300 hover:shadow-2xl hover:-translate-y-2 hover:border-green-200 relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-400 to-emerald-500 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
+                                <div class="w-20 h-20 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:bg-green-600 transition-colors duration-300">
+                                    <i data-lucide="shield-check" class="w-10 h-10 text-green-600 group-hover:text-white transition-colors"></i>
+                                </div>
+                                <h3 class="text-xl font-bold mb-2 text-slate-900">개인정보 완벽 보호</h3>
+                                <p class="text-gray-500 text-sm break-keep">영상은 저장되지 않으며, 비식별 통계 데이터만 추출 후 즉시 파기되어 법적 리스크가 없습니다.</p>
+                                <div class="mt-6 text-green-600 text-sm font-bold flex items-center justify-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i> 법적 안정성 확인
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-3xl shadow-lg overflow-hidden border border-gray-100">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left min-w-[600px]">
+                                    <thead class="bg-gray-50 text-gray-700 font-bold uppercase text-xs border-b">
+                                        <tr>
+                                            <th class="px-8 py-5">구분</th>
+                                            <th class="px-8 py-5 text-center text-gray-400">기존 OOH</th>
+                                            <th class="px-8 py-5 text-center text-blue-600 bg-blue-50">INWAVE (AI OOH)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 text-sm lg:text-base">
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-8 py-5 font-bold text-slate-800">측정 단위</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">노출 횟수 (Impression)</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">**시청 횟수 (View)**</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-8 py-5 font-bold text-slate-800">과금 방식</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">노출당 비용 (CPM) 또는 대당 월 정액</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">**시청당 비용 (CPV)**</td>
+                                        </tr>
+                                        <tr class="hover:bg-gray-50">
+                                            <td class="px-8 py-5 font-bold text-slate-800">타겟팅</td>
+                                            <td class="px-8 py-5 text-center text-gray-500">고정 (장소 기반)</td>
+                                            <td class="px-8 py-5 text-center font-bold text-blue-600 bg-blue-50/30">실시간 **데모그래픽** 기반</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'pricing',
+                title: '상품 & 가격 (파일럿 특가)',
+                icon: 'tag',
+                content: `
+                    <div class="max-w-7xl mx-auto slide-enter pb-10">
+                        <div class="text-center mb-12">
+                            <span class="bg-yellow-100 text-yellow-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">Performance & Data Solutions</span>
+                            <h2 class="text-4xl font-bold text-slate-900 mt-5 leading-tight">
+                                광고 목적에 따라 AI 탑재 유무를 선택하세요.<br>
+                                투명한 성과 측정이 가능한 **AI 솔루션**을 추천합니다.
+                            </h2>
+                            <p class="text-gray-500 mt-4 text-lg">인웨이브는 AI 시선 분석 기술을 활용하여 예산 낭비를 최소화합니다.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+                            <div class="bg-white p-8 rounded-3xl shadow-lg border-2 border-gray-100 hover:border-gray-400 transition-all duration-300 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-sm font-bold text-gray-500 uppercase">Non-AI Option</span>
+                                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">기본 송출 패키지 (CPM)</h3>
+                                    <p class="text-gray-600 mb-6">AI 분석 없이 단순 모니터 노출 횟수 및 위치만 보장합니다.</p>
+                                    
+                                    <div class="text-4xl font-extrabold text-gray-600 mb-8">
+                                        월 최소 30만 원<span class="text-lg font-normal text-gray-500">부터</span>
+                                    </div>
+                                    
+                                    <ul class="space-y-4 text-gray-700">
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="monitor" class="w-5 h-5 text-gray-500 shrink-0 mt-1"></i>
+                                            <span>모니터당 월 **15,000원** (기본 단가)</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="list-checks" class="w-5 h-5 text-gray-500 shrink-0 mt-1"></i>
+                                            <span>**월 최소 30만 원**부터 계약 가능</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-gray-400">
+                                            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-1"></i>
+                                            <span>AI 시청자 데이터 리포트 제공 불가</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-gray-400">
+                                            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-1"></i>
+                                            <span>광고 최적화 및 타겟 집중 송출 불가</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-gray-100 hover:bg-gray-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">
+                                    기본 노출 문의하기
+                                </a>
+                            </div>
+                            
+                            <div class="bg-blue-600 p-8 rounded-3xl shadow-2xl ring-4 ring-blue-300 transform scale-[1.03] flex flex-col justify-between">
+                                <div>
+                                    <span class="text-sm font-bold text-yellow-300 uppercase flex items-center gap-2 mb-2">
+                                        <i data-lucide="star" class="w-4 h-4 fill-current"></i> RECOMMENDED (10대 한정 파일럿)
+                                    </span>
+                                    <h3 class="text-3xl font-bold text-white mt-2 mb-4">AI 데이터 파일럿 (A.D.P)</h3>
+                                    <p class="text-blue-200 mb-6">AI 분석 기술을 검증하고 투명한 성과 측정 리포트를 받으세요.</p>
+                                    
+                                    <div class="text-5xl font-extrabold text-white mb-8">
+                                        월 45만 원<span class="text-lg font-normal text-blue-200"> (총액)</span>
+                                    </div>
+                                    
+                                    <ul class="space-y-4 text-white">
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                            <span>**1개월 파일럿** 전용 상품</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                            <span>**CPV 기반** 시청 성과 리포트 제공</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                            <span>성별/연령대 데모그래픽 분석 포함</span>
+                                        </li>
+                                        <li class="flex items-start gap-3 text-blue-100">
+                                            <i data-lucide="x-circle" class="w-5 h-5 text-blue-300 shrink-0 mt-1"></i>
+                                            <span>AI 송출 최적화 기능 (제한적)</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-white hover:bg-blue-50 text-blue-600 font-bold py-3 rounded-xl transition-colors shadow-lg">
+                                    1개월 AI 파일럿 시작 (총액 45만 원)
+                                </a>
+                            </div>
+                            
+                            <div class="bg-white p-8 rounded-3xl shadow-lg border-2 border-gray-100 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-sm font-bold text-gray-500 uppercase">AI Option</span>
+                                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">타겟 집중 솔루션 (T.F.S)</h3>
+                                    <p class="text-gray-600 mb-6">AI 최적화 기능 활성화로, 타겟에게 가장 효율적으로 도달합니다.</p>
+                                    
+                                    <div class="text-4xl font-extrabold text-purple-600 mb-8">
+                                        월 60만 원<span class="text-lg font-normal text-gray-500"> (총액)</span>
+                                    </div>
+                                    
+                                    <ul class="space-y-4 text-gray-700">
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                            <span>**3개월 이상** 장기 계약 권장</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                            <span>**AI 최적화 송출** 기능 무제한</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                            <span>시간대/데모그래픽별 자동 최적화</span>
+                                        </li>
+                                        <li class="flex items-start gap-3">
+                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                            <span>**캠페인 확장** 및 컨설팅 지원</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 rounded-xl transition-colors">
+                                    3개월 집중 솔루션 문의 (총액 60만 원)
+                                </a>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-12 p-6 bg-slate-100 rounded-xl">
+                            <p class="text-sm text-gray-600 text-center">
+                                <span class="font-bold text-red-600">참고 사항:</span> 현재 매체 수가 **10대**를 기준으로 산정된 총액입니다. 추후 모니터 수량이 확대되면, **총액은 비례하여 증가**합니다. (예: 20대 기준 A.D.P는 90만 원)
+                            </p>
+                            <p class="text-sm text-gray-600 text-center mt-2">
+                                **AI 솔루션**은 실제 시청 성과를 기반으로 광고 효율을 극대화하여, **단순 송출 대비 높은 ROI**를 목표로 합니다.
+                            </p>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'report',
+                title: '데이터 리포트 예시',
+                icon: 'pie-chart',
+                content: `
+                    <div class="max-w-7xl mx-auto h-full flex flex-col slide-enter pb-4 lg:pb-8 overflow-hidden">
+                        <div class="mb-6 shrink-0">
+                            <h2 class="text-3xl font-bold text-slate-900">Campaign ROI Report Dashboard</h2>
+                            <p class="text-gray-500 text-lg mt-2">인웨이브는 광고주가 바로 이해하고 활용할 수 있는 **데이터 인사이트**를 제공합니다. (PC/Mobile 지원)</p>
+                        </div>
+
+                        <div class="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 relative">
+                            
+                            <div class="lg:flex-[2] bg-slate-100 rounded-2xl p-2 border border-slate-200 shadow-inner relative flex flex-col justify-center items-center min-h-[400px] lg:min-h-0 order-1">
+                                <div class="w-full h-full bg-white rounded-xl shadow-sm border border-gray-300 overflow-hidden relative group">
+                                    <img src="images/dash006.jpg"
+                                        alt="Inwave Analytics Dashboard"
+                                        class="w-full h-full object-contain bg-white transform transition-transform duration-500 group-hover:scale-[1.02]">
+                                </div>
+                            </div>
+
+                            <div class="lg:flex-1 bg-indigo-50 border border-indigo-100 p-6 lg:p-8 rounded-2xl flex flex-col justify-center gap-5 shadow-sm order-2 overflow-y-auto custom-scrollbar">
+                                <div class="flex items-center gap-3 text-indigo-600 mb-2">
+                                    <div class="bg-white p-3 rounded-full shadow-sm shrink-0">
+                                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                                    </div>
+                                    <h5 class="text-xl font-bold text-indigo-800">
+                                        AI 기반 성과 분석 & 최적화
+                                    </h5>
+                                </div>
+                                <div class="space-y-4">
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Campaign Insight</span>
+                                        <p class="text-slate-700 mt-2 leading-relaxed text-base lg:text-lg">
+                                            데이터 분석 결과, <span class="font-bold text-indigo-700 bg-indigo-100 px-1 rounded">30대 여성(30's F)</span>의 관여도가 가장 높게 나타났습니다.
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm">
+                                        <span class="text-xs font-bold text-indigo-500 uppercase tracking-wider">Performance Golden Time</span>
+                                        <p class="text-slate-700 mt-2 leading-relaxed text-base lg:text-lg">
+                                            특히 <span class="font-bold text-indigo-700">오후 6~9시 퇴근 시간대</span>에 트래픽과 주목도가 집중되는 **골든타임**이 식별되었습니다.
+                                        </p>
+                                    </div>
+                                    <div class="bg-white p-4 rounded-xl border border-indigo-100 shadow-sm ring-2 ring-indigo-200">
+                                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider flex items-center gap-1">
+                                            <i data-lucide="lightbulb" class="w-4 h-4"></i> Data-Driven Recommendation
+                                        </span>
+                                        <p class="text-slate-800 font-bold mt-2 leading-relaxed text-base lg:text-lg">
+                                            **차기 집행 시** 해당 시간대 노출 비중을 **15% 상향 조정**하여 **ROI**를 극대화할 것을 제안합니다.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'offer',
+                title: '광고 집행 문의',
+                icon: 'handshake',
+                content: `
+                    <div class="max-w-6xl mx-auto h-full flex flex-col justify-center items-center slide-enter p-4 lg:p-6">
+                        
+                        <div class="text-center mb-8 lg:mb-12">
+                            <h2 class="text-3xl lg:text-5xl font-bold text-slate-900 mb-4 leading-tight">
+                                허수 없는 투명한 광고를<br>
+                                지금 바로 시작하세요.
+                            </h2>
+                            <p class="text-gray-500 text-lg">데이터로 증명하는 옥외광고, 인웨이브에 직접 문의하십시오.</p>
+                        </div>
+
+                        <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-8 mb-10 lg:mb-14">
+                            <div class="bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-gray-100 hover:border-blue-200 hover:-translate-y-1 transition-all group text-center">
+                                <div class="w-14 h-14 bg-blue-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-blue-600 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="trending-up" class="w-7 h-7"></i>
+                                </div>
+                                <h3 class="font-bold text-lg lg:text-xl text-slate-900 mb-2">성과 증명</h3>
+                                <p class="text-gray-600 text-sm break-keep">
+                                    '실제 시청자 수' 데이터로<br>**광고 효과**를 명확하게 증명합니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-gray-100 hover:border-indigo-200 hover:-translate-y-1 transition-all group text-center">
+                                <div class="w-14 h-14 bg-indigo-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-indigo-600 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="dollar-sign" class="w-7 h-7"></i>
+                                </div>
+                                <h3 class="font-bold text-lg lg:text-xl text-slate-900 mb-2">효율적인 예산</h3>
+                                <p class="text-gray-600 text-sm break-keep">
+                                    시청당 과금(**CPV**) 방식으로<br>**예산 낭비를 최소화**합니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-gray-100 hover:border-purple-200 hover:-translate-y-1 transition-all group text-center">
+                                <div class="w-14 h-14 bg-purple-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-purple-600 group-hover:scale-110 transition-transform">
+                                    <i data-lucide="layers" class="w-7 h-7"></i>
+                                </div>
+                                <h3 class="font-bold text-lg lg:text-xl text-slate-900 mb-2">캠페인 개선</h3>
+                                <p class="text-gray-600 text-sm break-keep">
+                                    성별/연령대 등 **데이터 피드백**을<br>다음 캠페인에 즉시 반영합니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="w-full max-w-lg flex flex-col sm:flex-row gap-4">
+                            <a href="mailto:jhpark8271@gmail.com" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-xl font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2">
+                                <i data-lucide="mail" class="w-5 h-5"></i>
+                                광고 집행 문의하기
+                            </a>
+                            
+                            <a href="Inwave_Media_Introduction.pdf" download class="flex-1 bg-white hover:bg-gray-50 text-slate-900 border border-gray-200 py-4 px-6 rounded-xl font-bold shadow-md hover:shadow-lg transition-all hover:scale-105 flex items-center justify-center gap-2">
+                                <i data-lucide="download" class="w-5 h-5 text-blue-600"></i>
+                                매체소개서 다운로드
+                            </a>
+                        </div>
+                    </div>
+                `
+            },
+            {
+                id: 'company',
+                title: '회사 소개',
+                icon: 'building',
+                content: `
+                    <div class="max-w-7xl mx-auto h-full slide-enter p-6 lg:p-12 flex flex-col justify-center">
+                        
+                        <div class="mb-10 border-b border-gray-200 pb-6">
+                            <span class="text-blue-600 font-bold tracking-wider text-sm uppercase">About Us</span>
+                            <h2 class="text-4xl font-bold text-slate-900 mt-2">Data-Driven OOH Innovator</h2>
+                            <p class="text-gray-500 mt-2 text-lg">인웨이브는 **AI 기술**로 옥외광고 시장의 투명성과 효율성을 높입니다.</p>
+                        </div>
+
+                        <div class="flex flex-col lg:flex-row gap-12 lg:gap-20 h-full">
+                            
+                            <div class="lg:w-5/12 flex flex-col">
+                                <div class="relative mb-8 group w-1/2">
+                                    <div class="relative bg-white rounded-xl overflow-hidden border border-gray-100" style="box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);">
+                                            <img src="images/ceo.jpg" alt="CEO Profile" class="w-full h-auto grayscale hover:grayscale-0 transition-all duration-500">
+                                    </div>
+                                </div>
+                                
+                                <blockquote class="relative">
+                                    <svg class="absolute top-0 left-0 transform -translate-x-6 -translate-y-4 h-10 w-10 text-gray-200" fill="currentColor" viewBox="0 0 32 32" aria-hidden="true">
+                                        <path d="M9.352 4C4.456 7.456 1 13.12 1 19.36c0 5.088 3.072 8.064 6.624 8.064 3.36 0 5.856-2.688 5.856-5.856 0-3.168-2.208-5.472-5.088-5.472-.576 0-1.344.096-1.536.192.48-3.264 3.552-7.104 6.624-9.024L9.352 4zm16.512 0c-4.8 3.456-8.256 9.12-8.256 15.36 0 5.088 3.072 8.064 6.624 8.064 3.264 0 5.856-2.688 5.856-5.856 0-3.168-2.304-5.472-5.184-5.472-.576 0-1.248.096-1.44.192.48-3.264 3.456-7.104 6.528-9.024L25.864 4z" />
+                                    </svg>
+                                    <p class="text-gray-600 leading-relaxed italic relative z-10">
+                                        "측정할 수 없는 광고는 투자가 아닙니다.<br>
+                                        인웨이브는 '감'에 의존했던 옥외광고 시장에 **투명한 데이터**를 더해,<br> 광고주의 **성공적인 투자**를 지원합니다."
+                                    </p>
+                                    <footer class="mt-4">
+                                        <p class="text-base font-bold text-slate-900">대표이사 박재훈</p>
+                                        <p class="text-sm text-slate-500">Inwave CEO & Founder</p>
+                                    </footer>
+                                </blockquote>
+                            </div>
+
+                            <div class="lg:w-7/12 flex flex-col justify-center">
+                                <h3 class="text-xl font-bold text-slate-800 mb-8 flex items-center gap-2">
+                                    <i data-lucide="award" class="w-5 h-5 text-blue-600"></i>
+                                    주요 성과 및 연혁
+                                </h3>
+                                
+                                <div class="relative border-l-2 border-slate-200 ml-3 space-y-10">
+                                    
+                                    <div class="relative pl-8 slide-enter" style="animation-delay: 0.1s;">
+                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-blue-600 ring-4 ring-white"></span>
+                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8 cursor-pointer" onclick="openModal('installation')">
+                                            <span class="font-bold text-blue-600 text-lg w-24 shrink-0">2025. 11</span>
+                                            <div>
+                                                <h4 class="font-bold text-slate-800 text-lg">두산위브 시선분석 광고 솔루션 공식 송출</h4>
+                                                <p class="text-gray-500 text-sm mt-1">실제 거주 공간 기반 타겟팅 광고 상용화 개시</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative pl-8 slide-enter" style="animation-delay: 0.2s;">
+                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-slate-300 ring-4 ring-white"></span>
+                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8">
+                                            <span class="font-bold text-slate-500 text-lg w-24 shrink-0">2025. 05~10</span>
+                                            <div>
+                                                <h4 class="font-bold text-slate-800 text-lg">시선분석 광고 플랫폼 시범사업 운영 (PoC 완료)</h4>
+                                                <p class="text-gray-500 text-sm mt-1">데이터 신뢰도 및 상업적 효용성 검증</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative pl-8 slide-enter" style="animation-delay: 0.3s;">
+                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-slate-300 ring-4 ring-white"></span>
+                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8">
+                                            <span class="font-bold text-slate-500 text-lg w-24 shrink-0">2025. 05</span>
+                                            <div>
+                                                <h4 class="font-bold text-slate-800 text-lg">부천시 유망 보육기업 선정</h4>
+                                                <p class="text-gray-500 text-sm mt-1">AI 기술력 및 사업성 인정</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="relative pl-8 slide-enter" style="animation-delay: 0.4s;">
+                                        <span class="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-slate-300 ring-4 ring-white"></span>
+                                        <div class="flex flex-col sm:flex-row sm:items-baseline gap-2 sm:gap-8">
+                                            <span class="font-bold text-slate-500 text-lg w-24 shrink-0">2025. 04</span>
+                                            <div>
+                                                <h4 class="font-bold text-slate-800 text-lg">(주)인웨이브 법인 설립</h4>
+                                                <p class="text-gray-500 text-sm mt-1">데이터 기반 OOH 혁신의 시작</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        ];
+
+        // State
+        let currentSlideId = 'cover';
+        let autoSlideInterval;
+
+        // Elements
+        const sidebarMenu = document.getElementById('sidebar-menu');
+        const contentArea = document.getElementById('content-area');
+        const headerTitle = document.getElementById('header-title');
+
+        // Functions
+        function renderSidebar() {
+            sidebarMenu.innerHTML = slides.map(slide => `
+                <li class="cursor-pointer">
+                    <div
+                        onclick="changeSlide('${slide.id}')"
+                        class="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 group ${slide.id === currentSlideId ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}"
+                    >
+                        <i data-lucide="${slide.icon}" class="w-5 h-5 transition-transform group-hover:scale-110"></i>
+                        <span class="text-sm font-medium">${slide.title}</span>
+                    </div>
+                </li>
+            `).join('');
+            
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        function changeSlide(id) {
+            currentSlideId = id;
+            const slide = slides.find(s => s.id === id);
+            
+            // Update Header
+            headerTitle.innerText = slide.title;
+            
+            // Update Sidebar Active State
+            renderSidebar();
+
+            // Render Content
+            contentArea.innerHTML = slide.content;
+            
+            // Reset Scroll
+            contentArea.scrollTop = 0;
+            
+            // Check if lucide is defined before using it
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSidebar();
+            changeSlide('cover'); // Start with cover
+        });
+
+        // --- Modal & Popup Logic ---
+        
+        function openModal(type) {
+            // Clear existing interval if any
+            if (autoSlideInterval) {
+                clearInterval(autoSlideInterval);
+                autoSlideInterval = null;
+            }
+
+            // Modal HTML Structure
+            const modalHtml = `
+                <div id="custom-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeModal()"></div>
+                    
+                    <div class="relative bg-white w-full max-w-5xl rounded-3xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 overflow-hidden flex flex-col max-h-[90vh]" id="modal-panel">
+                        
+                        <div class="flex justify-between items-center p-6 border-b border-gray-100 bg-gray-50 flex-shrink-0">
+                            <h3 class="text-xl font-bold text-slate-800 flex items-center gap-2" id="modal-title">
+                            </h3>
+                            <button onclick="closeModal()" class="p-2 hover:bg-gray-200 rounded-full transition-colors text-gray-500 hover:text-red-500">
+                                <i data-lucide="x" class="w-6 h-6"></i>
+                            </button>
+                        </div>
+
+                        <div class="p-0 overflow-y-auto bg-slate-50 flex-1" id="modal-body">
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHtml);
+            
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                document.getElementById('modal-backdrop').classList.remove('opacity-0');
+                document.getElementById('modal-panel').classList.remove('scale-95', 'opacity-0');
+            });
+
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+
+            // [1] 시선 추적 동영상
+            if (type === 'eye') {
+                modalTitle.innerHTML = `<i data-lucide="eye" class="text-indigo-600"></i> AI 시선 추적 데모`;
+                modalBody.innerHTML = `
+                    <div class="aspect-video mx-auto max-w-4xl relative rounded-2xl overflow-hidden shadow-xl my-8 border border-gray-100">
+                        <iframe src="https://player.vimeo.com/video/1142473836?autoplay=1&loop=1&title=0&byline=0&portrait=0"
+                                class="absolute top-0 left-0 w-full h-full"
+                                frameborder="0" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                    <div class="px-8 pb-8 text-center">
+                        <p class="text-gray-600 text-lg">Inwave의 AI는 <span class="text-indigo-600 font-bold">눈동자의 움직임(Gaze)</span>을 0.01초 단위로 추적하여<br>단순히 앞을 보는 것과 실제 광고를 응시하는 것을 정확히 구분합니다.</p>
+                    </div>
+                `;
+            
+            // [2] 대시보드 슬라이드
+            } else if (type === 'demo') {
+                modalTitle.innerHTML = `<i data-lucide="bar-chart-2" class="text-blue-600"></i> 실시간 데이터 분석 대시보드`;
+                modalBody.innerHTML = `
+                    <div class="relative w-full h-[500px] bg-slate-900 overflow-hidden group">
+                        <div id="slider-track" class="flex h-full transition-transform duration-700 ease-in-out">
+                            
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800 relative">
+                                <div class="text-center w-full h-full flex flex-col justify-center items-center p-10">
+                                    <div class="text-blue-400 font-bold text-xl mb-4 animate-pulse">LIVE DASHBOARD</div>
+                                    <img src="images/dash001.JPG" class="rounded-lg shadow-2xl border border-slate-600 max-h-[350px] object-contain">
+                                </div>
+                            </div>
+
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800">
+                                <div class="text-center w-full h-full flex flex-col justify-center items-center p-10">
+                                    <div class="text-green-400 font-bold text-xl mb-4 animate-pulse">DEMOGRAPHIC ANALYSIS</div>
+                                    <img src="images/dash002.JPG" class="rounded-lg shadow-2xl border border-slate-600 max-h-[350px] object-contain">
+                                </div>
+                            </div>
+
+                            <div class="min-w-full h-full flex items-center justify-center bg-slate-800">
+                                <div class="text-center w-full h-full flex flex-col justify-center items-center p-10">
+                                    <div class="text-purple-400 font-bold text-xl mb-4 animate-pulse">HEATMAP & TRAFFIC</div>
+                                    <img src="images/dash003.JPG" class="rounded-lg shadow-2xl border border-slate-600 max-h-[350px] object-contain">
+                                </div>
+                            </div>
+
+                        </div>
+                        
+                        <div class="absolute bottom-6 left-0 w-full flex justify-center gap-2">
+                            <span class="w-3 h-3 rounded-full bg-white opacity-100 transition-opacity"></span>
+                            <span class="w-3 h-3 rounded-full bg-white opacity-50 transition-opacity"></span>
+                            <span class="w-3 h-3 rounded-full bg-white opacity-50 transition-opacity"></span>
+                        </div>
+                    </div>
+                `;
+                
+                // 2초마다 자동 슬라이드 로직
+                let slideIndex = 0;
+                const track = document.getElementById('slider-track');
+                const indicators = document.querySelectorAll('.absolute.bottom-6 span');
+                
+                autoSlideInterval = setInterval(() => {
+                    slideIndex = (slideIndex + 1) % 3;
+                    if (track) {
+                        track.style.transform = `translateX(-${slideIndex * 100}%)`;
+                    }
+                    indicators.forEach((dot, i) => {
+                        dot.style.opacity = i === slideIndex ? '1' : '0.5';
+                    });
+                }, 2000); // 2000ms = 2초
+
+            // [3] 프라이버시 보호
+            } else if (type === 'privacy') {
+                modalTitle.innerHTML = `<i data-lucide="shield-check" class="text-green-600"></i> AI 윤리·법적 리스크 대응 전략`;
+                modalBody.innerHTML = `
+                    <div class="p-8 lg:p-12">
+                        <div class="bg-green-50 border border-green-200 rounded-2xl p-6 text-center mb-10">
+                            <h4 class="text-xl font-bold text-green-800 mb-2">Privacy-by-Design</h4>
+                            <p class="text-green-700">인웨이브는 개인정보보호법 및 AI 윤리 기준을 <span class="bg-white px-2 py-0.5 rounded font-bold shadow-sm">100% 준수</span>하는 구조로 설계되었습니다.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">1</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">법적 문제 없음</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    인웨이브 AI는 <span class="text-red-500 font-bold">영상을 저장하지 않고</span>, 실시간으로 분석된 비식별 통계 데이터만 저장하므로 개인정보보호법 상 위법 소지가 없습니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">2</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">법령상 예외 조항</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    개인정보보호법 시행령 제22조에 따라, <span class="bg-gray-100 px-1 rounded font-medium">"통계 산출을 위한 일시적 영상처리"</span>는 합법으로 인정됩니다.
+                                </p>
+                            </div>
+                            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:border-green-300 transition-colors">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-600 font-bold text-lg">3</div>
+                                <h5 class="font-bold text-lg text-slate-900 mb-2">2차 활용 가능</h5>
+                                <p class="text-gray-600 text-sm leading-relaxed">
+                                    수집된 정보는 개인을 식별할 수 없는 <span class="text-blue-600 font-bold">통계값 형태</span>이므로, 2차 가공 및 분석 활용도 법적 제약 없이 가능합니다.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 text-right text-gray-400 text-xs border-t pt-4">
+                            법률 자문: 구태언 변호사 / 테크앤로 법률사무소
+                        </div>
+                    </div>
+                `;
+            }
+
+            // [4] 설치 이미지 갤러리 - 수정된 부분
+            else if (type === 'installation') {
+                modalTitle.innerHTML = `<i data-lucide="monitor" class="text-blue-600"></i> 두산위브 설치 사례 이미지`;
+                modalBody.innerHTML = `
+                    <div class="p-4 lg:p-8 bg-white overflow-y-auto">
+                        <div class="text-center mb-6">
+                            <p class="text-lg text-gray-700 font-medium">AI OOH 솔루션 설치 실제 모습</p>
+                            <p class="text-sm text-gray-500 mt-1">이미지 파일명: image_39333a.jpg</p>
+                        </div>
+                        <img src="images/image_39333a.jpg" alt="두산위브 설치 사례" class="w-full h-auto rounded-xl shadow-2xl border-4 border-blue-500/50 object-contain">
+                    </div>
+                `;
+            }
+
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        }
+        
+
+        function closeModal() {
+            const modal = document.getElementById('custom-modal');
+            if (modal) {
+                // Clear Interval if exists
+                if (autoSlideInterval) {
+                    clearInterval(autoSlideInterval);
+                    autoSlideInterval = null;
+                }
+                
+                // Animate Out
+                const backdrop = document.getElementById('modal-backdrop');
+                const panel = document.getElementById('modal-panel');
+                if (backdrop) backdrop.classList.add('opacity-0');
+                if (panel) panel.classList.add('scale-95', 'opacity-0');
+                
+                // Remove from DOM after animation
+                setTimeout(() => {
+                    modal.remove();
+                }, 300);
+            }
+        }
+    </script>
+</body>
+</html>
