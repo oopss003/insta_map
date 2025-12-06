@@ -375,6 +375,9 @@
                 `
             },
             {
+... (이전 코드 생략)
+
+            {
                 id: 'pricing',
                 title: '상품 & 가격 (파일럿 특가)',
                 icon: 'tag',
@@ -383,117 +386,152 @@
                         <div class="text-center mb-12">
                             <span class="bg-yellow-100 text-yellow-700 px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase">Performance & Data Solutions</span>
                             <h2 class="text-4xl font-bold text-slate-900 mt-5 leading-tight">
-                                광고 목적에 따라 AI 탑재 유무를 선택하세요.<br>
-                                투명한 성과 측정이 가능한 **AI 솔루션**을 추천합니다.
+                                광고 목적과 예산에 따라 최적의 솔루션을 선택하세요.<br>
+                                복합 캠페인은 **맞춤형 엔터프라이즈**로 협의 가능합니다.
                             </h2>
                             <p class="text-gray-500 mt-4 text-lg">인웨이브는 AI 시선 분석 기술을 활용하여 예산 낭비를 최소화합니다.</p>
                         </div>
                         
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
-                            <div class="bg-white p-8 rounded-3xl shadow-lg border-2 border-gray-100 hover:border-gray-400 transition-all duration-300 flex flex-col justify-between">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-gray-100 hover:border-gray-400 transition-all duration-300 flex flex-col justify-between">
                                 <div>
-                                    <span class="text-sm font-bold text-gray-500 uppercase">Non-AI Option</span>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">기본 송출 패키지 (CPM)</h3>
-                                    <p class="text-gray-600 mb-6">AI 분석 없이 단순 모니터 노출 횟수 및 위치만 보장합니다.</p>
+                                    <span class="text-sm font-bold text-gray-500 uppercase">Level 1</span>
+                                    <h3 class="text-2xl font-bold text-slate-900 mt-2 mb-4">기본 노출 패키지 (CPM)</h3>
+                                    <p class="text-gray-600 mb-6 text-sm">AI 분석 없이 단순 모니터 노출 횟수 및 위치만 보장합니다.</p>
                                     
-                                    <div class="text-4xl font-extrabold text-gray-600 mb-8">
-                                        월 최소 30만 원<span class="text-lg font-normal text-gray-500">부터</span>
+                                    <div class="text-3xl font-extrabold text-gray-600 mb-8">
+                                        월 최소 30만 원<span class="text-base font-normal text-gray-500">부터</span>
                                     </div>
                                     
-                                    <ul class="space-y-4 text-gray-700">
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="monitor" class="w-5 h-5 text-gray-500 shrink-0 mt-1"></i>
+                                    <ul class="space-y-3 text-gray-700 text-sm">
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="monitor" class="w-4 h-4 text-gray-500 shrink-0 mt-1"></i>
                                             <span>모니터당 월 **15,000원** (기본 단가)</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="list-checks" class="w-5 h-5 text-gray-500 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="list-checks" class="w-4 h-4 text-gray-500 shrink-0 mt-1"></i>
                                             <span>**월 최소 30만 원**부터 계약 가능</span>
                                         </li>
-                                        <li class="flex items-start gap-3 text-gray-400">
-                                            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2 text-gray-400">
+                                            <i data-lucide="x-circle" class="w-4 h-4 text-red-400 shrink-0 mt-1"></i>
                                             <span>AI 시청자 데이터 리포트 제공 불가</span>
                                         </li>
-                                        <li class="flex items-start gap-3 text-gray-400">
-                                            <i data-lucide="x-circle" class="w-5 h-5 text-red-400 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2 text-gray-400">
+                                            <i data-lucide="x-circle" class="w-4 h-4 text-red-400 shrink-0 mt-1"></i>
                                             <span>광고 최적화 및 타겟 집중 송출 불가</span>
                                         </li>
                                     </ul>
                                 </div>
                                 
-                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-gray-100 hover:bg-gray-200 text-slate-700 font-bold py-3 rounded-xl transition-colors">
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-gray-100 hover:bg-gray-200 text-slate-700 font-bold py-3 rounded-xl transition-colors text-sm">
                                     기본 노출 문의하기
                                 </a>
                             </div>
                             
-                            <div class="bg-blue-600 p-8 rounded-3xl shadow-2xl ring-4 ring-blue-300 transform scale-[1.03] flex flex-col justify-between">
+                            <div class="bg-blue-600 p-6 rounded-2xl shadow-2xl ring-4 ring-blue-300 transform scale-100 lg:scale-[1.05] flex flex-col justify-between">
                                 <div>
                                     <span class="text-sm font-bold text-yellow-300 uppercase flex items-center gap-2 mb-2">
-                                        <i data-lucide="star" class="w-4 h-4 fill-current"></i> RECOMMENDED (10대 한정 파일럿)
+                                        <i data-lucide="star" class="w-4 h-4 fill-current"></i> Level 2 (파일럿 특가)
                                     </span>
-                                    <h3 class="text-3xl font-bold text-white mt-2 mb-4">AI 데이터 파일럿 (A.D.P)</h3>
-                                    <p class="text-blue-200 mb-6">AI 분석 기술을 검증하고 투명한 성과 측정 리포트를 받으세요.</p>
+                                    <h3 class="text-2xl font-bold text-white mt-2 mb-4">AI 데이터 파일럿 (A.D.P)</h3>
+                                    <p class="text-blue-200 mb-6 text-sm">AI 분석 기술을 검증하고 투명한 성과 측정 리포트를 받으세요.</p>
                                     
-                                    <div class="text-5xl font-extrabold text-white mb-8">
-                                        월 45만 원<span class="text-lg font-normal text-blue-200"> (총액)</span>
+                                    <div class="text-3xl font-extrabold text-white mb-8">
+                                        월 45만 원<span class="text-base font-normal text-blue-200"> (총액)</span>
                                     </div>
                                     
-                                    <ul class="space-y-4 text-white">
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                    <ul class="space-y-3 text-white text-sm">
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-yellow-300 shrink-0 mt-1"></i>
                                             <span>**1개월 파일럿** 전용 상품</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-yellow-300 shrink-0 mt-1"></i>
                                             <span>**CPV 기반** 시청 성과 리포트 제공</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-yellow-300 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-yellow-300 shrink-0 mt-1"></i>
                                             <span>성별/연령대 데모그래픽 분석 포함</span>
                                         </li>
-                                        <li class="flex items-start gap-3 text-blue-100">
-                                            <i data-lucide="x-circle" class="w-5 h-5 text-blue-300 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2 text-blue-100">
+                                            <i data-lucide="x-circle" class="w-4 h-4 text-blue-300 shrink-0 mt-1"></i>
                                             <span>AI 송출 최적화 기능 (제한적)</span>
                                         </li>
                                     </ul>
                                 </div>
                                 
-                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-white hover:bg-blue-50 text-blue-600 font-bold py-3 rounded-xl transition-colors shadow-lg">
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-white hover:bg-blue-50 text-blue-600 font-bold py-3 rounded-xl transition-colors shadow-lg text-sm">
                                     1개월 AI 파일럿 시작 (총액 45만 원)
                                 </a>
                             </div>
                             
-                            <div class="bg-white p-8 rounded-3xl shadow-lg border-2 border-gray-100 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between">
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-gray-100 hover:border-purple-400 transition-all duration-300 flex flex-col justify-between">
                                 <div>
-                                    <span class="text-sm font-bold text-gray-500 uppercase">AI Option</span>
-                                    <h3 class="text-3xl font-bold text-slate-900 mt-2 mb-4">타겟 집중 솔루션 (T.F.S)</h3>
-                                    <p class="text-gray-600 mb-6">AI 최적화 기능 활성화로, 타겟에게 가장 효율적으로 도달합니다.</p>
+                                    <span class="text-sm font-bold text-gray-500 uppercase">Level 3</span>
+                                    <h3 class="text-2xl font-bold text-slate-900 mt-2 mb-4">타겟 집중 솔루션 (T.F.S)</h3>
+                                    <p class="text-gray-600 mb-6 text-sm">AI 최적화 기능 활성화로, 타겟에게 가장 효율적으로 도달합니다.</p>
                                     
-                                    <div class="text-4xl font-extrabold text-purple-600 mb-8">
-                                        월 60만 원<span class="text-lg font-normal text-gray-500"> (총액)</span>
+                                    <div class="text-3xl font-extrabold text-purple-600 mb-8">
+                                        월 60만 원<span class="text-base font-normal text-gray-500"> (총액)</span>
                                     </div>
                                     
-                                    <ul class="space-y-4 text-gray-700">
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                    <ul class="space-y-3 text-gray-700 text-sm">
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500 shrink-0 mt-1"></i>
                                             <span>**3개월 이상** 장기 계약 권장</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500 shrink-0 mt-1"></i>
                                             <span>**AI 최적화 송출** 기능 무제한</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500 shrink-0 mt-1"></i>
                                             <span>시간대/데모그래픽별 자동 최적화</span>
                                         </li>
-                                        <li class="flex items-start gap-3">
-                                            <i data-lucide="check-circle" class="w-5 h-5 text-green-500 shrink-0 mt-1"></i>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500 shrink-0 mt-1"></i>
                                             <span>**캠페인 확장** 및 컨설팅 지원</span>
                                         </li>
                                     </ul>
                                 </div>
                                 
-                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 rounded-xl transition-colors">
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-purple-100 hover:bg-purple-200 text-purple-700 font-bold py-3 rounded-xl transition-colors text-sm">
                                     3개월 집중 솔루션 문의 (총액 60만 원)
+                                </a>
+                            </div>
+
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border-2 border-gray-100 hover:border-red-400 transition-all duration-300 flex flex-col justify-between">
+                                <div>
+                                    <span class="text-sm font-bold text-red-500 uppercase">Level 4 (Consultation)</span>
+                                    <h3 class="text-2xl font-bold text-slate-900 mt-2 mb-4">맞춤형 엔터프라이즈</h3>
+                                    <p class="text-gray-600 mb-6 text-sm">대규모 캠페인, 특정 커스터마이징 기능이 필요한 경우 협의합니다.</p>
+                                    
+                                    <div class="text-3xl font-extrabold text-red-600 mb-8">
+                                        별도 협의<span class="text-base font-normal text-gray-500"> (Price on Request)</span>
+                                    </div>
+                                    
+                                    <ul class="space-y-3 text-gray-700 text-sm">
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-red-500 shrink-0 mt-1"></i>
+                                            <span>**대규모 매체** 수량에 따른 단가 협의</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-red-500 shrink-0 mt-1"></i>
+                                            <span>특정 KPI 달성을 위한 **전략 협의**</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-red-500 shrink-0 mt-1"></i>
+                                            <span>**캠페인 기간**에 따른 **할인율 협의**</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i data-lucide="check-circle" class="w-4 h-4 text-red-500 shrink-0 mt-1"></i>
+                                            <span>커스터마이징 보고서 형태 제공 가능</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                                
+                                <a href="#" onclick="changeSlide('offer')" class="mt-8 block w-full text-center bg-red-100 hover:bg-red-200 text-red-700 font-bold py-3 rounded-xl transition-colors text-sm">
+                                    맞춤형 협의 요청하기
                                 </a>
                             </div>
                         </div>
@@ -509,6 +547,7 @@
                     </div>
                 `
             },
+
             {
                 id: 'report',
                 title: '데이터 리포트 예시',
