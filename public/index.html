@@ -8,6 +8,7 @@
   <!--
     기능 설명:
     - 인웨이브 메인페이지 디자인용 단독 HTML
+    - 상단에 전체화면 동영상 Hero 추가
     - 관련 파일:
       1) public/images/main.mp4
       2) 필요 시 public/images/logo.png
@@ -134,7 +135,7 @@
     .site-header {
       position: sticky;
       top: 0;
-      z-index: 50;
+      z-index: 100;
       backdrop-filter: blur(18px);
       background: rgba(247, 250, 255, 0.72);
       border-bottom: 1px solid rgba(148, 163, 184, 0.10);
@@ -302,10 +303,86 @@
       box-shadow: var(--shadow-pressed);
     }
 
+    /* Fullscreen video hero */
+    .fullscreen-video {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      min-height: 640px;
+      overflow: hidden;
+      background: #dfe7f2;
+    }
+
+    .fullscreen-video video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .fullscreen-overlay {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(245, 248, 253, 0.20) 0%, rgba(245, 248, 253, 0.05) 35%, rgba(245, 248, 253, 0.35) 100%);
+      pointer-events: none;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      left: 50%;
+      bottom: 28px;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      color: #ffffff;
+      text-shadow: 0 4px 14px rgba(0,0,0,0.18);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+    }
+
+    .scroll-mouse {
+      width: 28px;
+      height: 46px;
+      border: 2px solid rgba(255,255,255,0.9);
+      border-radius: 20px;
+      position: relative;
+    }
+
+    .scroll-mouse::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 9px;
+      transform: translateX(-50%);
+      width: 4px;
+      height: 9px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.95);
+      animation: wheelMove 1.8s infinite;
+    }
+
+    @keyframes wheelMove {
+      0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(0);
+      }
+      30% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(12px);
+      }
+    }
+
     /* Hero */
     .hero {
       position: relative;
-      padding: 48px 0 80px;
+      padding: 80px 0 80px;
       overflow: hidden;
     }
 
@@ -541,7 +618,6 @@
       color: var(--text-soft);
     }
 
-    /* Trust line */
     .trust-row {
       margin-top: 34px;
       display: grid;
@@ -571,7 +647,6 @@
       line-height: 1.7;
     }
 
-    /* Feature cards */
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -616,7 +691,6 @@
       font-size: 15px;
     }
 
-    /* Platform section */
     .platform-wrap {
       display: grid;
       grid-template-columns: 0.95fr 1.05fr;
@@ -820,7 +894,6 @@
       letter-spacing: -0.03em;
     }
 
-    /* CTA */
     .cta-box {
       padding: 48px;
       border-radius: 34px;
@@ -853,7 +926,6 @@
       justify-content: flex-end;
     }
 
-    /* Footer */
     .site-footer {
       padding: 34px 0 48px;
     }
@@ -890,12 +962,10 @@
       color: var(--text-soft);
     }
 
-    /* Mobile nav panel */
     .mobile-panel {
       display: none;
     }
 
-    /* Responsive */
     @media (max-width: 1180px) {
       .hero-shell,
       .platform-wrap {
@@ -987,8 +1057,13 @@
         width: min(calc(100% - 28px), var(--max-width));
       }
 
+      .fullscreen-video {
+        height: 100svh;
+        min-height: 520px;
+      }
+
       .hero {
-        padding: 28px 0 44px;
+        padding: 56px 0 44px;
       }
 
       .hero-copy,
@@ -1097,7 +1172,8 @@
       </a>
 
       <nav class="nav" aria-label="메인 메뉴">
-        <a href="#hero">Home</a>
+        <a href="#top-video">Home</a>
+        <a href="#hero">Overview</a>
         <a href="#technology">Technology</a>
         <a href="#platform">Platform</a>
         <a href="#contact">Contact</a>
@@ -1113,7 +1189,8 @@
     </div>
 
     <div class="mobile-panel" id="mobilePanel">
-      <a href="#hero">Home</a>
+      <a href="#top-video">Home</a>
+      <a href="#hero">Overview</a>
       <a href="#technology">Technology</a>
       <a href="#platform">Platform</a>
       <a href="#contact">Contact</a>
@@ -1123,6 +1200,20 @@
   </header>
 
   <main>
+    <!-- 전체 화면 동영상 -->
+    <section class="fullscreen-video" id="top-video">
+      <video autoplay muted loop playsinline>
+        <source src="./images/main.mp4" type="video/mp4" />
+      </video>
+      <div class="fullscreen-overlay"></div>
+
+      <div class="scroll-indicator">
+        <div class="scroll-mouse"></div>
+        <span>SCROLL</span>
+      </div>
+    </section>
+
+    <!-- 기존 디자인을 아래로 이동 -->
     <section class="hero" id="hero">
       <div class="container">
         <div class="hero-shell">
@@ -1398,7 +1489,7 @@
 
           <div class="cta-actions">
             <a href="#" class="btn btn-primary">도입 문의</a>
-            <a href="#hero" class="btn btn-secondary">처음으로</a>
+            <a href="#top-video" class="btn btn-secondary">처음으로</a>
           </div>
         </div>
       </div>
@@ -1414,7 +1505,8 @@
         </p>
 
         <div class="footer-links">
-          <a href="#hero">Home</a>
+          <a href="#top-video">Home</a>
+          <a href="#hero">Overview</a>
           <a href="#technology">Technology</a>
           <a href="#platform">Platform</a>
           <a href="#contact">Contact</a>
