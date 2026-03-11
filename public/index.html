@@ -708,6 +708,50 @@
       line-height: 1.7;
     }
 
+    .service-links {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+    
+    .service-link-card {
+      display: block;
+      padding: 26px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #f9fcff, #eef3f9);
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    
+    .service-link-card:hover {
+      transform: translateY(-4px);
+    }
+    
+    .service-link-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+    
+    .service-link-card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+    
+    .service-link-card p {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.75;
+    }
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1119,6 +1163,10 @@
       .fullscreen-video {
         height: 100svh;
         min-height: 520px;
+      }
+
+      .service-links {
+        grid-template-columns: 1fr;
       }
 
       .video-slogan {
