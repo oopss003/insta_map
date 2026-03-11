@@ -1,361 +1,1443 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>INWAVE – 메인</title>
-    <!-- Google Font -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css"
-    />
-    <style>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inwave | AI Advertising Intelligence</title>
+
+  <!--
+    기능 설명:
+    - 인웨이브 메인페이지 디자인용 단독 HTML
+    - 관련 파일:
+      1) public/images/main.mp4
+      2) 필요 시 public/images/logo.png
+    - 현재 단계는 디자인 중심이며, 실제 링크/문구/통계값은 추후 변경 가능
+  -->
+
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --bg-2: #eef3f9;
+      --surface: #f4f7fb;
+      --surface-strong: #ffffff;
+      --text: #1f2a37;
+      --text-soft: #5b6676;
+      --line: rgba(124, 145, 173, 0.14);
+      --primary: #5b8cff;
+      --primary-2: #7aa8ff;
+      --mint: #45d6c3;
+      --shadow-light: rgba(255, 255, 255, 0.95);
+      --shadow-dark: rgba(181, 194, 212, 0.45);
+      --shadow-card: 14px 14px 28px rgba(194, 203, 216, 0.55),
+                     -14px -14px 28px rgba(255, 255, 255, 0.95);
+      --shadow-pressed: inset 6px 6px 12px rgba(196, 205, 217, 0.75),
+                        inset -6px -6px 12px rgba(255, 255, 255, 0.98);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+      --max-width: 1280px;
+      --header-h: 88px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(122, 168, 255, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(69, 214, 195, 0.10), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, #f3f6fb 40%, #eef3f9 100%);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    img,
+    video {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .section {
+      padding: 110px 0;
+    }
+
+    .section-head {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--mint), var(--primary));
+      box-shadow: 0 0 14px rgba(91, 140, 255, 0.45);
+    }
+
+    h1, h2, h3, p {
+      margin: 0;
+    }
+
+    h2.section-title {
+      font-size: clamp(30px, 4vw, 52px);
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    p.section-desc {
+      max-width: 760px;
+      margin: 0 auto;
+      font-size: 17px;
+      line-height: 1.8;
+      color: var(--text-soft);
+    }
+
+    /* Header */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(18px);
+      background: rgba(247, 250, 255, 0.72);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+    }
+
+    .header-inner {
+      height: var(--header-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .logo-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #fafdff, #e8eef7);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logo-text strong {
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .logo-text span {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      border-radius: 999px;
+      background: rgba(244, 247, 251, 0.76);
+      box-shadow: var(--shadow-card);
+    }
+
+    .nav a {
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-soft);
+      transition: 0.25s ease;
+    }
+
+    .nav a:hover {
+      background: rgba(255, 255, 255, 0.7);
+      color: var(--text);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mobile-toggle {
+      display: none;
+      width: 50px;
+      height: 50px;
+      border: none;
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+      cursor: pointer;
+      position: relative;
+    }
+
+    .mobile-toggle span,
+    .mobile-toggle::before,
+    .mobile-toggle::after {
+      content: "";
+      position: absolute;
+      left: 14px;
+      width: 22px;
+      height: 2px;
+      border-radius: 999px;
+      background: var(--text);
+      transition: 0.25s ease;
+    }
+
+    .mobile-toggle span {
+      top: 24px;
+    }
+
+    .mobile-toggle::before {
+      top: 17px;
+    }
+
+    .mobile-toggle::after {
+      top: 31px;
+    }
+
+    .mobile-toggle.active span {
+      opacity: 0;
+    }
+
+    .mobile-toggle.active::before {
+      top: 24px;
+      transform: rotate(45deg);
+    }
+
+    .mobile-toggle.active::after {
+      top: 24px;
+      transform: rotate(-45deg);
+    }
+
+    /* Buttons */
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 15px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 28px rgba(91, 140, 255, 0.26);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: var(--shadow-pressed);
+    }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      padding: 48px 0 80px;
+      overflow: hidden;
+    }
+
+    .hero-shell {
+      display: grid;
+      grid-template-columns: 1.08fr 0.92fr;
+      gap: 34px;
+      align-items: stretch;
+    }
+
+    .hero-left,
+    .hero-right {
+      min-width: 0;
+    }
+
+    .neo-card {
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .hero-copy {
+      padding: 56px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      min-height: 620px;
+    }
+
+    .hero-copy::after {
+      content: "";
+      position: absolute;
+      right: -100px;
+      top: -70px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(91, 140, 255, 0.13), transparent 65%);
+      pointer-events: none;
+    }
+
+    .hero-badge {
+      width: fit-content;
+      padding: 12px 18px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.58);
+      box-shadow: var(--shadow-card);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 26px;
+    }
+
+    .hero-title {
+      font-size: clamp(38px, 5vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.05em;
+      max-width: 10.5ch;
+      margin-bottom: 22px;
+    }
+
+    .hero-title strong {
+      background: linear-gradient(135deg, var(--primary), #3bd5c2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .hero-desc {
+      max-width: 610px;
+      font-size: 18px;
+      line-height: 1.85;
+      color: var(--text-soft);
+      margin-bottom: 34px;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 38px;
+    }
+
+    .hero-meta {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin-top: auto;
+    }
+
+    .meta-item {
+      padding: 22px 18px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.54);
+      box-shadow: var(--shadow-card);
+      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .meta-label {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-bottom: 10px;
+    }
+
+    .meta-value {
+      font-size: clamp(22px, 3vw, 34px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .meta-sub {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .hero-visual {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      min-height: 620px;
+    }
+
+    .video-frame {
+      position: relative;
+      flex: 1;
+      min-height: 420px;
+      border-radius: 28px;
+      overflow: hidden;
+      background: linear-gradient(145deg, #eef3fa, #dde6f1);
+      box-shadow: var(--shadow-card);
+    }
+
+    .video-frame video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .video-overlay-chip {
+      position: absolute;
+      z-index: 2;
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(248, 251, 255, 0.7);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .chip-top-left {
+      left: 18px;
+      top: 18px;
+    }
+
+    .chip-top-right {
+      right: 18px;
+      top: 18px;
+    }
+
+    .video-status {
+      position: absolute;
+      left: 18px;
+      bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 18px;
+      border-radius: 18px;
+      background: rgba(248, 251, 255, 0.68);
+      backdrop-filter: blur(12px);
+      box-shadow: var(--shadow-card);
+      z-index: 2;
+    }
+
+    .pulse {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #37d4c2;
+      box-shadow: 0 0 0 0 rgba(55, 212, 194, 0.6);
+      animation: pulse 1.8s infinite;
+      flex: 0 0 auto;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(55, 212, 194, 0.6);
+      }
+      70% {
+        box-shadow: 0 0 0 14px rgba(55, 212, 194, 0);
+      }
+      100% {
+        box-shadow: 0 0 0 0 rgba(55, 212, 194, 0);
+      }
+    }
+
+    .insight-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .insight-card {
+      padding: 20px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.55);
+      box-shadow: var(--shadow-card);
+      min-height: 120px;
+    }
+
+    .insight-card h3 {
+      font-size: 15px;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .insight-card p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-soft);
+    }
+
+    /* Trust line */
+    .trust-row {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .trust-item {
+      min-height: 110px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #f9fcff, #eef3f9);
+      box-shadow: var(--shadow-card);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .trust-item strong {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .trust-item span {
+      color: var(--text-soft);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+
+    /* Feature cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .feature-card {
+      padding: 30px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .feature-icon {
+      width: 66px;
+      height: 66px;
+      border-radius: 22px;
+      background: linear-gradient(145deg, #fafdff, #e8eef7);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 22px;
+      font-size: 18px;
+    }
+
+    .feature-card h3 {
+      font-size: 22px;
+      margin-bottom: 14px;
+      letter-spacing: -0.03em;
+    }
+
+    .feature-card p {
+      color: var(--text-soft);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    /* Platform section */
+    .platform-wrap {
+      display: grid;
+      grid-template-columns: 0.95fr 1.05fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .platform-info,
+    .platform-screen {
+      padding: 34px;
+      border-radius: 30px;
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+    }
+
+    .platform-info h3 {
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 16px;
+    }
+
+    .platform-info p {
+      font-size: 16px;
+      line-height: 1.9;
+      color: var(--text-soft);
+      margin-bottom: 24px;
+    }
+
+    .platform-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .platform-list-item {
+      padding: 18px 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.52);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .platform-list-item .num {
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      flex: 0 0 auto;
+      margin-top: 2px;
+    }
+
+    .platform-list-item strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 15px;
+    }
+
+    .platform-list-item span {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .dashboard {
+      height: 100%;
+      min-height: 520px;
+      border-radius: 26px;
+      background: linear-gradient(145deg, #edf3fa, #fafdff);
+      box-shadow: var(--shadow-pressed);
+      padding: 24px;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: 18px;
+    }
+
+    .dashboard-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .dashboard-title strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 6px;
+    }
+
+    .dashboard-title span {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .dot-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #dbe5f1;
+      box-shadow: 2px 2px 6px rgba(194, 203, 216, 0.7),
+                  -2px -2px 6px rgba(255, 255, 255, 0.95);
+    }
+
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+    }
+
+    .dash-card {
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: var(--shadow-card);
+      padding: 20px;
+    }
+
+    .dash-card h4 {
+      font-size: 15px;
+      margin-bottom: 14px;
+    }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      gap: 12px;
+      height: 180px;
+    }
+
+    .bar {
+      flex: 1;
+      border-radius: 18px 18px 10px 10px;
+      background: linear-gradient(180deg, rgba(91, 140, 255, 0.95), rgba(69, 214, 195, 0.92));
+      box-shadow: 0 12px 24px rgba(91, 140, 255, 0.16);
+    }
+
+    .bar:nth-child(1) { height: 42%; }
+    .bar:nth-child(2) { height: 68%; }
+    .bar:nth-child(3) { height: 56%; }
+    .bar:nth-child(4) { height: 84%; }
+    .bar:nth-child(5) { height: 72%; }
+    .bar:nth-child(6) { height: 95%; }
+
+    .mini-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .mini-row {
+      padding: 14px 16px;
+      border-radius: 18px;
+      background: rgba(245, 248, 252, 0.92);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 14px;
+    }
+
+    .mini-row strong {
+      font-size: 14px;
+    }
+
+    .mini-row span {
+      color: var(--text-soft);
+    }
+
+    .dashboard-bottom {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .small-metric {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.62);
+      box-shadow: var(--shadow-card);
+    }
+
+    .small-metric .label {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    .small-metric .value {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    /* CTA */
+    .cta-box {
+      padding: 48px;
+      border-radius: 34px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(240,246,255,0.95));
+      box-shadow: var(--shadow-card);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 24px;
+      align-items: center;
+    }
+
+    .cta-box h3 {
+      font-size: clamp(28px, 3.2vw, 46px);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .cta-box p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: var(--text-soft);
+      max-width: 760px;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* Footer */
+    .site-footer {
+      padding: 34px 0 48px;
+    }
+
+    .footer-box {
+      padding: 28px 30px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .footer-box p {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-links a {
+      padding: 12px 16px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.58);
+      box-shadow: var(--shadow-card);
+      font-size: 14px;
+      color: var(--text-soft);
+    }
+
+    /* Mobile nav panel */
+    .mobile-panel {
+      display: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 1180px) {
+      .hero-shell,
+      .platform-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy,
+      .hero-visual {
+        min-height: auto;
+      }
+
+      .trust-row,
+      .feature-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 960px) {
       :root {
-        --primary: #0056ff;
-        --gray-100: #f4f6fa;
-        --gray-500: #777;
+        --header-h: 78px;
       }
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: "Noto Sans KR", sans-serif;
-      }
-      body {
-        background: #ffffff;
-        color: #000;
-        line-height: 1.65;
-      }
-      a {
-        color: inherit;
-        text-decoration: none;
-      }
-      /* ─── 헤더 ─────────────────────────────────────────────── */
-      /* ─── 헤더 & 네비게이션 ─── */
-      header {
-        position: relative;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 72px;
-        padding: 0 16px;
-      }
-      .logo {
-        font-size: 24px;
-        font-weight: bold;
-        color: #0F9ED5;
-        line-height: 74px;
-        font-family: 'Pretendard', sans-serif;
-      }
-      /* 햄버거 */
-      .menu-toggle {
+
+      .nav {
         display: none;
-        position: relative;
-        top: 16px;
-        width: 40px; height: 40px;
-        background: none; border: none;
-        cursor: pointer;
-        align-self: center;
-      }
-      .menu-toggle span {
-        position: absolute;
-        left: 50%;
-        width: 24px; height: 2px;
-        background: #222;
-        transform-origin: center center;
-        transition: transform 0.3s ease, opacity 0.3s ease;
-      }
-      .menu-toggle span:nth-child(1) { transform: translate(-50%,-8px); }
-      .menu-toggle span:nth-child(2) { transform: translate(-50%, 0); }
-      .menu-toggle span:nth-child(3) { transform: translate(-50%, 8px); }
-      .menu-toggle.open span:nth-child(1) { transform: translate(-50%,0) rotate(45deg); }
-      .menu-toggle.open span:nth-child(2) { opacity: 0; }
-      .menu-toggle.open span:nth-child(3) { transform: translate(-50%,0) rotate(-45deg); }
-
-      /* 기본 네비 */
-      nav {
-        display: flex;
-      }
-      nav a {
-        margin-left: 16px;
-        text-decoration: none;
-        color: #0F9ED5;
-        font-weight: 500;
-        padding-bottom: 4px;
-        font-family: 'Pretendard', sans-serif;
-      }
-      nav a.active {
-        border-bottom: 2px solid #0F9ED5;
       }
 
-      /* 드롭다운 네비 (모바일) */
-      nav.dropdown {
-        display: flex;
-        position: absolute;
-        top: 64px; right: 16px;
-        background: #fff;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        flex-direction: column;
-        overflow: hidden;
-        z-index: 1000;
-      }
-      nav.dropdown a {
-        margin: 0; padding: 12px 16px;
-        border-bottom: 1px solid #eee;
-      }
-      nav.dropdown a:last-child {
-        border-bottom: none;
+      .mobile-toggle {
+        display: inline-block;
       }
 
-      /* 반응형 */
-      @media (max-width: 768px) {
-        .menu-toggle { display: flex; }
-        nav { display: none; }
-        nav.dropdown { display: flex; }
+      .header-actions .btn-secondary {
+        display: none;
       }
 
-      nav a.active {
-        color: var(--primary);
-      }
-
-      /* ─── 히어로 섹션 ──────────────────────────────────────── */
-      .hero {
-        position: relative;
-        max-width: 1200px;
-        margin: 40px auto;
-        overflow: hidden;
-        border-radius: 24px;
-      }
-      .hero img {
-        width: 100%;
-        display: block;
-      }
-      .dot-nav {
-        position: absolute;
-        bottom: 12px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        gap: 8px;
-      }
-      .dot-nav span {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #ccc;
-      }
-      .dot-nav span.active {
-        background: #fff;
-      }
-
-      /* ─── 메인 컨텐츠 ─────────────────────────────────────── */
-      section.container {
-        max-width: 1200px;
-        margin: 60px auto;
+      .mobile-panel {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-        gap: 40px;
-        align-items: start;
+        gap: 10px;
+        padding: 0 20px 20px;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.28s ease;
       }
-      .section-title {
-        font-size: 28px;
-        font-weight: 700;
-        margin-bottom: 12px;
+
+      .mobile-panel.open {
+        max-height: 320px;
       }
-      .section-desc {
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--gray-500);
-        margin-bottom: 24px;
-      }
-      .illustration {
+
+      .mobile-panel a,
+      .mobile-panel button {
         width: 100%;
-        max-width: 240px;
-        margin-bottom: 24px;
-      }
-
-      /* ─── 카드 ─────────────────────────────────────────────── */
-      .card {
-        background: var(--gray-100);
-        border: 1px solid #e5e7eb;
-        border-radius: 16px;
-        padding: 24px;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-      .card h3 {
-        font-size: 20px;
-        font-weight: 700;
-      }
-      .card p {
-        font-size: 14px;
-        color: var(--gray-500);
-      }
-      .card ul {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        font-size: 14px;
-      }
-      .card ul li {
-        position: relative;
-        padding-left: 16px;
-      }
-      .card ul li::before {
-        content: "•";
-        position: absolute;
-        left: 0;
-        color: var(--primary);
-      }
-      .btn {
-        margin-top: auto;
-        padding: 10px 24px;
+        padding: 16px 18px;
+        border-radius: 18px;
+        background: var(--surface);
+        box-shadow: var(--shadow-card);
+        text-align: left;
         border: none;
-        border-radius: 999em;
-        background: var(--primary);
-        color: #fff;
-        font-weight: 600;
-        font-size: 14px;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 4px;
-      }
-      .btn:hover {
-        opacity: 0.9;
+        font-size: 15px;
+        color: var(--text);
       }
 
-      /* ─── 푸터 ─────────────────────────────────────────────── */
-      footer {
-        padding: 40px 0;
-        background: #f8f8f8;
-        text-align: center;
-        font-size: 14px;
-        color: #656565;
+      .hero-copy {
+        padding: 36px;
       }
 
-      /* ─── 반응형 ───────────────────────────────────────────── */
-      @media (max-width: 640px) {
-        header {
-          padding: 12px 16px;
-        }
-        nav ul {
-          gap: 16px;
-          font-size: 14px;
-        }
-        .section-title {
-          font-size: 22px;
-        }
+      .hero-title {
+        max-width: 100%;
       }
-    </style>
-  </head>
-  <body>
-    <!-- ─── 헤더 영역 ─────────────────────────────────────── -->
-    <header>
-      <div class="logo">INWAVE</div>
 
-      <button class="menu-toggle" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
+      .hero-meta,
+      .insight-grid,
+      .dashboard-grid,
+      .dashboard-bottom,
+      .cta-box,
+      .footer-box {
+        grid-template-columns: 1fr;
+      }
 
-      <nav>
-        <a href="adwave1.html" class="active">애드웨이브 1.0</a>
-        <a href="waveshare.html">웨이브쉐어</a>
-        <a href="invest.html">투자라운지</a>
-        <a href="view_stores.html">2차어디가?</a>
+      .cta-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .section {
+        padding: 82px 0;
+      }
+
+      .container {
+        width: min(calc(100% - 28px), var(--max-width));
+      }
+
+      .hero {
+        padding: 28px 0 44px;
+      }
+
+      .hero-copy,
+      .platform-info,
+      .platform-screen,
+      .feature-card,
+      .cta-box,
+      .footer-box {
+        padding: 24px;
+      }
+
+      .hero-title {
+        font-size: clamp(34px, 9vw, 52px);
+        line-height: 1.08;
+      }
+
+      .hero-desc,
+      p.section-desc,
+      .platform-info p,
+      .cta-box p {
+        font-size: 15px;
+        line-height: 1.8;
+      }
+
+      .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-actions .btn,
+      .cta-actions .btn {
+        width: 100%;
+      }
+
+      .hero-meta,
+      .trust-row,
+      .feature-grid,
+      .insight-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .video-frame {
+        min-height: 260px;
+      }
+
+      .video-status {
+        right: 18px;
+        max-width: calc(100% - 36px);
+      }
+
+      .dashboard {
+        min-height: auto;
+      }
+
+      .bars {
+        height: 140px;
+      }
+
+      h2.section-title {
+        font-size: clamp(28px, 8vw, 40px);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .logo-text strong {
+        font-size: 18px;
+      }
+
+      .logo-text span {
+        font-size: 11px;
+      }
+
+      .hero-copy {
+        padding: 22px;
+      }
+
+      .hero-badge,
+      .eyebrow {
+        font-size: 12px;
+      }
+
+      .meta-item,
+      .trust-item,
+      .insight-card,
+      .feature-card,
+      .platform-list-item,
+      .small-metric {
+        border-radius: 20px;
+      }
+
+      .btn {
+        min-height: 52px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo-wrap" aria-label="Inwave 홈">
+        <div class="logo-mark">IW</div>
+        <div class="logo-text">
+          <strong>Inwave</strong>
+          <span>AI Advertising Intelligence</span>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="메인 메뉴">
+        <a href="#hero">Home</a>
+        <a href="#technology">Technology</a>
+        <a href="#platform">Platform</a>
+        <a href="#contact">Contact</a>
       </nav>
-    
-    </header>
 
-    <!-- ─── 히어로 배너 ──────────────────────────────────── -->
-    <section class="hero">
-      <!-- 임시 이미지, 실제 서비스용으로 교체하세요 -->
-      <img
-        src="/images/Hero_banner.JPG"
-        alt="Hero banner"
-      />
-      <div class="dot-nav"><span class="active"></span><span></span></div>
-    </section>
+      <div class="header-actions">
+        <a href="#platform" class="btn btn-secondary">플랫폼 보기</a>
+        <a href="#contact" class="btn btn-primary">문의하기</a>
+        <button class="mobile-toggle" id="mobileToggle" aria-label="모바일 메뉴 열기">
+          <span></span>
+        </button>
+      </div>
+    </div>
 
-    <!-- ─── 메인 컨텐츠 섹션 ─────────────────────────────── -->
-    <section class="container" id="adwave">
-      <!-- 왼쪽: 애드웨이브 1.0 -->
-      <div>
-        <h2 class="section-title">애드웨이브 1.0</h2>
-        <p class="section-desc">
-          오프라인 디지털광고에도 AI기반 데이터 분석을 통해 광고의 효율을
-          높여요.
-        </p>
-        <div class="card">
-          <h3>유효광고에 과금되는 시스템</h3>
-          <ul>
-            <li>아무도 보지 않는 광고에 쓰는 시간에도 광고비용이 수익이 됩니다.</li>
-            <li>1년 최대 500만원 이상의 수익을 받을 수 있어요.</li>
-          </ul>
+    <div class="mobile-panel" id="mobilePanel">
+      <a href="#hero">Home</a>
+      <a href="#technology">Technology</a>
+      <a href="#platform">Platform</a>
+      <a href="#contact">Contact</a>
+      <a href="#platform">플랫폼 보기</a>
+      <a href="#contact">문의하기</a>
+    </div>
+  </header>
 
-          <h3>애드웨이브1.0 데이터 공유</h3>
-          <p>
-            직접 개발한 시스템으로 우리 광고가 누구에게 보여지고 있는지
-            고객반응 데이터를 분석하여 전달드리고 효율이 높은 장소와 시간에
-            송출되게 해요.
-          </p>
+  <main>
+    <section class="hero" id="hero">
+      <div class="container">
+        <div class="hero-shell">
+          <div class="hero-left">
+            <div class="hero-copy neo-card">
+              <div class="hero-badge">Bright AI Experience for Real-World Advertising</div>
 
-          <h3>지역기반 광고 플랫폼</h3>
-          <p>
-            지역기반의 소상공인과 상생하여 지역의 특성을 고려한 광고
-            플랫폼이에요.
-          </p>
+              <h1 class="hero-title">
+                더 밝고 선명하게,<br />
+                <strong>현실 데이터를 이해하는 AI</strong>
+              </h1>
 
-          <button class="btn" onclick="location.href='adwave1.html'">더 알아보기</button>
+              <p class="hero-desc">
+                인웨이브는 오프라인 공간에서 발생하는 실제 시청 데이터를 기반으로
+                광고의 도달, 관심, 반응 흐름을 더 직관적이고 신뢰감 있게 보여주는
+                AI 분석 플랫폼입니다.
+              </p>
+
+              <div class="hero-actions">
+                <a href="#contact" class="btn btn-primary">데모 요청하기</a>
+                <a href="#technology" class="btn btn-secondary">기술 소개 보기</a>
+              </div>
+
+              <div class="hero-meta">
+                <div class="meta-item">
+                  <div class="meta-label">Real-time Analytics</div>
+                  <div class="meta-value">24/7</div>
+                  <div class="meta-sub">실시간 시청 데이터 흐름 분석</div>
+                </div>
+                <div class="meta-item">
+                  <div class="meta-label">Audience Insight</div>
+                  <div class="meta-value">AI</div>
+                  <div class="meta-sub">시선·반응·관심도 중심 분석</div>
+                </div>
+                <div class="meta-item">
+                  <div class="meta-label">Optimization</div>
+                  <div class="meta-value">Smart</div>
+                  <div class="meta-sub">광고 운영을 위한 인사이트 제공</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-right">
+            <div class="hero-visual neo-card">
+              <div class="video-frame">
+                <div class="video-overlay-chip chip-top-left">AI Vision Analytics</div>
+                <div class="video-overlay-chip chip-top-right">Live Monitoring</div>
+
+                <video autoplay muted loop playsinline>
+                  <source src="./images/main.mp4" type="video/mp4" />
+                </video>
+
+                <div class="video-status">
+                  <span class="pulse"></span>
+                  <div>
+                    <strong style="display:block; font-size:14px; margin-bottom:4px;">Viewer Data Collecting</strong>
+                    <span style="font-size:12px; color: var(--text-soft);">
+                      실제 매장 환경 기반 분석 장면
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="insight-grid">
+                <div class="insight-card">
+                  <h3>Attention Flow</h3>
+                  <p>광고 노출 이후 사용자의 시선 흐름과 반응 강도를 직관적으로 해석할 수 있는 구조입니다.</p>
+                </div>
+                <div class="insight-card">
+                  <h3>Audience AI</h3>
+                  <p>연령대와 성별 추정, 정면 주시 흐름 등 오프라인 광고에 필요한 데이터를 구성합니다.</p>
+                </div>
+                <div class="insight-card">
+                  <h3>Clean Interface</h3>
+                  <p>밝고 부드러운 AI 브랜드 이미지에 맞춘 화이트 중심의 신뢰감 있는 UI 스타일입니다.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="trust-row">
+          <div class="trust-item">
+            <strong>광고 시청 데이터</strong>
+            <span>오프라인 공간에서 보이는 반응을 데이터 형태로 구조화합니다.</span>
+          </div>
+          <div class="trust-item">
+            <strong>현장 중심 분석</strong>
+            <span>매장 유리면, 보행자 흐름, 실제 환경 기반 장면에 최적화된 구성입니다.</span>
+          </div>
+          <div class="trust-item">
+            <strong>부드러운 브랜드 인상</strong>
+            <span>화이트 기반의 밝은 AI 기업 이미지를 메인 디자인에 반영했습니다.</span>
+          </div>
+          <div class="trust-item">
+            <strong>반응형 웹 구조</strong>
+            <span>PC, 태블릿, 모바일에서 모두 자연스럽게 보이도록 설계했습니다.</span>
+          </div>
         </div>
       </div>
+    </section>
 
-      <!-- 오른쪽: 웨이브쉐어 -->
-      <div id="wshare">
-        <h2 class="section-title">웨이브쉐어</h2>
-        <p class="section-desc">
-          사용하지 않는 장소를 빌려주고 추가 광고수익을 낼 수 있어요.
-        </p>
-        <div class="card">
-          <h3>업계 최고 수익 보장</h3>
-          <ul>
-            <li>매장운영을 안하는 시간에도 광고비용이 수익이 됩니다.</li>
-            <li>1년 최대 500만원 이상의 수익을 받을 수 있어요.</li>
-          </ul>
-
-          <h3>광고료 선지급 옵션</h3>
-          <p>
-            매달 꾸준히 받는 것보다 목돈으로 받고 싶으시다면 1년치 광고료를
-            선지급 받을 수 있는 옵션이 있습니다.
+    <section class="section" id="technology">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Technology</div>
+          <h2 class="section-title">인웨이브의 핵심 기술을 밝고 직관적으로</h2>
+          <p class="section-desc">
+            어려운 기술을 복잡하게 나열하는 대신, 실제 공간에서 어떻게 데이터가 수집되고
+            어떻게 광고 운영에 연결되는지를 한눈에 이해할 수 있도록 구성했습니다.
           </p>
+        </div>
 
-          <h3>자연없는 광고료 수익 지급</h3>
-          <p>
-            이미 지불된 광고비용을 통해 광고료는 자연없이 지급돼요. 걱정하지
-            않으셔도 됩니다.
-          </p>
+        <div class="feature-grid">
+          <article class="feature-card">
+            <div class="feature-icon">01</div>
+            <h3>시선 기반 분석</h3>
+            <p>
+              광고를 스쳐 지나가는 장면이 아니라, 실제로 주목한 순간을 중심으로
+              반응을 해석할 수 있도록 설계된 AI 분석 흐름입니다.
+            </p>
+          </article>
 
-          <button class="btn" onclick="location.href='waveshare.html'">더 알아보기&nbsp;😊</button>
+          <article class="feature-card">
+            <div class="feature-icon">02</div>
+            <h3>관심도 데이터 구조화</h3>
+            <p>
+              연령대, 성별 추정, 정면 주시 흐름 등 다양한 요소를 분석 화면과
+              리포트 형태로 자연스럽게 연결할 수 있습니다.
+            </p>
+          </article>
+
+          <article class="feature-card">
+            <div class="feature-icon">03</div>
+            <h3>광고 최적화 연결</h3>
+            <p>
+              수집된 데이터를 기반으로 시간대별, 위치별, 화면별 광고 운영 전략을
+              더 정교하게 구성할 수 있는 기반을 제공합니다.
+            </p>
+          </article>
         </div>
       </div>
     </section>
 
-    <!-- ─── 푸터 ─────────────────────────────────────────── -->
-    <footer>© 2025 INWAVE. All rights reserved.</footer>
-    <script>
-      const btnOpen = document.querySelector('.menu-toggle');
-      const nav     = document.querySelector('nav');
-      btnOpen.addEventListener('click', () => {
-        btnOpen.classList.toggle('open');
-        nav.classList.toggle('dropdown');
+    <section class="section" id="platform">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Platform</div>
+          <h2 class="section-title">보기 쉬운 대시보드, 신뢰감 있는 AI 플랫폼</h2>
+          <p class="section-desc">
+            화이트 중심의 화면 구성과 부드러운 카드 스타일을 통해
+            데이터가 많아도 복잡하지 않게, 인사이트가 자연스럽게 보이도록 설계했습니다.
+          </p>
+        </div>
+
+        <div class="platform-wrap">
+          <div class="platform-info">
+            <h3>운영자가 바로 이해할 수 있는 데이터 흐름</h3>
+            <p>
+              메인페이지 이후 이어질 플랫폼 영역도 같은 톤앤매너를 유지할 수 있도록,
+              카드형 정보 구조와 데이터 중심 레이아웃을 기반으로 구성했습니다.
+            </p>
+
+            <div class="platform-list">
+              <div class="platform-list-item">
+                <div class="num">01</div>
+                <div>
+                  <strong>실시간 모니터링</strong>
+                  <span>매장별 분석 흐름과 광고 반응 데이터를 한 화면 안에서 빠르게 파악할 수 있습니다.</span>
+                </div>
+              </div>
+
+              <div class="platform-list-item">
+                <div class="num">02</div>
+                <div>
+                  <strong>시간대별 성과 비교</strong>
+                  <span>광고가 가장 잘 작동하는 시간 흐름을 직관적인 차트 형태로 확인할 수 있습니다.</span>
+                </div>
+              </div>
+
+              <div class="platform-list-item">
+                <div class="num">03</div>
+                <div>
+                  <strong>밝고 부드러운 UI 시스템</strong>
+                  <span>기술기업의 전문성과 친근한 브랜드 이미지를 함께 전달할 수 있는 화이트 AI 스타일입니다.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="platform-screen">
+            <div class="dashboard">
+              <div class="dashboard-top">
+                <div class="dashboard-title">
+                  <strong>Inwave Analytics Overview</strong>
+                  <span>Audience response and ad performance overview</span>
+                </div>
+                <div class="dot-group" aria-hidden="true">
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                  <span class="dot"></span>
+                </div>
+              </div>
+
+              <div class="dashboard-grid">
+                <div class="dash-card">
+                  <h4>Performance Trend</h4>
+                  <div class="bars">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                  </div>
+                </div>
+
+                <div class="dash-card">
+                  <h4>Audience Snapshot</h4>
+                  <div class="mini-list">
+                    <div class="mini-row">
+                      <strong>Primary Viewers</strong>
+                      <span>20s · 30s</span>
+                    </div>
+                    <div class="mini-row">
+                      <strong>Peak Time</strong>
+                      <span>18:00 - 21:00</span>
+                    </div>
+                    <div class="mini-row">
+                      <strong>Attention</strong>
+                      <span>High</span>
+                    </div>
+                    <div class="mini-row">
+                      <strong>Store Zone</strong>
+                      <span>Glass Front</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-bottom">
+                <div class="small-metric">
+                  <div class="label">Response Quality</div>
+                  <div class="value">98%</div>
+                </div>
+                <div class="small-metric">
+                  <div class="label">AI Tracking</div>
+                  <div class="value">Live</div>
+                </div>
+                <div class="small-metric">
+                  <div class="label">Reporting</div>
+                  <div class="value">Auto</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="contact">
+      <div class="container">
+        <div class="cta-box">
+          <div>
+            <h3>인웨이브의 밝은 AI 메인페이지, 여기서부터 확장하면 됩니다</h3>
+            <p>
+              지금 단계에서는 메인페이지의 시각적 방향과 반응형 구조를 먼저 완성했습니다.
+              다음 단계에서는 실제 회사 소개 문구, 적용 사례, 문의 연결, 플랫폼 상세 페이지를
+              같은 스타일로 이어서 확장하면 됩니다.
+            </p>
+          </div>
+
+          <div class="cta-actions">
+            <a href="#" class="btn btn-primary">도입 문의</a>
+            <a href="#hero" class="btn btn-secondary">처음으로</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-box">
+        <p>
+          © 2026 Inwave. White AI style responsive main page design.<br />
+          메인 영상 경로: <strong>./images/main.mp4</strong>
+        </p>
+
+        <div class="footer-links">
+          <a href="#hero">Home</a>
+          <a href="#technology">Technology</a>
+          <a href="#platform">Platform</a>
+          <a href="#contact">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const mobileToggle = document.getElementById("mobileToggle");
+    const mobilePanel = document.getElementById("mobilePanel");
+
+    mobileToggle.addEventListener("click", () => {
+      mobileToggle.classList.toggle("active");
+      mobilePanel.classList.toggle("open");
+    });
+
+    document.querySelectorAll(".mobile-panel a").forEach((link) => {
+      link.addEventListener("click", () => {
+        mobileToggle.classList.remove("active");
+        mobilePanel.classList.remove("open");
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
 </html>
