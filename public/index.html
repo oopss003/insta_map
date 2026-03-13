@@ -326,7 +326,80 @@
         linear-gradient(180deg, rgba(245, 248, 253, 0.20) 0%, rgba(245, 248, 253, 0.05) 35%, rgba(245, 248, 253, 0.35) 100%);
       pointer-events: none;
     }
-
+    /* Stats Section */
+    .stats-section {
+      position: relative;
+      padding: 88px 0 92px;
+      background:
+        linear-gradient(180deg, #111827 0%, #182232 100%);
+      overflow: hidden;
+    }
+    
+    .stats-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(91, 140, 255, 0.22), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(69, 214, 195, 0.14), transparent 24%);
+      pointer-events: none;
+    }
+    
+    .stats-section .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .stats-head {
+      margin-bottom: 42px;
+    }
+    
+    .stats-section .eyebrow {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
+      color: #8fc2ff;
+    }
+    
+    .stats-section .section-title {
+      color: #ffffff;
+    }
+    
+    .stats-section .section-desc {
+      color: rgba(255, 255, 255, 0.74);
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+    
+    .stats-card {
+      padding: 34px 26px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    .stats-value {
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+    
+    .stats-label {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.74);
+    }
     .video-slogan {
       position: absolute;
       z-index: 2;
@@ -1086,6 +1159,9 @@
       .feature-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 960px) {
@@ -1246,6 +1322,26 @@
       h2.section-title {
         font-size: clamp(28px, 8vw, 40px);
       }
+      .stats-section {
+        padding: 68px 0 72px;
+      }
+      
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .stats-card {
+        min-height: auto;
+        padding: 26px 22px;
+      }
+      
+      .stats-value {
+        font-size: clamp(30px, 10vw, 44px);
+      }
+      
+      .stats-label {
+        font-size: 14px;
+      }
     }
 
     @media (max-width: 520px) {
@@ -1344,7 +1440,40 @@
         <span>SCROLL</span>
       </div>
     </section>
-
+    <section class="section stats-section" id="stats">
+      <div class="container">
+        <div class="section-head stats-head">
+          <div class="eyebrow">Performance</div>
+          <h2 class="section-title">숫자로 먼저 신뢰를 보여줍니다</h2>
+          <p class="section-desc">
+            인웨이브는 실제 운영 환경에서 축적된 분석 시간과 데이터 흐름을 기반으로
+            오프라인 광고를 더 명확하게 이해할 수 있도록 돕습니다.
+          </p>
+        </div>
+    
+        <div class="stats-grid">
+          <div class="stats-card">
+            <div class="stats-value">3건</div>
+            <div class="stats-label">보유 AI Vision 특허</div>
+          </div>
+    
+          <div class="stats-card">
+            <div class="stats-value">24/7</div>
+            <div class="stats-label">실시간 광고 분석</div>
+          </div>
+    
+          <div class="stats-card">
+            <div class="stats-value">57,600+</div>
+            <div class="stats-label">누적 운영 분석 시간</div>
+          </div>
+    
+          <div class="stats-card">
+            <div class="stats-value">100만+</div>
+            <div class="stats-label">누적 분석 프레임</div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- 기존 디자인을 아래로 이동 -->
     <section class="hero" id="hero">
       <div class="container">
