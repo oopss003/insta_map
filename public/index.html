@@ -2117,10 +2117,13 @@
           }
 
           const age = Math.max(ageMin, Math.min(ageMax, baseAge + (Math.random() - 0.5) * 10));
-
-          const x = xFromHour(hour) + jitterX;
+          
+          const nextHour = hours[index + 1] ?? hour + 2;
+          const randomHour = hour + Math.random() * (nextHour - hour);
+          
+          const x = xFromHour(randomHour) + jitterX;
           const y = yFromAge(age);
-
+          
           const radius = 1.8 + Math.random() * 2.1;
 
           ctx.beginPath();
