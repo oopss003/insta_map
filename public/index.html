@@ -1013,13 +1013,6 @@
       line-height: 1.4;
     }
 
-    .platform-demo-side {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      justify-content: flex-start;
-    }
-
     .platform-side-head h3 {
       font-size: clamp(28px, 2.8vw, 40px);
       line-height: 1.2;
@@ -1035,8 +1028,10 @@
 
     .platform-step-list {
       display: grid;
+      grid-template-rows: repeat(4, 1fr);
       gap: 14px;
       margin-top: 8px;
+      height: 100%;
     }
 
     .platform-step {
