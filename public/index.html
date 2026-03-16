@@ -724,20 +724,28 @@
       gap: 24px;
       align-items: stretch;
     }
-
+    
     .platform-demo-board,
     .platform-demo-side {
       background: linear-gradient(145deg, #f8fbff, #edf2f8);
       border-radius: 30px;
       box-shadow: var(--shadow-card);
       padding: 28px;
+      height: 100%;
     }
-
+    
     .platform-demo-board {
-      min-height: 760px;
+      min-height: 720px;
       display: grid;
       grid-template-rows: auto auto 1fr;
       gap: 18px;
+    }
+    
+    .platform-demo-side {
+      min-height: 720px;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 16px;
     }
 
     .platform-topbar {
@@ -846,11 +854,12 @@
     }
 
     .demo-bars {
-      display: grid;
-      gap: 10px;
-      margin-top: 12px;
-      align-content: start;
-      min-height: 120px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 14px;
+      flex: 1;
+      justify-content: center;
     }
 
     .demo-bar-row {
