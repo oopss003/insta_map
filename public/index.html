@@ -1453,22 +1453,22 @@
     
         <div class="stats-grid">
           <div class="stats-card">
-            <div class="stats-value">3건</div>
+            <div class="stats-value" data-target="3" data-suffix="건">0건</div>
             <div class="stats-label">보유 AI Vision 특허</div>
           </div>
-    
+          
           <div class="stats-card">
             <div class="stats-value">24/7</div>
             <div class="stats-label">실시간 광고 분석</div>
           </div>
-    
+          
           <div class="stats-card">
-            <div class="stats-value">57,600+</div>
+            <div class="stats-value" data-target="57600" data-suffix="+">0+</div>
             <div class="stats-label">누적 운영 분석 시간</div>
           </div>
-    
+          
           <div class="stats-card">
-            <div class="stats-value">100만+</div>
+            <div class="stats-value" data-target="1000000" data-format="man" data-suffix="+">0만+</div>
             <div class="stats-label">누적 분석 프레임</div>
           </div>
         </div>
@@ -1798,18 +1798,70 @@
   <script>
     const mobileToggle = document.getElementById("mobileToggle");
     const mobilePanel = document.getElementById("mobilePanel");
-
+  
     mobileToggle.addEventListener("click", () => {
       mobileToggle.classList.toggle("active");
       mobilePanel.classList.toggle("open");
     });
-
+  
     document.querySelectorAll(".mobile-panel a").forEach((link) => {
       link.addEventListener("click", () => {
         mobileToggle.classList.remove("active");
         mobilePanel.classList.remove("open");
       });
     });
+  
+    function formatCountValue(value, formatType, suffix) {
+      if (formatType === "man") {
+        const manValue = Math.floor(value / 10000);
+        return manValue.toLocaleString() + "만" + suffix;
+      }
+  
+      return value.toLocaleString() + suffix;
+    }
+  
+    function animateCounter(counter) {
+      const target = Number(counter.dataset.target || 0);
+      const suffix = counter.dataset.suffix || "";
+      const formatType = counter.dataset.format || "";
+      const duration = 2000;
+      const startTime = performance.now();
+  
+      function update(currentTime) {
+        const progress = Math.min((currentTime - startTime) / duration, 1);
+        const currentValue = Math.floor(target * progress);
+  
+        counter.textContent = formatCountValue(currentValue, formatType, suffix);
+  
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          counter.textContent = formatCountValue(target, formatType, suffix);
+        }
+      }
+  
+      requestAnimationFrame(update);
+    }
+  
+    const statsSection = document.getElementById("stats");
+    const statCounters = document.querySelectorAll(".stats-value[data-target]");
+    let statsAnimated = false;
+  
+    const statsObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !statsAnimated) {
+          statCounters.forEach((counter) => animateCounter(counter));
+          statsAnimated = true;
+          statsObserver.unobserve(statsSection);
+        }
+      });
+    }, {
+      threshold: 0.35
+    });
+  
+    if (statsSection) {
+      statsObserver.observe(statsSection);
+    }
   </script>
 </body>
 </html>
