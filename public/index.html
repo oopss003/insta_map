@@ -8,11 +8,12 @@
   <!--
     기능 설명:
     - 인웨이브 메인페이지 디자인용 단독 HTML
-    - 상단에 전체화면 동영상 Hero 추가
+    - Hero / Overview / Technology / Platform / Contact 구조
+    - Platform 섹션은 홈페이지 연출용 데모 대시보드
     - 관련 파일:
       1) public/images/main.mp4
-      2) 필요 시 public/images/logo.png
-    - 현재 단계는 디자인 중심이며, 실제 링크/문구/통계값은 추후 변경 가능
+      2) public/images/main_test.mp4 (또는 웹호환 mp4)
+    - 카카오톡 채널 URL은 아래 KAKAO_CHANNEL_URL 상수에서 수정
   -->
 
   <style>
@@ -27,6 +28,7 @@
       --primary: #5b8cff;
       --primary-2: #7aa8ff;
       --mint: #45d6c3;
+      --danger: #ef4444;
       --shadow-light: rgba(255, 255, 255, 0.95);
       --shadow-dark: rgba(181, 194, 212, 0.45);
       --shadow-card: 14px 14px 28px rgba(194, 203, 216, 0.55),
@@ -41,13 +43,9 @@
       --header-h: 88px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
-    html {
-      scroll-behavior: smooth;
-    }
+    html { scroll-behavior: smooth; }
 
     body {
       margin: 0;
@@ -64,12 +62,9 @@
       text-decoration: none;
     }
 
-    button {
-      font: inherit;
-    }
+    button { font: inherit; }
 
-    img,
-    video {
+    img, video {
       display: block;
       max-width: 100%;
     }
@@ -112,7 +107,7 @@
       box-shadow: 0 0 14px rgba(91, 140, 255, 0.45);
     }
 
-    h1, h2, h3, p {
+    h1, h2, h3, h4, p {
       margin: 0;
     }
 
@@ -240,27 +235,15 @@
       transition: 0.25s ease;
     }
 
-    .mobile-toggle span {
-      top: 24px;
-    }
+    .mobile-toggle span { top: 24px; }
+    .mobile-toggle::before { top: 17px; }
+    .mobile-toggle::after { top: 31px; }
 
-    .mobile-toggle::before {
-      top: 17px;
-    }
-
-    .mobile-toggle::after {
-      top: 31px;
-    }
-
-    .mobile-toggle.active span {
-      opacity: 0;
-    }
-
+    .mobile-toggle.active span { opacity: 0; }
     .mobile-toggle.active::before {
       top: 24px;
       transform: rotate(45deg);
     }
-
     .mobile-toggle.active::after {
       top: 24px;
       transform: rotate(-45deg);
@@ -326,80 +309,7 @@
         linear-gradient(180deg, rgba(245, 248, 253, 0.20) 0%, rgba(245, 248, 253, 0.05) 35%, rgba(245, 248, 253, 0.35) 100%);
       pointer-events: none;
     }
-    /* Stats Section */
-    .stats-section {
-      position: relative;
-      padding: 88px 0 92px;
-      background:
-        linear-gradient(180deg, #111827 0%, #182232 100%);
-      overflow: hidden;
-    }
-    
-    .stats-section::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background:
-        radial-gradient(circle at top left, rgba(91, 140, 255, 0.22), transparent 28%),
-        radial-gradient(circle at bottom right, rgba(69, 214, 195, 0.14), transparent 24%);
-      pointer-events: none;
-    }
-    
-    .stats-section .container {
-      position: relative;
-      z-index: 1;
-    }
-    
-    .stats-head {
-      margin-bottom: 42px;
-    }
-    
-    .stats-section .eyebrow {
-      background: rgba(255, 255, 255, 0.08);
-      box-shadow: none;
-      color: #8fc2ff;
-    }
-    
-    .stats-section .section-title {
-      color: #ffffff;
-    }
-    
-    .stats-section .section-desc {
-      color: rgba(255, 255, 255, 0.74);
-    }
-    
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 18px;
-    }
-    
-    .stats-card {
-      padding: 34px 26px;
-      border-radius: 28px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      backdrop-filter: blur(10px);
-      min-height: 190px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    
-    .stats-value {
-      font-size: clamp(34px, 4vw, 56px);
-      line-height: 1;
-      font-weight: 800;
-      letter-spacing: -0.04em;
-      color: #ffffff;
-      margin-bottom: 18px;
-    }
-    
-    .stats-label {
-      font-size: 15px;
-      line-height: 1.7;
-      color: rgba(255, 255, 255, 0.74);
-    }
+
     .video-slogan {
       position: absolute;
       z-index: 2;
@@ -410,7 +320,7 @@
       color: #fff;
       animation: sloganFadeUp 1s ease forwards;
     }
-    
+
     .video-slogan-kicker {
       margin-bottom: 16px;
       font-size: 14px;
@@ -419,7 +329,7 @@
       color: rgba(255, 255, 255, 0.78);
       text-transform: uppercase;
     }
-    
+
     .video-slogan-title {
       font-size: clamp(38px, 5vw, 76px);
       line-height: 1.08;
@@ -428,14 +338,14 @@
       color: rgba(255, 255, 255, 0.96);
       text-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
     }
-    
+
     .video-slogan-title span {
       background: linear-gradient(135deg, #8fc2ff, #6ef0df);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    
+
     .video-slogan-desc {
       max-width: 620px;
       font-size: 18px;
@@ -443,7 +353,7 @@
       color: rgba(255, 255, 255, 0.92);
       text-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
     }
-    
+
     @keyframes sloganFadeUp {
       from {
         opacity: 0;
@@ -454,6 +364,7 @@
         transform: translateY(-50%) translateY(0);
       }
     }
+
     .scroll-indicator {
       position: absolute;
       left: 50%;
@@ -497,19 +408,97 @@
         opacity: 0;
         transform: translateX(-50%) translateY(0);
       }
-      30% {
-        opacity: 1;
-      }
+      30% { opacity: 1; }
       100% {
         opacity: 0;
         transform: translateX(-50%) translateY(12px);
       }
     }
 
-    /* Hero */
+    /* Overview stats */
+    .stats-section {
+      position: relative;
+      padding: 88px 0 92px;
+      background: linear-gradient(180deg, #111827 0%, #182232 100%);
+      overflow: hidden;
+    }
+
+    .stats-section::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(circle at top left, rgba(91, 140, 255, 0.22), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(69, 214, 195, 0.14), transparent 24%);
+      pointer-events: none;
+    }
+
+    .stats-section .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .stats-head {
+      margin-bottom: 42px;
+    }
+
+    .stats-section .eyebrow {
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: none;
+      color: #8fc2ff;
+    }
+
+    .stats-section .section-title {
+      color: #ffffff;
+    }
+
+    .stats-section .section-desc {
+      color: rgba(255, 255, 255, 0.74);
+      display: inline-block;
+      max-width: none;
+      white-space: nowrap;
+      font-size: clamp(11px, 1.2vw, 14px);
+      line-height: 1.7;
+      margin-top: 4px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .stats-card {
+      padding: 34px 26px;
+      border-radius: 28px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+      min-height: 190px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .stats-value {
+      font-size: clamp(34px, 4vw, 56px);
+      line-height: 1;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: #ffffff;
+      margin-bottom: 18px;
+    }
+
+    .stats-label {
+      font-size: 15px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.74);
+    }
+
+    /* Technology section */
     .hero {
       position: relative;
-      padding: 80px 0 80px;
+      padding: 86px 0 80px;
       overflow: hidden;
     }
 
@@ -525,7 +514,7 @@
       min-width: 0;
       display: flex;
     }
-    
+
     .hero-copy,
     .hero-visual {
       width: 100%;
@@ -578,7 +567,7 @@
       font-size: clamp(38px, 5vw, 72px);
       line-height: 1.05;
       letter-spacing: -0.05em;
-      max-width: 10.5ch;
+      max-width: 11ch;
       margin-bottom: 22px;
     }
 
@@ -631,7 +620,7 @@
     }
 
     .meta-value {
-      font-size: clamp(22px, 3vw, 34px);
+      font-size: clamp(22px, 2.4vw, 30px);
       font-weight: 800;
       letter-spacing: -0.03em;
     }
@@ -640,6 +629,7 @@
       margin-top: 8px;
       font-size: 13px;
       color: var(--text-soft);
+      line-height: 1.6;
     }
 
     .hero-visual {
@@ -664,29 +654,6 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    .video-overlay-chip {
-      position: absolute;
-      z-index: 2;
-      padding: 12px 16px;
-      border-radius: 999px;
-      background: rgba(248, 251, 255, 0.7);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow-card);
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text);
-    }
-
-    .chip-top-left {
-      left: 18px;
-      top: 18px;
-    }
-
-    .chip-top-right {
-      right: 18px;
-      top: 18px;
     }
 
     .video-status {
@@ -715,15 +682,9 @@
     }
 
     @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(55, 212, 194, 0.6);
-      }
-      70% {
-        box-shadow: 0 0 0 14px rgba(55, 212, 194, 0);
-      }
-      100% {
-        box-shadow: 0 0 0 0 rgba(55, 212, 194, 0);
-      }
+      0% { box-shadow: 0 0 0 0 rgba(55, 212, 194, 0.6); }
+      70% { box-shadow: 0 0 0 14px rgba(55, 212, 194, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(55, 212, 194, 0); }
     }
 
     .insight-grid {
@@ -752,170 +713,337 @@
       color: var(--text-soft);
     }
 
-    .trust-row {
-      margin-top: 34px;
+    /* Platform demo */
+    .platform-section {
+      background: linear-gradient(180deg, #f4f8fd 0%, #eef4fb 100%);
+    }
+
+    .platform-demo-shell {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    .platform-demo-board,
+    .platform-demo-side {
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      border-radius: 30px;
+      box-shadow: var(--shadow-card);
+      padding: 28px;
+    }
+
+    .platform-demo-board {
+      min-height: 760px;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
       gap: 18px;
     }
 
-    .trust-item {
-      min-height: 110px;
-      border-radius: 24px;
-      background: linear-gradient(145deg, #f9fcff, #eef3f9);
+    .platform-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .platform-topbar-title strong {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 6px;
+    }
+
+    .platform-topbar-title span {
+      font-size: 13px;
+      color: var(--text-soft);
+    }
+
+    .live-badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.66);
       box-shadow: var(--shadow-card);
-      padding: 24px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+      box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55);
+      animation: livePulse 1.7s infinite;
+    }
+
+    @keyframes livePulse {
+      0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.55); }
+      100% { box-shadow: 0 0 0 12px rgba(34, 197, 94, 0); }
+    }
+
+    .platform-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .platform-kpi {
+      padding: 18px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.62);
+      box-shadow: var(--shadow-card);
+      min-height: 106px;
       display: flex;
       flex-direction: column;
       justify-content: center;
     }
 
-    .trust-item strong {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-
-    .trust-item span {
+    .platform-kpi-label {
+      font-size: 12px;
       color: var(--text-soft);
-      font-size: 13px;
-      line-height: 1.7;
+      margin-bottom: 8px;
+      line-height: 1.5;
     }
 
-    .service-links {
-      margin-top: 34px;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-    }
-    
-    .service-link-card {
-      display: block;
-      padding: 26px;
-      border-radius: 24px;
-      background: linear-gradient(145deg, #f9fcff, #eef3f9);
-      box-shadow: var(--shadow-card);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-    }
-    
-    .service-link-card:hover {
-      transform: translateY(-4px);
-    }
-    
-    .service-link-num {
-      width: 44px;
-      height: 44px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      color: #fff;
-      font-size: 14px;
+    .platform-kpi-value {
+      font-size: clamp(22px, 2vw, 34px);
       font-weight: 800;
-      margin-bottom: 18px;
-    }
-    
-    .service-link-card h3 {
-      font-size: 20px;
-      margin-bottom: 12px;
-      letter-spacing: -0.02em;
-    }
-    
-    .service-link-card p {
-      color: var(--text-soft);
-      font-size: 14px;
-      line-height: 1.75;
-    }
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 24px;
+      letter-spacing: -0.04em;
     }
 
-    .feature-card {
-      padding: 30px;
-      border-radius: 28px;
-      background: linear-gradient(145deg, #f8fbff, #edf2f8);
-      box-shadow: var(--shadow-card);
-      transition: transform 0.25s ease;
-    }
-
-    .feature-card:hover {
-      transform: translateY(-4px);
-    }
-
-    .feature-icon {
-      width: 66px;
-      height: 66px;
-      border-radius: 22px;
-      background: linear-gradient(145deg, #fafdff, #e8eef7);
-      box-shadow: var(--shadow-card);
-      display: grid;
-      place-items: center;
-      font-weight: 800;
-      color: var(--primary);
-      margin-bottom: 22px;
-      font-size: 18px;
-    }
-
-    .feature-card h3 {
-      font-size: 22px;
-      margin-bottom: 14px;
-      letter-spacing: -0.03em;
-    }
-
-    .feature-card p {
-      color: var(--text-soft);
-      line-height: 1.8;
-      font-size: 15px;
-    }
-
-    .platform-wrap {
+    .platform-charts-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 28px;
-      align-items: stretch;
+      gap: 16px;
+      align-content: start;
     }
 
-    .platform-info,
-    .platform-screen {
-      padding: 34px;
-      border-radius: 30px;
-      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+    .chart-card {
+      padding: 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.66);
       box-shadow: var(--shadow-card);
+      min-height: 250px;
+      display: flex;
+      flex-direction: column;
     }
 
-    .platform-info h3 {
-      font-size: clamp(28px, 3vw, 40px);
+    .chart-card h3 {
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .chart-card p {
+      font-size: 12px;
+      color: var(--text-soft);
+      margin-bottom: 14px;
+      line-height: 1.6;
+    }
+
+    .demo-bars {
+      display: grid;
+      gap: 12px;
+      margin-top: auto;
+    }
+
+    .demo-bar-row {
+      display: grid;
+      grid-template-columns: 54px 1fr 52px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .demo-bar-label,
+    .demo-bar-value {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-soft);
+    }
+
+    .demo-bar-track {
+      height: 14px;
+      border-radius: 999px;
+      background: #e7edf6;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .demo-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--mint));
+      width: 0%;
+      transition: width 0.8s ease;
+    }
+
+    .heatmap-wrap {
+      margin-top: auto;
+    }
+
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+
+    .heat-cell {
+      aspect-ratio: 1 / 1;
+      border-radius: 8px;
+      background: #edf2f8;
+      transition: background 0.5s ease, transform 0.35s ease;
+    }
+
+    .heat-lv-0 { background: #edf2f8; }
+    .heat-lv-1 { background: #dbeafe; }
+    .heat-lv-2 { background: #93c5fd; }
+    .heat-lv-3 { background: #5b8cff; }
+    .heat-lv-4 { background: #1d4ed8; }
+
+    .heatmap-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+      color: #90a0b4;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .scatter-area {
+      position: relative;
+      flex: 1;
+      min-height: 150px;
+      border-left: 1px solid #dde6f1;
+      border-bottom: 1px solid #dde6f1;
+      margin: 10px 6px 18px 20px;
+      overflow: hidden;
+    }
+
+    .scatter-dot {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.78;
+      transition: left 0.8s ease, bottom 0.8s ease, width 0.8s ease, height 0.8s ease;
+    }
+
+    .scatter-dot.male {
+      background: rgba(91, 140, 255, 0.72);
+    }
+
+    .scatter-dot.female {
+      background: rgba(239, 68, 68, 0.62);
+    }
+
+    .scatter-x {
+      display: flex;
+      justify-content: space-between;
+      color: #90a0b4;
+      font-size: 10px;
+      font-weight: 700;
+      margin-left: 18px;
+    }
+
+    .scatter-y {
+      position: absolute;
+      left: -18px;
+      color: #90a0b4;
+      font-size: 10px;
+      font-weight: 700;
+    }
+
+    .dwell-bars {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      flex: 1;
+      min-height: 160px;
+      padding-top: 10px;
+    }
+
+    .dwell-group {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .dwell-value {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text-soft);
+    }
+
+    .dwell-bar {
+      width: 100%;
+      max-width: 58px;
+      border-radius: 12px 12px 6px 6px;
+      background: #cfd9e6;
+      height: 30%;
+      transition: height 0.8s ease;
+    }
+
+    .dwell-bar.highlight {
+      background: linear-gradient(180deg, var(--primary), var(--mint));
+    }
+
+    .dwell-label {
+      font-size: 11px;
+      color: var(--text-soft);
+      text-align: center;
+      line-height: 1.4;
+    }
+
+    .platform-demo-side {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      justify-content: flex-start;
+    }
+
+    .platform-side-head h3 {
+      font-size: clamp(28px, 2.8vw, 40px);
       line-height: 1.2;
       letter-spacing: -0.03em;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
 
-    .platform-info p {
-      font-size: 16px;
-      line-height: 1.9;
+    .platform-side-head p {
+      font-size: 15px;
+      line-height: 1.85;
       color: var(--text-soft);
-      margin-bottom: 24px;
     }
 
-    .platform-list {
+    .platform-step-list {
       display: grid;
       gap: 14px;
+      margin-top: 8px;
     }
 
-    .platform-list-item {
-      padding: 18px 20px;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.52);
+    .platform-step {
+      padding: 18px 18px 18px 16px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.58);
       box-shadow: var(--shadow-card);
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
+      border: 1px solid transparent;
+      transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
     }
 
-    .platform-list-item .num {
-      width: 34px;
-      height: 34px;
+    .platform-step.active {
+      border-color: rgba(91, 140, 255, 0.38);
+      background: linear-gradient(145deg, rgba(255,255,255,0.86), rgba(235, 244, 255, 0.92));
+      transform: translateY(-2px);
+    }
+
+    .platform-step-num {
+      width: 36px;
+      height: 36px;
       border-radius: 12px;
       display: grid;
       place-items: center;
@@ -923,155 +1051,22 @@
       color: #fff;
       font-size: 13px;
       font-weight: 800;
-      flex: 0 0 auto;
-      margin-top: 2px;
+      margin-bottom: 12px;
     }
 
-    .platform-list-item strong {
-      display: block;
-      margin-bottom: 6px;
-      font-size: 15px;
-    }
-
-    .platform-list-item span {
-      color: var(--text-soft);
-      font-size: 14px;
-      line-height: 1.75;
-    }
-
-    .dashboard {
-      height: 100%;
-      min-height: 520px;
-      border-radius: 26px;
-      background: linear-gradient(145deg, #edf3fa, #fafdff);
-      box-shadow: var(--shadow-pressed);
-      padding: 24px;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
-      gap: 18px;
-    }
-
-    .dashboard-top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-    }
-
-    .dashboard-title strong {
-      display: block;
-      font-size: 18px;
-      margin-bottom: 6px;
-    }
-
-    .dashboard-title span {
-      font-size: 13px;
-      color: var(--text-soft);
-    }
-
-    .dot-group {
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: #dbe5f1;
-      box-shadow: 2px 2px 6px rgba(194, 203, 216, 0.7),
-                  -2px -2px 6px rgba(255, 255, 255, 0.95);
-    }
-
-    .dashboard-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-    }
-
-    .dash-card {
-      border-radius: 22px;
-      background: rgba(255, 255, 255, 0.6);
-      box-shadow: var(--shadow-card);
-      padding: 20px;
-    }
-
-    .dash-card h4 {
-      font-size: 15px;
-      margin-bottom: 14px;
-    }
-
-    .bars {
-      display: flex;
-      align-items: end;
-      gap: 12px;
-      height: 180px;
-    }
-
-    .bar {
-      flex: 1;
-      border-radius: 18px 18px 10px 10px;
-      background: linear-gradient(180deg, rgba(91, 140, 255, 0.95), rgba(69, 214, 195, 0.92));
-      box-shadow: 0 12px 24px rgba(91, 140, 255, 0.16);
-    }
-
-    .bar:nth-child(1) { height: 42%; }
-    .bar:nth-child(2) { height: 68%; }
-    .bar:nth-child(3) { height: 56%; }
-    .bar:nth-child(4) { height: 84%; }
-    .bar:nth-child(5) { height: 72%; }
-    .bar:nth-child(6) { height: 95%; }
-
-    .mini-list {
-      display: grid;
-      gap: 12px;
-    }
-
-    .mini-row {
-      padding: 14px 16px;
-      border-radius: 18px;
-      background: rgba(245, 248, 252, 0.92);
-      box-shadow: var(--shadow-card);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      font-size: 14px;
-    }
-
-    .mini-row strong {
-      font-size: 14px;
-    }
-
-    .mini-row span {
-      color: var(--text-soft);
-    }
-
-    .dashboard-bottom {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .small-metric {
-      padding: 18px;
-      border-radius: 18px;
-      background: rgba(255, 255, 255, 0.62);
-      box-shadow: var(--shadow-card);
-    }
-
-    .small-metric .label {
-      font-size: 12px;
-      color: var(--text-soft);
+    .platform-step h4 {
+      font-size: 16px;
       margin-bottom: 8px;
+      letter-spacing: -0.02em;
     }
 
-    .small-metric .value {
-      font-size: 26px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
+    .platform-step p {
+      font-size: 13px;
+      line-height: 1.75;
+      color: var(--text-soft);
     }
 
+    /* Contact */
     .cta-box {
       padding: 48px;
       border-radius: 34px;
@@ -1104,6 +1099,52 @@
       justify-content: flex-end;
     }
 
+    .service-links {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .service-link-card {
+      display: block;
+      padding: 26px;
+      border-radius: 24px;
+      background: linear-gradient(145deg, #f9fcff, #eef3f9);
+      box-shadow: var(--shadow-card);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    .service-link-card:hover {
+      transform: translateY(-4px);
+    }
+
+    .service-link-num {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 18px;
+    }
+
+    .service-link-card h3 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .service-link-card p {
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    /* Footer */
     .site-footer {
       padding: 34px 0 48px;
     }
@@ -1146,7 +1187,7 @@
 
     @media (max-width: 1180px) {
       .hero-shell,
-      .platform-wrap {
+      .platform-demo-shell {
         grid-template-columns: 1fr;
       }
 
@@ -1155,11 +1196,9 @@
         min-height: auto;
       }
 
-      .trust-row,
-      .feature-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-      .stats-grid {
+      .stats-grid,
+      .platform-kpi-grid,
+      .service-links {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
@@ -1177,15 +1216,11 @@
         display: inline-block;
       }
 
-      .header-actions .btn-secondary {
-        display: none;
-      }
-
       .mobile-panel {
         display: none;
         overflow: hidden;
       }
-      
+
       .mobile-panel.open {
         display: grid;
         gap: 10px;
@@ -1215,15 +1250,24 @@
 
       .hero-meta,
       .insight-grid,
-      .dashboard-grid,
-      .dashboard-bottom,
       .cta-box,
       .footer-box {
         grid-template-columns: 1fr;
       }
 
+      .platform-kpi-grid,
+      .platform-charts-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
       .cta-actions {
         justify-content: flex-start;
+      }
+
+      .stats-section .section-desc {
+        white-space: normal;
+        max-width: 620px;
+        display: block;
       }
     }
 
@@ -1241,32 +1285,28 @@
         min-height: 520px;
       }
 
-      .service-links {
-        grid-template-columns: 1fr;
-      }
-
       .video-slogan {
         left: 24px;
         right: 24px;
         max-width: none;
       }
-    
+
       .video-slogan-title {
         font-size: clamp(30px, 9vw, 48px);
       }
-    
+
       .video-slogan-desc {
         font-size: 15px;
         line-height: 1.7;
       }
+
       .hero {
         padding: 56px 0 44px;
       }
 
       .hero-copy,
-      .platform-info,
-      .platform-screen,
-      .feature-card,
+      .platform-demo-board,
+      .platform-demo-side,
       .cta-box,
       .footer-box {
         padding: 24px;
@@ -1279,8 +1319,8 @@
 
       .hero-desc,
       p.section-desc,
-      .platform-info p,
-      .cta-box p {
+      .cta-box p,
+      .platform-side-head p {
         font-size: 15px;
         line-height: 1.8;
       }
@@ -1296,9 +1336,11 @@
       }
 
       .hero-meta,
-      .trust-row,
-      .feature-grid,
-      .insight-grid {
+      .insight-grid,
+      .stats-grid,
+      .platform-kpi-grid,
+      .platform-charts-grid,
+      .service-links {
         grid-template-columns: 1fr;
       }
 
@@ -1311,36 +1353,29 @@
         max-width: calc(100% - 36px);
       }
 
-      .dashboard {
+      .platform-demo-board {
         min-height: auto;
       }
 
-      .bars {
-        height: 140px;
-      }
-
-      h2.section-title {
-        font-size: clamp(28px, 8vw, 40px);
-      }
       .stats-section {
         padding: 68px 0 72px;
       }
-      
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-      
+
       .stats-card {
         min-height: auto;
         padding: 26px 22px;
       }
-      
+
       .stats-value {
         font-size: clamp(30px, 10vw, 44px);
       }
-      
+
       .stats-label {
         font-size: 14px;
+      }
+
+      .footer-links {
+        justify-content: flex-start;
       }
     }
 
@@ -1363,11 +1398,11 @@
       }
 
       .meta-item,
-      .trust-item,
       .insight-card,
-      .feature-card,
-      .platform-list-item,
-      .small-metric {
+      .platform-kpi,
+      .chart-card,
+      .platform-step,
+      .service-link-card {
         border-radius: 20px;
       }
 
@@ -1390,15 +1425,14 @@
 
       <nav class="nav" aria-label="메인 메뉴">
         <a href="#top-video">Home</a>
-        <a href="#hero">Overview</a>
+        <a href="#overview">Overview</a>
         <a href="#technology">Technology</a>
         <a href="#platform">Platform</a>
         <a href="#contact">Contact</a>
       </nav>
 
       <div class="header-actions">
-        <a href="#platform" class="btn btn-secondary">플랫폼 보기</a>
-        <a href="#contact" class="btn btn-primary">문의하기</a>
+        <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="btn btn-primary">문의하기</a>
         <button class="mobile-toggle" id="mobileToggle" aria-label="모바일 메뉴 열기">
           <span></span>
         </button>
@@ -1407,23 +1441,22 @@
 
     <div class="mobile-panel" id="mobilePanel">
       <a href="#top-video">Home</a>
-      <a href="#hero">Overview</a>
+      <a href="#overview">Overview</a>
       <a href="#technology">Technology</a>
       <a href="#platform">Platform</a>
       <a href="#contact">Contact</a>
-      <a href="#platform">플랫폼 보기</a>
-      <a href="#contact">문의하기</a>
+      <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer">문의하기</a>
     </div>
   </header>
 
   <main>
-    <!-- 전체 화면 동영상 -->
+    <!-- Hero video -->
     <section class="fullscreen-video" id="top-video">
       <video autoplay muted loop playsinline>
         <source src="./images/main.mp4" type="video/mp4" />
       </video>
       <div class="fullscreen-overlay"></div>
-      
+
       <div class="video-slogan">
         <p class="video-slogan-kicker">AI Advertising Intelligence</p>
         <h1 class="video-slogan-title">
@@ -1440,33 +1473,34 @@
         <span>SCROLL</span>
       </div>
     </section>
-    <section class="section stats-section" id="stats">
+
+    <!-- Overview -->
+    <section class="section stats-section" id="overview">
       <div class="container">
         <div class="section-head stats-head">
-          <div class="eyebrow">Performance</div>
+          <div class="eyebrow">Overview</div>
           <h2 class="section-title">숫자로 먼저 신뢰를 보여줍니다</h2>
           <p class="section-desc">
-            인웨이브는 실제 운영 환경에서 축적된 분석 시간과 데이터 흐름을 기반으로
-            오프라인 광고를 더 명확하게 이해할 수 있도록 돕습니다.
+            인웨이브는 실제 운영 환경에서 축적된 분석 시간과 데이터를 기반으로 오프라인 광고를 더 명확하게 이해할 수 있도록 돕습니다.
           </p>
         </div>
-    
+
         <div class="stats-grid">
           <div class="stats-card">
             <div class="stats-value" data-target="3" data-suffix="건">0건</div>
             <div class="stats-label">보유 AI Vision 특허</div>
           </div>
-          
+
           <div class="stats-card">
             <div class="stats-value">24/7</div>
             <div class="stats-label">실시간 광고 분석</div>
           </div>
-          
+
           <div class="stats-card">
             <div class="stats-value" data-target="57600" data-suffix="+">0+</div>
             <div class="stats-label">누적 운영 분석 시간</div>
           </div>
-          
+
           <div class="stats-card">
             <div class="stats-value" data-target="1000000" data-format="man" data-suffix="+">0만+</div>
             <div class="stats-label">누적 분석 프레임</div>
@@ -1474,45 +1508,50 @@
         </div>
       </div>
     </section>
-    <!-- 기존 디자인을 아래로 이동 -->
-    <section class="hero" id="hero">
+
+    <!-- Technology -->
+    <section class="hero" id="technology">
       <div class="container">
+        <div class="section-head" style="margin-bottom:34px;">
+          <div class="eyebrow">Technology</div>
+        </div>
+
         <div class="hero-shell">
           <div class="hero-left">
             <div class="hero-copy neo-card">
               <div class="hero-badge">Bright AI Experience for Real-World Advertising</div>
 
-              <h1 class="hero-title">
-                더 밝고 선명하게,<br />
-                <strong>현실 데이터를 이해하는 AI</strong>
-              </h1>
+              <h2 class="hero-title">
+                오프라인 광고를<br />
+                <strong>실제 데이터로 이해하는 AI</strong>
+              </h2>
 
               <p class="hero-desc">
                 인웨이브는 오프라인 공간에서 발생하는 실제 시청 데이터를 기반으로
-                광고의 도달, 관심, 반응 흐름을 더 직관적이고 신뢰감 있게 보여주는
-                AI 분석 플랫폼입니다.
+                사람의 얼굴, 연령, 성별, 시선 집중도를 분석합니다.
+                광고를 누가 보고, 얼마나 보고, 어떤 반응을 보였는지
+                정확한 데이터로 수집하는 AI Vision 기술입니다.
               </p>
 
               <div class="hero-actions">
-                <a href="#contact" class="btn btn-primary">데모 요청하기</a>
-                <a href="#technology" class="btn btn-secondary">기술 소개 보기</a>
+                <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="btn btn-primary">문의하기</a>
               </div>
 
               <div class="hero-meta">
                 <div class="meta-item">
-                  <div class="meta-label">Real-time Analytics</div>
+                  <div class="meta-label">실시간 광고 시청 분석</div>
                   <div class="meta-value">24/7</div>
-                  <div class="meta-sub">실시간 시청 데이터 흐름 분석</div>
+                  <div class="meta-sub">광고를 누가 보고 있는지 실시간으로 분석합니다</div>
                 </div>
                 <div class="meta-item">
-                  <div class="meta-label">Audience Insight</div>
-                  <div class="meta-value">AI</div>
-                  <div class="meta-sub">시선·반응·관심도 중심 분석</div>
+                  <div class="meta-label">시청자 분석</div>
+                  <div class="meta-value">성별 · 연령</div>
+                  <div class="meta-sub">광고를 보는 사람의 성별과 나이를 분석합니다</div>
                 </div>
                 <div class="meta-item">
-                  <div class="meta-label">Optimization</div>
-                  <div class="meta-value">Smart</div>
-                  <div class="meta-sub">광고 운영을 위한 인사이트 제공</div>
+                  <div class="meta-label">광고 효과 분석</div>
+                  <div class="meta-value">데이터</div>
+                  <div class="meta-sub">광고 시청 데이터를 리포트 형태로 제공합니다</div>
                 </div>
               </div>
             </div>
@@ -1521,9 +1560,6 @@
           <div class="hero-right">
             <div class="hero-visual neo-card">
               <div class="video-frame">
-                <div class="video-overlay-chip chip-top-left">AI Vision Analytics</div>
-                <div class="video-overlay-chip chip-top-right">Live Monitoring</div>
-
                 <video autoplay muted loop playsinline>
                   <source src="./images/main_test.mp4" type="video/mp4" />
                 </video>
@@ -1541,213 +1577,146 @@
 
               <div class="insight-grid">
                 <div class="insight-card">
-                  <h3>Attention Flow</h3>
-                  <p>광고 노출 이후 사용자의 시선 흐름과 반응 강도를 직관적으로 해석할 수 있는 구조입니다.</p>
+                  <h3>Face Detection</h3>
+                  <p>영상 속 사람의 얼굴을 실시간으로 인식하여 분석 대상을 감지합니다.</p>
                 </div>
                 <div class="insight-card">
-                  <h3>Audience AI</h3>
-                  <p>연령대와 성별 추정, 정면 주시 흐름 등 오프라인 광고에 필요한 데이터를 구성합니다.</p>
+                  <h3>Age · Gender Estimation</h3>
+                  <p>얼굴 데이터를 기반으로 연령과 성별을 분석해 시청자 특성을 파악합니다.</p>
                 </div>
                 <div class="insight-card">
-                  <h3>Clean Interface</h3>
-                  <p>밝고 부드러운 AI 브랜드 이미지에 맞춘 화이트 중심의 신뢰감 있는 UI 스타일입니다.</p>
+                  <h3>Attention Score</h3>
+                  <p>광고 화면을 바라보는 시선 집중도를 계산하여 실제 반응을 수치화합니다.</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-        <div class="trust-row">
-          <div class="trust-item">
-            <strong>광고 시청 데이터</strong>
-            <span>오프라인 공간에서 보이는 반응을 데이터 형태로 구조화합니다.</span>
-          </div>
-          <div class="trust-item">
-            <strong>현장 중심 분석</strong>
-            <span>매장 유리면, 보행자 흐름, 실제 환경 기반 장면에 최적화된 구성입니다.</span>
-          </div>
-          <div class="trust-item">
-            <strong>부드러운 브랜드 인상</strong>
-            <span>화이트 기반의 밝은 AI 기업 이미지를 메인 디자인에 반영했습니다.</span>
-          </div>
-          <div class="trust-item">
-            <strong>반응형 웹 구조</strong>
-            <span>PC, 태블릿, 모바일에서 모두 자연스럽게 보이도록 설계했습니다.</span>
-          </div>
-        </div>
-        <div class="service-links">
-          <a href="/dachboard.html" class="service-link-card">
-            <div class="service-link-num">01</div>
-            <h3>Analytics Dashboard</h3>
-            <p>실시간 시청 데이터와 광고 성과를 확인할 수 있는 분석 대시보드입니다.</p>
-          </a>
-        
-          <a href="/adv_rfp.html" class="service-link-card">
-            <div class="service-link-num">02</div>
-            <h3>Partner Proposal</h3>
-            <p>에이전시 및 제휴사를 위한 인웨이브 파트너십 제안서입니다.</p>
-          </a>
-        
-          <a href="/adv_company.html" class="service-link-card">
-            <div class="service-link-num">03</div>
-            <h3>Campaign Proposal</h3>
-            <p>광고주 대상 투자 효과와 성과 중심의 광고 제안서입니다.</p>
-          </a>
-        </div>
       </div>
     </section>
 
-    <section class="section" id="technology">
-      <div class="container">
-        <div class="section-head">
-          <div class="eyebrow">Technology</div>
-          <h2 class="section-title">인웨이브의 핵심 기술을 밝고 직관적으로</h2>
-          <p class="section-desc">
-            어려운 기술을 복잡하게 나열하는 대신, 실제 공간에서 어떻게 데이터가 수집되고
-            어떻게 광고 운영에 연결되는지를 한눈에 이해할 수 있도록 구성했습니다.
-          </p>
-        </div>
-
-        <div class="feature-grid">
-          <article class="feature-card">
-            <div class="feature-icon">01</div>
-            <h3>시선 기반 분석</h3>
-            <p>
-              광고를 스쳐 지나가는 장면이 아니라, 실제로 주목한 순간을 중심으로
-              반응을 해석할 수 있도록 설계된 AI 분석 흐름입니다.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon">02</div>
-            <h3>관심도 데이터 구조화</h3>
-            <p>
-              연령대, 성별 추정, 정면 주시 흐름 등 다양한 요소를 분석 화면과
-              리포트 형태로 자연스럽게 연결할 수 있습니다.
-            </p>
-          </article>
-
-          <article class="feature-card">
-            <div class="feature-icon">03</div>
-            <h3>광고 최적화 연결</h3>
-            <p>
-              수집된 데이터를 기반으로 시간대별, 위치별, 화면별 광고 운영 전략을
-              더 정교하게 구성할 수 있는 기반을 제공합니다.
-            </p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="platform">
+    <!-- Platform -->
+    <section class="section platform-section" id="platform">
       <div class="container">
         <div class="section-head">
           <div class="eyebrow">Platform</div>
-          <h2 class="section-title">보기 쉬운 대시보드, 신뢰감 있는 AI 플랫폼</h2>
+          <h2 class="section-title">실시간 광고 데이터 플랫폼</h2>
           <p class="section-desc">
-            화이트 중심의 화면 구성과 부드러운 카드 스타일을 통해
-            데이터가 많아도 복잡하지 않게, 인사이트가 자연스럽게 보이도록 설계했습니다.
+            수집된 시청 데이터를 대시보드로 시각화하여 광고 반응과 시청 패턴을 한눈에 확인할 수 있습니다.
           </p>
         </div>
 
-        <div class="platform-wrap">
-          <div class="platform-info">
-            <h3>운영자가 바로 이해할 수 있는 데이터 흐름</h3>
-            <p>
-              메인페이지 이후 이어질 플랫폼 영역도 같은 톤앤매너를 유지할 수 있도록,
-              카드형 정보 구조와 데이터 중심 레이아웃을 기반으로 구성했습니다.
-            </p>
+        <div class="platform-demo-shell">
+          <div class="platform-demo-board">
+            <div class="platform-topbar">
+              <div class="platform-topbar-title">
+                <strong>Inwave Platform Dashboard</strong>
+                <span id="scenarioLabel">출근 시간대 시청 흐름 분석</span>
+              </div>
+              <div class="live-badge">
+                <span class="live-dot"></span>
+                Live Demo
+              </div>
+            </div>
 
-            <div class="platform-list">
-              <div class="platform-list-item">
-                <div class="num">01</div>
-                <div>
-                  <strong>실시간 모니터링</strong>
-                  <span>매장별 분석 흐름과 광고 반응 데이터를 한 화면 안에서 빠르게 파악할 수 있습니다.</span>
+            <div class="platform-kpi-grid">
+              <div class="platform-kpi">
+                <div class="platform-kpi-label">총 방문자 수</div>
+                <div class="platform-kpi-value" id="kpiVisitors">0</div>
+              </div>
+              <div class="platform-kpi">
+                <div class="platform-kpi-label">광고 시청자 수</div>
+                <div class="platform-kpi-value" id="kpiViewers">0</div>
+              </div>
+              <div class="platform-kpi">
+                <div class="platform-kpi-label">평균 체류시간</div>
+                <div class="platform-kpi-value" id="kpiDwell">0.0s</div>
+              </div>
+              <div class="platform-kpi">
+                <div class="platform-kpi-label">주목도 비율</div>
+                <div class="platform-kpi-value" id="kpiAttention">0%</div>
+              </div>
+            </div>
+
+            <div class="platform-charts-grid">
+              <div class="chart-card">
+                <h3>성별 · 연령 분포</h3>
+                <p>광고를 본 주요 시청자층을 성별과 연령 기준으로 분석합니다.</p>
+                <div class="demo-bars" id="demoBars"></div>
+              </div>
+
+              <div class="chart-card">
+                <h3>시간대 반응 분석</h3>
+                <p>요일과 시간대에 따라 반응이 높은 구간을 히트맵으로 보여줍니다.</p>
+                <div class="heatmap-wrap">
+                  <div class="heatmap-grid" id="heatmapGrid"></div>
+                  <div class="heatmap-labels">
+                    <span>06</span>
+                    <span>09</span>
+                    <span>12</span>
+                    <span>15</span>
+                    <span>18</span>
+                    <span>21</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="platform-list-item">
-                <div class="num">02</div>
-                <div>
-                  <strong>시간대별 성과 비교</strong>
-                  <span>광고가 가장 잘 작동하는 시간 흐름을 직관적인 차트 형태로 확인할 수 있습니다.</span>
+              <div class="chart-card">
+                <h3>시청자 패턴</h3>
+                <p>시간(X)과 연령(Y), 관심도 크기를 기반으로 시청 흐름을 보여줍니다.</p>
+                <div class="scatter-area" id="scatterArea">
+                  <span class="scatter-y" style="bottom:10%;">20</span>
+                  <span class="scatter-y" style="bottom:40%;">30</span>
+                  <span class="scatter-y" style="bottom:70%;">40+</span>
+                </div>
+                <div class="scatter-x">
+                  <span>08</span>
+                  <span>12</span>
+                  <span>16</span>
+                  <span>20</span>
                 </div>
               </div>
 
-              <div class="platform-list-item">
-                <div class="num">03</div>
-                <div>
-                  <strong>밝고 부드러운 UI 시스템</strong>
-                  <span>기술기업의 전문성과 친근한 브랜드 이미지를 함께 전달할 수 있는 화이트 AI 스타일입니다.</span>
-                </div>
+              <div class="chart-card">
+                <h3>체류시간 분석</h3>
+                <p>광고를 얼마나 오래 보고 집중했는지 구간별로 시각화합니다.</p>
+                <div class="dwell-bars" id="dwellBars"></div>
               </div>
             </div>
           </div>
 
-          <div class="platform-screen">
-            <div class="dashboard">
-              <div class="dashboard-top">
-                <div class="dashboard-title">
-                  <strong>Inwave Analytics Overview</strong>
-                  <span>Audience response and ad performance overview</span>
-                </div>
-                <div class="dot-group" aria-hidden="true">
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                  <span class="dot"></span>
-                </div>
+          <div class="platform-demo-side">
+            <div class="platform-side-head">
+              <h3>데이터를 이해하기 쉬운 흐름으로 보여줍니다</h3>
+              <p>
+                홈페이지에서는 실제 운영 대시보드 대신, 플랫폼이 어떤 데이터를 제공하는지
+                직관적으로 이해할 수 있도록 연출용 데모 화면으로 구성했습니다.
+              </p>
+            </div>
+
+            <div class="platform-step-list" id="platformStepList">
+              <div class="platform-step active">
+                <div class="platform-step-num">01</div>
+                <h4>실시간 시청 지표</h4>
+                <p>방문자 수, 광고 시청자 수, 평균 체류시간, 주목도 비율을 한눈에 확인합니다.</p>
               </div>
 
-              <div class="dashboard-grid">
-                <div class="dash-card">
-                  <h4>Performance Trend</h4>
-                  <div class="bars">
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                    <div class="bar"></div>
-                  </div>
-                </div>
-
-                <div class="dash-card">
-                  <h4>Audience Snapshot</h4>
-                  <div class="mini-list">
-                    <div class="mini-row">
-                      <strong>Primary Viewers</strong>
-                      <span>20s · 30s</span>
-                    </div>
-                    <div class="mini-row">
-                      <strong>Peak Time</strong>
-                      <span>18:00 - 21:00</span>
-                    </div>
-                    <div class="mini-row">
-                      <strong>Attention</strong>
-                      <span>High</span>
-                    </div>
-                    <div class="mini-row">
-                      <strong>Store Zone</strong>
-                      <span>Glass Front</span>
-                    </div>
-                  </div>
-                </div>
+              <div class="platform-step">
+                <div class="platform-step-num">02</div>
+                <h4>성별 · 연령 분석</h4>
+                <p>광고를 시청한 주요 고객층을 성별과 연령 기준으로 분석해 타겟 흐름을 파악합니다.</p>
               </div>
 
-              <div class="dashboard-bottom">
-                <div class="small-metric">
-                  <div class="label">Response Quality</div>
-                  <div class="value">98%</div>
-                </div>
-                <div class="small-metric">
-                  <div class="label">AI Tracking</div>
-                  <div class="value">Live</div>
-                </div>
-                <div class="small-metric">
-                  <div class="label">Reporting</div>
-                  <div class="value">Auto</div>
-                </div>
+              <div class="platform-step">
+                <div class="platform-step-num">03</div>
+                <h4>시간대 반응 패턴</h4>
+                <p>요일과 시간대별 반응이 높은 구간을 시각적으로 보여주어 운영 전략에 활용합니다.</p>
+              </div>
+
+              <div class="platform-step">
+                <div class="platform-step-num">04</div>
+                <h4>체류시간 · 관심도 해석</h4>
+                <p>광고를 얼마나 오래 보고 집중했는지를 수치화해 실제 반응 품질을 확인합니다.</p>
               </div>
             </div>
           </div>
@@ -1755,22 +1724,43 @@
       </div>
     </section>
 
+    <!-- Contact -->
     <section class="section" id="contact">
       <div class="container">
         <div class="cta-box">
           <div>
-            <h3>인웨이브의 밝은 AI 메인페이지, 여기서부터 확장하면 됩니다</h3>
+            <h3>AI 광고 데이터 플랫폼을 지금 경험해보세요</h3>
             <p>
-              지금 단계에서는 메인페이지의 시각적 방향과 반응형 구조를 먼저 완성했습니다.
-              다음 단계에서는 실제 회사 소개 문구, 적용 사례, 문의 연결, 플랫폼 상세 페이지를
-              같은 스타일로 이어서 확장하면 됩니다.
+              인웨이브는 오프라인 공간에서 발생하는 실제 시청 데이터를 기반으로
+              광고 효과를 분석합니다. 도입 상담, 제휴 문의, 광고 운영 제안까지
+              카카오톡 채널을 통해 바로 연결할 수 있습니다.
             </p>
           </div>
 
           <div class="cta-actions">
-            <a href="#" class="btn btn-primary">도입 문의</a>
+            <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="btn btn-primary">도입 문의</a>
             <a href="#top-video" class="btn btn-secondary">처음으로</a>
           </div>
+        </div>
+
+        <div class="service-links">
+          <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="service-link-card">
+            <div class="service-link-num">01</div>
+            <h3>Analytics Dashboard</h3>
+            <p>실시간 광고 시청 데이터를 대시보드 기준으로 상담받을 수 있습니다.</p>
+          </a>
+
+          <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="service-link-card">
+            <div class="service-link-num">02</div>
+            <h3>Partner Proposal</h3>
+            <p>광고 파트너 및 에이전시와의 데이터 기반 협업 문의를 진행할 수 있습니다.</p>
+          </a>
+
+          <a href="https://pf.kakao.com/_YOUR_CHANNEL_ID" target="_blank" rel="noopener noreferrer" class="service-link-card">
+            <div class="service-link-num">03</div>
+            <h3>Campaign Proposal</h3>
+            <p>분석 데이터를 기반으로 최적의 광고 캠페인 운영 방향을 상담할 수 있습니다.</p>
+          </a>
         </div>
       </div>
     </section>
@@ -1786,7 +1776,7 @@
 
         <div class="footer-links">
           <a href="#top-video">Home</a>
-          <a href="#hero">Overview</a>
+          <a href="#overview">Overview</a>
           <a href="#technology">Technology</a>
           <a href="#platform">Platform</a>
           <a href="#contact">Contact</a>
@@ -1796,72 +1786,337 @@
   </footer>
 
   <script>
+    const KAKAO_CHANNEL_URL = "https://pf.kakao.com/_YOUR_CHANNEL_ID";
+
+    // 모바일 메뉴
     const mobileToggle = document.getElementById("mobileToggle");
     const mobilePanel = document.getElementById("mobilePanel");
-  
+
     mobileToggle.addEventListener("click", () => {
       mobileToggle.classList.toggle("active");
       mobilePanel.classList.toggle("open");
     });
-  
+
     document.querySelectorAll(".mobile-panel a").forEach((link) => {
       link.addEventListener("click", () => {
         mobileToggle.classList.remove("active");
         mobilePanel.classList.remove("open");
       });
     });
-  
+
+    // 숫자 카운트
     function formatCountValue(value, formatType, suffix) {
       if (formatType === "man") {
         const manValue = Math.floor(value / 10000);
         return manValue.toLocaleString() + "만" + suffix;
       }
-  
       return value.toLocaleString() + suffix;
     }
-  
+
     function animateCounter(counter) {
       const target = Number(counter.dataset.target || 0);
       const suffix = counter.dataset.suffix || "";
       const formatType = counter.dataset.format || "";
       const duration = 2000;
       const startTime = performance.now();
-  
+
       function update(currentTime) {
         const progress = Math.min((currentTime - startTime) / duration, 1);
         const currentValue = Math.floor(target * progress);
-  
         counter.textContent = formatCountValue(currentValue, formatType, suffix);
-  
+
         if (progress < 1) {
           requestAnimationFrame(update);
         } else {
           counter.textContent = formatCountValue(target, formatType, suffix);
         }
       }
-  
+
       requestAnimationFrame(update);
     }
-  
-    const statsSection = document.getElementById("stats");
+
+    const overviewSection = document.getElementById("overview");
     const statCounters = document.querySelectorAll(".stats-value[data-target]");
     let statsAnimated = false;
-  
+
     const statsObserver = new IntersectionObserver((entries) => {
       entries.forEach((entry) => {
         if (entry.isIntersecting && !statsAnimated) {
           statCounters.forEach((counter) => animateCounter(counter));
           statsAnimated = true;
-          statsObserver.unobserve(statsSection);
+          statsObserver.unobserve(overviewSection);
         }
       });
-    }, {
-      threshold: 0.35
-    });
-  
-    if (statsSection) {
-      statsObserver.observe(statsSection);
+    }, { threshold: 0.35 });
+
+    if (overviewSection) {
+      statsObserver.observe(overviewSection);
     }
+
+    // Platform 데모 데이터
+    const platformScenarios = [
+      {
+        label: "출근 시간대 시청 흐름 분석",
+        kpis: {
+          visitors: 37203,
+          viewers: 1477,
+          dwell: "4.8s",
+          attention: "58%"
+        },
+        bars: [
+          { label: "20대", value: 82 },
+          { label: "30대", value: 96 },
+          { label: "40대", value: 61 },
+          { label: "50+", value: 34 }
+        ],
+        heatmap: [
+          1,2,2,3,4,3,
+          1,1,2,3,3,2,
+          0,1,2,2,3,2,
+          0,1,1,2,2,1,
+          0,1,2,3,4,3,
+          1,2,2,3,3,2
+        ],
+        dots: [
+          { x: 10, y: 18, size: 12, gender: "male" },
+          { x: 18, y: 28, size: 10, gender: "female" },
+          { x: 28, y: 35, size: 15, gender: "male" },
+          { x: 36, y: 48, size: 14, gender: "female" },
+          { x: 52, y: 55, size: 18, gender: "male" },
+          { x: 64, y: 38, size: 13, gender: "female" },
+          { x: 78, y: 64, size: 16, gender: "male" }
+        ],
+        dwell: [
+          { label: "Pass", value: 42, highlight: false },
+          { label: "Short", value: 68, highlight: false },
+          { label: "Engaged", value: 84, highlight: true },
+          { label: "Deep", value: 51, highlight: true }
+        ]
+      },
+      {
+        label: "점심 시간대 광고 반응 분석",
+        kpis: {
+          visitors: 45594,
+          viewers: 15721,
+          dwell: "6.1s",
+          attention: "63%"
+        },
+        bars: [
+          { label: "20대", value: 76 },
+          { label: "30대", value: 88 },
+          { label: "40대", value: 71 },
+          { label: "50+", value: 42 }
+        ],
+        heatmap: [
+          0,1,2,2,3,2,
+          1,2,3,4,4,3,
+          1,2,3,4,3,2,
+          1,1,2,3,2,1,
+          0,1,2,4,4,3,
+          1,2,2,3,2,1
+        ],
+        dots: [
+          { x: 8, y: 20, size: 10, gender: "female" },
+          { x: 20, y: 30, size: 13, gender: "male" },
+          { x: 30, y: 42, size: 17, gender: "female" },
+          { x: 44, y: 54, size: 14, gender: "male" },
+          { x: 60, y: 32, size: 12, gender: "female" },
+          { x: 73, y: 46, size: 15, gender: "male" },
+          { x: 84, y: 58, size: 19, gender: "female" }
+        ],
+        dwell: [
+          { label: "Pass", value: 26, highlight: false },
+          { label: "Short", value: 54, highlight: false },
+          { label: "Engaged", value: 91, highlight: true },
+          { label: "Deep", value: 67, highlight: true }
+        ]
+      },
+      {
+        label: "퇴근 시간대 고관심 시청 흐름",
+        kpis: {
+          visitors: 51248,
+          viewers: 18394,
+          dwell: "7.4s",
+          attention: "71%"
+        },
+        bars: [
+          { label: "20대", value: 66 },
+          { label: "30대", value: 94 },
+          { label: "40대", value: 77 },
+          { label: "50+", value: 46 }
+        ],
+        heatmap: [
+          1,1,2,3,4,4,
+          1,2,3,3,4,4,
+          0,1,2,3,4,3,
+          0,1,1,2,3,3,
+          1,2,3,4,4,4,
+          1,2,2,3,4,3
+        ],
+        dots: [
+          { x: 12, y: 24, size: 12, gender: "male" },
+          { x: 24, y: 36, size: 14, gender: "female" },
+          { x: 34, y: 44, size: 18, gender: "male" },
+          { x: 48, y: 58, size: 19, gender: "female" },
+          { x: 62, y: 40, size: 14, gender: "male" },
+          { x: 76, y: 50, size: 18, gender: "female" },
+          { x: 88, y: 66, size: 20, gender: "male" }
+        ],
+        dwell: [
+          { label: "Pass", value: 18, highlight: false },
+          { label: "Short", value: 40, highlight: false },
+          { label: "Engaged", value: 86, highlight: true },
+          { label: "Deep", value: 82, highlight: true }
+        ]
+      },
+      {
+        label: "주말 시간대 가족 단위 반응 분석",
+        kpis: {
+          visitors: 28974,
+          viewers: 9342,
+          dwell: "5.9s",
+          attention: "66%"
+        },
+        bars: [
+          { label: "20대", value: 58 },
+          { label: "30대", value: 74 },
+          { label: "40대", value: 82 },
+          { label: "50+", value: 49 }
+        ],
+        heatmap: [
+          0,1,1,2,3,2,
+          0,1,2,2,3,2,
+          1,2,3,3,4,3,
+          1,2,3,4,4,3,
+          1,1,2,3,3,2,
+          1,2,3,4,3,2
+        ],
+        dots: [
+          { x: 10, y: 22, size: 10, gender: "female" },
+          { x: 22, y: 34, size: 12, gender: "male" },
+          { x: 36, y: 48, size: 16, gender: "female" },
+          { x: 50, y: 60, size: 17, gender: "male" },
+          { x: 66, y: 52, size: 14, gender: "female" },
+          { x: 78, y: 42, size: 12, gender: "male" },
+          { x: 88, y: 62, size: 17, gender: "female" }
+        ],
+        dwell: [
+          { label: "Pass", value: 24, highlight: false },
+          { label: "Short", value: 48, highlight: false },
+          { label: "Engaged", value: 73, highlight: true },
+          { label: "Deep", value: 58, highlight: true }
+        ]
+      }
+    ];
+
+    const stepCards = document.querySelectorAll(".platform-step");
+    const scenarioLabel = document.getElementById("scenarioLabel");
+    const demoBars = document.getElementById("demoBars");
+    const heatmapGrid = document.getElementById("heatmapGrid");
+    const scatterArea = document.getElementById("scatterArea");
+    const dwellBars = document.getElementById("dwellBars");
+
+    function animateValue(el, target, suffix = "") {
+      const raw = el.textContent.replace(/[^\d.]/g, "");
+      const start = Number(raw) || 0;
+      const end = Number(String(target).replace(/[^\d.]/g, "")) || 0;
+      const duration = 700;
+      const startTime = performance.now();
+
+      function frame(now) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const value = start + (end - start) * progress;
+
+        if (String(target).includes(".")) {
+          el.textContent = value.toFixed(1) + suffix;
+        } else {
+          el.textContent = Math.round(value).toLocaleString() + suffix;
+        }
+
+        if (progress < 1) requestAnimationFrame(frame);
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    function renderScenario(index) {
+      const scenario = platformScenarios[index];
+      scenarioLabel.textContent = scenario.label;
+
+      animateValue(document.getElementById("kpiVisitors"), scenario.kpis.visitors, "");
+      animateValue(document.getElementById("kpiViewers"), scenario.kpis.viewers, "");
+      document.getElementById("kpiDwell").textContent = scenario.kpis.dwell;
+      document.getElementById("kpiAttention").textContent = scenario.kpis.attention;
+
+      // 막대 그래프
+      demoBars.innerHTML = "";
+      const maxBar = Math.max(...scenario.bars.map((b) => b.value));
+      scenario.bars.forEach((item) => {
+        const row = document.createElement("div");
+        row.className = "demo-bar-row";
+        row.innerHTML = `
+          <div class="demo-bar-label">${item.label}</div>
+          <div class="demo-bar-track">
+            <div class="demo-bar-fill" style="width:0%"></div>
+          </div>
+          <div class="demo-bar-value">${item.value}%</div>
+        `;
+        demoBars.appendChild(row);
+        requestAnimationFrame(() => {
+          row.querySelector(".demo-bar-fill").style.width = `${(item.value / maxBar) * 100}%`;
+        });
+      });
+
+      // 히트맵
+      heatmapGrid.innerHTML = "";
+      scenario.heatmap.forEach((level) => {
+        const cell = document.createElement("div");
+        cell.className = `heat-cell heat-lv-${level}`;
+        heatmapGrid.appendChild(cell);
+      });
+
+      // 산점도
+      scatterArea.querySelectorAll(".scatter-dot").forEach((dot) => dot.remove());
+      scenario.dots.forEach((dot) => {
+        const el = document.createElement("div");
+        el.className = `scatter-dot ${dot.gender}`;
+        el.style.left = `${dot.x}%`;
+        el.style.bottom = `${dot.y}%`;
+        el.style.width = `${dot.size}px`;
+        el.style.height = `${dot.size}px`;
+        scatterArea.appendChild(el);
+      });
+
+      // 체류시간
+      dwellBars.innerHTML = "";
+      const maxDwell = Math.max(...scenario.dwell.map((d) => d.value));
+      scenario.dwell.forEach((item) => {
+        const group = document.createElement("div");
+        group.className = "dwell-group";
+        group.innerHTML = `
+          <div class="dwell-value">${item.value}</div>
+          <div class="dwell-bar ${item.highlight ? "highlight" : ""}" style="height:12%"></div>
+          <div class="dwell-label">${item.label}</div>
+        `;
+        dwellBars.appendChild(group);
+        requestAnimationFrame(() => {
+          group.querySelector(".dwell-bar").style.height = `${(item.value / maxDwell) * 100}%`;
+        });
+      });
+
+      // 순차 설명 강조
+      stepCards.forEach((card, i) => {
+        card.classList.toggle("active", i === index);
+      });
+    }
+
+    let currentScenario = 0;
+    renderScenario(currentScenario);
+
+    setInterval(() => {
+      currentScenario = (currentScenario + 1) % platformScenarios.length;
+      renderScenario(currentScenario);
+    }, 3500);
   </script>
 </body>
 </html>
