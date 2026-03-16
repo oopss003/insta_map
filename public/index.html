@@ -964,7 +964,7 @@
 
     .dwell-bars {
       display: flex;
-      align-items: flex-end;
+      align-items: stretch;
       justify-content: space-between;
       gap: 10px;
       flex: 1;
@@ -974,6 +974,7 @@
 
     .dwell-group {
       flex: 1;
+      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -2192,7 +2193,8 @@
         `;
         dwellBars.appendChild(group);
         requestAnimationFrame(() => {
-          group.querySelector(".dwell-bar").style.height = `${(item.value / maxDwell) * 100}%`;
+          const maxBarHeight = 140;
+          group.querySelector(".dwell-bar").style.height = `${(item.value / maxDwell) * maxBarHeight}px`;
         });
       });
 
