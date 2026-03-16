@@ -928,16 +928,17 @@
     .scatter-dot {
       position: absolute;
       border-radius: 50%;
-      opacity: 0.78;
+      opacity: 0.72;
       transition: left 0.8s ease, bottom 0.8s ease, width 0.8s ease, height 0.8s ease;
+      filter: blur(0.2px);
     }
-
+    
     .scatter-dot.male {
-      background: rgba(91, 140, 255, 0.72);
+      background: rgba(91, 140, 255, 0.55);
     }
-
+    
     .scatter-dot.female {
-      background: rgba(239, 68, 68, 0.62);
+      background: rgba(239, 68, 68, 0.45);
     }
 
     .scatter-x {
@@ -1957,13 +1958,38 @@
           1,2,2,3,4,3
         ],
         dots: [
-          { x: 12, y: 24, size: 12, gender: "male" },
-          { x: 24, y: 36, size: 14, gender: "female" },
-          { x: 34, y: 44, size: 18, gender: "male" },
-          { x: 48, y: 58, size: 19, gender: "female" },
-          { x: 62, y: 40, size: 14, gender: "male" },
-          { x: 76, y: 50, size: 18, gender: "female" },
-          { x: 88, y: 66, size: 20, gender: "male" }
+          { x: 6, y: 18, size: 6, gender: "male" },
+          { x: 8, y: 22, size: 7, gender: "female" },
+          { x: 10, y: 24, size: 5, gender: "male" },
+          { x: 12, y: 20, size: 8, gender: "female" },
+          { x: 14, y: 28, size: 6, gender: "male" },
+          { x: 16, y: 26, size: 7, gender: "female" },
+          { x: 18, y: 32, size: 8, gender: "male" },
+          { x: 20, y: 30, size: 6, gender: "female" },
+          { x: 22, y: 34, size: 10, gender: "male" },
+          { x: 24, y: 36, size: 7, gender: "female" },
+          { x: 26, y: 40, size: 9, gender: "male" },
+          { x: 28, y: 38, size: 8, gender: "female" },
+          { x: 30, y: 42, size: 12, gender: "male" },
+          { x: 32, y: 44, size: 9, gender: "female" },
+          { x: 34, y: 46, size: 11, gender: "male" },
+          { x: 36, y: 48, size: 10, gender: "female" },
+          { x: 38, y: 50, size: 8, gender: "male" },
+          { x: 40, y: 52, size: 9, gender: "female" },
+          { x: 42, y: 55, size: 13, gender: "male" },
+          { x: 44, y: 58, size: 10, gender: "female" },
+          { x: 46, y: 54, size: 8, gender: "male" },
+          { x: 48, y: 60, size: 12, gender: "female" },
+          { x: 52, y: 62, size: 11, gender: "male" },
+          { x: 56, y: 50, size: 8, gender: "female" },
+          { x: 60, y: 46, size: 7, gender: "male" },
+          { x: 64, y: 42, size: 9, gender: "female" },
+          { x: 68, y: 48, size: 10, gender: "male" },
+          { x: 72, y: 56, size: 11, gender: "female" },
+          { x: 76, y: 60, size: 8, gender: "male" },
+          { x: 80, y: 64, size: 12, gender: "female" },
+          { x: 84, y: 68, size: 9, gender: "male" },
+          { x: 88, y: 62, size: 7, gender: "female" }
         ],
         dwell: [
           { label: "Pass", value: 18, highlight: false },
