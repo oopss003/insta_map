@@ -929,27 +929,18 @@
     .scatter-area {
       position: relative;
       flex: 1;
-      min-height: 185px;
+      min-height: 220px;
       border-left: 1px solid #dde6f1;
       border-bottom: 1px solid #dde6f1;
-      margin: 6px 4px 14px 14px;
+      margin: 8px 6px 14px 18px;
       overflow: hidden;
     }
 
-    .scatter-dot {
+    .scatter-area canvas {
       position: absolute;
-      border-radius: 50%;
-      opacity: 0.72;
-      transition: left 0.8s ease, bottom 0.8s ease, width 0.8s ease, height 0.8s ease;
-      filter: blur(0.2px);
-    }
-    
-    .scatter-dot.male {
-      background: rgba(91, 140, 255, 0.55);
-    }
-    
-    .scatter-dot.female {
-      background: rgba(239, 68, 68, 0.45);
+      inset: 0;
+      width: 100%;
+      height: 100%;
     }
 
     .scatter-x {
@@ -959,14 +950,16 @@
       font-size: 10px;
       font-weight: 700;
       margin-left: 18px;
+      margin-right: 4px;
     }
 
     .scatter-y {
       position: absolute;
-      left: -18px;
+      left: -22px;
       color: #90a0b4;
       font-size: 10px;
       font-weight: 700;
+      z-index: 2;
     }
 
     .dwell-bars {
@@ -1677,16 +1670,21 @@
 
               <div class="chart-card">
                 <h3>시청자 패턴</h3>
-                <p>시간(X)과 연령(Y), 관심도 크기를 기반으로 시청 흐름을 보여줍니다.</p>
-                <div class="scatter-area" id="scatterArea">
-                  <span class="scatter-y" style="bottom:10%;">20</span>
-                  <span class="scatter-y" style="bottom:40%;">30</span>
-                  <span class="scatter-y" style="bottom:70%;">40+</span>
+                <p>시간대별 시청자 분포를 밀집 산점도로 보여줍니다.</p>
+                <div class="scatter-area">
+                  <canvas id="audiencePatternCanvas"></canvas>
+                  <span class="scatter-y" style="bottom:8%;">10</span>
+                  <span class="scatter-y" style="bottom:32%;">30</span>
+                  <span class="scatter-y" style="bottom:56%;">50</span>
+                  <span class="scatter-y" style="bottom:80%;">70</span>
                 </div>
                 <div class="scatter-x">
                   <span>08</span>
+                  <span>10</span>
                   <span>12</span>
+                  <span>14</span>
                   <span>16</span>
+                  <span>18</span>
                   <span>20</span>
                 </div>
               </div>
@@ -1893,15 +1891,13 @@
           0,1,2,3,4,3,
           1,2,2,3,3,2
         ],
-        dots: [
-          { x: 10, y: 18, size: 12, gender: "male" },
-          { x: 18, y: 28, size: 10, gender: "female" },
-          { x: 28, y: 35, size: 15, gender: "male" },
-          { x: 36, y: 48, size: 14, gender: "female" },
-          { x: 52, y: 55, size: 18, gender: "male" },
-          { x: 64, y: 38, size: 13, gender: "female" },
-          { x: 78, y: 64, size: 16, gender: "male" }
-        ],
+        audiencePattern: {
+          hours: [8, 10, 12, 14, 16, 18, 20],
+          density: [70, 110, 160, 175, 150, 120, 80],
+          maleRatio: 0.35,
+          femaleRatio: 0.65,
+          ageRange: { min: 10, max: 75 }
+        },
         dwell: [
           { label: "Pass", value: 42, highlight: false },
           { label: "Short", value: 68, highlight: false },
@@ -1933,15 +1929,13 @@
           0,1,2,4,4,3,
           1,2,2,3,2,1
         ],
-        dots: [
-          { x: 8, y: 20, size: 10, gender: "female" },
-          { x: 20, y: 30, size: 13, gender: "male" },
-          { x: 30, y: 42, size: 17, gender: "female" },
-          { x: 44, y: 54, size: 14, gender: "male" },
-          { x: 60, y: 32, size: 12, gender: "female" },
-          { x: 73, y: 46, size: 15, gender: "male" },
-          { x: 84, y: 58, size: 19, gender: "female" }
-        ],
+        audiencePattern: {
+          hours: [8, 10, 12, 14, 16, 18, 20],
+          density: [45, 85, 170, 185, 160, 105, 60],
+          maleRatio: 0.42,
+          femaleRatio: 0.58,
+          ageRange: { min: 12, max: 72 }
+        },
         dwell: [
           { label: "Pass", value: 26, highlight: false },
           { label: "Short", value: 54, highlight: false },
@@ -1973,40 +1967,13 @@
           1,2,3,4,4,4,
           1,2,2,3,4,3
         ],
-        dots: [
-          { x: 6, y: 18, size: 6, gender: "male" },
-          { x: 8, y: 22, size: 7, gender: "female" },
-          { x: 10, y: 24, size: 5, gender: "male" },
-          { x: 12, y: 20, size: 8, gender: "female" },
-          { x: 14, y: 28, size: 6, gender: "male" },
-          { x: 16, y: 26, size: 7, gender: "female" },
-          { x: 18, y: 32, size: 8, gender: "male" },
-          { x: 20, y: 30, size: 6, gender: "female" },
-          { x: 22, y: 34, size: 10, gender: "male" },
-          { x: 24, y: 36, size: 7, gender: "female" },
-          { x: 26, y: 40, size: 9, gender: "male" },
-          { x: 28, y: 38, size: 8, gender: "female" },
-          { x: 30, y: 42, size: 12, gender: "male" },
-          { x: 32, y: 44, size: 9, gender: "female" },
-          { x: 34, y: 46, size: 11, gender: "male" },
-          { x: 36, y: 48, size: 10, gender: "female" },
-          { x: 38, y: 50, size: 8, gender: "male" },
-          { x: 40, y: 52, size: 9, gender: "female" },
-          { x: 42, y: 55, size: 13, gender: "male" },
-          { x: 44, y: 58, size: 10, gender: "female" },
-          { x: 46, y: 54, size: 8, gender: "male" },
-          { x: 48, y: 60, size: 12, gender: "female" },
-          { x: 52, y: 62, size: 11, gender: "male" },
-          { x: 56, y: 50, size: 8, gender: "female" },
-          { x: 60, y: 46, size: 7, gender: "male" },
-          { x: 64, y: 42, size: 9, gender: "female" },
-          { x: 68, y: 48, size: 10, gender: "male" },
-          { x: 72, y: 56, size: 11, gender: "female" },
-          { x: 76, y: 60, size: 8, gender: "male" },
-          { x: 80, y: 64, size: 12, gender: "female" },
-          { x: 84, y: 68, size: 9, gender: "male" },
-          { x: 88, y: 62, size: 7, gender: "female" }
-        ],
+        audiencePattern: {
+          hours: [8, 10, 12, 14, 16, 18, 20],
+          density: [30, 60, 95, 135, 175, 190, 130],
+          maleRatio: 0.48,
+          femaleRatio: 0.52,
+          ageRange: { min: 15, max: 70 }
+        },
         dwell: [
           { label: "Pass", value: 18, highlight: false },
           { label: "Short", value: 40, highlight: false },
@@ -2038,15 +2005,13 @@
           1,1,2,3,3,2,
           1,2,3,4,3,2
         ],
-        dots: [
-          { x: 10, y: 22, size: 10, gender: "female" },
-          { x: 22, y: 34, size: 12, gender: "male" },
-          { x: 36, y: 48, size: 16, gender: "female" },
-          { x: 50, y: 60, size: 17, gender: "male" },
-          { x: 66, y: 52, size: 14, gender: "female" },
-          { x: 78, y: 42, size: 12, gender: "male" },
-          { x: 88, y: 62, size: 17, gender: "female" }
-        ],
+        audiencePattern: {
+          hours: [8, 10, 12, 14, 16, 18, 20],
+          density: [40, 70, 120, 155, 145, 95, 55],
+          maleRatio: 0.40,
+          femaleRatio: 0.60,
+          ageRange: { min: 10, max: 76 }
+        },
         dwell: [
           { label: "Pass", value: 24, highlight: false },
           { label: "Short", value: 48, highlight: false },
@@ -2060,7 +2025,7 @@
     const scenarioLabel = document.getElementById("scenarioLabel");
     const demoBars = document.getElementById("demoBars");
     const heatmapGrid = document.getElementById("heatmapGrid");
-    const scatterArea = document.getElementById("scatterArea");
+    const audiencePatternCanvas = document.getElementById("audiencePatternCanvas");
     const dwellBars = document.getElementById("dwellBars");
 
     function animateValue(el, target, suffix = "") {
@@ -2084,6 +2049,92 @@
       }
 
       requestAnimationFrame(frame);
+    }
+
+    function drawAudiencePattern(canvas, pattern) {
+      const ctx = canvas.getContext("2d");
+      const parent = canvas.parentElement;
+      const dpr = window.devicePixelRatio || 1;
+
+      const width = parent.clientWidth;
+      const height = parent.clientHeight;
+
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      canvas.style.width = width + "px";
+      canvas.style.height = height + "px";
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, width, height);
+
+      const padding = {
+        top: 8,
+        right: 8,
+        bottom: 8,
+        left: 8
+      };
+
+      const plotWidth = width - padding.left - padding.right;
+      const plotHeight = height - padding.top - padding.bottom;
+
+      const hours = pattern.hours;
+      const densities = pattern.density;
+      const ageMin = pattern.ageRange.min;
+      const ageMax = pattern.ageRange.max;
+
+      const minHour = Math.min(...hours);
+      const maxHour = Math.max(...hours);
+
+      function xFromHour(hour) {
+        const ratio = (hour - minHour) / (maxHour - minHour);
+        return padding.left + ratio * plotWidth;
+      }
+
+      function yFromAge(age) {
+        const ratio = (age - ageMin) / (ageMax - ageMin);
+        return height - padding.bottom - ratio * plotHeight;
+      }
+
+      hours.forEach((hour, index) => {
+        const count = densities[index];
+
+        for (let i = 0; i < count; i++) {
+          const isMale = Math.random() < pattern.maleRatio;
+
+          const jitterX = (Math.random() - 0.5) * 34;
+
+          let baseAge;
+          const ageSeed = Math.random();
+
+          if (ageSeed < 0.18) {
+            baseAge = 20 + Math.random() * 8;
+          } else if (ageSeed < 0.58) {
+            baseAge = 28 + Math.random() * 10;
+          } else if (ageSeed < 0.88) {
+            baseAge = 38 + Math.random() * 12;
+          } else {
+            baseAge = 52 + Math.random() * 16;
+          }
+
+          const age = Math.max(ageMin, Math.min(ageMax, baseAge + (Math.random() - 0.5) * 10));
+
+          const x = xFromHour(hour) + jitterX;
+          const y = yFromAge(age);
+
+          const radius = 1.8 + Math.random() * 2.1;
+
+          ctx.beginPath();
+          ctx.arc(x, y, radius, 0, Math.PI * 2);
+
+          if (isMale) {
+            ctx.fillStyle = "rgba(91, 140, 255, 0.42)";
+          } else {
+            ctx.fillStyle = "rgba(239, 68, 68, 0.38)";
+          }
+
+          ctx.fill();
+        }
+      });
     }
 
     function renderScenario(index) {
@@ -2123,16 +2174,7 @@
       });
 
       // 산점도
-      scatterArea.querySelectorAll(".scatter-dot").forEach((dot) => dot.remove());
-      scenario.dots.forEach((dot) => {
-        const el = document.createElement("div");
-        el.className = `scatter-dot ${dot.gender}`;
-        el.style.left = `${dot.x}%`;
-        el.style.bottom = `${dot.y}%`;
-        el.style.width = `${dot.size}px`;
-        el.style.height = `${dot.size}px`;
-        scatterArea.appendChild(el);
-      });
+      drawAudiencePattern(audiencePatternCanvas, scenario.audiencePattern);
 
       // 체류시간
       dwellBars.innerHTML = "";
@@ -2164,6 +2206,10 @@
       currentScenario = (currentScenario + 1) % platformScenarios.length;
       renderScenario(currentScenario);
     }, 3500);
+
+    window.addEventListener("resize", () => {
+      renderScenario(currentScenario);
+    });
   </script>
 </body>
 </html>
