@@ -494,6 +494,412 @@
       line-height: 1.7;
       color: rgba(255, 255, 255, 0.74);
     }
+    /* Overview framework */
+    .overview-framework {
+      margin-top: 34px;
+      padding: 30px 26px 28px;
+      border-radius: 30px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .framework-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+      flex-wrap: wrap;
+    }
+
+    .framework-title-wrap h3 {
+      font-size: clamp(24px, 2.6vw, 34px);
+      color: #ffffff;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+
+    .framework-title-wrap p {
+      font-size: 14px;
+      line-height: 1.8;
+      color: rgba(255, 255, 255, 0.72);
+      max-width: 760px;
+    }
+
+    .framework-badge {
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #9ec8ff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .framework-flow {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 16px;
+      align-items: stretch;
+      position: relative;
+    }
+
+    .flow-step {
+      position: relative;
+      min-height: 245px;
+      padding: 22px 18px 20px;
+      border-radius: 24px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      overflow: hidden;
+      transition: transform 0.35s ease, border-color 0.35s ease, background 0.35s ease, box-shadow 0.35s ease;
+      opacity: 0.55;
+      transform: translateY(8px);
+    }
+
+    .flow-step.active {
+      opacity: 1;
+      transform: translateY(0);
+      border-color: rgba(143, 194, 255, 0.42);
+      background: linear-gradient(180deg, rgba(255,255,255,0.13), rgba(255,255,255,0.07));
+      box-shadow: 0 18px 30px rgba(0, 0, 0, 0.14);
+    }
+
+    .flow-step.final-step.active {
+      border-color: rgba(69, 214, 195, 0.48);
+      box-shadow: 0 20px 34px rgba(69, 214, 195, 0.10);
+    }
+
+    .flow-step-num {
+      width: 40px;
+      height: 40px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      font-size: 13px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .flow-step h4 {
+      font-size: 18px;
+      line-height: 1.35;
+      letter-spacing: -0.02em;
+      color: #ffffff;
+      margin-bottom: 10px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .flow-step p {
+      font-size: 13px;
+      line-height: 1.75;
+      color: rgba(255,255,255,0.72);
+      position: relative;
+      z-index: 2;
+    }
+
+    .flow-visual {
+      position: relative;
+      height: 70px;
+      margin-bottom: 16px;
+      z-index: 1;
+    }
+
+    /* 1단계 : 스캔/촬영 느낌 */
+    .visual-capture::before,
+    .visual-capture::after {
+      content: "";
+      position: absolute;
+      border-radius: 50%;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .visual-capture::before {
+      width: 58px;
+      height: 58px;
+      border: 2px solid rgba(143, 194, 255, 0.55);
+      box-shadow: 0 0 0 10px rgba(143, 194, 255, 0.06);
+    }
+
+    .visual-capture::after {
+      width: 12px;
+      height: 12px;
+      background: linear-gradient(135deg, #8fc2ff, #6ef0df);
+      box-shadow: 0 0 20px rgba(110, 240, 223, 0.45);
+    }
+
+    .visual-capture .scan-line {
+      position: absolute;
+      left: 18%;
+      right: 18%;
+      top: 50%;
+      height: 2px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, rgba(143,194,255,0.95), transparent);
+      box-shadow: 0 0 14px rgba(143,194,255,0.35);
+      animation: scanLineMove 2.4s ease-in-out infinite;
+    }
+
+    @keyframes scanLineMove {
+      0%, 100% { transform: translateY(-16px); opacity: 0.45; }
+      50% { transform: translateY(16px); opacity: 1; }
+    }
+
+    /* 2단계 : 분석 막대그래프 느낌 */
+    .visual-analyze {
+      display: flex;
+      align-items: flex-end;
+      gap: 8px;
+      padding: 0 8px;
+    }
+
+    .visual-analyze span {
+      flex: 1;
+      border-radius: 10px 10px 4px 4px;
+      background: linear-gradient(180deg, rgba(143,194,255,0.95), rgba(91,140,255,0.35));
+      box-shadow: 0 0 16px rgba(91, 140, 255, 0.15);
+      animation: analyzeBars 2.6s ease-in-out infinite;
+    }
+
+    .visual-analyze span:nth-child(1) { height: 32px; animation-delay: 0s; }
+    .visual-analyze span:nth-child(2) { height: 52px; animation-delay: 0.15s; }
+    .visual-analyze span:nth-child(3) { height: 42px; animation-delay: 0.3s; }
+    .visual-analyze span:nth-child(4) { height: 62px; animation-delay: 0.45s; }
+
+    @keyframes analyzeBars {
+      0%, 100% { transform: scaleY(0.92); opacity: 0.72; }
+      50% { transform: scaleY(1.06); opacity: 1; }
+    }
+
+    /* 3단계 : 광고 송출 화면 느낌 */
+    .visual-delivery {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .visual-delivery .screen {
+      width: 86px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.12), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.14);
+      position: relative;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
+
+    .visual-delivery .screen::before {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      top: 14px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(143,194,255,0.22), rgba(110,240,223,0.65), rgba(143,194,255,0.22));
+      animation: screenGlow 2.2s linear infinite;
+    }
+
+    .visual-delivery .screen::after {
+      content: "";
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: -10px;
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.18);
+    }
+
+    @keyframes screenGlow {
+      0% { opacity: 0.45; transform: scaleX(0.82); }
+      50% { opacity: 1; transform: scaleX(1); }
+      100% { opacity: 0.45; transform: scaleX(0.82); }
+    }
+
+    /* 4단계 : 두 데이터가 합쳐지는 느낌 */
+    .visual-merge {
+      position: relative;
+    }
+
+    .visual-merge::before,
+    .visual-merge::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 34px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(143,194,255,0.20), rgba(143,194,255,0.85));
+    }
+
+    .visual-merge::before {
+      left: 10px;
+      transform: translateY(-50%) rotate(18deg);
+    }
+
+    .visual-merge::after {
+      right: 10px;
+      transform: translateY(-50%) rotate(-18deg);
+      background: linear-gradient(90deg, rgba(110,240,223,0.85), rgba(110,240,223,0.20));
+    }
+
+    .visual-merge .merge-center {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, rgba(255,255,255,0.13), rgba(255,255,255,0.04));
+      border: 1px solid rgba(255,255,255,0.14);
+      box-shadow: 0 0 18px rgba(143,194,255,0.10);
+    }
+
+    .visual-merge .merge-center::before,
+    .visual-merge .merge-center::after {
+      content: "";
+      position: absolute;
+      border-radius: 999px;
+      background: rgba(143,194,255,0.9);
+    }
+
+    .visual-merge .merge-center::before {
+      width: 26px;
+      height: 4px;
+      left: 14px;
+      top: 25px;
+    }
+
+    .visual-merge .merge-center::after {
+      width: 4px;
+      height: 26px;
+      left: 25px;
+      top: 14px;
+    }
+
+    /* 5단계 : 고도화/상승 느낌 */
+    .visual-optimize {
+      position: relative;
+    }
+
+    .visual-optimize .rise-line {
+      position: absolute;
+      left: 18px;
+      right: 18px;
+      bottom: 16px;
+      height: 36px;
+    }
+
+    .visual-optimize .rise-line::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      width: 100%;
+      height: 100%;
+      clip-path: polygon(0% 100%, 20% 72%, 42% 76%, 64% 40%, 82% 48%, 100% 0%, 100% 100%);
+      background: linear-gradient(135deg, rgba(143,194,255,0.25), rgba(110,240,223,0.95));
+      box-shadow: 0 0 18px rgba(110,240,223,0.25);
+    }
+
+    .visual-optimize .rise-dot {
+      position: absolute;
+      right: 18px;
+      top: 10px;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #6ef0df;
+      box-shadow: 0 0 16px rgba(110,240,223,0.65);
+      animation: optimizePulse 1.8s ease-in-out infinite;
+    }
+
+    @keyframes optimizePulse {
+      0%, 100% { transform: scale(0.9); opacity: 0.8; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+
+    /* 카드 사이 화살표 */
+    .flow-arrow {
+      position: absolute;
+      top: 50%;
+      right: -13px;
+      width: 26px;
+      height: 26px;
+      transform: translateY(-50%);
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .flow-arrow::before,
+    .flow-arrow::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .flow-arrow::before {
+      left: 0;
+      width: 16px;
+      height: 2px;
+      background: linear-gradient(90deg, rgba(143,194,255,0.25), rgba(143,194,255,0.95));
+      border-radius: 999px;
+    }
+
+    .flow-arrow::after {
+      right: 2px;
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid rgba(143,194,255,0.95);
+      border-right: 2px solid rgba(143,194,255,0.95);
+      transform: translateY(-50%) rotate(45deg);
+    }
+
+    @media (max-width: 1180px) {
+      .framework-flow {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .flow-arrow {
+        display: none;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .overview-framework {
+        padding: 22px 18px 20px;
+        margin-top: 24px;
+      }
+
+      .framework-flow {
+        grid-template-columns: 1fr;
+      }
+
+      .flow-step {
+        min-height: auto;
+      }
+
+      .framework-title-wrap h3 {
+        font-size: 24px;
+      }
+
+      .framework-title-wrap p {
+        font-size: 13px;
+      }
+    }
 
     /* Technology section */
     .hero {
@@ -1514,6 +1920,84 @@
             <div class="stats-label">누적 분석 프레임</div>
           </div>
         </div>
+
+        <div class="overview-framework">
+          <div class="framework-head">
+            <div class="framework-title-wrap">
+              <h3>Inwave Analysis Framework</h3>
+              <p>
+                인웨이브는 단순 촬영이 아니라, 데이터 수집부터 분석·송출·재분석·고도화까지 이어지는
+                순환형 광고 최적화 구조를 기반으로 운영됩니다.
+              </p>
+            </div>
+            <div class="framework-badge">AI DATA FLOW</div>
+          </div>
+
+          <div class="framework-flow" id="frameworkFlow">
+            <div class="flow-step active">
+              <div class="flow-step-num">01</div>
+              <div class="flow-visual visual-capture">
+                <span class="scan-line"></span>
+              </div>
+              <h4>AI 영상촬영 기반 데이터 수집</h4>
+              <p>
+                광고 화면 주변의 시청 반응과 흐름을 감지해 분석에 필요한 기초 데이터를 수집합니다.
+              </p>
+              <span class="flow-arrow"></span>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step-num">02</div>
+              <div class="flow-visual visual-analyze">
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <h4>자료 분석</h4>
+              <p>
+                수집된 데이터를 바탕으로 시청 시간, 관심도, 성별·연령 추정 등 핵심 지표를 분석합니다.
+              </p>
+              <span class="flow-arrow"></span>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step-num">03</div>
+              <div class="flow-visual visual-delivery">
+                <div class="screen"></div>
+              </div>
+              <h4>효과적인 광고 송출</h4>
+              <p>
+                분석 결과를 바탕으로 더 적합한 시간대와 타겟에 맞는 광고를 효율적으로 송출합니다.
+              </p>
+              <span class="flow-arrow"></span>
+            </div>
+
+            <div class="flow-step">
+              <div class="flow-step-num">04</div>
+              <div class="flow-visual visual-merge">
+                <div class="merge-center"></div>
+              </div>
+              <h4>송출 데이터 + 영상 데이터 통합 분석</h4>
+              <p>
+                광고 송출 결과와 실제 시청 데이터를 함께 비교 분석하여 반응 구조를 더 정밀하게 해석합니다.
+              </p>
+              <span class="flow-arrow"></span>
+            </div>
+
+            <div class="flow-step final-step">
+              <div class="flow-step-num">05</div>
+              <div class="flow-visual visual-optimize">
+                <div class="rise-line"></div>
+                <div class="rise-dot"></div>
+              </div>
+              <h4>고도화된 데이터 최적화</h4>
+              <p>
+                반복적인 분석과 개선을 통해 광고 운영 전략을 더 정교하게 고도화하는 것이 인웨이브의 핵심 구조입니다.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -2211,6 +2695,40 @@
     window.addEventListener("resize", () => {
       renderScenario(currentScenario);
     });
+        // Overview framework 순차 강조
+    const frameworkSteps = document.querySelectorAll("#frameworkFlow .flow-step");
+    let frameworkIndex = 0;
+    let frameworkTimer = null;
+
+    function activateFrameworkStep(index) {
+      frameworkSteps.forEach((step, i) => {
+        step.classList.toggle("active", i === index);
+      });
+    }
+
+    function startFrameworkAnimation() {
+      if (frameworkTimer) return;
+
+      frameworkTimer = setInterval(() => {
+        frameworkIndex = (frameworkIndex + 1) % frameworkSteps.length;
+        activateFrameworkStep(frameworkIndex);
+      }, 1800);
+    }
+
+    const frameworkObserverTarget = document.getElementById("frameworkFlow");
+
+    if (frameworkObserverTarget) {
+      const frameworkObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            activateFrameworkStep(frameworkIndex);
+            startFrameworkAnimation();
+          }
+        });
+      }, { threshold: 0.35 });
+
+      frameworkObserver.observe(frameworkObserverTarget);
+    }
   </script>
 </body>
 </html>
