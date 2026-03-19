@@ -1480,6 +1480,45 @@
       color: var(--text-soft);
     }
 
+    .showcase-block {
+      padding: 22px;
+    }
+    
+    .logo-item {
+      height: 64px;
+      min-width: 120px;
+      padding: 12px 18px;
+    }
+    
+    .location-item {
+      width: 240px;
+      height: 148px;
+    }
+    
+    .marquee-shell::before,
+    .marquee-shell::after {
+      width: 56px;
+    }
+    
+    .showcase-head h3 {
+      font-size: 20px;
+    }
+    
+    .showcase-head p {
+      font-size: 13px;
+    }
+    
+    .marquee-track {
+      gap: 12px;
+    }
+    
+    .marquee-shell-logo {
+      padding: 14px 0;
+    }
+    
+    .marquee-shell-location {
+      padding: 12px 0;
+    }
     /* Contact */
     .cta-box {
       padding: 48px;
@@ -1790,6 +1829,45 @@
 
       .footer-links {
         justify-content: flex-start;
+      }
+      .showcase-block {
+        padding: 22px;
+      }
+      
+      .logo-item {
+        height: 64px;
+        min-width: 120px;
+        padding: 12px 18px;
+      }
+      
+      .location-item {
+        width: 240px;
+        height: 148px;
+      }
+      
+      .marquee-shell::before,
+      .marquee-shell::after {
+        width: 56px;
+      }
+      
+      .showcase-head h3 {
+        font-size: 20px;
+      }
+      
+      .showcase-head p {
+        font-size: 13px;
+      }
+      
+      .marquee-track {
+        gap: 12px;
+      }
+      
+      .marquee-shell-logo {
+        padding: 14px 0;
+      }
+      
+      .marquee-shell-location {
+        padding: 12px 0;
       }
     }
 
@@ -2217,6 +2295,43 @@
       </div>
     </section>
 
+    <!-- Showcase -->
+    <section class="section showcase-section" id="showcase">
+      <div class="container">
+        <div class="section-head">
+          <div class="eyebrow">Showcase</div>
+          <h2 class="section-title">함께한 파트너와 설치 사례</h2>
+          <p class="section-desc">
+            인웨이브와 함께한 파트너 로고와 실제 설치 사례를 확인할 수 있습니다.
+          </p>
+        </div>
+    
+        <div class="showcase-stack">
+          <div class="showcase-block">
+            <div class="showcase-head">
+              <h3>Partners</h3>
+              <p>광고 및 협업을 진행한 파트너 로고</p>
+            </div>
+    
+            <div class="marquee-shell marquee-shell-logo">
+              <div class="marquee-track" id="partnerMarqueeTrack"></div>
+            </div>
+          </div>
+    
+          <div class="showcase-block">
+            <div class="showcase-head">
+              <h3>Installed Locations</h3>
+              <p>실제 모니터가 설치되어 운영 중인 공간 이미지</p>
+            </div>
+    
+            <div class="marquee-shell marquee-shell-location">
+              <div class="marquee-track" id="locationMarqueeTrack"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <!-- Contact -->
     <section class="section" id="contact">
       <div class="container">
@@ -2729,6 +2844,70 @@
 
       frameworkObserver.observe(frameworkObserverTarget);
     }
+    async function loadJsonList(path) {
+      try {
+        const response = await fetch(path, { cache: "no-cache" });
+        if (!response.ok) throw new Error(`Failed to load: ${path}`);
+        const data = await response.json();
+        return Array.isArray(data) ? data : [];
+      } catch (error) {
+        console.error(error);
+        return [];
+      }
+    }
+    
+    function createLogoItem(src, index) {
+      const item = document.createElement("div");
+      item.className = "logo-item";
+    
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = `partner-logo-${index + 1}`;
+      img.loading = "lazy";
+      img.decoding = "async";
+    
+      item.appendChild(img);
+      return item;
+    }
+    
+    function createLocationItem(src, index) {
+      const item = document.createElement("div");
+      item.className = "location-item";
+    
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = `installed-location-${index + 1}`;
+      img.loading = "lazy";
+      img.decoding = "async";
+    
+      item.appendChild(img);
+      return item;
+    }
+    
+    function buildMarquee(trackId, items, factory) {
+      const track = document.getElementById(trackId);
+      if (!track || !items.length) return;
+    
+      track.innerHTML = "";
+    
+      const repeated = [...items, ...items];
+    
+      repeated.forEach((src, index) => {
+        track.appendChild(factory(src, index));
+      });
+    }
+    
+    async function initShowcaseMarquees() {
+      const [partners, locations] = await Promise.all([
+        loadJsonList("./data/partners.json"),
+        loadJsonList("./data/locations.json")
+      ]);
+    
+      buildMarquee("partnerMarqueeTrack", partners, createLogoItem);
+      buildMarquee("locationMarqueeTrack", locations, createLocationItem);
+    }
+    
+    initShowcaseMarquees();
   </script>
 </body>
 </html>
