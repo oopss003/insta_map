@@ -3016,8 +3016,8 @@
     
     async function initShowcaseMarquees() {
       const [partners, locations] = await Promise.all([
-        loadJsonList("./data/partners.json"),
-        loadJsonList("./data/locations.json")
+        loadJsonList("/data/partners.json"),
+        loadJsonList("/data/locations.json")
       ]);
     
       buildMarquee("partnerMarqueeTrack", partners, createLogoItem);
