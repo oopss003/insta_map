@@ -3,297 +3,472 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inwave Analysis Framework</title>
+  <title>Inwave | Image Download</title>
+
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    :root {
+      --bg: #f5f7fb;
+      --surface: #f4f7fb;
+      --surface-strong: #ffffff;
+      --text: #1f2a37;
+      --text-soft: #5b6676;
+      --primary: #5b8cff;
+      --primary-2: #7aa8ff;
+      --mint: #45d6c3;
+      --shadow-card: 14px 14px 28px rgba(194, 203, 216, 0.55),
+                     -14px -14px 28px rgba(255, 255, 255, 0.95);
+      --shadow-pressed: inset 6px 6px 12px rgba(196, 205, 217, 0.75),
+                        inset -6px -6px 12px rgba(255, 255, 255, 0.98);
+      --radius-xl: 32px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --max-width: 1280px;
+      --header-h: 88px;
     }
 
-    html, body {
-      width: 100%;
-      height: 100%;
-      background: transparent;
-      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      overflow: hidden;
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
+      margin: 0;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(122, 168, 255, 0.18), transparent 28%),
+        radial-gradient(circle at top right, rgba(69, 214, 195, 0.10), transparent 24%),
+        linear-gradient(180deg, #f8fbff 0%, #f3f6fb 40%, #eef3f9 100%);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    .container {
+      width: min(calc(100% - 40px), var(--max-width));
+      margin: 0 auto;
+    }
+
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(18px);
+      background: rgba(247, 250, 255, 0.72);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+    }
+
+    .header-inner {
+      height: var(--header-h);
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: space-between;
+      gap: 24px;
     }
 
-    .frame-wrap {
-      width: 1145px;
-      height: 424px;
-      background: transparent;
-      padding: 22px 26px;
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 14px;
     }
 
-    .main-panel {
+    .logo-mark {
+      width: 50px;
+      height: 50px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #fafdff, #e8eef7);
+      box-shadow: var(--shadow-card);
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      color: var(--primary);
+      font-size: 16px;
+    }
+
+    .logo-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .logo-text strong {
+      font-size: 20px;
+      letter-spacing: -0.03em;
+    }
+
+    .logo-text span {
+      font-size: 12px;
+      color: var(--text-soft);
+    }
+
+    .btn {
+      border: none;
+      outline: none;
+      cursor: pointer;
+      border-radius: 999px;
+      padding: 15px 24px;
+      font-size: 15px;
+      font-weight: 700;
+      transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      white-space: nowrap;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      box-shadow: 0 14px 28px rgba(91, 140, 255, 0.26);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .btn-secondary:hover {
+      box-shadow: var(--shadow-pressed);
+    }
+
+    .page-section {
+      padding: 72px 0 92px;
+    }
+
+    .hero-card {
+      padding: 42px;
+      border-radius: var(--radius-xl);
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: "";
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--mint), var(--primary));
+      box-shadow: 0 0 14px rgba(91, 140, 255, 0.45);
+    }
+
+    .hero-title {
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      margin: 0 0 14px;
+    }
+
+    .hero-desc {
+      margin: 0;
+      max-width: 760px;
+      font-size: 17px;
+      line-height: 1.85;
+      color: var(--text-soft);
+    }
+
+    .actions-row {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 22px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 24px;
+    }
+
+    .image-card {
+      padding: 22px;
+      border-radius: var(--radius-lg);
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+      border: 1px solid rgba(255, 255, 255, 0.55);
+    }
+
+    .image-preview-wrap {
+      border-radius: 22px;
+      overflow: hidden;
+      background: #eef3f9;
+      box-shadow: inset 4px 4px 10px rgba(201, 211, 224, 0.22),
+                  inset -4px -4px 10px rgba(255, 255, 255, 0.88);
+      margin-bottom: 18px;
+      aspect-ratio: 16 / 9;
+    }
+
+    .image-preview {
       width: 100%;
       height: 100%;
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(31, 42, 63, 0.92) 0%, rgba(32, 41, 58, 0.9) 100%);
-      border: 1px solid rgba(123, 157, 255, 0.12);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.04),
-        0 18px 40px rgba(0,0,0,0.18);
-      padding: 22px 18px 18px 18px;
-      position: relative;
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      object-fit: cover;
     }
 
-    .title {
-      font-size: 27px;
-      line-height: 1.15;
-      font-weight: 800;
-      color: rgba(255,255,255,0.96);
-      letter-spacing: -0.03em;
-      margin-bottom: 10px;
-    }
-
-    .sub-row {
+    .image-meta {
       display: flex;
+      align-items: flex-start;
       justify-content: space-between;
-      align-items: center;
+      gap: 14px;
       margin-bottom: 18px;
-      gap: 16px;
     }
 
-    .subtitle {
-      font-size: 13px;
-      line-height: 1.6;
-      font-weight: 600;
-      color: rgba(255,255,255,0.72);
-      letter-spacing: -0.015em;
-    }
-
-    .flow-badge {
-      padding: 10px 18px;
-      border-radius: 999px;
-      background: rgba(108, 137, 205, 0.16);
-      border: 1px solid rgba(149, 180, 255, 0.2);
-      color: rgba(220,235,255,0.92);
-      font-size: 12px;
+    .image-title {
+      font-size: 20px;
       font-weight: 800;
-      letter-spacing: 0.02em;
-      white-space: nowrap;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+      letter-spacing: -0.02em;
+      margin: 0 0 8px;
     }
 
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-      height: calc(100% - 92px);
-    }
-
-    .card {
-      position: relative;
-      border-radius: 20px;
-      padding: 18px 16px 16px 16px;
-      background: linear-gradient(180deg, rgba(45, 58, 84, 0.72) 0%, rgba(44, 56, 81, 0.62) 100%);
-      border: 1px solid rgba(133, 163, 223, 0.10);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.03),
-        0 8px 24px rgba(0,0,0,0.12);
-      overflow: hidden;
-    }
-
-    .card.active {
-      background: linear-gradient(180deg, rgba(83, 94, 117, 0.92) 0%, rgba(78, 88, 110, 0.88) 100%);
-      border: 1px solid rgba(136, 177, 255, 0.45);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 10px 28px rgba(34, 69, 143, 0.18);
-    }
-
-    .num {
-      width: 33px;
-      height: 33px;
-      border-radius: 11px;
-      background: linear-gradient(180deg, #6f97ff 0%, #7ea9ff 100%);
-      color: white;
-      font-size: 13px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 18px;
-      box-shadow: 0 6px 16px rgba(73, 118, 243, 0.28);
-    }
-
-    .icon-area {
-      height: 78px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 10px;
-      opacity: 0.95;
-    }
-
-    .card-title {
-      font-size: 15px;
-      line-height: 1.45;
-      font-weight: 800;
-      color: rgba(255,255,255,0.92);
-      letter-spacing: -0.03em;
-      margin-bottom: 10px;
-      word-break: keep-all;
-    }
-
-    .card-desc {
-      font-size: 12px;
+    .image-desc {
+      margin: 0;
+      font-size: 14px;
       line-height: 1.7;
-      font-weight: 600;
-      color: rgba(255,255,255,0.56);
-      letter-spacing: -0.01em;
-      word-break: keep-all;
+      color: var(--text-soft);
     }
 
-    .line-glow {
-      position: absolute;
-      top: 123px;
-      right: -20px;
-      width: 42px;
-      height: 1px;
-      background: linear-gradient(90deg, rgba(111, 201, 255, 0) 0%, rgba(111, 201, 255, 0.75) 100%);
-      opacity: 0.7;
+    .image-badge {
+      flex: 0 0 auto;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.72);
+      box-shadow: var(--shadow-card);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--primary);
     }
 
-    .card:last-child .line-glow {
-      display: none;
+    .image-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
     }
 
-    svg {
-      overflow: visible;
+    .site-footer {
+      padding: 0 0 48px;
+    }
+
+    .footer-box {
+      padding: 24px 28px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, #f8fbff, #edf2f8);
+      box-shadow: var(--shadow-card);
+      color: var(--text-soft);
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    @media (max-width: 980px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: min(calc(100% - 28px), var(--max-width));
+      }
+
+      .header-inner {
+        height: 78px;
+      }
+
+      .hero-card,
+      .image-card,
+      .footer-box {
+        padding: 22px;
+      }
+
+      .hero-title {
+        font-size: clamp(28px, 8vw, 42px);
+      }
+
+      .hero-desc {
+        font-size: 15px;
+      }
+
+      .image-meta {
+        flex-direction: column;
+      }
+
+      .image-actions {
+        flex-direction: column;
+      }
+
+      .image-actions .btn,
+      .actions-row .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="frame-wrap">
-    <section class="main-panel">
-      <h1 class="title">Inwave Analysis Framework</h1>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a href="#" class="logo-wrap" aria-label="Inwave 홈">
+        <div class="logo-mark">IW</div>
+        <div class="logo-text">
+          <strong>Inwave</strong>
+          <span>AI Advertising Intelligence</span>
+        </div>
+      </a>
 
-      <div class="sub-row">
-        <p class="subtitle">
-          인웨이브는 단순 촬영이 아니라, 데이터 수집부터 분석·송출·재분석·고도화까지 이어지는
-          순환형 광고 최적화 구조를 기반으로 운영됩니다.
+      <a href="/" class="btn btn-primary">메인으로</a>
+    </div>
+  </header>
+
+  <main class="page-section">
+    <div class="container">
+      <section class="hero-card">
+        <div class="eyebrow">Image Download</div>
+        <h1 class="hero-title">대시보드 이미지를 바로 다운로드할 수 있습니다</h1>
+        <p class="hero-desc">
+          아래 4개의 이미지는 각각 개별 다운로드가 가능하며,
+          필요하면 한 번에 모두 다운로드할 수도 있도록 구성했습니다.
         </p>
-        <div class="flow-badge">AI DATA FLOW</div>
+      </section>
+
+      <div class="actions-row">
+        <button class="btn btn-secondary" onclick="downloadAllImages()">전체 이미지 다운로드</button>
       </div>
 
-      <div class="cards">
-        <!-- 01 -->
-        <div class="card">
-          <div class="num">01</div>
-
-          <div class="icon-area">
-            <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
-              <ellipse cx="55" cy="37" rx="44" ry="2.5" fill="rgba(110,170,255,0.12)"/>
-              <circle cx="55" cy="37" r="28" stroke="rgba(123,165,255,0.16)" stroke-width="2"/>
-              <circle cx="55" cy="37" r="18" stroke="rgba(123,165,255,0.28)" stroke-width="2"/>
-              <circle cx="55" cy="37" r="5" fill="rgba(125,235,255,0.65)"/>
-              <line x1="10" y1="37" x2="100" y2="37" stroke="rgba(102,186,255,0.18)" stroke-width="1"/>
-            </svg>
+      <section class="gallery-grid">
+        <article class="image-card">
+          <div class="image-preview-wrap">
+            <img src="./images/dashboard_01.png" alt="대시보드 이미지 1" class="image-preview">
           </div>
-
-          <div class="card-title">AI 영상촬영 기반 데이터 수집</div>
-          <div class="card-desc">
-            광고 화면 주변의 시청 반응과 흐름을 감지해 분석에 필요한 기초 데이터를 수집합니다.
+          <div class="image-meta">
+            <div>
+              <h2 class="image-title">이미지 01</h2>
+              <p class="image-desc">첫 번째 대시보드 이미지입니다.</p>
+            </div>
+            <div class="image-badge">PNG</div>
           </div>
-
-          <div class="line-glow"></div>
-        </div>
-
-        <!-- 02 -->
-        <div class="card">
-          <div class="num">02</div>
-
-          <div class="icon-area">
-            <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
-              <rect x="18" y="32" width="22" height="28" rx="6" fill="rgba(108,144,230,0.75)"/>
-              <rect x="46" y="16" width="22" height="44" rx="6" fill="rgba(122,162,255,0.75)"/>
-              <rect x="74" y="24" width="22" height="36" rx="6" fill="rgba(108,144,230,0.75)"/>
-              <line x1="10" y1="61" x2="104" y2="61" stroke="rgba(136,176,255,0.22)" stroke-width="1"/>
-            </svg>
+          <div class="image-actions">
+            <a class="btn btn-primary" href="./images/dashboard_01.png" download="dashboard_01.png">다운로드</a>
+            <a class="btn btn-secondary" href="./images/dashboard_01.png" target="_blank">새 창 보기</a>
           </div>
+        </article>
 
-          <div class="card-title">자료 분석</div>
-          <div class="card-desc">
-            수집된 데이터를 바탕으로 시청 시간, 관심도, 성별·연령 추정 등 핵심 지표를 분석합니다.
+        <article class="image-card">
+          <div class="image-preview-wrap">
+            <img src="./images/dashboard_02.png" alt="대시보드 이미지 2" class="image-preview">
           </div>
-
-          <div class="line-glow"></div>
-        </div>
-
-        <!-- 03 -->
-        <div class="card active">
-          <div class="num">03</div>
-
-          <div class="icon-area">
-            <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
-              <rect x="22" y="12" width="46" height="34" rx="10" fill="rgba(92,104,122,0.95)" stroke="rgba(210,225,255,0.08)"/>
-              <rect x="31" y="22" width="28" height="7" rx="3.5" fill="rgba(105,235,226,0.55)"/>
-              <rect x="38" y="50" width="18" height="3" rx="1.5" fill="rgba(220,230,255,0.20)"/>
-              <line x1="33" y1="54" x2="58" y2="54" stroke="rgba(220,230,255,0.16)" stroke-width="2"/>
-            </svg>
+          <div class="image-meta">
+            <div>
+              <h2 class="image-title">이미지 02</h2>
+              <p class="image-desc">두 번째 대시보드 이미지입니다.</p>
+            </div>
+            <div class="image-badge">PNG</div>
           </div>
-
-          <div class="card-title">효과적인 광고 송출</div>
-          <div class="card-desc">
-            분석 결과를 바탕으로 더 적합한 시간대와 타겟에 맞는 광고를 효율적으로 송출합니다.
+          <div class="image-actions">
+            <a class="btn btn-primary" href="./images/dashboard_02.png" download="dashboard_02.png">다운로드</a>
+            <a class="btn btn-secondary" href="./images/dashboard_02.png" target="_blank">새 창 보기</a>
           </div>
+        </article>
 
-          <div class="line-glow"></div>
-        </div>
-
-        <!-- 04 -->
-        <div class="card">
-          <div class="num">04</div>
-
-          <div class="icon-area">
-            <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
-              <line x1="16" y1="34" x2="40" y2="42" stroke="rgba(122,162,255,0.35)" stroke-width="2"/>
-              <line x1="70" y1="42" x2="94" y2="34" stroke="rgba(89,239,228,0.35)" stroke-width="2"/>
-              <rect x="40" y="18" width="40" height="40" rx="12" fill="rgba(53,64,89,0.35)" stroke="rgba(126,161,224,0.18)"/>
-              <line x1="60" y1="28" x2="60" y2="48" stroke="rgba(178,204,255,0.72)" stroke-width="3" stroke-linecap="round"/>
-              <line x1="50" y1="38" x2="70" y2="38" stroke="rgba(178,204,255,0.72)" stroke-width="3" stroke-linecap="round"/>
-            </svg>
+        <article class="image-card">
+          <div class="image-preview-wrap">
+            <img src="./images/dashboard_03.png" alt="대시보드 이미지 3" class="image-preview">
           </div>
-
-          <div class="card-title">송출 데이터 + 영상 데이터<br>통합 분석</div>
-          <div class="card-desc">
-            광고 송출 결과와 실제 시청 데이터를 함께 비교 분석하여 반응 구조를 더 정밀하게 해석합니다.
+          <div class="image-meta">
+            <div>
+              <h2 class="image-title">이미지 03</h2>
+              <p class="image-desc">세 번째 대시보드 이미지입니다.</p>
+            </div>
+            <div class="image-badge">PNG</div>
           </div>
-
-          <div class="line-glow"></div>
-        </div>
-
-        <!-- 05 -->
-        <div class="card">
-          <div class="num">05</div>
-
-          <div class="icon-area">
-            <svg width="110" height="70" viewBox="0 0 110 70" fill="none">
-              <path d="M14 50 L38 43 L65 44 L86 34 L104 35" stroke="rgba(105,235,226,0.45)" stroke-width="2" fill="none"/>
-              <path d="M14 50 L38 43 L65 44 L86 34 L104 35 L104 56 L14 56 Z" fill="rgba(105,235,226,0.28)"/>
-              <circle cx="104" cy="20" r="5" fill="rgba(105,235,226,0.58)"/>
-              <line x1="104" y1="25" x2="104" y2="36" stroke="rgba(105,235,226,0.58)" stroke-width="2"/>
-            </svg>
+          <div class="image-actions">
+            <a class="btn btn-primary" href="./images/dashboard_03.png" download="dashboard_03.png">다운로드</a>
+            <a class="btn btn-secondary" href="./images/dashboard_03.png" target="_blank">새 창 보기</a>
           </div>
+        </article>
 
-          <div class="card-title">고도화된 데이터 최적화</div>
-          <div class="card-desc">
-            반복적인 분석과 개선을 통해 광고 운영 전략을 더 정교하게 고도화하는 인웨이브의 핵심 구조입니다.
+        <article class="image-card">
+          <div class="image-preview-wrap">
+            <img src="./images/dashboard_04.png" alt="대시보드 이미지 4" class="image-preview">
           </div>
-        </div>
+          <div class="image-meta">
+            <div>
+              <h2 class="image-title">이미지 04</h2>
+              <p class="image-desc">네 번째 대시보드 이미지입니다.</p>
+            </div>
+            <div class="image-badge">PNG</div>
+          </div>
+          <div class="image-actions">
+            <a class="btn btn-primary" href="./images/dashboard_04.png" download="dashboard_04.png">다운로드</a>
+            <a class="btn btn-secondary" href="./images/dashboard_04.png" target="_blank">새 창 보기</a>
+          </div>
+        </article>
+      </section>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-box">
+        이미지 파일 경로만 실제 위치에 맞게 수정하면 바로 사용할 수 있습니다.
+        예: <strong>./images/dashboard_01.png</strong>
       </div>
-    </section>
-  </div>
+    </div>
+  </footer>
+
+  <script>
+    const imageList = [
+      { url: "./images/dashboard_01.png", name: "dashboard_01.png" },
+      { url: "./images/dashboard_02.png", name: "dashboard_02.png" },
+      { url: "./images/dashboard_03.png", name: "dashboard_03.png" },
+      { url: "./images/dashboard_04.png", name: "dashboard_04.png" }
+    ];
+
+    function downloadImage(url, filename) {
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    function downloadAllImages() {
+      imageList.forEach((image, index) => {
+        setTimeout(() => {
+          downloadImage(image.url, image.name);
+        }, index * 250);
+      });
+    }
+  </script>
 </body>
 </html>
