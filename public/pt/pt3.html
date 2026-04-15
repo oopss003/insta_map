@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>매출 추정 근거 및 그래프</title>
+  <title>매출 추정 근거</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,93 +18,155 @@
 
     .slide {
       width: 1600px;
-      min-height: 900px;
+      height: 900px;
       margin: 0 auto;
-      padding: 34px 42px 40px;
-      background:
-        radial-gradient(circle at 20% 20%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 140px, transparent 141px),
-        radial-gradient(circle at 65% 10%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 170px, transparent 171px),
-        radial-gradient(circle at 85% 80%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 180px, transparent 181px),
-        #f4f5f7;
-      border: 1px solid #d7dbe2;
+      padding: 22px 24px;
+      background: #eef2f7;
+    }
+
+    .frame {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      grid-template-columns: 360px 1fr 280px;
+      gap: 18px;
+    }
+
+    .left-panel {
+      padding: 10px 8px 10px 6px;
     }
 
     .title {
-      margin: 0 0 18px;
-      font-size: 28px;
+      margin: 0 0 26px 0;
+      font-size: 24px;
       font-weight: 800;
-      color: #1f3bb3;
+      color: #2642c7;
       letter-spacing: -0.03em;
     }
 
-    .section-label-row {
+    .hero-text {
+      margin-top: 46px;
+      font-size: 34px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: #3b3f46;
+      letter-spacing: -0.04em;
+      word-break: keep-all;
+    }
+
+    .center-panel {
+      background: #f7f9fc;
+      border-radius: 28px;
+      box-shadow: 0 8px 26px rgba(27, 39, 94, 0.08);
+      padding: 18px 20px 18px;
+      display: grid;
+      grid-template-rows: 78px 320px 1fr;
+      gap: 14px;
+    }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stat-card {
+      background: #ffffff;
+      border-radius: 16px;
+      box-shadow: 0 3px 12px rgba(50, 64, 120, 0.05);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #7a8599;
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1e2a44;
+      letter-spacing: -0.03em;
+    }
+
+    .chart-card,
+    .table-card {
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 3px 12px rgba(50, 64, 120, 0.05);
+      padding: 18px 18px 16px;
+    }
+
+    .card-head {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin: 8px 6px 10px;
+      margin-bottom: 12px;
     }
 
-    .section-label {
+    .card-title {
       font-size: 16px;
-      color: #4b5563;
+      font-weight: 800;
+      color: #3b3f46;
+      letter-spacing: -0.02em;
     }
 
     .unit {
-      font-size: 14px;
-      color: #374151;
+      font-size: 12px;
+      color: #7a8599;
+      font-weight: 600;
     }
 
     .chart-wrap {
-      margin-top: 6px;
-      padding: 0 18px 0 18px;
-    }
-
-    .chart-area {
       position: relative;
-      height: 300px;
-      margin-top: 10px;
-      border-left: 0;
-      border-bottom: 2px solid #c9ced8;
+      height: 245px;
+      margin-top: 6px;
+      border-bottom: 1px solid #d7dfeb;
       background:
         repeating-linear-gradient(
           to top,
           transparent 0,
           transparent 39px,
-          #d8dde6 39px,
-          #d8dde6 40px
+          #edf1f7 39px,
+          #edf1f7 40px
         );
+      border-radius: 12px 12px 0 0;
     }
 
-    .y-labels {
+    .y-axis {
       position: absolute;
-      left: -6px;
+      left: 0;
       top: 0;
       bottom: 0;
-      width: 70px;
-      transform: translateX(-100%);
+      width: 56px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      font-size: 14px;
-      color: #6b7280;
-      padding: 0 8px 0 0;
+      padding: 0 6px 0 0;
       text-align: right;
+      font-size: 11px;
+      color: #93a0b5;
+      font-weight: 600;
     }
 
     .bars {
       position: absolute;
-      left: 30px;
-      right: 20px;
-      bottom: 0;
+      left: 70px;
+      right: 14px;
       top: 0;
+      bottom: 0;
       display: flex;
-      justify-content: space-around;
       align-items: flex-end;
-      padding: 0 8px;
+      justify-content: space-around;
     }
 
     .bar-group {
-      width: 180px;
+      width: 110px;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -113,225 +175,308 @@
     }
 
     .bar {
-      width: 78px;
-      background: #3a43d6;
+      width: 56px;
       border-radius: 0;
+      background: linear-gradient(180deg, #4752e7 0%, #3944d9 100%);
       position: relative;
     }
 
     .bar-value {
       position: absolute;
-      top: -30px;
+      top: -24px;
       left: 50%;
       transform: translateX(-50%);
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 700;
-      color: #374151;
+      color: #4b5563;
       white-space: nowrap;
     }
 
-    .year {
+    .x-year {
       margin-top: 12px;
-      font-size: 16px;
+      font-size: 14px;
       color: #6b7280;
-    }
-
-    .legend {
-      margin-top: 18px;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      font-size: 15px;
-      color: #4b5563;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .legend-color {
-      width: 10px;
-      height: 10px;
-      background: #3a43d6;
-    }
-
-    .table-title-row {
-      margin: 34px 6px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .table-title {
-      font-size: 16px;
-      color: #374151;
+      font-weight: 600;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      background: rgba(255,255,255,0.28);
-      font-size: 16px;
+      overflow: hidden;
+      border-radius: 12px;
+      font-size: 14px;
     }
 
     th, td {
-      border: 1px solid #4e8fc5;
-      padding: 12px 10px;
+      border: 1px solid #b9c9dc;
+      padding: 10px 8px;
       text-align: center;
-      line-height: 1.25;
+      line-height: 1.3;
+      word-break: keep-all;
     }
 
     th {
-      background: rgba(210, 222, 234, 0.8);
+      background: #eef4fb;
+      color: #334155;
       font-weight: 700;
-      color: #111827;
     }
 
     td {
-      background: rgba(234, 239, 244, 0.68);
-      color: #374151;
+      background: #ffffff;
+      color: #4b5563;
     }
 
-    .note-box {
-      margin-top: 22px;
-      padding: 18px 18px 2px;
-      color: #374151;
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
-    .note-title {
-      font-size: 15px;
-      font-weight: 700;
+    .side-title {
+      font-size: 18px;
+      line-height: 1.4;
+      font-weight: 800;
+      color: #2e3440;
+      letter-spacing: -0.03em;
+      padding: 6px 4px 2px;
+      word-break: keep-all;
+    }
+
+    .side-desc {
+      font-size: 13px;
+      line-height: 1.6;
+      color: #6b7280;
+      padding: 0 4px 2px;
+      word-break: keep-all;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border-radius: 18px;
+      box-shadow: 0 3px 12px rgba(50, 64, 120, 0.05);
+      padding: 16px 16px 14px;
+      min-height: 116px;
+      border: 1px solid transparent;
+    }
+
+    .step-card.active {
+      border: 1px solid #bfd1ff;
+      box-shadow: 0 4px 14px rgba(38, 66, 199, 0.07);
+    }
+
+    .step-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: linear-gradient(180deg, #6f93ff 0%, #5b7ef0 100%);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       margin-bottom: 12px;
     }
 
-    .note-text {
-      font-size: 15px;
-      line-height: 1.7;
-      margin-bottom: 10px;
+    .step-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: #334155;
+      margin-bottom: 8px;
+      line-height: 1.35;
+      word-break: keep-all;
+    }
+
+    .step-text {
+      font-size: 12px;
+      line-height: 1.55;
+      color: #6b7280;
       word-break: keep-all;
     }
 
     .em {
-      color: #d14343;
-      text-decoration: underline;
-      text-decoration-thickness: 2px;
-      text-underline-offset: 3px;
+      color: #2642c7;
+      font-weight: 800;
     }
   </style>
 </head>
 <body>
   <div class="slide">
-    <h1 class="title">[매출 추정 근거 - 50원 기준]</h1>
-
-    <div class="section-label-row">
-      <div class="section-label">4개년 매출 계획 그래프</div>
-      <div class="unit">단위 : 백만원</div>
-    </div>
-
-    <div class="chart-wrap">
-      <div class="chart-area">
-        <div class="y-labels">
-          <div>₩10,000</div>
-          <div>₩8,000</div>
-          <div>₩6,000</div>
-          <div>₩4,000</div>
-          <div>₩2,000</div>
-          <div>₩-</div>
-        </div>
-
-        <div class="bars">
-          <div class="bar-group">
-            <div class="bar" style="height: 13px;">
-              <div class="bar-value">440</div>
-            </div>
-            <div class="year">2027</div>
-          </div>
-
-          <div class="bar-group">
-            <div class="bar" style="height: 37px;">
-              <div class="bar-value">1,244</div>
-            </div>
-            <div class="year">2028</div>
-          </div>
-
-          <div class="bar-group">
-            <div class="bar" style="height: 132px;">
-              <div class="bar-value">4,398</div>
-            </div>
-            <div class="year">2029</div>
-          </div>
-
-          <div class="bar-group">
-            <div class="bar" style="height: 287px;">
-              <div class="bar-value">9,581</div>
-            </div>
-            <div class="year">2030</div>
-          </div>
+    <div class="frame">
+      <!-- 왼쪽 -->
+      <div class="left-panel">
+        <h1 class="title">[매출 추정 근거]</h1>
+        <div class="hero-text">
+          15초 50원<br />
+          기준으로 다시 계산한<br />
+          연도별 매출 구조
         </div>
       </div>
 
-      <div class="legend">
-        <div class="legend-item">
-          <div class="legend-color"></div>
-          <div>매출</div>
+      <!-- 가운데 -->
+      <div class="center-panel">
+        <div class="stats-row">
+          <div class="stat-card">
+            <div class="stat-label">2027년 매출</div>
+            <div class="stat-value">440</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">2028년 매출</div>
+            <div class="stat-value">1,244</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">2029년 매출</div>
+            <div class="stat-value">4,398</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">2030년 매출</div>
+            <div class="stat-value">9,581</div>
+          </div>
+        </div>
+
+        <div class="chart-card">
+          <div class="card-head">
+            <div class="card-title">4개년 매출 계획 그래프</div>
+            <div class="unit">단위 : 백만원</div>
+          </div>
+
+          <div class="chart-wrap">
+            <div class="y-axis">
+              <div>10,000</div>
+              <div>8,000</div>
+              <div>6,000</div>
+              <div>4,000</div>
+              <div>2,000</div>
+              <div>0</div>
+            </div>
+
+            <div class="bars">
+              <div class="bar-group">
+                <div class="bar" style="height: 11px;">
+                  <div class="bar-value">440</div>
+                </div>
+                <div class="x-year">2027</div>
+              </div>
+
+              <div class="bar-group">
+                <div class="bar" style="height: 30px;">
+                  <div class="bar-value">1,244</div>
+                </div>
+                <div class="x-year">2028</div>
+              </div>
+
+              <div class="bar-group">
+                <div class="bar" style="height: 108px;">
+                  <div class="bar-value">4,398</div>
+                </div>
+                <div class="x-year">2029</div>
+              </div>
+
+              <div class="bar-group">
+                <div class="bar" style="height: 235px;">
+                  <div class="bar-value">9,581</div>
+                </div>
+                <div class="x-year">2030</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="card-head">
+            <div class="card-title">4개년 매출 추정 근거표</div>
+            <div class="unit">단위 : 백만원</div>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>단계</th>
+                <th>연 평균 설치 대수</th>
+                <th>모니터당 월평균매출<br />(15초 50원 기준)</th>
+                <th>매출</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>2027년</td>
+                <td>85</td>
+                <td>0.43</td>
+                <td>440</td>
+              </tr>
+              <tr>
+                <td>2028년</td>
+                <td>240</td>
+                <td>0.43</td>
+                <td>1,244</td>
+              </tr>
+              <tr>
+                <td>2029년</td>
+                <td>849</td>
+                <td>0.43</td>
+                <td>4,398</td>
+              </tr>
+              <tr>
+                <td>2030년</td>
+                <td>1849</td>
+                <td>0.43</td>
+                <td>9,581</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-    </div>
 
-    <div class="table-title-row">
-      <div class="table-title">4개년 매출 추정 근거표</div>
-      <div class="unit">단위 : 백만원</div>
-    </div>
+      <!-- 오른쪽 -->
+      <div class="right-panel">
+        <div class="side-title">
+          계산 기준을<br />
+          쉽게 이해할 수 있도록<br />
+          정리했습니다
+        </div>
+        <div class="side-desc">
+          단가만 150원에서 50원으로 조정하고,
+          나머지 설치 대수와 운영 가정은 동일하게 적용한 구조입니다.
+        </div>
 
-    <table>
-      <thead>
-        <tr>
-          <th>단계</th>
-          <th>연 평균 설치 대수</th>
-          <th>모니터당 월평균매출<br />(15초 50원 기준)</th>
-          <th>매출</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>2027년</td>
-          <td>85</td>
-          <td>0.43</td>
-          <td>440</td>
-        </tr>
-        <tr>
-          <td>2028년</td>
-          <td>240</td>
-          <td>0.43</td>
-          <td>1,244</td>
-        </tr>
-        <tr>
-          <td>2029년</td>
-          <td>849</td>
-          <td>0.43</td>
-          <td>4,398</td>
-        </tr>
-        <tr>
-          <td>2030년</td>
-          <td>1849</td>
-          <td>0.43</td>
-          <td>9,581</td>
-        </tr>
-      </tbody>
-    </table>
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <div class="step-title">기준 단가 변경</div>
+          <div class="step-text">
+            기존 <span class="em">15초 150원</span> 기준을
+            <span class="em">15초 50원</span>으로 변경했습니다.
+          </div>
+        </div>
 
-    <div class="note-box">
-      <div class="note-title">매출 추정 근거 설명</div>
-      <div class="note-text">
-        15초 송출 기준 <span class="em">50원 부과 시</span>를 기준으로, 기존 150원 기준 매출 추정값을 1/3로 조정하여 산출하였습니다.
-      </div>
-      <div class="note-text">
-        기존 가정과 동일하게 유효과금 시간, 설치 대수, 운영 구조는 유지하고 <span class="em">단가만 150원에서 50원으로 변경</span>하였습니다.
-      </div>
-      <div class="note-text">
-        따라서 연도별 매출은 2027년 440백만원, 2028년 1,244백만원, 2029년 4,398백만원, 2030년 9,581백만원으로 재산정하였습니다.
+        <div class="step-card active">
+          <div class="step-num">02</div>
+          <div class="step-title">기존 운영 가정 유지</div>
+          <div class="step-text">
+            연 평균 설치 대수와 유효과금 시간 가정은 그대로 두고
+            매출만 다시 계산했습니다.
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <div class="step-title">기존 매출의 1/3 적용</div>
+          <div class="step-text">
+            15초 송출 기준 50원 부과시 24시간중 최저 1시간 20분의 유효과금 시간으로
+            모니터당 월 매출 산출함. ( 2025년 4월 ~ 10월 시범운영 기간중 데이터 산출값을 근거로함.)
+
+            모니터당 월 평균매출의 경우 향후 분석데이터를 통해 평균매출이 높아질 것으로 예상됨.
+
+          </div>
+        </div>
+
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <div class="step-title">재산정 결과 반영</div>
+          <div class="step-text">
+            최종 매출은 2027년 440, 2028년 1,244,
+            2029년 4,398, 2030년 9,581로 반영했습니다.
+          </div>
+        </div>
       </div>
     </div>
   </div>
