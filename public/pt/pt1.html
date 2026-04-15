@@ -91,14 +91,15 @@
       overflow: hidden;
     }
 
-    .left-box {
-      border: 1px solid rgba(94, 245, 230, 0.62);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.04),
-        0 0 0 1px rgba(94, 245, 230, 0.10),
-        0 16px 36px rgba(0,0,0,0.18);
-    }
 
+    .left-box {
+      border: 1px solid rgba(255,255,255,0.05);  /* 일반 카드랑 동일하게 */
+    
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 16px 36px rgba(0,0,0,0.16);   /* 👈 민트 라인 제거 */
+    }
+    
     .top-badge {
       width: 54px;
       height: 54px;
@@ -257,7 +258,7 @@
       <div class="content">
         <!-- 좌측 -->
         <div class="left-box">
-          <div class="top-badge">02</div>
+          <div class="top-badge">01</div>
           <h2 class="section-title">개발 방향 및 수행 방법</h2>
 
           <div class="flow-grid">
@@ -305,7 +306,7 @@
 
         <!-- 우측 -->
         <div class="right-box">
-          <div class="top-badge">03</div>
+          <div class="top-badge">02</div>
           <h2 class="section-title">정량 목표와 평가 기준</h2>
 
           <div class="section-desc">
