@@ -1,1 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>왜 야간 저조도 대응 기술개발이 필요한가</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(47, 93, 198, 0.16), transparent 28%),
+        radial-gradient(circle at 85% 85%, rgba(63, 224, 209, 0.10), transparent 24%),
+        linear-gradient(90deg, #0d1727 0%, #111c2f 45%, #0f1a2c 100%);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: #f3f7ff;
+    }
+
+    .slide {
+      width: 1600px;
+      height: 900px;
+      margin: 0 auto;
+      padding: 18px;
+    }
+
+    .panel {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(35, 47, 69, 0.96) 0%, rgba(28, 40, 60, 0.98) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 30px 80px rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 34px 40px 30px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .tag {
+      position: absolute;
+      top: 34px;
+      right: 40px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #dbe9ff;
+      background: rgba(110, 136, 184, 0.18);
+      border: 1px solid rgba(171, 198, 255, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .title {
+      margin: 0;
+      font-size: 56px;
+      line-height: 1.12;
+      font-weight: 800;
+      color: #f7fbff;
+      letter-spacing: -0.035em;
+      word-break: keep-all;
+    }
+
+    .subtitle {
+      margin-top: 14px;
+      font-size: 20px;
+      line-height: 1.55;
+      color: rgba(223, 232, 248, 0.82);
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+      max-width: 1380px;
+    }
+
+    .content {
+      margin-top: 26px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 22px;
+      height: 700px;
+    }
+
+    .left-area {
+      display: grid;
+      grid-template-rows: 232px 1fr;
+      gap: 22px;
+      min-height: 0;
+    }
+
+    .hero-box {
+      border-radius: 26px;
+      background: linear-gradient(180deg, rgba(58, 73, 99, 0.50) 0%, rgba(43, 56, 78, 0.58) 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      padding: 24px 24px 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .hero-label {
+      font-size: 15px;
+      font-weight: 800;
+      color: #8fb7ff;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .hero-title {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.035em;
+      word-break: keep-all;
+    }
+
+    .issue-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      min-height: 0;
+    }
+
+    .issue-card {
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(45, 58, 82, 0.76) 0%, rgba(35, 47, 68, 0.86) 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.03),
+        0 16px 36px rgba(0,0,0,0.16);
+      padding: 24px 22px 22px;
+      min-height: 0;
+    }
+
+    .issue-card h3 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.4;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .issue-card p {
+      margin: 12px 0 0;
+      font-size: 16px;
+      line-height: 1.68;
+      color: rgba(223, 232, 248, 0.82);
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .right-card {
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 78% 18%, rgba(131,255,241,0.08), transparent 24%),
+        linear-gradient(180deg, rgba(62, 77, 103, 0.76) 0%, rgba(45, 57, 79, 0.88) 100%);
+      border: 1px solid rgba(94, 245, 230, 0.40);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 18px 40px rgba(0,0,0,0.20);
+      padding: 28px 26px 26px;
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .right-card h2 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.28;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.035em;
+      word-break: keep-all;
+    }
+
+    .right-card p {
+      margin: 20px 0 0;
+      font-size: 18px;
+      line-height: 1.78;
+      color: rgba(223,232,248,0.86);
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .quote {
+      margin-top: 30px;
+      font-size: 23px;
+      line-height: 1.6;
+      font-weight: 800;
+      color: #83fff1;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .em-aqua {
+      color: #83fff1;
+      font-weight: 800;
+    }
+
+    .em-blue {
+      color: #8fb7ff;
+      font-weight: 800;
+    }
+
+    .footer-line {
+      position: absolute;
+      left: 40px;
+      right: 40px;
+      bottom: 18px;
+      height: 1px;
+      background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(115,153,222,0.25) 20%,
+        rgba(115,153,222,0.10) 80%,
+        transparent 100%
+      );
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <div class="panel">
+      <div class="tag">WHY DEVELOPMENT</div>
+
+      <h1 class="title">왜 야간 저조도 대응 기술개발이 필요한가</h1>
+      <div class="subtitle">
+        실외 광고 장치는 주간보다 야간·저조도 환경에서 더 많은 운영 시간을 가지며,
+        이 구간에서 얼굴 검출과 시선 분석 정확도가 떨어지면 데이터 신뢰도 자체가 흔들립니다.
+      </div>
+
+      <div class="content">
+        <div class="left-area">
+          <div class="hero-box">
+            <div class="hero-label">LOW-LIGHT LIMITATION</div>
+            <h2 class="hero-title">
+              야간에는 얼굴 검출이 흔들리고,<br />
+              얼굴 검출이 흔들리면 시선 분석과 유효 시청 판별도 함께 약해집니다.
+            </h2>
+          </div>
+
+          <div class="issue-grid">
+            <div class="issue-card">
+              <h3>실외 장치는 야간 운영 비중이 높습니다</h3>
+              <p>
+                오프라인 광고 장치는 저녁과 밤 시간에도 계속 운영됩니다.
+                그러나 기존 <span class="em-blue">RGB 카메라 중심 구조</span>는
+                조도가 낮아질수록 검출 정확도가 급격히 저하됩니다.
+              </p>
+            </div>
+
+            <div class="issue-card">
+              <h3>얼굴 인식 저하는 데이터 신뢰도 저하로 이어집니다</h3>
+              <p>
+                얼굴을 안정적으로 찾지 못하면
+                <span class="em-aqua">시선 방향 분석, 체류시간 계산, 유효 시청 판단</span>
+                모두 흔들리게 됩니다.
+              </p>
+            </div>
+
+            <div class="issue-card">
+              <h3>광고주는 실제 반응 데이터를 원합니다</h3>
+              <p>
+                단순 노출이 아니라 누가, 얼마나, 실제로 광고를 보았는지를
+                정량적으로 설명할 수 있어야 광고 성과를 증명할 수 있습니다.
+              </p>
+            </div>
+
+            <div class="issue-card">
+              <h3>야간 대응이 안 되면 현장 적용이 어렵습니다</h3>
+              <p>
+                실외 환경에서 가장 취약한 구간을 해결하지 못하면,
+                기술은 있어도 <span class="em-blue">실제 상용 운영 데이터</span>를
+                안정적으로 확보하기 어렵습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="right-card">
+          <h2>핵심 문제 정의</h2>
+
+          <p>
+            기존 오프라인 광고 분석 기술은 광고가 얼마나 송출되었는지는 보여줄 수 있지만,
+            <span class="em-aqua">야간 저조도 환경에서도 실제로 누가 광고를 보았는지</span>를
+            안정적으로 판별하는 데에는 한계가 있습니다.
+          </p>
+
+          <p>
+            특히 실외 설치 장치는 조도 변화, 거리, 각도, 역광, 야간 조명 등
+            다양한 조건에 노출되기 때문에, 주간 중심 성능만으로는 현장 적용성을 확보하기 어렵습니다.
+          </p>
+
+          <div class="quote">
+            “야간에서도 얼굴을 정확히 찾을 수 있어야<br />
+            광고 데이터가 신뢰를 가질 수 있습니다.”
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-line"></div>
+    </div>
+  </div>
+</body>
+</html>
