@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>경쟁사 대비 차별점 – Why Inwave?</title>
+  <title>3단계 확장 전략</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,196 +11,383 @@
 
     body {
       margin: 0;
-      background: #eef2f7;
+      background:
+        radial-gradient(circle at 20% 50%, rgba(31, 78, 168, 0.22), transparent 35%),
+        radial-gradient(circle at 85% 85%, rgba(0, 220, 255, 0.14), transparent 28%),
+        linear-gradient(90deg, #0d1727 0%, #111c2f 45%, #0f1a2c 100%);
       font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      color: #1f2937;
+      color: #f3f7ff;
     }
 
     .slide {
       width: 1600px;
       height: 900px;
       margin: 0 auto;
-      background: #eef2f7;
       position: relative;
       overflow: hidden;
-      padding: 64px 72px 56px 72px;
+      padding: 58px 72px;
+    }
+
+    .panel {
+      width: 100%;
+      height: 100%;
+      border-radius: 34px;
+      background: linear-gradient(180deg, rgba(35, 47, 69, 0.94) 0%, rgba(28, 40, 60, 0.96) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 30px 80px rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 42px 44px 38px;
+      position: relative;
     }
 
     .title {
-      margin: 0 0 42px 0;
-      font-size: 42px;
+      margin: 0;
+      font-size: 52px;
       font-weight: 800;
-      line-height: 1.35;
-      color: #111827;
       letter-spacing: -0.03em;
+      color: #f7fbff;
     }
 
-    .table-wrap {
-      width: 100%;
-      background: #ffffff;
-      border-radius: 24px;
-      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
-      padding: 28px 28px 24px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-      overflow: hidden;
-      border-radius: 16px;
-    }
-
-    th, td {
-      border: 2px solid #5f90bd;
-      text-align: center;
-      vertical-align: middle;
-      padding: 14px 12px;
-      font-size: 25px;
-      line-height: 1.3;
+    .subtitle {
+      margin-top: 12px;
+      font-size: 20px;
+      font-weight: 500;
+      color: rgba(223, 232, 248, 0.78);
       letter-spacing: -0.02em;
+    }
+
+    .tag {
+      position: absolute;
+      top: 44px;
+      right: 44px;
+      padding: 12px 22px;
+      border-radius: 999px;
+      font-size: 16px;
+      font-weight: 700;
+      color: #dbe9ff;
+      background: rgba(110, 136, 184, 0.18);
+      border: 1px solid rgba(171, 198, 255, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .cards {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      height: 660px;
+    }
+
+    .card {
+      position: relative;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(55, 68, 92, 0.64) 0%, rgba(44, 56, 78, 0.78) 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 18px 40px rgba(0,0,0,0.18);
+      padding: 28px 28px 30px;
+      overflow: hidden;
+    }
+
+    .card.active {
+      border: 1px solid rgba(94, 245, 230, 0.65);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 0 1px rgba(94, 245, 230, 0.16),
+        0 18px 40px rgba(0,0,0,0.24);
+      background: linear-gradient(180deg, rgba(67, 81, 107, 0.76) 0%, rgba(51, 65, 89, 0.88) 100%);
+    }
+
+    .step-badge {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #6b96ff 0%, #4d72f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      box-shadow: 0 8px 20px rgba(76, 118, 255, 0.28);
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-area {
+      height: 180px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin-top: 10px;
+      margin-bottom: 8px;
+    }
+
+    .icon-glow {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(92, 243, 228, 0.16) 0%, rgba(92, 243, 228, 0.04) 35%, transparent 70%);
+      filter: blur(4px);
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #f3f7ff;
+      letter-spacing: -0.03em;
+      position: relative;
+      z-index: 2;
       word-break: keep-all;
     }
 
-    th {
-      background: #d7e4f2;
-      color: #1f2937;
-      font-weight: 800;
-    }
-
-    td {
-      background: #f7f9fc;
-      color: #374151;
+    .card p {
+      margin: 18px 0 0;
+      font-size: 22px;
+      line-height: 1.65;
       font-weight: 500;
+      color: rgba(223, 232, 248, 0.83);
+      letter-spacing: -0.02em;
+      position: relative;
+      z-index: 2;
+      word-break: keep-all;
     }
 
-    .left-col {
-      width: 22%;
-      background: #e7edf5;
-      font-weight: 700;
-      color: #374151;
-    }
-
-    .mid-col {
-      width: 31%;
-      background: #f7f9fc;
-      color: #4b5563;
-    }
-
-    .right-col,
-    th.right-col {
-      width: 47%;
-      background: #cfe1f3;
-      color: #111827;
+    .emphasis {
+      color: #83fff1;
       font-weight: 800;
     }
 
-    .em-red {
-      color: #d13d3d;
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      text-decoration-thickness: 2px;
+    .emphasis-blue {
+      color: #8fb7ff;
       font-weight: 800;
     }
 
-    .em-blue {
-      color: #1d4ed8;
-      font-weight: 800;
+    .line-deco {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      top: 138px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(112, 157, 255, 0.38) 25%, rgba(112, 157, 255, 0.18) 50%, transparent 100%);
+      opacity: 0.8;
     }
 
-    .bottom-quote {
-      margin-top: 28px;
-      font-size: 30px;
-      font-weight: 800;
-      line-height: 1.45;
-      color: #4b5563;
-      letter-spacing: -0.03em;
-    }
-
-    .bottom-quote .highlight {
-      color: #1d3fd6;
+    .bg-number {
+      position: absolute;
+      right: 18px;
+      bottom: -8px;
+      font-size: 150px;
       font-weight: 900;
+      color: rgba(255,255,255,0.03);
+      letter-spacing: -0.06em;
+      z-index: 0;
+      user-select: none;
     }
 
-    .bottom-quote .highlight-dark {
-      color: #374151;
-      font-weight: 900;
+    .footer-line {
+      position: absolute;
+      left: 44px;
+      right: 44px;
+      bottom: 28px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(115, 153, 222, 0.25) 20%, rgba(115, 153, 222, 0.1) 80%, transparent 100%);
+    }
+
+    /* 아이콘 */
+    .icon-bars {
+      width: 180px;
+      height: 110px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 14px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-bars span {
+      width: 34px;
+      border-radius: 10px 10px 6px 6px;
+      background: linear-gradient(180deg, rgba(144, 176, 255, 0.95) 0%, rgba(97, 131, 232, 0.85) 100%);
+      box-shadow: 0 8px 18px rgba(93, 130, 229, 0.16);
+    }
+
+    .icon-bars span:nth-child(1) { height: 44px; }
+    .icon-bars span:nth-child(2) { height: 78px; }
+    .icon-bars span:nth-child(3) { height: 58px; }
+    .icon-bars span:nth-child(4) { height: 92px; }
+
+    .icon-monitor {
+      width: 190px;
+      height: 120px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-monitor .screen {
+      width: 140px;
+      height: 84px;
+      margin: 0 auto;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(73, 87, 113, 0.95) 0%, rgba(48, 59, 79, 0.95) 100%);
+      border: 1px solid rgba(156, 183, 255, 0.12);
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+
+    .icon-monitor .screen::after {
+      content: "";
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      top: 34px;
+      height: 12px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, rgba(105, 255, 234, 0.12) 0%, rgba(105, 255, 234, 0.7) 45%, rgba(105, 255, 234, 0.12) 100%);
+      filter: blur(0.3px);
+    }
+
+    .icon-monitor .stand {
+      width: 26px;
+      height: 18px;
+      margin: 0 auto;
+      background: rgba(118, 132, 157, 0.8);
+      border-radius: 0 0 8px 8px;
+    }
+
+    .icon-monitor .base {
+      width: 70px;
+      height: 8px;
+      margin: 8px auto 0;
+      border-radius: 10px;
+      background: rgba(118, 132, 157, 0.78);
+    }
+
+    .icon-growth {
+      width: 200px;
+      height: 110px;
+      position: relative;
+      z-index: 2;
+    }
+
+    .icon-growth svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      filter: drop-shadow(0 8px 18px rgba(67, 241, 221, 0.18));
     }
   </style>
 </head>
 <body>
   <div class="slide">
-    <h1 class="title">
-      인웨이브는 ‘실외 시선 기반 데이터 광고’로 기존 광고의 한계를 넘어섭니다.
-    </h1>
+    <div class="panel">
+      <div class="tag">3 STEP STRATEGY</div>
 
-    <div class="table-wrap">
-      <table>
-        <tr>
-          <th class="left-col">구분</th>
-          <th class="mid-col">엘리베이터 광고<br />(실내 고정형)</th>
-          <th class="right-col">AI분석 옥외 광고<br />(실외 시선형)</th>
-        </tr>
+      <h1 class="title">Inwave Growth Roadmap</h1>
+      <div class="subtitle">
+        인웨이브는 실증 확보부터 전국 확장, 데이터 기반 성장까지 단계적으로 시장을 확대합니다.
+      </div>
 
-        <tr>
-          <td class="left-col">광고 위치/노출 환경</td>
-          <td class="mid-col">아파트 내부 , 폐쇄된 공간</td>
-          <td class="right-col">길거리, 유동인구 많은 실외 공간</td>
-        </tr>
+      <div class="cards">
+        <!-- 1단계 -->
+        <div class="card">
+          <div class="step-badge">01</div>
+          <div class="line-deco"></div>
 
-        <tr>
-          <td class="left-col">시청자 특정</td>
-          <td class="mid-col">특정 아파트 주민 중심</td>
-          <td class="right-col">불특정 다수, 실시간 보행자 타겟</td>
-        </tr>
+          <div class="icon-area">
+            <div class="icon-glow"></div>
+            <div class="icon-bars">
+              <span></span>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
 
-        <tr>
-          <td class="left-col">광고 효과 측정 방식</td>
-          <td class="mid-col">단순 노출 횟수</td>
-          <td class="right-col">실제’본 사람 수‘ 정량화(시선감지)</td>
-        </tr>
+          <h3>부천 실증(파일럿)</h3>
+          <p>
+            <span class="emphasis-blue">단위면적당 인구수가 전국 1위</span>인 부천을 시작점으로,
+            <span class="emphasis">빠른 데이터 확보와 레퍼런스 구축</span>을 진행합니다.
+          </p>
 
-        <tr>
-          <td class="left-col">광고 송출 방식</td>
-          <td class="mid-col">정해진 시간 반복 송출</td>
-          <td class="right-col">시간,날씨,인구밀도에 따라 자동 변경</td>
-        </tr>
+          <div class="bg-number">1</div>
+        </div>
 
-        <tr>
-          <td class="left-col">특징 요약</td>
-          <td class="mid-col">지역 고정</td>
-          <td class="right-col">데이터 기반 실외형 스마트 광고</td>
-        </tr>
+        <!-- 2단계 -->
+        <div class="card">
+          <div class="step-badge">02</div>
+          <div class="line-deco"></div>
 
-        <tr>
-          <td class="left-col"><span class="em-red">과금기준</span></td>
-          <td class="mid-col">시간</td>
-          <td class="right-col">실제 시청</td>
-        </tr>
+          <div class="icon-area">
+            <div class="icon-glow"></div>
+            <div class="icon-monitor">
+              <div class="screen"></div>
+              <div class="stand"></div>
+              <div class="base"></div>
+            </div>
+          </div>
 
-        <tr>
-          <td class="left-col">광고단가</td>
-          <td class="mid-col">15초 슬롯당 약50원</td>
-          <td class="right-col">1시청당 150원</td>
-        </tr>
+          <h3>전국 단위 모니터 확장</h3>
+          <p>
+            <span class="emphasis">검증된 AI 성과 데이터</span>를 기반으로
+            생활밀착형 상권과 주요 거점으로 모니터 설치를 확대합니다.
+          </p>
 
-        <tr>
-          <td class="left-col">수익모델</td>
-          <td class="mid-col">재고 기반(시간)</td>
-          <td class="right-col">성과 기반(시청)</td>
-        </tr>
+          <div class="bg-number">2</div>
+        </div>
 
-        <tr>
-          <td class="left-col">일일매출</td>
-          <td class="mid-col">최대21.6만원 (18시간 <span class="em-red">운영시</span>)</td>
-          <td class="right-col">28.8만원 (약 8시간 <span class="em-red">시청시</span>)</td>
-        </tr>
-      </table>
-    </div>
+        <!-- 3단계 -->
+        <div class="card active">
+          <div class="step-badge">03</div>
+          <div class="line-deco"></div>
 
-    <div class="bottom-quote">
-      “<span class="highlight">인웨이브는</span> <span class="highlight-dark">‘ 실제 본 사람 수 ’</span>를
-      데이터로 측정하는 유일한 실외 광고 플랫폼입니다.”
+          <div class="icon-area">
+            <div class="icon-glow"></div>
+            <div class="icon-growth">
+              <svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#66d7ff"/>
+                    <stop offset="100%" stop-color="#74ffd9"/>
+                  </linearGradient>
+                  <linearGradient id="fillGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="rgba(116,255,217,0.35)"/>
+                    <stop offset="100%" stop-color="rgba(116,255,217,0.02)"/>
+                  </linearGradient>
+                </defs>
+
+                <path d="M20 88 L55 76 L90 72 L122 54 L160 58 L185 30"
+                      fill="none"
+                      stroke="url(#lineGrad)"
+                      stroke-width="6"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"/>
+                <circle cx="185" cy="30" r="7" fill="#74ffd9"/>
+                <path d="M20 88 L55 76 L90 72 L122 54 L160 58 L185 30 L185 100 L20 100 Z"
+                      fill="rgba(116,255,217,0.12)"/>
+              </svg>
+            </div>
+          </div>
+
+          <h3>데이터 기반 기업 성장</h3>
+          <p>
+            축적된 시선 데이터를 바탕으로
+            <span class="emphasis">소상공인 및 브랜드 대상 데이터 리포트</span>를 생성하고,
+            구독형 수익 구조로 확장합니다.
+          </p>
+
+          <div class="bg-number">3</div>
+        </div>
+      </div>
+
+      <div class="footer-line"></div>
     </div>
   </div>
 </body>
