@@ -3,248 +3,670 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inwave 배경 1장</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-
+  <title>야간 저조도 대응 기술개발 장표</title>
   <style>
     * {
       box-sizing: border-box;
     }
 
-    html, body {
-      margin: 0;
-      padding: 0;
-      background: #e9e9ef;
-      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-    }
-
     body {
-      padding: 24px;
+      margin: 0;
+      background:
+        radial-gradient(circle at 15% 20%, rgba(47, 93, 198, 0.18), transparent 28%),
+        radial-gradient(circle at 85% 85%, rgba(63, 224, 209, 0.14), transparent 24%),
+        linear-gradient(90deg, #0d1727 0%, #111c2f 45%, #0f1a2c 100%);
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: #f3f7ff;
     }
 
-    .wrap {
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .toolbar {
-      width: 1920px;
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font-family: inherit;
-      border-radius: 999px;
-      padding: 13px 18px;
-      font-size: 15px;
-      font-weight: 900;
-      transition: transform .15s ease;
-    }
-
-    button:hover {
-      transform: translateY(-1px);
-    }
-
-    .save-btn {
-      background: linear-gradient(135deg, #7c3aed 0%, #c026d3 100%);
-      color: white;
-      box-shadow: 0 10px 24px rgba(124,58,237,0.26);
+    .deck {
+      width: 1600px;
+      margin: 0 auto;
+      padding: 26px 34px 40px;
     }
 
     .slide {
-      width: 1920px;
-      height: 1080px;
+      width: 100%;
+      height: 900px;
       position: relative;
       overflow: hidden;
       border-radius: 34px;
-      background:
-        radial-gradient(circle at 16% 18%, rgba(183, 72, 255, 0.28), transparent 22%),
-        radial-gradient(circle at 82% 18%, rgba(123, 58, 237, 0.22), transparent 20%),
-        radial-gradient(circle at 70% 78%, rgba(192, 38, 211, 0.18), transparent 20%),
-        radial-gradient(circle at 28% 75%, rgba(109, 40, 255, 0.14), transparent 18%),
-        linear-gradient(135deg, #030304 0%, #08080d 28%, #10101a 58%, #1a1030 78%, #271147 100%);
-      box-shadow: 0 28px 70px rgba(0, 0, 0, 0.34);
-      isolation: isolate;
+      background: linear-gradient(180deg, rgba(35, 47, 69, 0.96) 0%, rgba(28, 40, 60, 0.98) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 30px 80px rgba(0,0,0,0.28);
+      border: 1px solid rgba(255,255,255,0.04);
+      padding: 40px 44px 34px;
+      margin-bottom: 30px;
     }
 
-    /* 미세 그리드 */
-    .grid {
+    .slide-tag {
       position: absolute;
-      inset: 0;
-      background-image:
-        linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-      background-size: 68px 68px;
-      mask-image: linear-gradient(180deg, rgba(0,0,0,0.5), transparent 92%);
-      opacity: 0.55;
-      z-index: 1;
-    }
-
-    /* 부드러운 빛 번짐 */
-    .glow-1,
-    .glow-2,
-    .glow-3,
-    .glow-4 {
-      position: absolute;
+      top: 40px;
+      right: 44px;
+      padding: 12px 20px;
       border-radius: 999px;
-      filter: blur(30px);
-      z-index: 0;
-      pointer-events: none;
+      font-size: 16px;
+      font-weight: 700;
+      color: #dbe9ff;
+      background: rgba(110, 136, 184, 0.18);
+      border: 1px solid rgba(171, 198, 255, 0.12);
     }
 
-    .glow-1 {
-      width: 540px;
-      height: 540px;
-      top: -120px;
-      right: -80px;
-      background: radial-gradient(circle at center, rgba(182, 72, 255, 0.22), rgba(182, 72, 255, 0.02));
+    .title {
+      margin: 0;
+      font-size: 54px;
+      line-height: 1.1;
+      font-weight: 800;
+      color: #f7fbff;
+      letter-spacing: -0.03em;
     }
 
-    .glow-2 {
-      width: 460px;
-      height: 460px;
-      bottom: -120px;
-      left: -90px;
-      background: radial-gradient(circle at center, rgba(109, 40, 255, 0.20), rgba(109, 40, 255, 0.01));
+    .subtitle {
+      margin-top: 14px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: rgba(223, 232, 248, 0.82);
+      letter-spacing: -0.02em;
     }
 
-    .glow-3 {
-      width: 300px;
-      height: 300px;
-      left: 32%;
-      top: 24%;
-      background: radial-gradient(circle at center, rgba(192, 38, 211, 0.10), rgba(192, 38, 211, 0.01));
+    .grid-2 {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      height: 720px;
     }
 
-    .glow-4 {
-      width: 260px;
-      height: 260px;
-      right: 20%;
-      bottom: 18%;
-      background: radial-gradient(circle at center, rgba(255,255,255,0.06), rgba(255,255,255,0.01));
+    .grid-2b {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      height: 720px;
     }
 
-    /* 아주 약한 노이즈 */
-    .noise {
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(rgba(255,255,255,0.05) 0.6px, transparent 0.6px);
-      background-size: 8px 8px;
-      opacity: 0.04;
-      z-index: 2;
-      pointer-events: none;
+    .card {
+      position: relative;
+      border-radius: 28px;
+      background: linear-gradient(180deg, rgba(55, 68, 92, 0.64) 0%, rgba(44, 56, 78, 0.8) 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.04),
+        0 18px 40px rgba(0,0,0,0.18);
+      padding: 26px 28px 28px;
+      overflow: hidden;
     }
 
-    /* 보라색 흐름 라인 */
-    .wave {
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: 0.48;
+    .card.highlight {
+      border: 1px solid rgba(94, 245, 230, 0.62);
+      box-shadow:
+        inset 0 1px 0 rgba(255,255,255,0.05),
+        0 0 0 1px rgba(94, 245, 230, 0.12),
+        0 18px 40px rgba(0,0,0,0.22);
     }
 
-    .wave svg {
-      width: 100%;
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 54px;
+      height: 54px;
+      padding: 0 16px;
+      border-radius: 16px;
+      background: linear-gradient(180deg, #6b96ff 0%, #4d72f0 100%);
+      font-size: 22px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 8px 20px rgba(76, 118, 255, 0.28);
+      margin-bottom: 18px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 32px;
+      line-height: 1.28;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #f3f7ff;
+      word-break: keep-all;
+    }
+
+    .card-desc {
+      margin: 14px 0 0;
+      font-size: 20px;
+      line-height: 1.65;
+      color: rgba(223, 232, 248, 0.84);
+      letter-spacing: -0.02em;
+      word-break: keep-all;
+    }
+
+    .em-aqua {
+      color: #83fff1;
+      font-weight: 800;
+    }
+
+    .em-blue {
+      color: #8fb7ff;
+      font-weight: 800;
+    }
+
+    .problem-panel {
       height: 100%;
-      display: block;
+      display: grid;
+      grid-template-rows: 260px 1fr;
+      gap: 24px;
     }
 
-    @media (max-width: 1980px) {
-      .toolbar {
-        width: min(1920px, 100%);
-      }
+    .big-visual {
+      position: relative;
+      border-radius: 24px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(115, 255, 240, 0.12), transparent 34%),
+        linear-gradient(180deg, rgba(64, 81, 110, 0.36) 0%, rgba(44, 56, 78, 0.26) 100%);
+      border: 1px solid rgba(255,255,255,0.05);
+      overflow: hidden;
+      padding: 26px;
+    }
 
-      .slide {
-        transform: scale(0.72);
-        transform-origin: top center;
-        margin-bottom: -300px;
-      }
+    .scene {
+      position: absolute;
+      left: 26px;
+      right: 26px;
+      bottom: 30px;
+      height: 110px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(19, 27, 43, 0.1) 0%, rgba(19, 27, 43, 0.35) 100%);
+    }
+
+    .lamp {
+      position: absolute;
+      top: 34px;
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,220,130,0.95) 0%, rgba(255,220,130,0.35) 35%, rgba(255,220,130,0.06) 65%, transparent 75%);
+      filter: blur(1px);
+    }
+
+    .lamp.left { left: 60px; }
+    .lamp.right { right: 60px; }
+
+    .face-box {
+      position: absolute;
+      bottom: 54px;
+      width: 88px;
+      height: 104px;
+      border-radius: 16px;
+      border: 2px solid rgba(126, 254, 231, 0.36);
+      background: rgba(126, 254, 231, 0.06);
+    }
+
+    .face-box.one { left: 170px; height: 96px; }
+    .face-box.two { left: 310px; width: 96px; height: 118px; }
+    .face-box.three { left: 470px; width: 82px; height: 92px; opacity: 0.4; }
+
+    .face-box::after {
+      content: "LOW LIGHT";
+      position: absolute;
+      top: -28px;
+      left: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: rgba(131,255,241,0.8);
+      letter-spacing: 0.06em;
+    }
+
+    .visual-copy {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+    }
+
+    .visual-copy .small {
+      font-size: 16px;
+      font-weight: 700;
+      color: rgba(143, 183, 255, 0.88);
+      letter-spacing: 0.08em;
+    }
+
+    .visual-copy .main {
+      margin-top: 14px;
+      font-size: 40px;
+      line-height: 1.32;
+      font-weight: 800;
+      color: #f7fbff;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .issue-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin-top: 6px;
+    }
+
+    .issue {
+      border-radius: 22px;
+      padding: 22px 22px 20px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+
+    .issue .num {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(107, 150, 255, 0.22);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #9ebcff;
+      font-weight: 800;
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+    .issue h4 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: #f3f7ff;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .issue p {
+      margin: 12px 0 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(223, 232, 248, 0.8);
+      word-break: keep-all;
+    }
+
+    .quote-box {
+      height: 100%;
+      border-radius: 28px;
+      padding: 28px;
+      background:
+        radial-gradient(circle at 70% 18%, rgba(131,255,241,0.12), transparent 22%),
+        linear-gradient(180deg, rgba(62, 77, 103, 0.74) 0%, rgba(45, 57, 79, 0.86) 100%);
+      border: 1px solid rgba(94, 245, 230, 0.36);
+      position: relative;
+    }
+
+    .quote-box h3 {
+      margin: 0;
+      font-size: 34px;
+      line-height: 1.3;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #f7fbff;
+      word-break: keep-all;
+    }
+
+    .quote-box p {
+      margin: 18px 0 0;
+      font-size: 21px;
+      line-height: 1.7;
+      color: rgba(223,232,248,0.86);
+      word-break: keep-all;
+    }
+
+    .quote-strong {
+      display: block;
+      margin-top: 26px;
+      font-size: 30px;
+      line-height: 1.45;
+      font-weight: 800;
+      color: #83fff1;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .flow-wrap {
+      height: 100%;
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      gap: 24px;
+    }
+
+    .flow-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      height: 100%;
+    }
+
+    .flow-item {
+      border-radius: 22px;
+      padding: 22px;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .flow-item .badge {
+      display: inline-flex;
+      min-width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: rgba(107, 150, 255, 0.22);
+      align-items: center;
+      justify-content: center;
+      color: #9ebcff;
+      font-size: 17px;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .flow-item h4 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: #f3f7ff;
+      letter-spacing: -0.03em;
+      word-break: keep-all;
+    }
+
+    .flow-item p {
+      margin: 10px 0 0;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(223,232,248,0.8);
+      word-break: keep-all;
+    }
+
+    .metric-wrap {
+      height: 100%;
+      display: grid;
+      grid-template-rows: auto 1fr;
+      gap: 18px;
+    }
+
+    .metric-title {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.3;
+      font-weight: 800;
+      color: #f7fbff;
+      letter-spacing: -0.03em;
+    }
+
+    .metric-boxes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      align-content: start;
+    }
+
+    .metric {
+      border-radius: 22px;
+      padding: 24px 22px;
+      background:
+        radial-gradient(circle at 80% 20%, rgba(131,255,241,0.1), transparent 26%),
+        rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.05);
+      min-height: 190px;
+    }
+
+    .metric .top {
+      font-size: 16px;
+      line-height: 1.5;
+      color: rgba(143, 183, 255, 0.86);
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .metric .value {
+      margin-top: 14px;
+      font-size: 52px;
+      line-height: 1;
+      font-weight: 900;
+      color: #83fff1;
+      letter-spacing: -0.04em;
+    }
+
+    .metric .sub {
+      margin-top: 12px;
+      font-size: 17px;
+      line-height: 1.6;
+      color: rgba(223,232,248,0.8);
+      word-break: keep-all;
+    }
+
+    .footer-note {
+      position: absolute;
+      left: 44px;
+      right: 44px;
+      bottom: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(115,153,222,0.25) 20%, rgba(115,153,222,0.1) 80%, transparent 100%);
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="toolbar">
-      <button class="save-btn" onclick="saveSlide('slide01', 'inwave_bg_01.png')">PNG 저장</button>
-    </div>
+  <div class="deck">
 
-    <section class="slide" id="slide01">
-      <div class="glow-1"></div>
-      <div class="glow-2"></div>
-      <div class="glow-3"></div>
-      <div class="glow-4"></div>
+    <!-- Slide 1 -->
+    <section class="slide">
+      <div class="slide-tag">WHY DEVELOPMENT</div>
 
-      <div class="wave">
-        <svg viewBox="0 0 1920 1080" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="waveStroke1" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stop-color="rgba(192,38,211,0)" />
-              <stop offset="25%" stop-color="rgba(192,38,211,0.45)" />
-              <stop offset="60%" stop-color="rgba(124,58,237,0.24)" />
-              <stop offset="100%" stop-color="rgba(124,58,237,0)" />
-            </linearGradient>
-
-            <linearGradient id="waveStroke2" x1="1" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="rgba(255,255,255,0)" />
-              <stop offset="40%" stop-color="rgba(216,180,254,0.18)" />
-              <stop offset="70%" stop-color="rgba(192,38,211,0.20)" />
-              <stop offset="100%" stop-color="rgba(255,255,255,0)" />
-            </linearGradient>
-          </defs>
-
-          <path
-            d="M -40 860 C 240 760, 420 940, 700 820 S 1160 650, 1460 760 S 1780 940, 1980 800"
-            fill="none"
-            stroke="url(#waveStroke1)"
-            stroke-width="2.2"
-          />
-
-          <path
-            d="M -60 250 C 220 140, 380 340, 700 230 S 1180 60, 1480 190 S 1740 380, 1980 220"
-            fill="none"
-            stroke="url(#waveStroke2)"
-            stroke-width="1.8"
-          />
-
-          <path
-            d="M 120 1040 C 420 920, 620 1060, 900 960 S 1360 820, 1740 930"
-            fill="none"
-            stroke="url(#waveStroke2)"
-            stroke-width="1.4"
-            opacity="0.55"
-          />
-        </svg>
+      <h1 class="title">왜 야간 저조도 대응 기술개발이 필요한가</h1>
+      <div class="subtitle">
+        실외 광고 장치는 주간보다 야간·저조도 환경에서 더 많은 운영 시간을 가지며,
+        이 구간에서 얼굴 검출과 시선 분석 정확도가 떨어지면 데이터 신뢰도 자체가 흔들립니다.
       </div>
 
-      <div class="grid"></div>
-      <div class="noise"></div>
+      <div class="grid-2">
+        <div class="problem-panel">
+          <div class="big-visual">
+            <div class="lamp left"></div>
+            <div class="lamp right"></div>
+            <div class="visual-copy">
+              <div class="small">LOW-LIGHT LIMITATION</div>
+              <div class="main">
+                야간에는 얼굴 검출이 흔들리고,<br />
+                얼굴 검출이 흔들리면 시선 분석과 유효 시청 판별도 함께 약해집니다.
+              </div>
+            </div>
+            <div class="scene"></div>
+            <div class="face-box one"></div>
+            <div class="face-box two"></div>
+            <div class="face-box three"></div>
+          </div>
+
+          <div class="issue-list">
+            <div class="issue">
+              <div class="num">01</div>
+              <h4>실외 장치는 야간 운영 비중이 높습니다</h4>
+              <p>
+                오프라인 광고 장치는 저녁과 밤 시간에도 계속 운영됩니다.
+                그러나 기존 <span class="em-blue">RGB 카메라 중심 구조</span>는
+                조도가 낮아질수록 검출 정확도가 급격히 저하됩니다.
+              </p>
+            </div>
+
+            <div class="issue">
+              <div class="num">02</div>
+              <h4>얼굴 인식 저하는 데이터 신뢰도 저하로 이어집니다</h4>
+              <p>
+                얼굴을 안정적으로 찾지 못하면
+                <span class="em-aqua">시선 방향 분석, 체류시간 계산, 유효 시청 판단</span>
+                모두 흔들리게 됩니다.
+              </p>
+            </div>
+
+            <div class="issue">
+              <div class="num">03</div>
+              <h4>광고주는 실제 반응 데이터를 원합니다</h4>
+              <p>
+                단순 노출이 아니라 누가, 얼마나, 실제로 광고를 보았는지를
+                정량적으로 설명할 수 있어야 광고 성과를 증명할 수 있습니다.
+              </p>
+            </div>
+
+            <div class="issue">
+              <div class="num">04</div>
+              <h4>야간 대응이 안 되면 현장 적용이 어렵습니다</h4>
+              <p>
+                실외 환경에서 가장 취약한 구간을 해결하지 못하면,
+                기술은 있어도 <span class="em-blue">실제 상용 운영 데이터</span>를
+                안정적으로 확보하기 어렵습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="quote-box">
+          <div class="section-label">01</div>
+          <h3>핵심 문제 정의</h3>
+          <p>
+            기존 오프라인 광고 분석 기술은 광고가 얼마나 송출되었는지는 보여줄 수 있지만,
+            <span class="em-aqua">야간 저조도 환경에서도 실제로 누가 광고를 보았는지</span>를
+            안정적으로 판별하는 데에는 한계가 있습니다.
+          </p>
+          <p>
+            특히 실외 설치 장치는 조도 변화, 거리, 각도, 역광, 야간 조명 등
+            다양한 조건에 노출되기 때문에, 주간 중심 성능만으로는 현장 적용성을 확보하기 어렵습니다.
+          </p>
+          <span class="quote-strong">
+            “야간에서도 얼굴을 정확히 찾을 수 있어야<br />
+            광고 데이터가 신뢰를 가질 수 있습니다.”
+          </span>
+        </div>
+      </div>
+
+      <div class="footer-note"></div>
     </section>
+
+    <!-- Slide 2 -->
+    <section class="slide">
+      <div class="slide-tag">HOW TO DEVELOP</div>
+
+      <h1 class="title">어떤 기준으로 어떻게 기술개발을 할 것인가</h1>
+      <div class="subtitle">
+        RGB의 한계를 보완하는 IR 카메라 융합 구조와 실환경 검증을 통해,
+        야간에도 안정적으로 얼굴 인식과 시선 분석이 가능한 구조를 확보합니다.
+      </div>
+
+      <div class="grid-2b">
+        <div class="card highlight">
+          <div class="section-label">02</div>
+          <h3 class="card-title">개발 방향 및 수행 방법</h3>
+          <div class="flow-wrap" style="margin-top:18px;">
+            <div class="flow-grid">
+              <div class="flow-item">
+                <div class="badge">01</div>
+                <h4>IR 카메라 융합</h4>
+                <p>
+                  기존 RGB 카메라의 한계를 보완하기 위해
+                  <span class="em-aqua">IR(적외선) 카메라 기반 얼굴 검출</span>을 적용하고,
+                  저조도 환경에서도 얼굴 특징을 안정적으로 추출합니다.
+                </p>
+              </div>
+
+              <div class="flow-item">
+                <div class="badge">02</div>
+                <h4>환경별 반복 검증</h4>
+                <p>
+                  <span class="em-blue">조도, 거리, 각도</span> 조건을 단계별로 나누어
+                  테스트하고, 실제 매장 및 실외 환경에서 수집한 데이터를 바탕으로
+                  성능을 반복 개선합니다.
+                </p>
+              </div>
+
+              <div class="flow-item">
+                <div class="badge">03</div>
+                <h4>RGB 대비 성능 비교</h4>
+                <p>
+                  동일 조건에서 RGB와 IR의 얼굴 검출 성공 여부,
+                  시선 분석 가능 여부를 비교해
+                  저조도 대응 성능 향상을 정량적으로 확인합니다.
+                </p>
+              </div>
+
+              <div class="flow-item">
+                <div class="badge">04</div>
+                <h4>유효 시청 판단 고도화</h4>
+                <p>
+                  얼굴 존재만 보는 것이 아니라
+                  <span class="em-aqua">정면 응시 여부 + 시선 방향 + 체류시간</span>을
+                  함께 반영하여 실제 광고 시청 여부를 판별합니다.
+                </p>
+              </div>
+            </div>
+
+            <div class="card" style="padding:24px 24px 22px;">
+              <h3 class="card-title" style="font-size:28px;">최종 개발 구조</h3>
+              <p class="card-desc" style="margin-top:12px;">
+                <span class="em-blue">IR 기반 저조도 얼굴 검출</span> →
+                <span class="em-aqua">시선 분석 및 유효 시청 판별</span> →
+                <span class="em-blue">광고 성과 데이터화 및 리포트 제공</span>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="section-label">03</div>
+          <div class="metric-wrap">
+            <div>
+              <h3 class="metric-title">정량 목표와 평가 기준</h3>
+              <p class="card-desc" style="margin-top:14px;">
+                기술개발은 “야간에도 동작한다”는 선언이 아니라,
+                <span class="em-aqua">명확한 목표 수치와 시험 조건</span>을 기준으로 검증합니다.
+              </p>
+            </div>
+
+            <div class="metric-boxes">
+              <div class="metric">
+                <div class="top">시선 기반 유효 시청 판별 정확도</div>
+                <div class="value">90%+</div>
+                <div class="sub">
+                  실제 시청 여부 Ground Truth와 시스템 결과를 비교하여
+                  유효 시청 판별 일치율을 산출합니다.
+                </div>
+              </div>
+
+              <div class="metric">
+                <div class="top">저조도 얼굴 검출 및 시선 분석 성공률</div>
+                <div class="value">85%+</div>
+                <div class="sub">
+                  <span class="em-blue">10 Lux 이하</span> 저조도 환경에서
+                  RGB 대비 IR 적용 전후 성능 차이를 평가합니다.
+                </div>
+              </div>
+
+              <div class="metric">
+                <div class="top">평가 환경</div>
+                <div class="value" style="font-size:38px;">조도·거리·각도</div>
+                <div class="sub">
+                  조도 0~500 Lux 구간, 거리 변화, 시선 각도 조건을 단계적으로 나누어
+                  실환경 기반 시험을 수행합니다.
+                </div>
+              </div>
+
+              <div class="metric">
+                <div class="top">개발 목표</div>
+                <div class="value" style="font-size:38px;">야간 적용 가능</div>
+                <div class="sub">
+                  주간뿐 아니라 야간 실외 환경에서도 안정적으로 얼굴을 검출하고,
+                  실제 광고 적용이 가능한 수준의 데이터 신뢰도를 확보합니다.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="footer-note"></div>
+    </section>
+
   </div>
-
-  <script>
-    async function saveSlide(slideId, fileName) {
-      const target = document.getElementById(slideId);
-      const canvas = await html2canvas(target, {
-        useCORS: true,
-        backgroundColor: null,
-        scale: 2
-      });
-
-      const link = document.createElement("a");
-      link.download = fileName;
-      link.href = canvas.toDataURL("image/png");
-      link.click();
-    }
-  </script>
 </body>
 </html>
