@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>매출 추정 근거 및 그래프</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #eef2f7;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      color: #1f2937;
+    }
+
+    .slide {
+      width: 1600px;
+      min-height: 900px;
+      margin: 0 auto;
+      padding: 34px 42px 40px;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 140px, transparent 141px),
+        radial-gradient(circle at 65% 10%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 170px, transparent 171px),
+        radial-gradient(circle at 85% 80%, rgba(0,0,0,0.02) 0, rgba(0,0,0,0.02) 180px, transparent 181px),
+        #f4f5f7;
+      border: 1px solid #d7dbe2;
+    }
+
+    .title {
+      margin: 0 0 18px;
+      font-size: 28px;
+      font-weight: 800;
+      color: #1f3bb3;
+      letter-spacing: -0.03em;
+    }
+
+    .section-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 8px 6px 10px;
+    }
+
+    .section-label {
+      font-size: 16px;
+      color: #4b5563;
+    }
+
+    .unit {
+      font-size: 14px;
+      color: #374151;
+    }
+
+    .chart-wrap {
+      margin-top: 6px;
+      padding: 0 18px 0 18px;
+    }
+
+    .chart-area {
+      position: relative;
+      height: 300px;
+      margin-top: 10px;
+      border-left: 0;
+      border-bottom: 2px solid #c9ced8;
+      background:
+        repeating-linear-gradient(
+          to top,
+          transparent 0,
+          transparent 39px,
+          #d8dde6 39px,
+          #d8dde6 40px
+        );
+    }
+
+    .y-labels {
+      position: absolute;
+      left: -6px;
+      top: 0;
+      bottom: 0;
+      width: 70px;
+      transform: translateX(-100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #6b7280;
+      padding: 0 8px 0 0;
+      text-align: right;
+    }
+
+    .bars {
+      position: absolute;
+      left: 30px;
+      right: 20px;
+      bottom: 0;
+      top: 0;
+      display: flex;
+      justify-content: space-around;
+      align-items: flex-end;
+      padding: 0 8px;
+    }
+
+    .bar-group {
+      width: 180px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      height: 100%;
+    }
+
+    .bar {
+      width: 78px;
+      background: #3a43d6;
+      border-radius: 0;
+      position: relative;
+    }
+
+    .bar-value {
+      position: absolute;
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 15px;
+      font-weight: 700;
+      color: #374151;
+      white-space: nowrap;
+    }
+
+    .year {
+      margin-top: 12px;
+      font-size: 16px;
+      color: #6b7280;
+    }
+
+    .legend {
+      margin-top: 18px;
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      font-size: 15px;
+      color: #4b5563;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-color {
+      width: 10px;
+      height: 10px;
+      background: #3a43d6;
+    }
+
+    .table-title-row {
+      margin: 34px 6px 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .table-title {
+      font-size: 16px;
+      color: #374151;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.28);
+      font-size: 16px;
+    }
+
+    th, td {
+      border: 1px solid #4e8fc5;
+      padding: 12px 10px;
+      text-align: center;
+      line-height: 1.25;
+    }
+
+    th {
+      background: rgba(210, 222, 234, 0.8);
+      font-weight: 700;
+      color: #111827;
+    }
+
+    td {
+      background: rgba(234, 239, 244, 0.68);
+      color: #374151;
+    }
+
+    .note-box {
+      margin-top: 22px;
+      padding: 18px 18px 2px;
+      color: #374151;
+    }
+
+    .note-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .note-text {
+      font-size: 15px;
+      line-height: 1.7;
+      margin-bottom: 10px;
+      word-break: keep-all;
+    }
+
+    .em {
+      color: #d14343;
+      text-decoration: underline;
+      text-decoration-thickness: 2px;
+      text-underline-offset: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="slide">
+    <h1 class="title">[매출 추정 근거 - 50원 기준]</h1>
+
+    <div class="section-label-row">
+      <div class="section-label">4개년 매출 계획 그래프</div>
+      <div class="unit">단위 : 백만원</div>
+    </div>
+
+    <div class="chart-wrap">
+      <div class="chart-area">
+        <div class="y-labels">
+          <div>₩10,000</div>
+          <div>₩8,000</div>
+          <div>₩6,000</div>
+          <div>₩4,000</div>
+          <div>₩2,000</div>
+          <div>₩-</div>
+        </div>
+
+        <div class="bars">
+          <div class="bar-group">
+            <div class="bar" style="height: 13px;">
+              <div class="bar-value">440</div>
+            </div>
+            <div class="year">2027</div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar" style="height: 37px;">
+              <div class="bar-value">1,244</div>
+            </div>
+            <div class="year">2028</div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar" style="height: 132px;">
+              <div class="bar-value">4,398</div>
+            </div>
+            <div class="year">2029</div>
+          </div>
+
+          <div class="bar-group">
+            <div class="bar" style="height: 287px;">
+              <div class="bar-value">9,581</div>
+            </div>
+            <div class="year">2030</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color"></div>
+          <div>매출</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-title-row">
+      <div class="table-title">4개년 매출 추정 근거표</div>
+      <div class="unit">단위 : 백만원</div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>단계</th>
+          <th>연 평균 설치 대수</th>
+          <th>모니터당 월평균매출<br />(15초 50원 기준)</th>
+          <th>매출</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>2027년</td>
+          <td>85</td>
+          <td>0.43</td>
+          <td>440</td>
+        </tr>
+        <tr>
+          <td>2028년</td>
+          <td>240</td>
+          <td>0.43</td>
+          <td>1,244</td>
+        </tr>
+        <tr>
+          <td>2029년</td>
+          <td>849</td>
+          <td>0.43</td>
+          <td>4,398</td>
+        </tr>
+        <tr>
+          <td>2030년</td>
+          <td>1849</td>
+          <td>0.43</td>
+          <td>9,581</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note-box">
+      <div class="note-title">매출 추정 근거 설명</div>
+      <div class="note-text">
+        15초 송출 기준 <span class="em">50원 부과 시</span>를 기준으로, 기존 150원 기준 매출 추정값을 1/3로 조정하여 산출하였습니다.
+      </div>
+      <div class="note-text">
+        기존 가정과 동일하게 유효과금 시간, 설치 대수, 운영 구조는 유지하고 <span class="em">단가만 150원에서 50원으로 변경</span>하였습니다.
+      </div>
+      <div class="note-text">
+        따라서 연도별 매출은 2027년 440백만원, 2028년 1,244백만원, 2029년 4,398백만원, 2030년 9,581백만원으로 재산정하였습니다.
+      </div>
+    </div>
+  </div>
+</body>
+</html>
