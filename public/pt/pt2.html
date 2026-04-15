@@ -79,24 +79,26 @@
       display: grid;
       grid-template-columns: 1.15fr 0.85fr;
       gap: 22px;
-      height: 700px;
+      height: 670px;
+      align-items: stretch;
     }
 
     .left-area {
-      display: grid;
-      grid-template-rows: 232px 1fr;
-      gap: 22px;
       min-height: 0;
+      display: flex;
+      flex-direction: column;
     }
 
     .hero-box {
+      flex: 1;
       border-radius: 26px;
       background: linear-gradient(180deg, rgba(58, 73, 99, 0.50) 0%, rgba(43, 56, 78, 0.58) 100%);
       border: 1px solid rgba(255,255,255,0.05);
-      padding: 24px 24px 22px;
+      padding: 34px 30px;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      min-height: 0;
     }
 
     .hero-label {
@@ -104,53 +106,16 @@
       font-weight: 800;
       color: #8fb7ff;
       letter-spacing: 0.08em;
-      margin-bottom: 12px;
+      margin-bottom: 16px;
     }
 
     .hero-title {
       margin: 0;
-      font-size: 34px;
-      line-height: 1.35;
+      font-size: 44px;
+      line-height: 1.42;
       font-weight: 800;
       color: #ffffff;
-      letter-spacing: -0.035em;
-      word-break: keep-all;
-    }
-
-    .issue-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 18px;
-      min-height: 0;
-    }
-
-    .issue-card {
-      border-radius: 24px;
-      background: linear-gradient(180deg, rgba(45, 58, 82, 0.76) 0%, rgba(35, 47, 68, 0.86) 100%);
-      border: 1px solid rgba(255,255,255,0.05);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.03),
-        0 16px 36px rgba(0,0,0,0.16);
-      padding: 24px 22px 22px;
-      min-height: 0;
-    }
-
-    .issue-card h3 {
-      margin: 0;
-      font-size: 21px;
-      line-height: 1.4;
-      font-weight: 800;
-      color: #ffffff;
-      letter-spacing: -0.03em;
-      word-break: keep-all;
-    }
-
-    .issue-card p {
-      margin: 12px 0 0;
-      font-size: 16px;
-      line-height: 1.68;
-      color: rgba(223, 232, 248, 0.82);
-      letter-spacing: -0.02em;
+      letter-spacing: -0.04em;
       word-break: keep-all;
     }
 
@@ -204,11 +169,6 @@
       font-weight: 800;
     }
 
-    .em-blue {
-      color: #8fb7ff;
-      font-weight: 800;
-    }
-
     .footer-line {
       position: absolute;
       left: 40px;
@@ -231,6 +191,7 @@
       <div class="tag">WHY DEVELOPMENT</div>
 
       <h1 class="title">왜 야간 저조도 대응 기술개발이 필요한가</h1>
+
       <div class="subtitle">
         실외 광고 장치는 주간보다 야간·저조도 환경에서 더 많은 운영 시간을 가지며,
         이 구간에서 얼굴 검출과 시선 분석 정확도가 떨어지면 데이터 신뢰도 자체가 흔들립니다.
@@ -242,45 +203,9 @@
             <div class="hero-label">LOW-LIGHT LIMITATION</div>
             <h2 class="hero-title">
               야간에는 얼굴 검출이 흔들리고,<br />
-              얼굴 검출이 흔들리면 시선 분석과 유효 시청 판별도 함께 약해집니다.
+              얼굴 검출이 흔들리면 시선 분석과<br />
+              유효 시청 판별도 함께 약해집니다.
             </h2>
-          </div>
-
-          <div class="issue-grid">
-            <div class="issue-card">
-              <h3>실외 장치는 야간 운영 비중이 높습니다</h3>
-              <p>
-                오프라인 광고 장치는 저녁과 밤 시간에도 계속 운영됩니다.
-                그러나 기존 <span class="em-blue">RGB 카메라 중심 구조</span>는
-                조도가 낮아질수록 검출 정확도가 급격히 저하됩니다.
-              </p>
-            </div>
-
-            <div class="issue-card">
-              <h3>얼굴 인식 저하는 데이터 신뢰도 저하로 이어집니다</h3>
-              <p>
-                얼굴을 안정적으로 찾지 못하면
-                <span class="em-aqua">시선 방향 분석, 체류시간 계산, 유효 시청 판단</span>
-                모두 흔들리게 됩니다.
-              </p>
-            </div>
-
-            <div class="issue-card">
-              <h3>광고주는 실제 반응 데이터를 원합니다</h3>
-              <p>
-                단순 노출이 아니라 누가, 얼마나, 실제로 광고를 보았는지를
-                정량적으로 설명할 수 있어야 광고 성과를 증명할 수 있습니다.
-              </p>
-            </div>
-
-            <div class="issue-card">
-              <h3>야간 대응이 안 되면 현장 적용이 어렵습니다</h3>
-              <p>
-                실외 환경에서 가장 취약한 구간을 해결하지 못하면,
-                기술은 있어도 <span class="em-blue">실제 상용 운영 데이터</span>를
-                안정적으로 확보하기 어렵습니다.
-              </p>
-            </div>
           </div>
         </div>
 
