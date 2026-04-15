@@ -3,472 +3,205 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inwave | Image Download</title>
-
+  <title>경쟁사 대비 차별점 – Why Inwave?</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --surface: #f4f7fb;
-      --surface-strong: #ffffff;
-      --text: #1f2a37;
-      --text-soft: #5b6676;
-      --primary: #5b8cff;
-      --primary-2: #7aa8ff;
-      --mint: #45d6c3;
-      --shadow-card: 14px 14px 28px rgba(194, 203, 216, 0.55),
-                     -14px -14px 28px rgba(255, 255, 255, 0.95);
-      --shadow-pressed: inset 6px 6px 12px rgba(196, 205, 217, 0.75),
-                        inset -6px -6px 12px rgba(255, 255, 255, 0.98);
-      --radius-xl: 32px;
-      --radius-lg: 24px;
-      --radius-md: 18px;
-      --max-width: 1280px;
-      --header-h: 88px;
-    }
-
     * {
       box-sizing: border-box;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
+      background: #eef2f7;
       font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      background:
-        radial-gradient(circle at top left, rgba(122, 168, 255, 0.18), transparent 28%),
-        radial-gradient(circle at top right, rgba(69, 214, 195, 0.10), transparent 24%),
-        linear-gradient(180deg, #f8fbff 0%, #f3f6fb 40%, #eef3f9 100%);
-      color: var(--text);
+      color: #1f2937;
     }
 
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-
-    .container {
-      width: min(calc(100% - 40px), var(--max-width));
+    .slide {
+      width: 1600px;
+      height: 900px;
       margin: 0 auto;
+      background: #eef2f7;
+      position: relative;
+      overflow: hidden;
+      padding: 64px 72px 56px 72px;
     }
 
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(18px);
-      background: rgba(247, 250, 255, 0.72);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.10);
-    }
-
-    .header-inner {
-      height: var(--header-h);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .logo-wrap {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-    }
-
-    .logo-mark {
-      width: 50px;
-      height: 50px;
-      border-radius: 18px;
-      background: linear-gradient(145deg, #fafdff, #e8eef7);
-      box-shadow: var(--shadow-card);
-      display: grid;
-      place-items: center;
+    .title {
+      margin: 0 0 42px 0;
+      font-size: 42px;
       font-weight: 800;
-      color: var(--primary);
-      font-size: 16px;
-    }
-
-    .logo-text {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-
-    .logo-text strong {
-      font-size: 20px;
+      line-height: 1.35;
+      color: #111827;
       letter-spacing: -0.03em;
     }
 
-    .logo-text span {
-      font-size: 12px;
-      color: var(--text-soft);
-    }
-
-    .btn {
-      border: none;
-      outline: none;
-      cursor: pointer;
-      border-radius: 999px;
-      padding: 15px 24px;
-      font-size: 15px;
-      font-weight: 700;
-      transition: transform 0.2s ease, box-shadow 0.25s ease, background 0.25s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      white-space: nowrap;
-    }
-
-    .btn:hover {
-      transform: translateY(-1px);
-    }
-
-    .btn-primary {
-      color: #fff;
-      background: linear-gradient(135deg, var(--primary), var(--primary-2));
-      box-shadow: 0 14px 28px rgba(91, 140, 255, 0.26);
-    }
-
-    .btn-secondary {
-      color: var(--text);
-      background: var(--surface);
-      box-shadow: var(--shadow-card);
-    }
-
-    .btn-secondary:hover {
-      box-shadow: var(--shadow-pressed);
-    }
-
-    .page-section {
-      padding: 72px 0 92px;
-    }
-
-    .hero-card {
-      padding: 42px;
-      border-radius: var(--radius-xl);
-      background: linear-gradient(145deg, #f8fbff, #edf2f8);
-      box-shadow: var(--shadow-card);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-      margin-bottom: 28px;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: var(--surface);
-      box-shadow: var(--shadow-card);
-      color: var(--primary);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      margin-bottom: 18px;
-    }
-
-    .eyebrow::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--mint), var(--primary));
-      box-shadow: 0 0 14px rgba(91, 140, 255, 0.45);
-    }
-
-    .hero-title {
-      font-size: clamp(32px, 4vw, 54px);
-      line-height: 1.12;
-      letter-spacing: -0.04em;
-      margin: 0 0 14px;
-    }
-
-    .hero-desc {
-      margin: 0;
-      max-width: 760px;
-      font-size: 17px;
-      line-height: 1.85;
-      color: var(--text-soft);
-    }
-
-    .actions-row {
-      display: flex;
-      justify-content: flex-end;
-      margin-bottom: 22px;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .gallery-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 24px;
-    }
-
-    .image-card {
-      padding: 22px;
-      border-radius: var(--radius-lg);
-      background: linear-gradient(145deg, #f8fbff, #edf2f8);
-      box-shadow: var(--shadow-card);
-      border: 1px solid rgba(255, 255, 255, 0.55);
-    }
-
-    .image-preview-wrap {
-      border-radius: 22px;
-      overflow: hidden;
-      background: #eef3f9;
-      box-shadow: inset 4px 4px 10px rgba(201, 211, 224, 0.22),
-                  inset -4px -4px 10px rgba(255, 255, 255, 0.88);
-      margin-bottom: 18px;
-      aspect-ratio: 16 / 9;
-    }
-
-    .image-preview {
+    .table-wrap {
       width: 100%;
-      height: 100%;
-      object-fit: cover;
+      background: #ffffff;
+      border-radius: 24px;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.08);
+      padding: 28px 28px 24px;
     }
 
-    .image-meta {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 14px;
-      margin-bottom: 18px;
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      overflow: hidden;
+      border-radius: 16px;
     }
 
-    .image-title {
-      font-size: 20px;
-      font-weight: 800;
+    th, td {
+      border: 2px solid #5f90bd;
+      text-align: center;
+      vertical-align: middle;
+      padding: 14px 12px;
+      font-size: 25px;
+      line-height: 1.3;
       letter-spacing: -0.02em;
-      margin: 0 0 8px;
+      word-break: keep-all;
     }
 
-    .image-desc {
-      margin: 0;
-      font-size: 14px;
-      line-height: 1.7;
-      color: var(--text-soft);
+    th {
+      background: #d7e4f2;
+      color: #1f2937;
+      font-weight: 800;
     }
 
-    .image-badge {
-      flex: 0 0 auto;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.72);
-      box-shadow: var(--shadow-card);
-      font-size: 12px;
+    td {
+      background: #f7f9fc;
+      color: #374151;
+      font-weight: 500;
+    }
+
+    .left-col {
+      width: 22%;
+      background: #e7edf5;
       font-weight: 700;
-      color: var(--primary);
+      color: #374151;
     }
 
-    .image-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+    .mid-col {
+      width: 31%;
+      background: #f7f9fc;
+      color: #4b5563;
     }
 
-    .site-footer {
-      padding: 0 0 48px;
+    .right-col,
+    th.right-col {
+      width: 47%;
+      background: #cfe1f3;
+      color: #111827;
+      font-weight: 800;
     }
 
-    .footer-box {
-      padding: 24px 28px;
-      border-radius: 28px;
-      background: linear-gradient(145deg, #f8fbff, #edf2f8);
-      box-shadow: var(--shadow-card);
-      color: var(--text-soft);
-      font-size: 14px;
-      line-height: 1.8;
+    .em-red {
+      color: #d13d3d;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      text-decoration-thickness: 2px;
+      font-weight: 800;
     }
 
-    @media (max-width: 980px) {
-      .gallery-grid {
-        grid-template-columns: 1fr;
-      }
+    .em-blue {
+      color: #1d4ed8;
+      font-weight: 800;
     }
 
-    @media (max-width: 768px) {
-      .container {
-        width: min(calc(100% - 28px), var(--max-width));
-      }
+    .bottom-quote {
+      margin-top: 28px;
+      font-size: 30px;
+      font-weight: 800;
+      line-height: 1.45;
+      color: #4b5563;
+      letter-spacing: -0.03em;
+    }
 
-      .header-inner {
-        height: 78px;
-      }
+    .bottom-quote .highlight {
+      color: #1d3fd6;
+      font-weight: 900;
+    }
 
-      .hero-card,
-      .image-card,
-      .footer-box {
-        padding: 22px;
-      }
-
-      .hero-title {
-        font-size: clamp(28px, 8vw, 42px);
-      }
-
-      .hero-desc {
-        font-size: 15px;
-      }
-
-      .image-meta {
-        flex-direction: column;
-      }
-
-      .image-actions {
-        flex-direction: column;
-      }
-
-      .image-actions .btn,
-      .actions-row .btn {
-        width: 100%;
-      }
+    .bottom-quote .highlight-dark {
+      color: #374151;
+      font-weight: 900;
     }
   </style>
 </head>
 <body>
-  <header class="site-header">
-    <div class="container header-inner">
-      <a href="#" class="logo-wrap" aria-label="Inwave 홈">
-        <div class="logo-mark">IW</div>
-        <div class="logo-text">
-          <strong>Inwave</strong>
-          <span>AI Advertising Intelligence</span>
-        </div>
-      </a>
+  <div class="slide">
+    <h1 class="title">
+      인웨이브는 ‘실외 시선 기반 데이터 광고’로 기존 광고의 한계를 넘어섭니다.
+    </h1>
 
-      <a href="/" class="btn btn-primary">메인으로</a>
+    <div class="table-wrap">
+      <table>
+        <tr>
+          <th class="left-col">구분</th>
+          <th class="mid-col">엘리베이터 광고<br />(실내 고정형)</th>
+          <th class="right-col">AI분석 옥외 광고<br />(실외 시선형)</th>
+        </tr>
+
+        <tr>
+          <td class="left-col">광고 위치/노출 환경</td>
+          <td class="mid-col">아파트 내부 , 폐쇄된 공간</td>
+          <td class="right-col">길거리, 유동인구 많은 실외 공간</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">시청자 특정</td>
+          <td class="mid-col">특정 아파트 주민 중심</td>
+          <td class="right-col">불특정 다수, 실시간 보행자 타겟</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">광고 효과 측정 방식</td>
+          <td class="mid-col">단순 노출 횟수</td>
+          <td class="right-col">실제’본 사람 수‘ 정량화(시선감지)</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">광고 송출 방식</td>
+          <td class="mid-col">정해진 시간 반복 송출</td>
+          <td class="right-col">시간,날씨,인구밀도에 따라 자동 변경</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">특징 요약</td>
+          <td class="mid-col">지역 고정</td>
+          <td class="right-col">데이터 기반 실외형 스마트 광고</td>
+        </tr>
+
+        <tr>
+          <td class="left-col"><span class="em-red">과금기준</span></td>
+          <td class="mid-col">시간</td>
+          <td class="right-col">실제 시청</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">광고단가</td>
+          <td class="mid-col">15초 슬롯당 약50원</td>
+          <td class="right-col">1시청당 150원</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">수익모델</td>
+          <td class="mid-col">재고 기반(시간)</td>
+          <td class="right-col">성과 기반(시청)</td>
+        </tr>
+
+        <tr>
+          <td class="left-col">일일매출</td>
+          <td class="mid-col">최대21.6만원 (18시간 <span class="em-red">운영시</span>)</td>
+          <td class="right-col">28.8만원 (약 8시간 <span class="em-red">시청시</span>)</td>
+        </tr>
+      </table>
     </div>
-  </header>
 
-  <main class="page-section">
-    <div class="container">
-      <section class="hero-card">
-        <div class="eyebrow">Image Download</div>
-        <h1 class="hero-title">대시보드 이미지를 바로 다운로드할 수 있습니다</h1>
-        <p class="hero-desc">
-          아래 4개의 이미지는 각각 개별 다운로드가 가능하며,
-          필요하면 한 번에 모두 다운로드할 수도 있도록 구성했습니다.
-        </p>
-      </section>
-
-      <div class="actions-row">
-        <button class="btn btn-secondary" onclick="downloadAllImages()">전체 이미지 다운로드</button>
-      </div>
-
-      <section class="gallery-grid">
-        <article class="image-card">
-          <div class="image-preview-wrap">
-            <img src="./images/dashboard_01.png" alt="대시보드 이미지 1" class="image-preview">
-          </div>
-          <div class="image-meta">
-            <div>
-              <h2 class="image-title">이미지 01</h2>
-              <p class="image-desc">첫 번째 대시보드 이미지입니다.</p>
-            </div>
-            <div class="image-badge">PNG</div>
-          </div>
-          <div class="image-actions">
-            <a class="btn btn-primary" href="./images/dashboard_01.png" download="dashboard_01.png">다운로드</a>
-            <a class="btn btn-secondary" href="./images/dashboard_01.png" target="_blank">새 창 보기</a>
-          </div>
-        </article>
-
-        <article class="image-card">
-          <div class="image-preview-wrap">
-            <img src="./images/dashboard_02.png" alt="대시보드 이미지 2" class="image-preview">
-          </div>
-          <div class="image-meta">
-            <div>
-              <h2 class="image-title">이미지 02</h2>
-              <p class="image-desc">두 번째 대시보드 이미지입니다.</p>
-            </div>
-            <div class="image-badge">PNG</div>
-          </div>
-          <div class="image-actions">
-            <a class="btn btn-primary" href="./images/dashboard_02.png" download="dashboard_02.png">다운로드</a>
-            <a class="btn btn-secondary" href="./images/dashboard_02.png" target="_blank">새 창 보기</a>
-          </div>
-        </article>
-
-        <article class="image-card">
-          <div class="image-preview-wrap">
-            <img src="./images/dashboard_03.png" alt="대시보드 이미지 3" class="image-preview">
-          </div>
-          <div class="image-meta">
-            <div>
-              <h2 class="image-title">이미지 03</h2>
-              <p class="image-desc">세 번째 대시보드 이미지입니다.</p>
-            </div>
-            <div class="image-badge">PNG</div>
-          </div>
-          <div class="image-actions">
-            <a class="btn btn-primary" href="./images/dashboard_03.png" download="dashboard_03.png">다운로드</a>
-            <a class="btn btn-secondary" href="./images/dashboard_03.png" target="_blank">새 창 보기</a>
-          </div>
-        </article>
-
-        <article class="image-card">
-          <div class="image-preview-wrap">
-            <img src="./images/dashboard_04.png" alt="대시보드 이미지 4" class="image-preview">
-          </div>
-          <div class="image-meta">
-            <div>
-              <h2 class="image-title">이미지 04</h2>
-              <p class="image-desc">네 번째 대시보드 이미지입니다.</p>
-            </div>
-            <div class="image-badge">PNG</div>
-          </div>
-          <div class="image-actions">
-            <a class="btn btn-primary" href="./images/dashboard_04.png" download="dashboard_04.png">다운로드</a>
-            <a class="btn btn-secondary" href="./images/dashboard_04.png" target="_blank">새 창 보기</a>
-          </div>
-        </article>
-      </section>
+    <div class="bottom-quote">
+      “<span class="highlight">인웨이브는</span> <span class="highlight-dark">‘ 실제 본 사람 수 ’</span>를
+      데이터로 측정하는 유일한 실외 광고 플랫폼입니다.”
     </div>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-box">
-        이미지 파일 경로만 실제 위치에 맞게 수정하면 바로 사용할 수 있습니다.
-        예: <strong>./images/dashboard_01.png</strong>
-      </div>
-    </div>
-  </footer>
-
-  <script>
-    const imageList = [
-      { url: "./images/dashboard_01.png", name: "dashboard_01.png" },
-      { url: "./images/dashboard_02.png", name: "dashboard_02.png" },
-      { url: "./images/dashboard_03.png", name: "dashboard_03.png" },
-      { url: "./images/dashboard_04.png", name: "dashboard_04.png" }
-    ];
-
-    function downloadImage(url, filename) {
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
-    function downloadAllImages() {
-      imageList.forEach((image, index) => {
-        setTimeout(() => {
-          downloadImage(image.url, image.name);
-        }, index * 250);
-      });
-    }
-  </script>
+  </div>
 </body>
 </html>
