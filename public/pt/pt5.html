@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>사업비 집행 계획</title>
+  <title>사업비 집행 세부계획</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,7 +18,7 @@
 
     .slide {
       width: 1600px;
-      height: 900px;
+      min-height: 900px;
       margin: 0 auto;
       padding: 22px 24px;
       background: #eef2f7;
@@ -26,10 +26,10 @@
 
     .frame {
       width: 100%;
-      height: 100%;
       display: grid;
-      grid-template-columns: 340px 1fr 300px;
+      grid-template-columns: 320px 1fr 290px;
       gap: 18px;
+      align-items: start;
     }
 
     .left-panel {
@@ -60,8 +60,9 @@
       box-shadow: 0 8px 26px rgba(27, 39, 94, 0.08);
       padding: 18px 20px 18px;
       display: grid;
-      grid-template-rows: 92px 260px 1fr;
+      grid-template-rows: 92px auto;
       gap: 14px;
+      align-content: start;
     }
 
     .top-cards {
@@ -102,12 +103,12 @@
       font-weight: 600;
     }
 
-    .chart-card,
     .table-card {
       background: #ffffff;
       border-radius: 20px;
       box-shadow: 0 3px 12px rgba(50, 64, 120, 0.05);
       padding: 18px;
+      height: auto;
     }
 
     .card-head {
@@ -130,162 +131,29 @@
       font-weight: 600;
     }
 
-    .bars-wrap {
-      position: relative;
-      height: 190px;
-      margin-top: 6px;
-      border-bottom: 1px solid #d7dfeb;
-      background:
-        repeating-linear-gradient(
-          to top,
-          transparent 0,
-          transparent 37px,
-          #edf1f7 37px,
-          #edf1f7 38px
-        );
-      border-radius: 12px 12px 0 0;
-    }
-
-    .y-axis {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 26px;
-      width: 58px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      text-align: right;
-      padding-right: 8px;
-      font-size: 11px;
-      color: #93a0b5;
-      font-weight: 600;
-    }
-
-    .bars-area {
-      position: absolute;
-      left: 66px;
-      right: 10px;
-      top: 0;
-      bottom: 30px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-around;
-    }
-
-    .bar-group {
-      width: 150px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 12px;
-      height: 100%;
-      position: relative;
-    }
-
-    .bar-item {
-      width: 42px;
-      position: relative;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-    }
-
-    .bar {
-      width: 42px;
-      border-radius: 10px 10px 0 0;
-      position: relative;
-    }
-
-    .bar.blue {
-      background: linear-gradient(180deg, #5160ee 0%, #3f4cde 100%);
-    }
-
-    .bar.gray {
-      background: linear-gradient(180deg, #d6dde8 0%, #c4cfde 100%);
-    }
-
-    .bar-value {
-      position: absolute;
-      top: -26px;
-      left: 50%;
-      transform: translateX(-50%);
-      font-size: 12px;
-      font-weight: 700;
-      color: #4b5563;
-      white-space: nowrap;
-    }
-
-    .bar-labels {
-      position: absolute;
-      left: 66px;
-      right: 10px;
-      bottom: 0;
-      height: 26px;
-      display: flex;
-      justify-content: space-around;
-      align-items: flex-end;
-    }
-
-    .bar-year {
-      width: 150px;
-      text-align: center;
-      font-size: 13px;
-      color: #6b7280;
-      font-weight: 700;
-    }
-
-    .legend {
-      margin-top: 10px;
-      display: flex;
-      justify-content: center;
-      gap: 18px;
-      font-size: 13px;
-      color: #6b7280;
-      font-weight: 600;
-    }
-
-    .legend-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .legend-color {
-      width: 14px;
-      height: 14px;
-      border-radius: 4px;
-    }
-
-    .legend-color.blue {
-      background: #4754e7;
-    }
-
-    .legend-color.gray {
-      background: #cbd5e1;
-    }
-
     .table-wrap {
       border-radius: 14px;
       overflow: hidden;
       border: 1px solid #b9c9dc;
+      background: #fff;
     }
 
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     th,
     td {
-      padding: 11px 10px;
+      padding: 10px 8px;
       text-align: center;
-      line-height: 1.35;
+      line-height: 1.4;
       word-break: keep-all;
       border-right: 1px solid #b9c9dc;
       border-bottom: 1px solid #b9c9dc;
+      vertical-align: middle;
     }
 
     th {
@@ -306,6 +174,28 @@
 
     tbody tr:last-child td {
       border-bottom: none;
+    }
+
+    .section-row td {
+      background: #f7faff;
+      font-weight: 700;
+      color: #30445c;
+    }
+
+    .sub-sum td {
+      background: #fafbfd;
+      font-weight: 700;
+      color: #40556d;
+    }
+
+    .total-row td {
+      background: #eef4fb;
+      font-weight: 800;
+      color: #253b56;
+    }
+
+    .left {
+      text-align: left;
     }
 
     .right-panel {
@@ -381,11 +271,11 @@
     <div class="frame">
       <!-- 왼쪽 -->
       <div class="left-panel">
-        <h1 class="title">[사업비 집행 계획]</h1>
+        <h1 class="title">[사업비 집행 세부계획]</h1>
         <div class="hero-text">
           총사업비 4,000만원을<br />
-          실증·검증 중심으로<br />
-          집행하는 구조
+          인건비와 운영비로 나누어<br />
+          세부 집행 내역까지 정리
         </div>
       </div>
 
@@ -394,138 +284,130 @@
         <div class="top-cards">
           <div class="top-card">
             <div class="top-label">총사업비</div>
-            <div class="top-value">4,000</div>
-            <div class="top-sub">단위: 만원</div>
+            <div class="top-value">40,000</div>
+            <div class="top-sub">단위: 천원</div>
           </div>
           <div class="top-card">
             <div class="top-label">지원금</div>
-            <div class="top-value">3,000</div>
+            <div class="top-value">30,000</div>
             <div class="top-sub">75%</div>
           </div>
           <div class="top-card">
             <div class="top-label">민간현금</div>
-            <div class="top-value">400</div>
+            <div class="top-value">4,000</div>
             <div class="top-sub">10%</div>
           </div>
           <div class="top-card">
             <div class="top-label">민간현물</div>
-            <div class="top-value">600</div>
+            <div class="top-value">6,000</div>
             <div class="top-sub">15%</div>
-          </div>
-        </div>
-
-        <div class="chart-card">
-          <div class="card-head">
-            <div class="card-title">사업비 구성 및 비목별 집행</div>
-            <div class="unit">단위 : 만원</div>
-          </div>
-
-          <div class="bars-wrap">
-            <div class="y-axis">
-              <div>4,000</div>
-              <div>3,000</div>
-              <div>2,000</div>
-              <div>1,000</div>
-              <div>0</div>
-            </div>
-
-            <div class="bars-area">
-              <div class="bar-group">
-                <div class="bar-item">
-                  <div class="bar blue" style="height: 142px;">
-                    <div class="bar-value">3,000</div>
-                  </div>
-                </div>
-                <div class="bar-item">
-                  <div class="bar gray" style="height: 19px;">
-                    <div class="bar-value">400</div>
-                  </div>
-                </div>
-                <div class="bar-item">
-                  <div class="bar gray" style="height: 28px;">
-                    <div class="bar-value">600</div>
-                  </div>
-                </div>
-              </div>
-
-              <div class="bar-group">
-                <div class="bar-item">
-                  <div class="bar blue" style="height: 19px;">
-                    <div class="bar-value">400</div>
-                  </div>
-                </div>
-                <div class="bar-item">
-                  <div class="bar gray" style="height: 171px;">
-                    <div class="bar-value">3,600</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div class="bar-labels">
-              <div class="bar-year">재원구성</div>
-              <div class="bar-year">비목구성</div>
-            </div>
-          </div>
-
-          <div class="legend">
-            <div class="legend-item">
-              <div class="legend-color blue"></div>
-              <div>핵심 항목</div>
-            </div>
-            <div class="legend-item">
-              <div class="legend-color gray"></div>
-              <div>세부 항목</div>
-            </div>
           </div>
         </div>
 
         <div class="table-card">
           <div class="card-head">
-            <div class="card-title">사업비 집행 요약표</div>
-            <div class="unit">단위 : 만원</div>
+            <div class="card-title">사업비 집행 세부 내역표</div>
+            <div class="unit">단위 : 천원</div>
           </div>
 
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>구분</th>
-                  <th>금액</th>
-                  <th>비중</th>
-                  <th>집행 방향</th>
+                  <th>비목</th>
+                  <th>세목</th>
+                  <th>세부구분</th>
+                  <th>세부내용</th>
+                  <th>현금(A)</th>
+                  <th>현물(B)</th>
+                  <th>합계(A+B)</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>지원금</td>
-                  <td>3,000</td>
-                  <td>75%</td>
-                  <td>IR 적용, 실환경 테스트, 데이터 검증 중심</td>
+                <tr class="section-row">
+                  <td rowspan="2">인건비</td>
+                  <td>보수(정규)</td>
+                  <td>박재훈 대표</td>
+                  <td class="left">실지급액 16,800 / 참여율 25%</td>
+                  <td>-</td>
+                  <td>4,000</td>
+                  <td>4,000</td>
                 </tr>
-                <tr>
-                  <td>민간현금</td>
-                  <td>400</td>
-                  <td>10%</td>
-                  <td>개발 운영 및 실증 보조 비용 반영</td>
+                <tr class="sub-sum">
+                  <td colspan="5">인건비 합계</td>
+                  <td>4,000</td>
                 </tr>
-                <tr>
-                  <td>민간현물</td>
-                  <td>600</td>
-                  <td>15%</td>
-                  <td>기보유 장비·개발환경·인프라 활용</td>
+
+                <tr class="section-row">
+                  <td rowspan="8">운영비</td>
+                  <td>재료비 및 외주용역비</td>
+                  <td>AI 분석 장비 및 외주</td>
+                  <td class="left">
+                    GPU 서버(AI 분석용), IR 카메라 모듈 구매,<br />
+                    인웨이브 라벨링 및 AI 모델 학습 외주
+                  </td>
+                  <td>16,500</td>
+                  <td>-</td>
+                  <td>16,500</td>
                 </tr>
-                <tr>
-                  <td>인건비</td>
-                  <td>400</td>
-                  <td>10%</td>
-                  <td>핵심 개발 인력의 알고리즘 개선 및 검증 업무</td>
+                <tr class="sub-sum">
+                  <td colspan="5">재료비 및 외주용역비 소계</td>
+                  <td>16,500</td>
                 </tr>
+
                 <tr>
-                  <td>운영비</td>
-                  <td>3,600</td>
-                  <td>90%</td>
-                  <td>실증, 데이터 수집, 시험, 리포트 및 대시보드 개선</td>
+                  <td>시설 및 장비 임차비</td>
+                  <td>테스트 장비 임차</td>
+                  <td class="left">
+                    테스트 매장 설치 장비 임차<br />
+                    (디스플레이, 거치대 등)
+                  </td>
+                  <td>4,500</td>
+                  <td>-</td>
+                  <td>4,500</td>
+                </tr>
+                <tr class="sub-sum">
+                  <td colspan="5">시설 및 장비임차비 소계</td>
+                  <td>4,500</td>
+                </tr>
+
+                <tr>
+                  <td>시험인증비</td>
+                  <td>특허 및 인증</td>
+                  <td class="left">특허출원비, 시험인증비</td>
+                  <td>9,000</td>
+                  <td>-</td>
+                  <td>9,000</td>
+                </tr>
+                <tr class="sub-sum">
+                  <td colspan="5">시험인증비 소계</td>
+                  <td>9,000</td>
+                </tr>
+
+                <tr>
+                  <td>광고선전비</td>
+                  <td>홍보 및 콘텐츠 제작</td>
+                  <td class="left">
+                    홍보영상 제작 및 홈페이지 콘텐츠 제작,<br />
+                    온라인 광고 및 홍보비
+                  </td>
+                  <td>6,000</td>
+                  <td>-</td>
+                  <td>6,000</td>
+                </tr>
+                <tr class="sub-sum">
+                  <td colspan="5">광고선전비 소계</td>
+                  <td>6,000</td>
+                </tr>
+
+                <tr class="total-row">
+                  <td colspan="6">운영비 합계</td>
+                  <td>36,000</td>
+                </tr>
+
+                <tr class="total-row">
+                  <td colspan="6">총 합계</td>
+                  <td>40,000</td>
                 </tr>
               </tbody>
             </table>
@@ -536,48 +418,48 @@
       <!-- 오른쪽 -->
       <div class="right-panel">
         <div class="side-title">
-          예산 집행 구조를<br />
-          쉽게 이해할 수 있도록<br />
-          정리했습니다
+          세부 집행 항목을<br />
+          한눈에 이해할 수 있도록<br />
+          다시 정리했습니다
         </div>
         <div class="side-desc">
-          사업비는 인건비보다 운영비 중심으로 편성하여
-          실제 기술 검증과 현장 적용에 바로 연결되도록 설계했습니다.
+          인건비는 최소화하고, 운영비는 장비·외주·실증·인증·홍보까지
+          실제 기술 검증과 사업화 준비에 직접 연결되도록 배치했습니다.
         </div>
 
         <div class="step-card">
           <div class="step-num">01</div>
-          <div class="step-title">총사업비 구성</div>
+          <div class="step-title">인건비</div>
           <div class="step-text">
-            총사업비는 <span class="em">4,000만원</span>이며,
-            지원금 3,000만원과 민간부담 1,000만원 구조입니다.
+            박재훈 대표의 참여율 25%를 기준으로
+            <span class="em">4,000천원</span>을 반영했습니다.
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">02</div>
-          <div class="step-title">운영비 중심 집행</div>
+          <div class="step-title">재료비 및 외주용역비</div>
           <div class="step-text">
-            전체 예산의 대부분을 <span class="em">운영비 3,600만원</span>으로 편성하여
-            실증과 검증 중심으로 사용합니다.
+            GPU 서버, IR 카메라 모듈, 라벨링 및
+            AI 모델 학습 외주에 <span class="em">16,500천원</span>을 편성했습니다.
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">03</div>
-          <div class="step-title">인건비 최소·핵심 집중</div>
+          <div class="step-title">실증·인증</div>
           <div class="step-text">
-            인건비는 400만원으로 제한하고,
-            알고리즘 고도화와 데이터 검증 업무에 집중합니다.
+            테스트 장비 임차 4,500천원,
+            시험인증 및 특허출원 9,000천원을 포함합니다.
           </div>
         </div>
 
         <div class="step-card">
           <div class="step-num">04</div>
-          <div class="step-title">실증형 집행 구조</div>
+          <div class="step-title">홍보 및 사업화 준비</div>
           <div class="step-text">
-            IR 카메라 적용, 현장 테스트, 데이터 확보, 리포트 개선까지
-            직접 연결되는 실증형 예산 구조입니다.
+            홍보영상, 홈페이지 콘텐츠, 온라인 광고 및 홍보비로
+            <span class="em">6,000천원</span>을 반영했습니다.
           </div>
         </div>
       </div>
