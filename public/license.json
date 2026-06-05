@@ -4,7 +4,7 @@
   "users": {
     "guest": {
       "status": "allow",
-      "expire": "2026-12-31",
+      "expire": "2026-06-10",
       "sites": [
         "부천시",
         "용인시",
