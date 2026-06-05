@@ -1,0 +1,23 @@
+{
+  "service": "SEIL_HMI",
+  "version": "1.0",
+  "users": {
+    "guest": {
+      "status": "allow",
+      "expire": "2026-12-31",
+      "sites": [
+        "부천시",
+        "인천시",
+        "용인시",
+        "광주시"
+      ],
+      "memo": "외부 전달용"
+    },
+    "monster": {
+      "status": "allow",
+      "expire": "2099-12-31",
+      "sites": "all",
+      "memo": "관리자용"
+    }
+  }
+}
