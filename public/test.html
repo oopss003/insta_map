@@ -1,427 +1,501 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<title>INWAVE Slide 02</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>INWAVE Slide 14 - Conclusion</title>
 
-<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
-
-<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
 <style>
+  * {
+    box-sizing: border-box;
+  }
 
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:'Noto Sans KR',sans-serif;
-}
+  body {
+    margin: 0;
+    background: #1f1f1f;
+    font-family: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", Arial, sans-serif;
+  }
 
-body{
-background:#e9e9e9;
-display:flex;
-justify-content:center;
-align-items:center;
-min-height:100vh;
-}
+  .page {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px;
+    gap: 16px;
+  }
 
-#slide{
-width:1920px;
-height:1080px;
-background:white;
-position:relative;
-overflow:hidden;
-}
+  .toolbar {
+    width: 1280px;
+    max-width: 96vw;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
 
-/* 다운로드 버튼 */
+  .toolbar button {
+    border: 0;
+    border-radius: 10px;
+    padding: 12px 18px;
+    background: #b00000;
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    cursor: pointer;
+  }
 
-#downloadBtn{
-position:fixed;
-top:20px;
-right:20px;
-z-index:99999;
-background:#111;
-color:white;
-border:none;
-padding:14px 24px;
-font-size:15px;
-font-weight:700;
-cursor:pointer;
-border-radius:12px;
-}
+  .toolbar button:hover {
+    filter: brightness(1.08);
+  }
 
-/* 좌측 노랑 */
+  .slide-scale {
+    width: 1280px;
+    max-width: 96vw;
+    aspect-ratio: 16 / 9;
+    position: relative;
+    overflow: hidden;
+    background: #ffffff;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+  }
 
-.left-panel{
-position:absolute;
-left:0;
-top:0;
-width:58%;
-height:100%;
-background:#FFD400;
-}
+  .slide {
+    width: 1920px;
+    height: 1080px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform-origin: left top;
+    background: #fbfbfb;
+    overflow: hidden;
+  }
 
-/* 우측 */
+  /* ===== Top Ribbon ===== */
 
-.right-panel{
-position:absolute;
-right:0;
-top:0;
-width:42%;
-height:100%;
-background:#ffffff;
-}
+  .top-red {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 150px;
+    height: 105px;
+    background: #a40000;
+    clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
+    z-index: 3;
+  }
 
-/* 카테고리 */
+  .page-num {
+    position: absolute;
+    left: 20px;
+    top: 18px;
+    font-size: 58px;
+    line-height: 1;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: -0.04em;
+  }
 
-.category{
-position:absolute;
-top:60px;
-left:70px;
+  .top-yellow {
+    position: absolute;
+    left: 128px;
+    top: 0;
+    width: 390px;
+    height: 105px;
+    background: #ffc20a;
+    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
+    z-index: 2;
+  }
 
-background:white;
-padding:10px 18px;
+  .section-name {
+    position: absolute;
+    left: 175px;
+    top: 36px;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 900;
+    color: #000000;
+    letter-spacing: -0.04em;
+  }
 
-font-size:14px;
-font-weight:800;
-letter-spacing:2px;
-}
+  /* ===== Main Left Text ===== */
 
-/* 타이틀 */
+  .main-title {
+    position: absolute;
+    left: 54px;
+    top: 170px;
+    width: 740px;
+    color: #000000;
+    font-size: 66px;
+    line-height: 1.38;
+    font-weight: 900;
+    letter-spacing: -0.07em;
+  }
 
-.title{
-position:absolute;
-left:80px;
-top:120px;
+  .main-title .red {
+    color: #b00000;
+  }
 
-font-size:78px;
-font-weight:900;
-line-height:1.15;
-color:#111;
-}
+  .body-copy {
+    position: absolute;
+    left: 55px;
+    top: 654px;
+    width: 750px;
+    color: #111111;
+    font-size: 34px;
+    line-height: 1.55;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+  }
 
-.title span{
-color:white;
-background:#111;
-padding:0 20px;
-}
+  /* ===== Right Cards ===== */
 
-/* 서브 */
+  .card {
+    position: absolute;
+    width: 440px;
+    height: 355px;
+    background: rgba(255,255,255,0.88);
+    border: 1px solid #d9d9d9;
+    border-radius: 24px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
 
-.subtitle{
-position:absolute;
-left:85px;
-top:300px;
+  .card-1 {
+    left: 890px;
+    top: 108px;
+  }
 
-font-size:26px;
-line-height:1.7;
-color:#333;
-font-weight:500;
-}
+  .card-2 {
+    left: 1365px;
+    top: 108px;
+  }
 
-/* ONLINE */
+  .card-3 {
+    left: 890px;
+    top: 488px;
+  }
 
-.online-box{
-position:absolute;
-left:90px;
-top:470px;
-width:650px;
-}
+  .card-4 {
+    left: 1365px;
+    top: 488px;
+  }
 
-.online-title{
-font-size:64px;
-font-weight:900;
-color:#111;
-}
+  .icon-box {
+    width: 160px;
+    height: 160px;
+    margin-top: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b00000;
+  }
 
-.online-sub{
-font-size:28px;
-font-weight:700;
-margin-top:5px;
-}
+  .card-line {
+    width: 50px;
+    height: 3px;
+    background: #b00000;
+    margin-top: 7px;
+    margin-bottom: 20px;
+  }
 
-.online-list{
-margin-top:40px;
-display:flex;
-flex-direction:column;
-gap:18px;
-}
+  .card-title {
+    font-size: 38px;
+    line-height: 1.15;
+    font-weight: 900;
+    color: #000000;
+    letter-spacing: -0.06em;
+    text-align: center;
+  }
 
-.online-list div{
-font-size:28px;
-font-weight:600;
-}
+  .card-sub {
+    margin-top: 14px;
+    font-size: 27px;
+    line-height: 1.15;
+    font-weight: 500;
+    color: #111111;
+    letter-spacing: -0.05em;
+    text-align: center;
+  }
 
-.metric{
-position:absolute;
-left:750px;
-top:510px;
-text-align:right;
-}
+  svg {
+    width: 100%;
+    height: 100%;
+  }
 
-.metric .n1{
-font-size:110px;
-font-weight:900;
-color:white;
-line-height:1;
-}
+  .svg-red {
+    stroke: #b00000;
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
 
-.metric .n2{
-font-size:90px;
-font-weight:900;
-color:#111;
-line-height:1;
-}
+  .svg-fill-red {
+    fill: #b00000;
+  }
 
-.metric .n3{
-font-size:70px;
-font-weight:800;
-color:#111;
-}
+  /* ===== Bottom Banner ===== */
 
-/* 중앙 카피 */
+  .bottom-banner {
+    position: absolute;
+    left: 0;
+    top: 842px;
+    width: 1920px;
+    height: 158px;
+    background: linear-gradient(90deg, #a80000 0%, #c40000 45%, #a80000 100%);
+    overflow: hidden;
+  }
 
-.center-copy{
-position:absolute;
-left:770px;
-top:820px;
+  .bottom-banner::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 380px;
+    height: 158px;
+    background-image: radial-gradient(rgba(255,255,255,0.22) 1.2px, transparent 1.2px);
+    background-size: 12px 12px;
+    opacity: 0.55;
+  }
 
-font-size:48px;
-font-weight:900;
-line-height:1.3;
-color:#111;
-}
+  .bottom-banner::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 390px;
+    height: 158px;
+    background-image: radial-gradient(rgba(255,255,255,0.20) 1.2px, transparent 1.2px);
+    background-size: 12px 12px;
+    opacity: 0.5;
+  }
 
-.center-copy span{
-background:white;
-padding:0 12px;
-}
+  .target-icon {
+    position: absolute;
+    left: 147px;
+    top: 31px;
+    width: 105px;
+    height: 105px;
+    color: #ffffff;
+    z-index: 2;
+  }
 
-/* 우측 */
+  .banner-text {
+    position: absolute;
+    left: 342px;
+    top: 40px;
+    color: #ffffff;
+    font-size: 60px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    z-index: 3;
+    white-space: nowrap;
+  }
 
-.offline-wrap{
-position:absolute;
-right:80px;
-top:120px;
-width:620px;
-}
+  .banner-text .yellow {
+    color: #fff200;
+  }
 
-.offline-title{
-font-size:64px;
-font-weight:900;
-color:#111;
-}
+  /* ===== Footer ===== */
 
-.offline-sub{
-font-size:28px;
-font-weight:700;
-margin-top:5px;
-}
+  .logo {
+    position: absolute;
+    left: 48px;
+    bottom: 23px;
+    color: #b00000;
+    font-size: 38px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+  }
 
-.offline-top{
-margin-top:50px;
-display:flex;
-flex-direction:column;
-gap:18px;
-}
-
-.offline-top div{
-font-size:28px;
-font-weight:600;
-}
-
-.question-area{
-margin-top:70px;
-}
-
-.question{
-font-size:100px;
-font-weight:900;
-color:#FFD400;
-line-height:1;
-}
-
-.question-text{
-margin-top:15px;
-font-size:26px;
-line-height:1.8;
-font-weight:700;
-color:#222;
-}
-
-/* 하단 */
-
-.footer{
-position:absolute;
-bottom:0;
-left:0;
-width:100%;
-height:120px;
-background:#111;
-
-display:flex;
-justify-content:center;
-align-items:center;
-}
-
-.footer p{
-font-size:36px;
-font-weight:800;
-color:white;
-}
-
-.footer span{
-color:#FFD400;
-}
-
-/* 원형 장식 */
-
-.circle1{
-position:absolute;
-width:500px;
-height:500px;
-border-radius:50%;
-background:rgba(255,255,255,0.18);
-
-left:-120px;
-top:-180px;
-}
-
-.circle2{
-position:absolute;
-width:350px;
-height:350px;
-border-radius:50%;
-background:#FFD400;
-
-right:-130px;
-top:-120px;
-}
-
+  .thanks {
+    position: absolute;
+    right: 98px;
+    bottom: 28px;
+    color: #111111;
+    font-size: 32px;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -0.05em;
+  }
 </style>
 </head>
 
 <body>
 
-<button id="downloadBtn">
-PNG 다운로드
-</button>
+<div class="page">
 
-<div id="slide">
+  <div class="toolbar">
+    <button onclick="downloadSlide()">14페이지 PNG 다운로드</button>
+  </div>
 
-<div class="left-panel"></div>
-<div class="right-panel"></div>
+  <div class="slide-scale" id="slideScale">
+    <section class="slide" id="slide14">
 
-<div class="circle1"></div>
-<div class="circle2"></div>
+      <!-- Top Ribbon -->
+      <div class="top-red">
+        <div class="page-num">14</div>
+      </div>
 
-<div class="category">
-PROBLEM
-</div>
+      <div class="top-yellow">
+        <div class="section-name">CONCLUSION</div>
+      </div>
 
-<div class="title">
-오프라인 광고는 아직도<br>
-<span>추정</span>으로 운영됩니다
-</div>
+      <!-- Main Text -->
+      <div class="main-title">
+        우리는 <span class="red">광고판</span>을<br>
+        만드는 회사가 아닙니다.<br>
+        <br>
+        <span class="red">광고 성과</span>를 측정하는<br>
+        <span class="red">데이터 회사</span>입니다.
+      </div>
 
-<div class="subtitle">
-광고는 이제 노출이 아니라 데이터로 평가되는 시대입니다.<br>
-하지만 오프라인 광고는 여전히 실제 광고 효과를 확인하기 어렵습니다.
-</div>
+      <div class="body-copy">
+        인웨이브는 AI 시선분석 기반으로<br>
+        오프라인 광고를 측정 가능한 데이터로 바꾸고,<br>
+        광고주의 의사결정을 돕습니다.
+      </div>
 
-<div class="online-box">
+      <!-- Right Card 01 -->
+      <div class="card card-1">
+        <div class="icon-box">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <circle class="svg-red" cx="80" cy="70" r="55"></circle>
+            <line class="svg-red" x1="80" y1="5" x2="80" y2="25"></line>
+            <line class="svg-red" x1="80" y1="115" x2="80" y2="138"></line>
+            <line class="svg-red" x1="15" y1="70" x2="38" y2="70"></line>
+            <line class="svg-red" x1="122" y1="70" x2="145" y2="70"></line>
+            <circle class="svg-fill-red" cx="80" cy="57" r="13"></circle>
+            <circle class="svg-fill-red" cx="55" cy="67" r="12"></circle>
+            <circle class="svg-fill-red" cx="105" cy="67" r="12"></circle>
+            <path class="svg-fill-red" d="M58 88c0-13 11-23 22-23s22 10 22 23v14H58z"></path>
+            <path class="svg-fill-red" d="M32 96c0-13 10-22 23-22 6 0 11 2 15 5-8 6-13 15-13 26H32z"></path>
+            <path class="svg-fill-red" d="M103 79c4-3 9-5 15-5 13 0 23 9 23 22v9h-25c0-11-5-20-13-26z"></path>
+          </svg>
+        </div>
+        <div class="card-line"></div>
+        <div class="card-title">실제 시청자 측정</div>
+        <div class="card-sub">본 사람만 데이터화</div>
+      </div>
 
-<div class="online-title">
-ONLINE
-</div>
+      <!-- Right Card 02 -->
+      <div class="card card-2">
+        <div class="icon-box">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <rect class="svg-red" x="28" y="20" width="104" height="70" rx="6"></rect>
+            <line class="svg-red" x1="80" y1="90" x2="80" y2="118"></line>
+            <line class="svg-red" x1="55" y1="122" x2="105" y2="122"></line>
+            <rect class="svg-fill-red" x="45" y="60" width="12" height="20"></rect>
+            <rect class="svg-fill-red" x="65" y="48" width="12" height="32"></rect>
+            <rect class="svg-fill-red" x="85" y="34" width="12" height="46"></rect>
+            <circle class="svg-fill-red" cx="108" cy="44" r="22"></circle>
+            <path d="M108 22v22h22" fill="#fbfbfb"></path>
+          </svg>
+        </div>
+        <div class="card-line"></div>
+        <div class="card-title">성과 리포트 제공</div>
+        <div class="card-sub">광고 효과를 한눈에</div>
+      </div>
 
-<div class="online-sub">
-온라인 광고
-</div>
+      <!-- Right Card 03 -->
+      <div class="card card-3">
+        <div class="icon-box">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <ellipse class="svg-red" cx="80" cy="50" rx="34" ry="15"></ellipse>
+            <path class="svg-red" d="M46 50v44c0 9 15 16 34 16s34-7 34-16V50"></path>
+            <ellipse class="svg-red" cx="80" cy="72" rx="34" ry="15"></ellipse>
+            <ellipse class="svg-red" cx="80" cy="94" rx="34" ry="15"></ellipse>
+            <path class="svg-red" d="M32 57c-14 13-20 33-12 51"></path>
+            <path class="svg-red" d="M21 108l-14-1 8 13"></path>
+            <path class="svg-red" d="M128 102c14-13 20-33 12-51"></path>
+            <path class="svg-red" d="M139 51l14 1-8-13"></path>
+          </svg>
+        </div>
+        <div class="card-line"></div>
+        <div class="card-title">데이터 구독 확장</div>
+        <div class="card-sub">반복 수익 구조</div>
+      </div>
 
-<div class="online-list">
-<div>✓ 클릭 수</div>
-<div>✓ 체류시간</div>
-<div>✓ 전환율</div>
-<div>✓ 광고 성과 분석</div>
-<div>✓ ROI 측정</div>
-</div>
+      <!-- Right Card 04 -->
+      <div class="card card-4">
+        <div class="icon-box">
+          <svg viewBox="0 0 160 160" aria-hidden="true">
+            <rect class="svg-fill-red" x="35" y="100" width="18" height="30"></rect>
+            <rect class="svg-fill-red" x="65" y="82" width="18" height="48"></rect>
+            <rect class="svg-fill-red" x="95" y="58" width="18" height="72"></rect>
+            <path class="svg-red" d="M30 72c34-10 62-30 91-66"></path>
+            <path class="svg-red" d="M112 8h25v25"></path>
+            <line class="svg-red" x1="30" y1="138" x2="130" y2="138"></line>
+          </svg>
+        </div>
+        <div class="card-line"></div>
+        <div class="card-title">지속 가능한 성장</div>
+        <div class="card-sub">실증 기반 확장</div>
+      </div>
 
-</div>
+      <!-- Bottom Banner -->
+      <div class="bottom-banner">
+        <div class="target-icon">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <circle cx="55" cy="65" r="38" stroke="#ffffff" stroke-width="10" fill="none"></circle>
+            <circle cx="55" cy="65" r="20" stroke="#ffffff" stroke-width="10" fill="none"></circle>
+            <circle cx="55" cy="65" r="6" fill="#ffffff"></circle>
+            <path d="M59 61L103 17" stroke="#ffffff" stroke-width="9" stroke-linecap="round"></path>
+            <path d="M95 14l12-8-1 15 12-1-8 12-17 0z" fill="#ffffff"></path>
+          </svg>
+        </div>
 
-<div class="metric">
-<div class="n1">63%</div>
-<div class="n2">7.2s</div>
-<div class="n3">1,248</div>
-</div>
+        <div class="banner-text">
+          오프라인 광고의 기준을 <span class="yellow">데이터</span>로 바꾸겠습니다
+        </div>
+      </div>
 
-<div class="center-copy">
-ONLINE은 <span>측정된다</span><br>
-OFFLINE은 추정된다
-</div>
+      <!-- Footer -->
+      <div class="logo">INWAVE</div>
+      <div class="thanks">감사합니다</div>
 
-<div class="offline-wrap">
-
-<div class="offline-title">
-OFFLINE
-</div>
-
-<div class="offline-sub">
-오프라인 광고
-</div>
-
-<div class="offline-top">
-<div>✓ 송출 횟수</div>
-<div>✓ 유동 인구</div>
-<div>✓ 설치 위치</div>
-</div>
-
-<div class="question-area">
-
-<div class="question">
-???
-</div>
-
-<div class="question-text">
-실제로 몇 명이 광고를 보았는가?<br>
-얼마나 오래 시청했는가?<br>
-광고에 반응한 고객은 누구인가?<br>
-광고 효과는 있었는가?
-</div>
-
-</div>
-
-</div>
-
-<div class="footer">
-<p>
-광고주는 광고비를 지출하지만
-<span>광고 효과는 설명하기 어렵습니다.</span>
-</p>
-</div>
+    </section>
+  </div>
 
 </div>
 
 <script>
+  function resizeSlide() {
+    const scaleBox = document.getElementById("slideScale");
+    const slide = document.getElementById("slide14");
+    const scale = scaleBox.clientWidth / 1920;
+    slide.style.transform = `scale(${scale})`;
+  }
 
-document.getElementById('downloadBtn').onclick = () => {
+  window.addEventListener("resize", resizeSlide);
+  window.addEventListener("load", resizeSlide);
 
-html2canvas(document.getElementById('slide'),{
-scale:2
-}).then(canvas=>{
+  async function downloadSlide() {
+    const slide = document.getElementById("slide14");
 
-const a=document.createElement('a');
+    const originalTransform = slide.style.transform;
+    slide.style.transform = "scale(1)";
 
-a.href=canvas.toDataURL();
+    const canvas = await html2canvas(slide, {
+      width: 1920,
+      height: 1080,
+      scale: 1,
+      backgroundColor: "#fbfbfb"
+    });
 
-a.download='slide02.png';
+    slide.style.transform = originalTransform;
 
-a.click();
-
-});
-
-};
-
+    const link = document.createElement("a");
+    link.download = "inwave_slide_14_conclusion.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
 </script>
 
 </body>
