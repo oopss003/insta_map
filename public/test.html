@@ -3,11 +3,9 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>문제 인식 슬라이드</title>
-
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap');
 
 * {
   margin: 0;
@@ -20,10 +18,7 @@ body {
   height: 1080px;
   overflow: hidden;
   font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
-  background:
-    radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.28), transparent 34%),
-    radial-gradient(circle at 82% 68%, rgba(249, 115, 22, 0.13), transparent 30%),
-    linear-gradient(135deg, #061428 0%, #071b38 45%, #03101f 100%);
+  background: #041225;
   color: #fff;
 }
 
@@ -31,266 +26,516 @@ body {
   position: relative;
   width: 1920px;
   height: 1080px;
-  padding: 78px 118px 72px;
+  background:
+    radial-gradient(circle at 28% 48%, rgba(0, 132, 255, 0.42), transparent 38%),
+    radial-gradient(circle at 74% 52%, rgba(4, 12, 26, 0.8), transparent 42%),
+    linear-gradient(135deg, #071d3d 0%, #06152b 45%, #030b17 100%);
+  overflow: hidden;
 }
 
-.grid-bg {
+/* 고급스러운 데이터 배경 */
+.slide::before {
+  content: "";
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
-  background-size: 72px 72px;
-  opacity: 0.45;
+    linear-gradient(rgba(91, 166, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(91, 166, 255, 0.07) 1px, transparent 1px);
+  background-size: 80px 80px;
+  opacity: 0.35;
 }
 
-.header {
-  position: relative;
-  z-index: 2;
+.top-title {
+  position: absolute;
+  top: 62px;
+  width: 100%;
   text-align: center;
+  z-index: 10;
 }
 
-.kicker {
-  display: inline-block;
-  padding: 10px 24px;
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 999px;
-  background: rgba(255,255,255,0.06);
-  color: #fbbf24;
-  font-size: 24px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin-bottom: 26px;
-}
-
-h1 {
-  font-size: 76px;
+.top-title h1 {
+  font-size: 78px;
   line-height: 1.18;
   font-weight: 900;
-  letter-spacing: -0.055em;
+  letter-spacing: -0.06em;
+  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
 }
 
-h1 span {
-  color: #fbbf24;
+.top-title .yellow {
+  color: #ffc21a;
 }
 
-.compare-area {
-  position: relative;
-  z-index: 2;
-  margin-top: 82px;
+/* 좌우 큰 영역 */
+.content {
+  position: absolute;
+  top: 220px;
+  left: 0;
+  width: 100%;
+  height: 640px;
   display: grid;
-  grid-template-columns: 1fr 170px 1fr;
+  grid-template-columns: 1fr 1fr;
+  z-index: 2;
+}
+
+.left-zone,
+.right-zone {
+  position: relative;
+  padding: 72px 96px;
+}
+
+.left-zone {
+  background:
+    linear-gradient(90deg, rgba(0, 103, 255, 0.32), rgba(0, 103, 255, 0.08)),
+    radial-gradient(circle at 18% 50%, rgba(0, 174, 255, 0.42), transparent 38%);
+}
+
+.right-zone {
+  background:
+    linear-gradient(90deg, rgba(0,0,0,0.24), rgba(0,0,0,0.68)),
+    radial-gradient(circle at 70% 48%, rgba(255,255,255,0.06), transparent 34%);
+}
+
+.section-title {
+  font-size: 54px;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+  margin-bottom: 10px;
+}
+
+.left-zone .section-title {
+  color: #8cc8ff;
+}
+
+.right-zone .section-title {
+  color: rgba(255,255,255,0.72);
+}
+
+.sub-title {
+  font-size: 29px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.78);
+  letter-spacing: -0.04em;
+}
+
+/* 온라인 대시보드 */
+.dashboard {
+  position: absolute;
+  left: 215px;
+  top: 190px;
+  width: 570px;
+  height: 330px;
+  border-radius: 24px;
+  background: linear-gradient(145deg, rgba(12, 54, 112, 0.95), rgba(5, 22, 52, 0.86));
+  border: 1px solid rgba(119, 190, 255, 0.38);
+  box-shadow:
+    0 0 40px rgba(0, 132, 255, 0.55),
+    inset 0 0 36px rgba(70, 169, 255, 0.12);
+  transform: perspective(900px) rotateY(-10deg);
+}
+
+.dashboard-header {
+  height: 54px;
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  display: flex;
   align-items: center;
+  padding: 0 26px;
+  font-size: 19px;
+  font-weight: 800;
+  color: #b9dcff;
+}
+
+.metric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+  padding: 24px;
+}
+
+.metric {
+  height: 112px;
+  border-radius: 16px;
+  background: rgba(255,255,255,0.055);
+  border: 1px solid rgba(255,255,255,0.09);
+  padding: 18px;
+}
+
+.metric-label {
+  font-size: 18px;
+  color: #9fd0ff;
+  font-weight: 700;
+}
+
+.metric-value {
+  margin-top: 10px;
+  font-size: 34px;
+  font-weight: 900;
+}
+
+.line-chart {
+  width: 100%;
+  height: 38px;
+  margin-top: 12px;
+  background:
+    linear-gradient(135deg, transparent 8%, #34b7ff 9%, transparent 11%),
+    linear-gradient(155deg, transparent 32%, #34b7ff 33%, transparent 35%),
+    linear-gradient(135deg, transparent 58%, #34b7ff 59%, transparent 61%);
+  border-bottom: 2px solid rgba(52,183,255,0.8);
+}
+
+.bar-chart {
+  display: flex;
+  align-items: end;
+  gap: 9px;
+  height: 58px;
+  margin-top: 8px;
+}
+
+.bar-chart span {
+  width: 18px;
+  background: linear-gradient(#93d8ff, #177dff);
+  border-radius: 5px 5px 0 0;
+}
+
+.bar-chart span:nth-child(1) { height: 24px; }
+.bar-chart span:nth-child(2) { height: 38px; }
+.bar-chart span:nth-child(3) { height: 50px; }
+.bar-chart span:nth-child(4) { height: 32px; }
+.bar-chart span:nth-child(5) { height: 62px; }
+
+.online-labels {
+  position: absolute;
+  left: 96px;
+  top: 255px;
+  display: flex;
+  flex-direction: column;
   gap: 34px;
 }
 
-.card {
-  height: 390px;
-  padding: 44px 50px;
-  border-radius: 34px;
-  background: linear-gradient(180deg, rgba(15, 39, 76, 0.82), rgba(6, 22, 45, 0.72));
-  border: 1px solid rgba(255,255,255,0.13);
-  box-shadow: 0 28px 70px rgba(0,0,0,0.25);
-  backdrop-filter: blur(10px);
-}
-
-.card-title {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 42px;
-  font-weight: 900;
-  letter-spacing: -0.04em;
-  margin-bottom: 36px;
-}
-
-.online .card-title {
-  color: #60a5fa;
-}
-
-.offline .card-title {
-  color: #fb923c;
-}
-
-.items {
-  display: flex;
-  flex-direction: column;
-  gap: 22px;
-}
-
-.item {
+.online-label {
   display: flex;
   align-items: center;
   gap: 18px;
-  font-size: 31px;
-  font-weight: 600;
-  letter-spacing: -0.04em;
-  color: rgba(255,255,255,0.92);
+  font-size: 28px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.9);
 }
 
-.check {
-  width: 34px;
-  height: 34px;
+.icon-circle {
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
+  border: 1px solid rgba(144, 210, 255, 0.55);
+  background: rgba(0, 117, 255, 0.18);
+  box-shadow: 0 0 22px rgba(0,153,255,0.55);
   display: grid;
   place-items: center;
-  font-size: 22px;
-  font-weight: 900;
-  background: rgba(96, 165, 250, 0.18);
-  color: #93c5fd;
-  border: 1px solid rgba(147,197,253,0.35);
+  color: #93d8ff;
+  font-size: 30px;
 }
 
-.no {
-  background: rgba(251, 146, 60, 0.16);
-  color: #fdba74;
-  border-color: rgba(251,146,60,0.35);
-}
-
-.icon-dashboard,
-.icon-billboard {
-  width: 110px;
-  height: 78px;
-  border-radius: 16px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.07);
-  position: relative;
-}
-
-.icon-dashboard::before {
-  content: "";
+/* 오프라인 영역 */
+.billboard {
   position: absolute;
-  left: 18px;
-  bottom: 18px;
-  width: 16px;
-  height: 28px;
-  background: #60a5fa;
-  border-radius: 5px;
-  box-shadow: 27px -15px 0 #93c5fd, 54px -4px 0 #38bdf8;
+  right: 145px;
+  top: 180px;
+  width: 390px;
+  height: 220px;
+  background:
+    linear-gradient(rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 5px);
+  border: 12px solid rgba(16, 25, 43, 0.96);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.65);
 }
 
-.icon-billboard::before {
+.billboard::before {
   content: "?";
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  font-size: 52px;
+  font-size: 150px;
   font-weight: 900;
-  color: #fbbf24;
+  color: rgba(255,255,255,0.42);
 }
 
-.icon-billboard::after {
+.billboard::after {
   content: "";
   position: absolute;
-  left: 45px;
-  bottom: -34px;
-  width: 20px;
-  height: 34px;
-  background: rgba(255,255,255,0.22);
-  border-radius: 8px;
+  left: 165px;
+  bottom: -170px;
+  width: 42px;
+  height: 160px;
+  background: rgba(12, 18, 30, 0.96);
 }
 
-.center-question {
-  height: 170px;
-  border-radius: 999px;
-  background: rgba(251, 191, 36, 0.12);
-  border: 1px solid rgba(251, 191, 36, 0.35);
+.people {
+  position: absolute;
+  left: 120px;
+  bottom: 60px;
+  width: 650px;
+  height: 210px;
+  opacity: 0.7;
+}
+
+.person {
+  position: absolute;
+  bottom: 0;
+  width: 44px;
+  height: 132px;
+  background: linear-gradient(#0a0f1a, #02050a);
+  border-radius: 24px 24px 8px 8px;
+  filter: blur(1px);
+}
+
+.person::before {
+  content: "";
+  position: absolute;
+  top: -42px;
+  left: 5px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #060a12;
+}
+
+.p1 { left: 40px; transform: scale(1.25); opacity: 0.95; }
+.p2 { left: 165px; transform: scale(0.95); opacity: 0.62; }
+.p3 { left: 295px; transform: scale(1.45); opacity: 0.95; }
+.p4 { left: 465px; transform: scale(0.8); opacity: 0.48; }
+.p5 { left: 570px; transform: scale(1.05); opacity: 0.7; }
+
+.question-text {
+  position: absolute;
+  color: rgba(255,255,255,0.48);
+  font-size: 27px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+}
+
+.q1 { top: 214px; left: 92px; }
+.q2 { top: 315px; right: 80px; }
+.q3 { bottom: 96px; right: 132px; }
+
+.big-q {
+  position: absolute;
+  font-size: 62px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.22);
+}
+
+.bq1 { top: 290px; left: 240px; }
+.bq2 { top: 430px; right: 280px; }
+.bq3 { bottom: 120px; left: 430px; }
+
+/* 중앙 VS 라인 */
+.vs-line {
+  position: absolute;
+  top: 216px;
+  left: 50%;
+  width: 2px;
+  height: 560px;
+  background: linear-gradient(transparent, rgba(255,255,255,0.85), transparent);
+  z-index: 8;
+  box-shadow: 0 0 28px rgba(60, 170, 255, 0.85);
+}
+
+.vs-line::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: -420px;
+  width: 840px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #3aa8ff, transparent);
+  box-shadow: 0 0 28px #3aa8ff;
+}
+
+.vs-box {
+  position: absolute;
+  top: 405px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 210px;
+  height: 240px;
+  z-index: 9;
+  text-align: center;
+}
+
+.vs-box .measure {
+  font-size: 54px;
+  font-weight: 900;
+  color: #77c8ff;
+  text-shadow: 0 0 24px rgba(0,153,255,0.9);
+}
+
+.vs-box .vs {
+  margin: 24px 0;
+  font-size: 64px;
+  font-weight: 900;
+  color: #fff;
+  font-style: italic;
+  text-shadow: 0 6px 20px rgba(0,0,0,0.65);
+}
+
+.vs-box .estimate {
+  font-size: 54px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.55);
+}
+
+/* 하단 핵심 메시지 */
+.bottom-caption {
+  position: absolute;
+  left: 280px;
+  bottom: 58px;
+  width: 1360px;
+  height: 168px;
+  border-radius: 32px;
+  background: linear-gradient(180deg, rgba(8, 31, 68, 0.88), rgba(3, 14, 31, 0.9));
+  border: 1px solid rgba(93, 177, 255, 0.38);
+  box-shadow:
+    0 0 42px rgba(0,132,255,0.32),
+    inset 0 0 30px rgba(255,255,255,0.04);
+  z-index: 12;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 0 24px;
-  color: #fbbf24;
-  font-size: 32px;
+}
+
+.bottom-caption .small {
+  font-size: 42px;
   font-weight: 900;
-  line-height: 1.25;
-  letter-spacing: -0.045em;
-  box-shadow: 0 0 55px rgba(251, 191, 36, 0.12);
+  letter-spacing: -0.055em;
+  color: #fff;
 }
 
-.footer-message {
-  position: relative;
-  z-index: 2;
-  margin: 72px auto 0;
-  width: 1120px;
-  padding: 26px 42px;
-  border-radius: 24px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.13);
-  text-align: center;
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1.45;
-  letter-spacing: -0.045em;
+.bottom-caption .big {
+  margin-top: 8px;
+  font-size: 62px;
+  font-weight: 900;
+  letter-spacing: -0.06em;
+  color: #fff;
 }
 
-.footer-message strong {
-  color: #fbbf24;
+.bottom-caption .big span {
+  color: #ffc21a;
 }
 
-.accent-line {
+/* 빛 효과 */
+.glow-line {
   position: absolute;
-  left: 118px;
-  bottom: 52px;
-  width: 1684px;
+  left: 0;
+  top: 220px;
+  width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, rgba(96,165,250,0.55), rgba(251,191,36,0.55), transparent);
+  background: linear-gradient(90deg, transparent, #2b9cff, transparent);
+  box-shadow: 0 0 35px #2b9cff;
+  z-index: 6;
+}
+
+.noise {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 8% 78%, rgba(0, 153, 255, 0.18), transparent 22%),
+    radial-gradient(circle at 95% 88%, rgba(255, 194, 26, 0.08), transparent 20%);
   z-index: 1;
 }
 </style>
 </head>
 
 <body>
-  <section class="slide">
-    <div class="grid-bg"></div>
+<section class="slide">
+  <div class="noise"></div>
+  <div class="glow-line"></div>
 
-    <header class="header">
-      <div class="kicker">PROBLEM RECOGNITION</div>
-      <h1>
-        광고비는 지출되지만<br />
-        <span>광고효과는 측정되지 않습니다</span>
-      </h1>
-    </header>
+  <div class="top-title">
+    <h1>
+      광고비는 지출되지만<br>
+      <span class="yellow">광고효과는 측정되지 않습니다</span>
+    </h1>
+  </div>
 
-    <main class="compare-area">
-      <div class="card online">
-        <div class="card-title">
-          <span>온라인 광고</span>
-          <div class="icon-dashboard"></div>
-        </div>
-        <div class="items">
-          <div class="item"><span class="check">✓</span>클릭 수 확인 가능</div>
-          <div class="item"><span class="check">✓</span>체류시간 확인 가능</div>
-          <div class="item"><span class="check">✓</span>전환율 확인 가능</div>
-        </div>
+  <div class="content">
+    <div class="left-zone">
+      <div class="section-title">온라인 광고</div>
+      <div class="sub-title">데이터로 측정됩니다</div>
+
+      <div class="online-labels">
+        <div class="online-label"><div class="icon-circle">↗</div>클릭 수 측정</div>
+        <div class="online-label"><div class="icon-circle">◷</div>체류시간 측정</div>
+        <div class="online-label"><div class="icon-circle">%</div>전환율 측정</div>
       </div>
 
-      <div class="center-question">
-        “실제로 광고를 본<br />사람은 몇 명일까?”
-      </div>
-
-      <div class="card offline">
-        <div class="card-title">
-          <span>오프라인 광고</span>
-          <div class="icon-billboard"></div>
+      <div class="dashboard">
+        <div class="dashboard-header">AI PERFORMANCE DASHBOARD</div>
+        <div class="metric-grid">
+          <div class="metric">
+            <div class="metric-label">클릭 수</div>
+            <div class="metric-value">98,765</div>
+            <div class="line-chart"></div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">전환율</div>
+            <div class="metric-value">3.45%</div>
+            <div class="bar-chart">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">체류시간</div>
+            <div class="metric-value">02:45</div>
+            <div class="line-chart"></div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">성과 분석</div>
+            <div class="metric-value">LIVE</div>
+            <div class="bar-chart">
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+          </div>
         </div>
-        <div class="items">
-          <div class="item"><span class="check no">!</span>실제 시청자 수 확인 불가</div>
-          <div class="item"><span class="check no">!</span>시청시간 확인 불가</div>
-          <div class="item"><span class="check no">!</span>광고효과 설명 불가</div>
-        </div>
       </div>
-    </main>
-
-    <div class="footer-message">
-      온라인 광고는 <strong>측정</strong>되지만,<br />
-      오프라인 광고는 아직도 <strong>추정</strong>하고 있습니다.
     </div>
 
-    <div class="accent-line"></div>
-  </section>
+    <div class="right-zone">
+      <div class="section-title">오프라인 광고</div>
+      <div class="sub-title">아직도 “감”으로 판단됩니다</div>
+
+      <div class="billboard"></div>
+
+      <div class="people">
+        <div class="person p1"></div>
+        <div class="person p2"></div>
+        <div class="person p3"></div>
+        <div class="person p4"></div>
+        <div class="person p5"></div>
+      </div>
+
+      <div class="question-text q1">몇 명이 봤을까?</div>
+      <div class="question-text q2">얼마나 오래 봤을까?</div>
+      <div class="question-text q3">효과가 있었을까?</div>
+
+      <div class="big-q bq1">?</div>
+      <div class="big-q bq2">?</div>
+      <div class="big-q bq3">?</div>
+    </div>
+  </div>
+
+  <div class="vs-line"></div>
+
+  <div class="vs-box">
+    <div class="measure">측정됨</div>
+    <div class="vs">VS</div>
+    <div class="estimate">추정됨</div>
+  </div>
+
+  <div class="bottom-caption">
+    <div class="small">오프라인 광고의 가장 큰 문제는</div>
+    <div class="big"><span>‘본 사람 수’</span>를 모른다는 것입니다.</div>
+  </div>
+</section>
 </body>
 </html>
 ```
-
