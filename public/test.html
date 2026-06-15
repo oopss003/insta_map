@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=1920, height=1080" />
-<title>INWAVE Slide 01 - Problem</title>
+<title>INWAVE Slide 01 - PROBLEM</title>
 
 <style>
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
@@ -20,193 +20,186 @@ body {
   overflow: hidden;
   font-family: "Pretendard", "Noto Sans KR", sans-serif;
   background: #f4efe3;
-  color: #172033;
+  color: #161b22;
 }
 
 .slide {
   position: relative;
   width: 1920px;
   height: 1080px;
-  padding: 72px 88px 64px;
+  padding: 62px 76px;
   background:
-    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.9), transparent 26%),
-    radial-gradient(circle at 88% 18%, rgba(10, 46, 255, 0.08), transparent 30%),
-    radial-gradient(circle at 48% 98%, rgba(255, 199, 44, 0.18), transparent 34%),
-    linear-gradient(135deg, #f7f1e6 0%, #f4efe3 55%, #eadfcd 100%);
+    radial-gradient(circle at 12% 8%, rgba(255,255,255,0.95), transparent 28%),
+    radial-gradient(circle at 90% 18%, rgba(255,199,44,0.18), transparent 28%),
+    radial-gradient(circle at 55% 105%, rgba(0,116,129,0.10), transparent 35%),
+    linear-gradient(135deg, #f7f1e6 0%, #f4efe3 52%, #eadfce 100%);
   overflow: hidden;
 }
 
-.slide::before {
+/* 캡쳐용 외곽 라인 */
+.slide-frame {
+  position: absolute;
+  inset: 24px;
+  border: 1px solid rgba(20, 20, 20, 0.11);
+  border-radius: 34px;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.slide-frame::before {
   content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(20, 20, 20, 0.045);
+  border-radius: 26px;
+}
+
+.soft-grid {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(7, 26, 61, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(7, 26, 61, 0.035) 1px, transparent 1px);
-  background-size: 56px 56px;
-  opacity: 0.45;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent 85%);
-}
-
-.top-row {
-  position: relative;
-  z-index: 2;
-  height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    linear-gradient(rgba(7,26,61,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(7,26,61,0.035) 1px, transparent 1px);
+  background-size: 58px 58px;
+  opacity: 0.42;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent 78%);
 }
 
 .category {
-  height: 42px;
-  padding: 0 22px;
+  position: relative;
+  z-index: 3;
   display: inline-flex;
   align-items: center;
+  height: 44px;
+  padding: 0 24px;
   border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid rgba(7, 26, 61, 0.08);
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(7,26,61,0.08);
   box-shadow:
-    0 14px 28px rgba(91, 72, 42, 0.10),
+    0 16px 34px rgba(93,72,42,0.12),
     inset 0 1px 0 rgba(255,255,255,0.9);
   font-size: 20px;
-  font-weight: 800;
-  letter-spacing: 0.13em;
+  font-weight: 900;
+  letter-spacing: 0.16em;
   color: #007481;
 }
 
-.slide-no {
+.slide-number {
+  position: absolute;
+  top: 66px;
+  right: 82px;
+  z-index: 3;
   font-size: 22px;
-  font-weight: 700;
-  color: rgba(23, 32, 51, 0.42);
+  font-weight: 800;
+  color: rgba(22,27,34,0.34);
 }
 
-.main {
+.hero {
   position: relative;
   z-index: 2;
-  height: 706px;
-  display: grid;
-  grid-template-columns: 1.35fr 0.9fr;
-  gap: 66px;
+  height: 730px;
+  padding-top: 34px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-}
-
-.copy {
-  padding-top: 10px;
-}
-
-.eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 30px;
-  font-size: 24px;
-  font-weight: 800;
-  color: #007481;
-}
-
-.eyebrow::before {
-  content: "";
-  width: 52px;
-  height: 4px;
-  border-radius: 999px;
-  background: #0a2eff;
 }
 
 .title {
+  text-align: center;
   font-size: 92px;
   line-height: 1.08;
-  letter-spacing: -0.06em;
+  letter-spacing: -0.065em;
   font-weight: 900;
-  color: #111827;
+  color: #121820;
 }
 
-.title .accent {
+.title .yellow {
   color: #ffc72c;
-  text-shadow: 0 8px 22px rgba(255, 199, 44, 0.28);
+  text-shadow: 0 10px 26px rgba(255,199,44,0.30);
 }
 
-.subtitle {
-  margin-top: 34px;
-  width: 820px;
-  font-size: 32px;
-  line-height: 1.45;
-  letter-spacing: -0.035em;
-  font-weight: 500;
-  color: rgba(23, 32, 51, 0.68);
-}
-
-.image-card {
+.visual-wrap {
   position: relative;
-  height: 610px;
-  border-radius: 32px;
+  margin-top: 42px;
+  width: 1280px;
+  height: 440px;
+  border-radius: 36px;
   overflow: hidden;
-  background: #fffaf0;
-  border: 1px solid rgba(7, 26, 61, 0.08);
+  background: #d8c7ad;
   box-shadow:
-    0 30px 70px rgba(91, 72, 42, 0.18),
-    0 10px 24px rgba(91, 72, 42, 0.10),
-    inset 0 1px 0 rgba(255,255,255,0.9);
+    0 34px 80px rgba(84, 66, 39, 0.22),
+    0 12px 28px rgba(84, 66, 39, 0.12),
+    inset 0 1px 0 rgba(255,255,255,0.45);
+  border: 1px solid rgba(255,255,255,0.7);
 }
 
-.ad-scene {
+/* 실제 이미지가 있으면 아래 .scene 대신 img 태그 사용 */
+.scene {
   position: absolute;
   inset: 0;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)),
-    linear-gradient(135deg, #d9c7a8 0%, #aa9474 52%, #6d5f54 100%);
+    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.24)),
+    linear-gradient(135deg, #cdb995 0%, #927b60 47%, #423b37 100%);
+}
+
+.scene::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 22% 26%, rgba(255,255,255,0.18), transparent 22%),
+    radial-gradient(circle at 72% 18%, rgba(255,199,44,0.20), transparent 20%);
 }
 
 .billboard {
   position: absolute;
-  left: 64px;
-  top: 72px;
-  width: 470px;
+  left: 86px;
+  top: 64px;
+  width: 610px;
   height: 255px;
-  border-radius: 24px;
+  border-radius: 26px;
   background:
-    linear-gradient(135deg, rgba(10,46,255,0.92), rgba(0,116,129,0.92)),
-    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 30%);
+    radial-gradient(circle at 24% 22%, rgba(255,255,255,0.32), transparent 26%),
+    linear-gradient(135deg, #0a2eff 0%, #007481 100%);
   box-shadow:
-    0 24px 48px rgba(0,0,0,0.24),
-    inset 0 1px 0 rgba(255,255,255,0.3);
-  padding: 34px;
-  color: white;
+    0 28px 54px rgba(0,0,0,0.30),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+  padding: 42px;
+  color: #fff;
 }
 
-.billboard small {
-  display: block;
-  font-size: 22px;
-  font-weight: 700;
-  opacity: 0.78;
-  letter-spacing: 0.06em;
+.billboard .small {
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: 0.10em;
+  opacity: 0.76;
 }
 
-.billboard strong {
-  display: block;
+.billboard .main-copy {
   margin-top: 18px;
-  font-size: 48px;
-  line-height: 1.05;
-  letter-spacing: -0.045em;
+  font-size: 58px;
+  line-height: 1.02;
+  letter-spacing: -0.05em;
+  font-weight: 900;
 }
 
-.walkway {
+.floor {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  height: 255px;
+  height: 155px;
   background:
-    linear-gradient(180deg, transparent 0%, rgba(40,30,22,0.26) 100%),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 72px);
+    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(30,22,16,0.38)),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 78px);
 }
 
 .person {
   position: absolute;
-  bottom: 72px;
+  bottom: 44px;
   width: 54px;
   height: 150px;
-  opacity: 0.42;
-  filter: blur(0.2px);
+  opacity: 0.44;
 }
 
 .person::before {
@@ -217,233 +210,179 @@ body {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: rgba(25,25,25,0.68);
+  background: rgba(20,20,20,0.78);
 }
 
 .person::after {
   content: "";
   position: absolute;
-  top: 36px;
-  left: 7px;
-  width: 40px;
-  height: 92px;
-  border-radius: 20px 20px 8px 8px;
-  background: rgba(25,25,25,0.62);
+  top: 38px;
+  left: 6px;
+  width: 42px;
+  height: 95px;
+  border-radius: 22px 22px 8px 8px;
+  background: rgba(20,20,20,0.72);
 }
 
-.p1 { left: 140px; transform: scale(1.12); }
-.p2 { left: 255px; transform: scale(0.88); opacity: 0.28; }
-.p3 { left: 410px; transform: scale(1.28); opacity: 0.52; }
-.p4 { left: 535px; transform: scale(0.94); opacity: 0.34; }
+.p1 { left: 760px; transform: scale(1.08); }
+.p2 { left: 850px; transform: scale(0.82); opacity: 0.32; }
+.p3 { left: 960px; transform: scale(1.22); opacity: 0.54; }
+.p4 { left: 1100px; transform: scale(0.94); opacity: 0.36; }
 
-.data-overlay {
+.unknown-panel {
   position: absolute;
-  left: 34px;
-  right: 34px;
-  bottom: 34px;
-  padding: 26px;
+  right: 38px;
+  top: 38px;
+  width: 355px;
+  padding: 24px;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255,255,255,0.78);
+  border: 1px solid rgba(255,255,255,0.85);
   backdrop-filter: blur(22px);
-  border: 1px solid rgba(255,255,255,0.8);
-  box-shadow: 0 22px 46px rgba(70, 55, 32, 0.18);
+  box-shadow: 0 24px 54px rgba(54,42,25,0.20);
 }
 
-.overlay-title {
+.unknown-row {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  margin-bottom: 18px;
-  font-size: 22px;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(7,26,61,0.08);
+}
+
+.unknown-row:last-child {
+  border-bottom: none;
+}
+
+.unknown-label {
+  font-size: 21px;
   font-weight: 800;
-  color: #007481;
+  letter-spacing: -0.02em;
+  color: rgba(22,27,34,0.58);
 }
 
-.status-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ffc72c;
-  box-shadow: 0 0 0 8px rgba(255,199,44,0.18);
-}
-
-.overlay-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 14px;
-}
-
-.overlay-item {
-  min-height: 82px;
-  padding: 18px;
-  border-radius: 18px;
-  background: rgba(244,239,227,0.76);
-  border: 1px solid rgba(7,26,61,0.06);
-}
-
-.overlay-label {
-  font-size: 19px;
-  font-weight: 700;
-  color: rgba(23,32,51,0.52);
-}
-
-.overlay-value {
-  margin-top: 7px;
-  font-size: 30px;
+.unknown-value {
+  font-size: 34px;
   line-height: 1;
   font-weight: 900;
-  letter-spacing: -0.02em;
-  color: #172033;
+  color: #121820;
 }
 
-.overlay-value.unknown {
+.unknown-value.question {
   color: #ffc72c;
-  text-shadow: 0 5px 16px rgba(255,199,44,0.22);
+  text-shadow: 0 8px 18px rgba(255,199,44,0.28);
 }
 
-.kpi-row {
+.kpi-area {
   position: relative;
-  z-index: 2;
-  height: 170px;
+  z-index: 3;
+  margin-top: 12px;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 28px;
-  margin-top: 10px;
+  gap: 26px;
 }
 
 .kpi-card {
-  position: relative;
-  padding: 30px 34px;
-  border-radius: 24px;
-  background: #ffffff;
-  border: 1px solid rgba(7, 26, 61, 0.07);
+  height: 142px;
+  padding: 28px 32px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.86);
+  border: 1px solid rgba(7,26,61,0.07);
   box-shadow:
-    0 22px 44px rgba(91, 72, 42, 0.12),
-    0 8px 18px rgba(91, 72, 42, 0.08),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  overflow: hidden;
-}
-
-.kpi-card::after {
-  content: "";
-  position: absolute;
-  right: -44px;
-  top: -44px;
-  width: 140px;
-  height: 140px;
-  border-radius: 40px;
-  background: rgba(0,116,129,0.08);
-  transform: rotate(18deg);
+    0 24px 48px rgba(91,72,42,0.13),
+    0 8px 18px rgba(91,72,42,0.08),
+    inset 0 1px 0 rgba(255,255,255,0.95);
 }
 
 .kpi-label {
-  position: relative;
-  z-index: 2;
   font-size: 26px;
-  font-weight: 800;
+  font-weight: 850;
   letter-spacing: -0.035em;
-  color: rgba(23,32,51,0.72);
+  color: rgba(22,27,34,0.66);
 }
 
 .kpi-value {
-  position: relative;
-  z-index: 2;
   margin-top: 18px;
   font-size: 58px;
   line-height: 1;
-  font-weight: 900;
-  color: #ffc72c;
+  font-weight: 950;
   letter-spacing: -0.03em;
+  color: #ffc72c;
+  text-shadow: 0 8px 18px rgba(255,199,44,0.24);
 }
 
-.bottom-message {
+.footer-message {
   position: relative;
-  z-index: 2;
+  z-index: 3;
   margin-top: 28px;
-  height: 68px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  text-align: center;
   font-size: 31px;
   line-height: 1.35;
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  color: #172033;
+  font-weight: 850;
+  letter-spacing: -0.04em;
+  color: rgba(22,27,34,0.78);
 }
 
-.bottom-message span {
+.footer-message strong {
   color: #007481;
+  font-weight: 950;
 }
 </style>
 </head>
 
 <body>
   <section class="slide">
-    <div class="top-row">
-      <div class="category">PROBLEM</div>
-      <div class="slide-no">01</div>
-    </div>
+    <div class="slide-frame"></div>
+    <div class="soft-grid"></div>
 
-    <main class="main">
-      <section class="copy">
-        <div class="eyebrow">Measurement Gap</div>
+    <div class="category">PROBLEM</div>
+    <div class="slide-number">01</div>
 
-        <h1 class="title">
-          광고는 송출되지만<br />
-          시청은 <span class="accent">측정되지 않습니다</span>
-        </h1>
+    <main class="hero">
+      <h1 class="title">
+        하루 1,248명이 지나갑니다<br />
+        하지만 광고를 본 사람은 <span class="yellow">알 수 없습니다</span>
+      </h1>
 
-        <p class="subtitle">
-          광고비는 집행되지만, 실제 광고를 본 사람은 알 수 없습니다.
-        </p>
-      </section>
-
-      <section class="image-card">
-        <div class="ad-scene">
+      <section class="visual-wrap">
+        <div class="scene">
           <div class="billboard">
-            <small>OFFLINE AD</small>
-            <strong>Campaign<br />Running</strong>
+            <div class="small">DIGITAL SIGNAGE</div>
+            <div class="main-copy">Campaign<br />Running</div>
           </div>
 
-          <div class="walkway"></div>
+          <div class="floor"></div>
           <div class="person p1"></div>
           <div class="person p2"></div>
           <div class="person p3"></div>
           <div class="person p4"></div>
         </div>
 
-        <div class="data-overlay">
-          <div class="overlay-title">
-            <span>Advertising Measurement</span>
-            <span class="status-dot"></span>
+        <div class="unknown-panel">
+          <div class="unknown-row">
+            <div class="unknown-label">Daily Traffic</div>
+            <div class="unknown-value">1,248</div>
           </div>
 
-          <div class="overlay-grid">
-            <div class="overlay-item">
-              <div class="overlay-label">Daily Traffic</div>
-              <div class="overlay-value">1,248</div>
-            </div>
+          <div class="unknown-row">
+            <div class="unknown-label">Actual Viewers</div>
+            <div class="unknown-value question">???</div>
+          </div>
 
-            <div class="overlay-item">
-              <div class="overlay-label">Actual Viewers</div>
-              <div class="overlay-value unknown">???</div>
-            </div>
+          <div class="unknown-row">
+            <div class="unknown-label">Watch Time</div>
+            <div class="unknown-value question">???</div>
+          </div>
 
-            <div class="overlay-item">
-              <div class="overlay-label">Watch Time</div>
-              <div class="overlay-value unknown">???</div>
-            </div>
-
-            <div class="overlay-item">
-              <div class="overlay-label">Engagement</div>
-              <div class="overlay-value unknown">???</div>
-            </div>
+          <div class="unknown-row">
+            <div class="unknown-label">ROI</div>
+            <div class="unknown-value question">???</div>
           </div>
         </div>
       </section>
     </main>
 
-    <section class="kpi-row">
+    <section class="kpi-area">
       <div class="kpi-card">
         <div class="kpi-label">실제 시청자 수</div>
         <div class="kpi-value">???</div>
@@ -460,8 +399,8 @@ body {
       </div>
     </section>
 
-    <div class="bottom-message">
-      오프라인 광고의 가장 큰 문제는 <span>&nbsp;“본 사람 수를 알 수 없다”&nbsp;</span>는 것입니다.
+    <div class="footer-message">
+      광고는 운영되고 있습니다. 하지만 <strong>광고를 실제로 본 사람 수</strong>는 알 수 없습니다.
     </div>
   </section>
 </body>
