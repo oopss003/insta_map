@@ -1,11 +1,12 @@
-```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
 <meta charset="UTF-8" />
-<title>문제 인식 슬라이드</title>
+<meta name="viewport" content="width=1920, height=1080" />
+<title>INWAVE Slide 01 - Problem</title>
+
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700;800;900&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 * {
   margin: 0;
@@ -17,525 +18,380 @@ body {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
-  background: #041225;
-  color: #fff;
+  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
+  background: #031126;
+  color: #ffffff;
 }
 
 .slide {
   position: relative;
   width: 1920px;
   height: 1080px;
+  padding: 70px 90px;
   background:
-    radial-gradient(circle at 28% 48%, rgba(0, 132, 255, 0.42), transparent 38%),
-    radial-gradient(circle at 74% 52%, rgba(4, 12, 26, 0.8), transparent 42%),
-    linear-gradient(135deg, #071d3d 0%, #06152b 45%, #030b17 100%);
+    radial-gradient(circle at 18% 22%, rgba(10,46,255,0.45), transparent 34%),
+    radial-gradient(circle at 82% 28%, rgba(255,199,44,0.16), transparent 30%),
+    linear-gradient(135deg, #031126 0%, #071A3D 52%, #020914 100%);
   overflow: hidden;
 }
 
-/* 고급스러운 데이터 배경 */
-.slide::before {
-  content: "";
+.grid-bg {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(91, 166, 255, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(91, 166, 255, 0.07) 1px, transparent 1px);
-  background-size: 80px 80px;
-  opacity: 0.35;
-}
-
-.top-title {
-  position: absolute;
-  top: 62px;
-  width: 100%;
-  text-align: center;
-  z-index: 10;
-}
-
-.top-title h1 {
-  font-size: 78px;
-  line-height: 1.18;
-  font-weight: 900;
-  letter-spacing: -0.06em;
-  text-shadow: 0 8px 24px rgba(0,0,0,0.45);
-}
-
-.top-title .yellow {
-  color: #ffc21a;
-}
-
-/* 좌우 큰 영역 */
-.content {
-  position: absolute;
-  top: 220px;
-  left: 0;
-  width: 100%;
-  height: 640px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  z-index: 2;
-}
-
-.left-zone,
-.right-zone {
-  position: relative;
-  padding: 72px 96px;
-}
-
-.left-zone {
-  background:
-    linear-gradient(90deg, rgba(0, 103, 255, 0.32), rgba(0, 103, 255, 0.08)),
-    radial-gradient(circle at 18% 50%, rgba(0, 174, 255, 0.42), transparent 38%);
-}
-
-.right-zone {
-  background:
-    linear-gradient(90deg, rgba(0,0,0,0.24), rgba(0,0,0,0.68)),
-    radial-gradient(circle at 70% 48%, rgba(255,255,255,0.06), transparent 34%);
-}
-
-.section-title {
-  font-size: 54px;
-  font-weight: 900;
-  letter-spacing: -0.055em;
-  margin-bottom: 10px;
-}
-
-.left-zone .section-title {
-  color: #8cc8ff;
-}
-
-.right-zone .section-title {
-  color: rgba(255,255,255,0.72);
-}
-
-.sub-title {
-  font-size: 29px;
-  font-weight: 700;
-  color: rgba(255,255,255,0.78);
-  letter-spacing: -0.04em;
-}
-
-/* 온라인 대시보드 */
-.dashboard {
-  position: absolute;
-  left: 215px;
-  top: 190px;
-  width: 570px;
-  height: 330px;
-  border-radius: 24px;
-  background: linear-gradient(145deg, rgba(12, 54, 112, 0.95), rgba(5, 22, 52, 0.86));
-  border: 1px solid rgba(119, 190, 255, 0.38);
-  box-shadow:
-    0 0 40px rgba(0, 132, 255, 0.55),
-    inset 0 0 36px rgba(70, 169, 255, 0.12);
-  transform: perspective(900px) rotateY(-10deg);
-}
-
-.dashboard-header {
-  height: 54px;
-  border-bottom: 1px solid rgba(255,255,255,0.12);
-  display: flex;
-  align-items: center;
-  padding: 0 26px;
-  font-size: 19px;
-  font-weight: 800;
-  color: #b9dcff;
-}
-
-.metric-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 18px;
-  padding: 24px;
-}
-
-.metric {
-  height: 112px;
-  border-radius: 16px;
-  background: rgba(255,255,255,0.055);
-  border: 1px solid rgba(255,255,255,0.09);
-  padding: 18px;
-}
-
-.metric-label {
-  font-size: 18px;
-  color: #9fd0ff;
-  font-weight: 700;
-}
-
-.metric-value {
-  margin-top: 10px;
-  font-size: 34px;
-  font-weight: 900;
-}
-
-.line-chart {
-  width: 100%;
-  height: 38px;
-  margin-top: 12px;
-  background:
-    linear-gradient(135deg, transparent 8%, #34b7ff 9%, transparent 11%),
-    linear-gradient(155deg, transparent 32%, #34b7ff 33%, transparent 35%),
-    linear-gradient(135deg, transparent 58%, #34b7ff 59%, transparent 61%);
-  border-bottom: 2px solid rgba(52,183,255,0.8);
-}
-
-.bar-chart {
-  display: flex;
-  align-items: end;
-  gap: 9px;
-  height: 58px;
-  margin-top: 8px;
-}
-
-.bar-chart span {
-  width: 18px;
-  background: linear-gradient(#93d8ff, #177dff);
-  border-radius: 5px 5px 0 0;
-}
-
-.bar-chart span:nth-child(1) { height: 24px; }
-.bar-chart span:nth-child(2) { height: 38px; }
-.bar-chart span:nth-child(3) { height: 50px; }
-.bar-chart span:nth-child(4) { height: 32px; }
-.bar-chart span:nth-child(5) { height: 62px; }
-
-.online-labels {
-  position: absolute;
-  left: 96px;
-  top: 255px;
-  display: flex;
-  flex-direction: column;
-  gap: 34px;
-}
-
-.online-label {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  font-size: 28px;
-  font-weight: 800;
-  color: rgba(255,255,255,0.9);
-}
-
-.icon-circle {
-  width: 62px;
-  height: 62px;
-  border-radius: 50%;
-  border: 1px solid rgba(144, 210, 255, 0.55);
-  background: rgba(0, 117, 255, 0.18);
-  box-shadow: 0 0 22px rgba(0,153,255,0.55);
-  display: grid;
-  place-items: center;
-  color: #93d8ff;
-  font-size: 30px;
-}
-
-/* 오프라인 영역 */
-.billboard {
-  position: absolute;
-  right: 145px;
-  top: 180px;
-  width: 390px;
-  height: 220px;
-  background:
-    linear-gradient(rgba(255,255,255,0.04), rgba(255,255,255,0.01)),
-    repeating-linear-gradient(0deg, rgba(255,255,255,0.08) 0 2px, transparent 2px 5px);
-  border: 12px solid rgba(16, 25, 43, 0.96);
-  box-shadow: 0 24px 60px rgba(0,0,0,0.65);
-}
-
-.billboard::before {
-  content: "?";
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 150px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.42);
-}
-
-.billboard::after {
-  content: "";
-  position: absolute;
-  left: 165px;
-  bottom: -170px;
-  width: 42px;
-  height: 160px;
-  background: rgba(12, 18, 30, 0.96);
-}
-
-.people {
-  position: absolute;
-  left: 120px;
-  bottom: 60px;
-  width: 650px;
-  height: 210px;
-  opacity: 0.7;
-}
-
-.person {
-  position: absolute;
-  bottom: 0;
-  width: 44px;
-  height: 132px;
-  background: linear-gradient(#0a0f1a, #02050a);
-  border-radius: 24px 24px 8px 8px;
-  filter: blur(1px);
-}
-
-.person::before {
-  content: "";
-  position: absolute;
-  top: -42px;
-  left: 5px;
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  background: #060a12;
-}
-
-.p1 { left: 40px; transform: scale(1.25); opacity: 0.95; }
-.p2 { left: 165px; transform: scale(0.95); opacity: 0.62; }
-.p3 { left: 295px; transform: scale(1.45); opacity: 0.95; }
-.p4 { left: 465px; transform: scale(0.8); opacity: 0.48; }
-.p5 { left: 570px; transform: scale(1.05); opacity: 0.7; }
-
-.question-text {
-  position: absolute;
-  color: rgba(255,255,255,0.48);
-  font-size: 27px;
-  font-weight: 800;
-  letter-spacing: -0.04em;
-}
-
-.q1 { top: 214px; left: 92px; }
-.q2 { top: 315px; right: 80px; }
-.q3 { bottom: 96px; right: 132px; }
-
-.big-q {
-  position: absolute;
-  font-size: 62px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.22);
-}
-
-.bq1 { top: 290px; left: 240px; }
-.bq2 { top: 430px; right: 280px; }
-.bq3 { bottom: 120px; left: 430px; }
-
-/* 중앙 VS 라인 */
-.vs-line {
-  position: absolute;
-  top: 216px;
-  left: 50%;
-  width: 2px;
-  height: 560px;
-  background: linear-gradient(transparent, rgba(255,255,255,0.85), transparent);
-  z-index: 8;
-  box-shadow: 0 0 28px rgba(60, 170, 255, 0.85);
-}
-
-.vs-line::before {
-  content: "";
-  position: absolute;
-  top: -3px;
-  left: -420px;
-  width: 840px;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #3aa8ff, transparent);
-  box-shadow: 0 0 28px #3aa8ff;
-}
-
-.vs-box {
-  position: absolute;
-  top: 405px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 210px;
-  height: 240px;
-  z-index: 9;
-  text-align: center;
-}
-
-.vs-box .measure {
-  font-size: 54px;
-  font-weight: 900;
-  color: #77c8ff;
-  text-shadow: 0 0 24px rgba(0,153,255,0.9);
-}
-
-.vs-box .vs {
-  margin: 24px 0;
-  font-size: 64px;
-  font-weight: 900;
-  color: #fff;
-  font-style: italic;
-  text-shadow: 0 6px 20px rgba(0,0,0,0.65);
-}
-
-.vs-box .estimate {
-  font-size: 54px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.55);
-}
-
-/* 하단 핵심 메시지 */
-.bottom-caption {
-  position: absolute;
-  left: 280px;
-  bottom: 58px;
-  width: 1360px;
-  height: 168px;
-  border-radius: 32px;
-  background: linear-gradient(180deg, rgba(8, 31, 68, 0.88), rgba(3, 14, 31, 0.9));
-  border: 1px solid rgba(93, 177, 255, 0.38);
-  box-shadow:
-    0 0 42px rgba(0,132,255,0.32),
-    inset 0 0 30px rgba(255,255,255,0.04);
-  z-index: 12;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-.bottom-caption .small {
-  font-size: 42px;
-  font-weight: 900;
-  letter-spacing: -0.055em;
-  color: #fff;
-}
-
-.bottom-caption .big {
-  margin-top: 8px;
-  font-size: 62px;
-  font-weight: 900;
-  letter-spacing: -0.06em;
-  color: #fff;
-}
-
-.bottom-caption .big span {
-  color: #ffc21a;
-}
-
-/* 빛 효과 */
-.glow-line {
-  position: absolute;
-  left: 0;
-  top: 220px;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #2b9cff, transparent);
-  box-shadow: 0 0 35px #2b9cff;
-  z-index: 6;
+    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent 82%);
+  opacity: 0.45;
 }
 
 .noise {
   position: absolute;
   inset: 0;
+  background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
+  background-size: 6px 6px;
+  opacity: 0.08;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+  height: 190px;
+}
+
+.category {
+  display: inline-flex;
+  align-items: center;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(20px);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: #FFC72C;
+}
+
+.title {
+  margin-top: 30px;
+  font-size: 82px;
+  line-height: 1.12;
+  font-weight: 800;
+  letter-spacing: -0.045em;
+}
+
+.title span {
+  color: #D6DCE5;
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+  height: 650px;
+  display: grid;
+  grid-template-columns: 1fr 130px 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.panel {
+  position: relative;
+  height: 560px;
+  border-radius: 34px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+
+.online {
   background:
-    radial-gradient(circle at 8% 78%, rgba(0, 153, 255, 0.18), transparent 22%),
-    radial-gradient(circle at 95% 88%, rgba(255, 194, 26, 0.08), transparent 20%);
-  z-index: 1;
+    radial-gradient(circle at 30% 18%, rgba(10,46,255,0.5), transparent 42%),
+    linear-gradient(135deg, rgba(20,78,255,0.28), rgba(255,255,255,0.045));
+}
+
+.offline {
+  background:
+    radial-gradient(circle at 72% 38%, rgba(255,199,44,0.12), transparent 36%),
+    linear-gradient(135deg, rgba(2,8,22,0.9), rgba(7,26,61,0.75));
+}
+
+.panel-inner {
+  position: relative;
+  z-index: 2;
+  padding: 42px;
+  height: 100%;
+}
+
+.panel-label {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+}
+
+.panel-sub {
+  margin-top: 10px;
+  font-size: 22px;
+  color: rgba(214,220,229,0.78);
+}
+
+.dashboard {
+  margin-top: 42px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+
+.metric {
+  height: 112px;
+  padding: 24px;
+  border-radius: 22px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+.metric-name {
+  font-size: 21px;
+  color: rgba(214,220,229,0.82);
+}
+
+.metric-value {
+  margin-top: 12px;
+  font-size: 34px;
+  font-weight: 800;
+}
+
+.graph {
+  position: absolute;
+  left: 42px;
+  right: 42px;
+  bottom: 42px;
+  height: 160px;
+  border-radius: 24px;
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.1);
+  overflow: hidden;
+}
+
+.graph svg {
+  width: 100%;
+  height: 100%;
+}
+
+.empty-data {
+  margin-top: 52px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.empty-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.11);
+}
+
+.empty-row strong {
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.empty-row span {
+  font-size: 34px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.28);
+}
+
+.people-shadow {
+  position: absolute;
+  right: 40px;
+  bottom: 0;
+  width: 420px;
+  height: 310px;
+  opacity: 0.22;
+}
+
+.people-shadow::before,
+.people-shadow::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 92px;
+  height: 230px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0));
+  border-radius: 60px 60px 0 0;
+  filter: blur(1px);
+}
+
+.people-shadow::before {
+  right: 160px;
+}
+
+.people-shadow::after {
+  right: 50px;
+  height: 280px;
+}
+
+.divider {
+  height: 560px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vs {
+  width: 118px;
+  height: 118px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,199,44,0.12);
+  border: 1px solid rgba(255,199,44,0.35);
+  box-shadow: 0 0 70px rgba(255,199,44,0.18);
+  font-size: 38px;
+  font-weight: 900;
+  color: #FFC72C;
+}
+
+.footer {
+  position: relative;
+  z-index: 2;
+  height: 140px;
+  display: flex;
+  align-items: center;
+}
+
+.footer-text {
+  width: 100%;
+  padding: 34px 44px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+
+.footer-text span {
+  color: #FFC72C;
 }
 </style>
 </head>
 
 <body>
-<section class="slide">
-  <div class="noise"></div>
-  <div class="glow-line"></div>
+  <section class="slide">
+    <div class="grid-bg"></div>
+    <div class="noise"></div>
 
-  <div class="top-title">
-    <h1>
-      광고비는 지출되지만<br>
-      <span class="yellow">광고효과는 측정되지 않습니다</span>
-    </h1>
-  </div>
+    <header class="header">
+      <div class="category">PROBLEM</div>
+      <h1 class="title">
+        광고는 송출되지만<br />
+        <span>시청은 측정되지 않습니다</span>
+      </h1>
+    </header>
 
-  <div class="content">
-    <div class="left-zone">
-      <div class="section-title">온라인 광고</div>
-      <div class="sub-title">데이터로 측정됩니다</div>
+    <main class="hero">
+      <section class="panel online">
+        <div class="panel-inner">
+          <div class="panel-label">온라인 광고</div>
+          <div class="panel-sub">Data Visible</div>
 
-      <div class="online-labels">
-        <div class="online-label"><div class="icon-circle">↗</div>클릭 수 측정</div>
-        <div class="online-label"><div class="icon-circle">◷</div>체류시간 측정</div>
-        <div class="online-label"><div class="icon-circle">%</div>전환율 측정</div>
-      </div>
-
-      <div class="dashboard">
-        <div class="dashboard-header">AI PERFORMANCE DASHBOARD</div>
-        <div class="metric-grid">
-          <div class="metric">
-            <div class="metric-label">클릭 수</div>
-            <div class="metric-value">98,765</div>
-            <div class="line-chart"></div>
-          </div>
-          <div class="metric">
-            <div class="metric-label">전환율</div>
-            <div class="metric-value">3.45%</div>
-            <div class="bar-chart">
-              <span></span><span></span><span></span><span></span><span></span>
+          <div class="dashboard">
+            <div class="metric">
+              <div class="metric-name">클릭</div>
+              <div class="metric-value">12,486</div>
+            </div>
+            <div class="metric">
+              <div class="metric-name">체류시간</div>
+              <div class="metric-value">38.2s</div>
+            </div>
+            <div class="metric">
+              <div class="metric-name">전환율</div>
+              <div class="metric-value">4.8%</div>
+            </div>
+            <div class="metric">
+              <div class="metric-name">ROI</div>
+              <div class="metric-value">312%</div>
             </div>
           </div>
-          <div class="metric">
-            <div class="metric-label">체류시간</div>
-            <div class="metric-value">02:45</div>
-            <div class="line-chart"></div>
-          </div>
-          <div class="metric">
-            <div class="metric-label">성과 분석</div>
-            <div class="metric-value">LIVE</div>
-            <div class="bar-chart">
-              <span></span><span></span><span></span><span></span><span></span>
-            </div>
+
+          <div class="graph">
+            <svg viewBox="0 0 700 160" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="lineGlow" x1="0" x2="1">
+                  <stop offset="0%" stop-color="#0A2EFF"/>
+                  <stop offset="100%" stop-color="#FFC72C"/>
+                </linearGradient>
+              </defs>
+              <polyline
+                points="0,120 80,98 160,112 240,62 320,76 400,38 500,54 600,26 700,42"
+                fill="none"
+                stroke="url(#lineGlow)"
+                stroke-width="6"
+                stroke-linecap="round"
+              />
+              <path
+                d="M0 120 L80 98 L160 112 L240 62 L320 76 L400 38 L500 54 L600 26 L700 42 L700 160 L0 160 Z"
+                fill="rgba(10,46,255,0.22)"
+              />
+            </svg>
           </div>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="right-zone">
-      <div class="section-title">오프라인 광고</div>
-      <div class="sub-title">아직도 “감”으로 판단됩니다</div>
-
-      <div class="billboard"></div>
-
-      <div class="people">
-        <div class="person p1"></div>
-        <div class="person p2"></div>
-        <div class="person p3"></div>
-        <div class="person p4"></div>
-        <div class="person p5"></div>
+      <div class="divider">
+        <div class="vs">VS</div>
       </div>
 
-      <div class="question-text q1">몇 명이 봤을까?</div>
-      <div class="question-text q2">얼마나 오래 봤을까?</div>
-      <div class="question-text q3">효과가 있었을까?</div>
+      <section class="panel offline">
+        <div class="panel-inner">
+          <div class="panel-label">오프라인 광고</div>
+          <div class="panel-sub">Data Blind Spot</div>
 
-      <div class="big-q bq1">?</div>
-      <div class="big-q bq2">?</div>
-      <div class="big-q bq3">?</div>
-    </div>
-  </div>
+          <div class="empty-data">
+            <div class="empty-row">
+              <strong>광고 송출</strong>
+              <span>ON</span>
+            </div>
+            <div class="empty-row">
+              <strong>유동인구</strong>
+              <span>추정</span>
+            </div>
+            <div class="empty-row">
+              <strong>실제 시청자 수</strong>
+              <span>?</span>
+            </div>
+            <div class="empty-row">
+              <strong>시청시간</strong>
+              <span>?</span>
+            </div>
+            <div class="empty-row">
+              <strong>광고효과</strong>
+              <span>?</span>
+            </div>
+          </div>
 
-  <div class="vs-line"></div>
+          <div class="people-shadow"></div>
+        </div>
+      </section>
+    </main>
 
-  <div class="vs-box">
-    <div class="measure">측정됨</div>
-    <div class="vs">VS</div>
-    <div class="estimate">추정됨</div>
-  </div>
-
-  <div class="bottom-caption">
-    <div class="small">오프라인 광고의 가장 큰 문제는</div>
-    <div class="big"><span>‘본 사람 수’</span>를 모른다는 것입니다.</div>
-  </div>
-</section>
+    <footer class="footer">
+      <div class="footer-text">
+        온라인 광고는 <span>측정</span>되지만, 오프라인 광고는 여전히 <span>추정</span>하고 있습니다.
+      </div>
+    </footer>
+  </section>
 </body>
 </html>
-```
