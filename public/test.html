@@ -1,407 +1,446 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=1920, height=1080" />
-<title>INWAVE Slide 01 - PROBLEM</title>
+<meta charset="UTF-8">
+<title>INWAVE - Slide 02</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
 <style>
-@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Pretendard',sans-serif;
 }
 
-body {
-  width: 1920px;
-  height: 1080px;
-  overflow: hidden;
-  font-family: "Pretendard", "Noto Sans KR", sans-serif;
-  background: #f4efe3;
-  color: #161b22;
+body{
+    background:#e8e8e8;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
 }
 
-.slide {
-  position: relative;
-  width: 1920px;
-  height: 1080px;
-  padding: 62px 76px;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(255,255,255,0.95), transparent 28%),
-    radial-gradient(circle at 90% 18%, rgba(255,199,44,0.18), transparent 28%),
-    radial-gradient(circle at 55% 105%, rgba(0,116,129,0.10), transparent 35%),
-    linear-gradient(135deg, #f7f1e6 0%, #f4efe3 52%, #eadfce 100%);
-  overflow: hidden;
+#slide{
+    width:1920px;
+    height:1080px;
+    background:#ffffff;
+    position:relative;
+    overflow:hidden;
 }
 
-/* 캡쳐용 외곽 라인 */
-.slide-frame {
-  position: absolute;
-  inset: 24px;
-  border: 1px solid rgba(20, 20, 20, 0.11);
-  border-radius: 34px;
-  pointer-events: none;
-  z-index: 50;
+/* 다운로드 버튼 */
+
+#downloadBtn{
+    position:fixed;
+    top:20px;
+    right:20px;
+    z-index:9999;
+    border:none;
+    background:#111;
+    color:#fff;
+    padding:14px 24px;
+    border-radius:10px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
 }
 
-.slide-frame::before {
-  content: "";
-  position: absolute;
-  inset: 8px;
-  border: 1px solid rgba(20, 20, 20, 0.045);
-  border-radius: 26px;
+/* 상단 */
+
+.category{
+    position:absolute;
+    left:80px;
+    top:55px;
+
+    background:#FFD400;
+    padding:10px 22px;
+
+    font-size:18px;
+    font-weight:700;
+    letter-spacing:2px;
 }
 
-.soft-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(7,26,61,0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(7,26,61,0.035) 1px, transparent 1px);
-  background-size: 58px 58px;
-  opacity: 0.42;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.65), transparent 78%);
+.title{
+    position:absolute;
+    top:110px;
+    width:100%;
+    text-align:center;
+
+    font-size:64px;
+    font-weight:800;
+    color:#111;
+    line-height:1.2;
 }
 
-.category {
-  position: relative;
-  z-index: 3;
-  display: inline-flex;
-  align-items: center;
-  height: 44px;
-  padding: 0 24px;
-  border-radius: 999px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(7,26,61,0.08);
-  box-shadow:
-    0 16px 34px rgba(93,72,42,0.12),
-    inset 0 1px 0 rgba(255,255,255,0.9);
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 0.16em;
-  color: #007481;
+.highlight{
+    color:#FFD400;
 }
 
-.slide-number {
-  position: absolute;
-  top: 66px;
-  right: 82px;
-  z-index: 3;
-  font-size: 22px;
-  font-weight: 800;
-  color: rgba(22,27,34,0.34);
+.subtitle{
+    position:absolute;
+    top:245px;
+    width:100%;
+
+    text-align:center;
+
+    font-size:24px;
+    color:#666;
+    line-height:1.7;
 }
 
-.hero {
-  position: relative;
-  z-index: 2;
-  height: 730px;
-  padding-top: 34px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+/* 메인 영역 */
+
+.main{
+    position:absolute;
+    top:360px;
+    left:120px;
+
+    width:1680px;
+    height:500px;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
 }
 
-.title {
-  text-align: center;
-  font-size: 92px;
-  line-height: 1.08;
-  letter-spacing: -0.065em;
-  font-weight: 900;
-  color: #121820;
+/* 카드 */
+
+.card{
+    width:720px;
+    height:500px;
+
+    border-radius:30px;
+    overflow:hidden;
+    position:relative;
 }
 
-.title .yellow {
-  color: #ffc72c;
-  text-shadow: 0 10px 26px rgba(255,199,44,0.30);
+.online{
+    background:#ffffff;
+    border:4px solid #FFD400;
 }
 
-.visual-wrap {
-  position: relative;
-  margin-top: 42px;
-  width: 1280px;
-  height: 440px;
-  border-radius: 36px;
-  overflow: hidden;
-  background: #d8c7ad;
-  box-shadow:
-    0 34px 80px rgba(84, 66, 39, 0.22),
-    0 12px 28px rgba(84, 66, 39, 0.12),
-    inset 0 1px 0 rgba(255,255,255,0.45);
-  border: 1px solid rgba(255,255,255,0.7);
+.online::before{
+    content:'';
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:12px;
+    background:#FFD400;
 }
 
-/* 실제 이미지가 있으면 아래 .scene 대신 img 태그 사용 */
-.scene {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.10), rgba(0,0,0,0.24)),
-    linear-gradient(135deg, #cdb995 0%, #927b60 47%, #423b37 100%);
+.offline{
+    background:#111111;
+    color:white;
 }
 
-.scene::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(circle at 22% 26%, rgba(255,255,255,0.18), transparent 22%),
-    radial-gradient(circle at 72% 18%, rgba(255,199,44,0.20), transparent 20%);
+/* 타이틀 */
+
+.card-title{
+    padding:45px 50px 20px 50px;
 }
 
-.billboard {
-  position: absolute;
-  left: 86px;
-  top: 64px;
-  width: 610px;
-  height: 255px;
-  border-radius: 26px;
-  background:
-    radial-gradient(circle at 24% 22%, rgba(255,255,255,0.32), transparent 26%),
-    linear-gradient(135deg, #0a2eff 0%, #007481 100%);
-  box-shadow:
-    0 28px 54px rgba(0,0,0,0.30),
-    inset 0 1px 0 rgba(255,255,255,0.35);
-  padding: 42px;
-  color: #fff;
+.card-title .eng{
+    font-size:52px;
+    font-weight:800;
+    line-height:1;
 }
 
-.billboard .small {
-  font-size: 24px;
-  font-weight: 800;
-  letter-spacing: 0.10em;
-  opacity: 0.76;
+.card-title .kor{
+    margin-top:8px;
+    font-size:30px;
+    font-weight:600;
 }
 
-.billboard .main-copy {
-  margin-top: 18px;
-  font-size: 58px;
-  line-height: 1.02;
-  letter-spacing: -0.05em;
-  font-weight: 900;
+/* 리스트 */
+
+.list{
+    padding-left:55px;
+    margin-top:20px;
 }
 
-.floor {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 155px;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.05), rgba(30,22,16,0.38)),
-    repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 78px);
+.list li{
+    list-style:none;
+    font-size:28px;
+    font-weight:500;
+    margin-bottom:18px;
 }
 
-.person {
-  position: absolute;
-  bottom: 44px;
-  width: 54px;
-  height: 150px;
-  opacity: 0.44;
+.online li{
+    color:#111;
 }
 
-.person::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 13px;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(20,20,20,0.78);
+.offline li{
+    color:#fff;
 }
 
-.person::after {
-  content: "";
-  position: absolute;
-  top: 38px;
-  left: 6px;
-  width: 42px;
-  height: 95px;
-  border-radius: 22px 22px 8px 8px;
-  background: rgba(20,20,20,0.72);
+/* BUT */
+
+.but{
+    margin-left:55px;
+    margin-top:20px;
+
+    font-size:36px;
+    font-weight:800;
+    color:#FFD400;
 }
 
-.p1 { left: 760px; transform: scale(1.08); }
-.p2 { left: 850px; transform: scale(0.82); opacity: 0.32; }
-.p3 { left: 960px; transform: scale(1.22); opacity: 0.54; }
-.p4 { left: 1100px; transform: scale(0.94); opacity: 0.36; }
+/* 하단 문구 */
 
-.unknown-panel {
-  position: absolute;
-  right: 38px;
-  top: 38px;
-  width: 355px;
-  padding: 24px;
-  border-radius: 28px;
-  background: rgba(255,255,255,0.78);
-  border: 1px solid rgba(255,255,255,0.85);
-  backdrop-filter: blur(22px);
-  box-shadow: 0 24px 54px rgba(54,42,25,0.20);
+.bottom-text{
+    position:absolute;
+    left:50px;
+    bottom:35px;
+
+    font-size:26px;
+    font-weight:700;
+    line-height:1.4;
 }
 
-.unknown-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  padding: 14px 0;
-  border-bottom: 1px solid rgba(7,26,61,0.08);
+.online .bottom-text{
+    color:#111;
 }
 
-.unknown-row:last-child {
-  border-bottom: none;
+.offline .bottom-text{
+    color:#FFD400;
 }
 
-.unknown-label {
-  font-size: 21px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: rgba(22,27,34,0.58);
+/* 그래프 느낌 */
+
+.graph{
+    position:absolute;
+    right:40px;
+    bottom:60px;
+
+    width:220px;
+    height:160px;
+
+    display:flex;
+    align-items:flex-end;
+    gap:15px;
 }
 
-.unknown-value {
-  font-size: 34px;
-  line-height: 1;
-  font-weight: 900;
-  color: #121820;
+.bar{
+    width:35px;
+    background:#FFD400;
+    border-radius:8px 8px 0 0;
 }
 
-.unknown-value.question {
-  color: #ffc72c;
-  text-shadow: 0 8px 18px rgba(255,199,44,0.28);
+.bar:nth-child(1){height:60px;}
+.bar:nth-child(2){height:90px;}
+.bar:nth-child(3){height:120px;}
+.bar:nth-child(4){height:140px;}
+.bar:nth-child(5){height:160px;}
+
+/* 사람 실루엣 */
+
+.people{
+    position:absolute;
+    right:40px;
+    top:120px;
+
+    font-size:180px;
+    opacity:0.08;
 }
 
-.kpi-area {
-  position: relative;
-  z-index: 3;
-  margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 26px;
+/* VS */
+
+.vs-wrap{
+    width:180px;
+    text-align:center;
 }
 
-.kpi-card {
-  height: 142px;
-  padding: 28px 32px;
-  border-radius: 28px;
-  background: rgba(255,255,255,0.86);
-  border: 1px solid rgba(7,26,61,0.07);
-  box-shadow:
-    0 24px 48px rgba(91,72,42,0.13),
-    0 8px 18px rgba(91,72,42,0.08),
-    inset 0 1px 0 rgba(255,255,255,0.95);
+.vs-top{
+    font-size:38px;
+    font-weight:800;
+    color:#111;
 }
 
-.kpi-label {
-  font-size: 26px;
-  font-weight: 850;
-  letter-spacing: -0.035em;
-  color: rgba(22,27,34,0.66);
+.vs{
+    font-size:120px;
+    font-weight:900;
+    color:#FFD400;
+    margin:10px 0;
 }
 
-.kpi-value {
-  margin-top: 18px;
-  font-size: 58px;
-  line-height: 1;
-  font-weight: 950;
-  letter-spacing: -0.03em;
-  color: #ffc72c;
-  text-shadow: 0 8px 18px rgba(255,199,44,0.24);
+.vs-bottom{
+    font-size:38px;
+    font-weight:800;
+    color:#111;
 }
 
-.footer-message {
-  position: relative;
-  z-index: 3;
-  margin-top: 28px;
-  text-align: center;
-  font-size: 31px;
-  line-height: 1.35;
-  font-weight: 850;
-  letter-spacing: -0.04em;
-  color: rgba(22,27,34,0.78);
+/* 하단 메시지 */
+
+.footer{
+    position:absolute;
+    bottom:0;
+    left:0;
+
+    width:100%;
+    height:120px;
+
+    background:#FFD400;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center;
 }
 
-.footer-message strong {
-  color: #007481;
-  font-weight: 950;
+.footer p{
+    font-size:34px;
+    font-weight:700;
+    color:#111;
+    line-height:1.4;
 }
+
+.footer strong{
+    font-weight:900;
+}
+
 </style>
 </head>
-
 <body>
-  <section class="slide">
-    <div class="slide-frame"></div>
-    <div class="soft-grid"></div>
 
-    <div class="category">PROBLEM</div>
-    <div class="slide-number">01</div>
+<button id="downloadBtn">
+PNG 다운로드
+</button>
 
-    <main class="hero">
-      <h1 class="title">
-        하루 1,248명이 지나갑니다<br />
-        하지만 광고를 본 사람은 <span class="yellow">알 수 없습니다</span>
-      </h1>
+<div id="slide">
 
-      <section class="visual-wrap">
-        <div class="scene">
-          <div class="billboard">
-            <div class="small">DIGITAL SIGNAGE</div>
-            <div class="main-copy">Campaign<br />Running</div>
-          </div>
+<div class="category">
+PROBLEM
+</div>
 
-          <div class="floor"></div>
-          <div class="person p1"></div>
-          <div class="person p2"></div>
-          <div class="person p3"></div>
-          <div class="person p4"></div>
-        </div>
+<div class="title">
+오프라인 광고는 아직도
+<span class="highlight">"추정"</span>으로 운영됩니다
+</div>
 
-        <div class="unknown-panel">
-          <div class="unknown-row">
-            <div class="unknown-label">Daily Traffic</div>
-            <div class="unknown-value">1,248</div>
-          </div>
+<div class="subtitle">
+광고는 이제 노출이 아니라 데이터로 평가되는 시대입니다.<br>
+하지만 오프라인 광고는 여전히 실제 광고 효과를 확인하기 어렵습니다.
+</div>
 
-          <div class="unknown-row">
-            <div class="unknown-label">Actual Viewers</div>
-            <div class="unknown-value question">???</div>
-          </div>
+<div class="main">
 
-          <div class="unknown-row">
-            <div class="unknown-label">Watch Time</div>
-            <div class="unknown-value question">???</div>
-          </div>
+<div class="card online">
 
-          <div class="unknown-row">
-            <div class="unknown-label">ROI</div>
-            <div class="unknown-value question">???</div>
-          </div>
-        </div>
-      </section>
-    </main>
+<div class="card-title">
+<div class="eng">ONLINE</div>
+<div class="kor">온라인 광고</div>
+</div>
 
-    <section class="kpi-area">
-      <div class="kpi-card">
-        <div class="kpi-label">실제 시청자 수</div>
-        <div class="kpi-value">???</div>
-      </div>
+<ul class="list">
+<li>✔ 클릭 수</li>
+<li>✔ 체류시간</li>
+<li>✔ 전환율</li>
+<li>✔ 광고 성과 분석</li>
+<li>✔ ROI 측정</li>
+</ul>
 
-      <div class="kpi-card">
-        <div class="kpi-label">평균 시청시간</div>
-        <div class="kpi-value">???</div>
-      </div>
+<div class="graph">
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+<div class="bar"></div>
+</div>
 
-      <div class="kpi-card">
-        <div class="kpi-label">광고 반응률</div>
-        <div class="kpi-value">???</div>
-      </div>
-    </section>
+<div class="bottom-text">
+모든 광고 활동이<br>
+데이터로 측정됩니다.
+</div>
 
-    <div class="footer-message">
-      광고는 운영되고 있습니다. 하지만 <strong>광고를 실제로 본 사람 수</strong>는 알 수 없습니다.
-    </div>
-  </section>
+</div>
+
+<div class="vs-wrap">
+<div class="vs-top">
+측정된다
+</div>
+
+<div class="vs">
+VS
+</div>
+
+<div class="vs-bottom">
+추정된다
+</div>
+</div>
+
+<div class="card offline">
+
+<div class="people">
+👥
+</div>
+
+<div class="card-title">
+<div class="eng">OFFLINE</div>
+<div class="kor">오프라인 광고</div>
+</div>
+
+<ul class="list">
+<li>✔ 송출 횟수</li>
+<li>✔ 유동 인구</li>
+<li>✔ 설치 위치</li>
+</ul>
+
+<div class="but">
+BUT
+</div>
+
+<ul class="list">
+<li>✖ 실제 광고를 본 사람 수</li>
+<li>✖ 시청 시간</li>
+<li>✖ 광고 반응</li>
+<li>✖ 광고 효과</li>
+</ul>
+
+<div class="bottom-text">
+실제 시청 데이터는<br>
+알 수 없습니다.
+</div>
+
+</div>
+
+</div>
+
+<div class="footer">
+<p>
+광고주는 광고비를 지출하지만
+<strong>광고 효과는 설명하기 어렵습니다.</strong>
+</p>
+</div>
+
+</div>
+
+<script>
+
+document.getElementById('downloadBtn').addEventListener('click', () => {
+
+html2canvas(document.querySelector("#slide"),{
+scale:2
+}).then(canvas=>{
+
+const link=document.createElement('a');
+
+link.download='INWAVE_Slide02.png';
+
+link.href=canvas.toDataURL();
+
+link.click();
+
+});
+
+});
+
+</script>
+
 </body>
 </html>
