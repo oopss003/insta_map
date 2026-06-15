@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>INWAVE Slide 14 - Conclusion</title>
+<title>INWAVE 14 Slides Editable HTML</title>
 
 <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 
@@ -14,488 +14,1184 @@
 
   body {
     margin: 0;
-    background: #1f1f1f;
-    font-family: "Noto Sans KR", "Pretendard", "Apple SD Gothic Neo", Arial, sans-serif;
-  }
-
-  .page {
-    width: 100%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 24px;
-    gap: 16px;
+    background: #222;
+    font-family: "Pretendard", "Noto Sans KR", "Apple SD Gothic Neo", Arial, sans-serif;
+    color: #111;
   }
 
   .toolbar {
-    width: 1280px;
-    max-width: 96vw;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
     display: flex;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 10px;
+    padding: 14px;
+    background: #151515;
+    border-bottom: 1px solid rgba(255,255,255,0.15);
   }
 
   .toolbar button {
     border: 0;
-    border-radius: 10px;
-    padding: 12px 18px;
+    border-radius: 8px;
+    padding: 11px 16px;
     background: #b00000;
-    color: #ffffff;
-    font-size: 15px;
+    color: #fff;
+    font-size: 14px;
     font-weight: 800;
     cursor: pointer;
   }
 
-  .toolbar button:hover {
-    filter: brightness(1.08);
+  .toolbar button.gray {
+    background: #444;
   }
 
-  .slide-scale {
+  .deck {
     width: 1280px;
     max-width: 96vw;
-    aspect-ratio: 16 / 9;
+    margin: 28px auto 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .slide-wrap {
     position: relative;
-    overflow: hidden;
-    background: #ffffff;
-    box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+    background: #111;
+    padding: 12px;
+    border-radius: 14px;
+    box-shadow: 0 24px 70px rgba(0,0,0,0.4);
+  }
+
+  .slide-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #ddd;
+    font-size: 13px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+
+  .slide-control button {
+    border: 0;
+    border-radius: 7px;
+    padding: 8px 12px;
+    background: #b00000;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 800;
+    cursor: pointer;
   }
 
   .slide {
-    width: 1920px;
-    height: 1080px;
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform-origin: left top;
-    background: #fbfbfb;
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #f7f7f7;
     overflow: hidden;
   }
 
-  /* ===== Top Ribbon ===== */
-
-  .top-red {
+  .slide-inner {
     position: absolute;
     left: 0;
     top: 0;
-    width: 150px;
-    height: 105px;
-    background: #a40000;
-    clip-path: polygon(0 0, 100% 0, 78% 100%, 0 100%);
-    z-index: 3;
+    width: 1920px;
+    height: 1080px;
+    transform-origin: left top;
+    background: #f7f7f7;
+    overflow: hidden;
   }
 
-  .page-num {
+  /* 공통 상단 페이지 라벨 */
+  .page-label {
     position: absolute;
-    left: 20px;
-    top: 18px;
-    font-size: 58px;
-    line-height: 1;
-    font-weight: 900;
-    color: #ffffff;
-    letter-spacing: -0.04em;
-  }
-
-  .top-yellow {
-    position: absolute;
-    left: 128px;
+    left: 0;
     top: 0;
-    width: 390px;
-    height: 105px;
-    background: #ffc20a;
-    clip-path: polygon(0 0, 100% 0, 90% 100%, 0 100%);
-    z-index: 2;
+    display: flex;
+    height: 72px;
+    z-index: 5;
   }
 
-  .section-name {
-    position: absolute;
-    left: 175px;
-    top: 36px;
-    font-size: 38px;
-    line-height: 1;
+  .page-no {
+    width: 74px;
+    height: 72px;
+    background: #b00000;
+    color: #fff;
+    font-size: 34px;
     font-weight: 900;
-    color: #000000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .section-label {
+    position: relative;
+    min-width: 185px;
+    height: 72px;
+    padding: 0 34px 0 22px;
+    background: #ffc400;
+    color: #111;
+    font-size: 18px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.03em;
+  }
+
+  .section-label::after {
+    content: "";
+    position: absolute;
+    right: -36px;
+    top: 0;
+    width: 72px;
+    height: 72px;
+    background: #ffc400;
+    transform: skewX(-22deg);
+    z-index: -1;
+  }
+
+  .top-category {
+    position: absolute;
+    left: 86px;
+    top: 54px;
+    color: #b00000;
+    font-size: 23px;
+    font-weight: 900;
     letter-spacing: -0.04em;
   }
-
-  /* ===== Main Left Text ===== */
 
   .main-title {
     position: absolute;
-    left: 54px;
-    top: 170px;
-    width: 740px;
-    color: #000000;
-    font-size: 66px;
-    line-height: 1.38;
+    left: 78px;
+    top: 145px;
+    width: 720px;
+    font-size: 60px;
+    line-height: 1.16;
     font-weight: 900;
     letter-spacing: -0.07em;
+    color: #111;
+  }
+
+  .main-title.large {
+    font-size: 70px;
+  }
+
+  .main-title.small {
+    font-size: 52px;
   }
 
   .main-title .red {
     color: #b00000;
   }
 
-  .body-copy {
+  .main-title .yellow {
+    color: #ffc400;
+  }
+
+  .sub-text {
     position: absolute;
-    left: 55px;
-    top: 654px;
-    width: 750px;
-    color: #111111;
-    font-size: 34px;
+    left: 82px;
+    top: 385px;
+    width: 630px;
+    font-size: 25px;
     line-height: 1.55;
     font-weight: 500;
-    letter-spacing: -0.05em;
+    letter-spacing: -0.04em;
+    color: #222;
   }
 
-  /* ===== Right Cards ===== */
+  .desc-text {
+    font-size: 24px;
+    line-height: 1.45;
+    letter-spacing: -0.04em;
+    color: #333;
+  }
 
-  .card {
+  .red-bottom {
     position: absolute;
-    width: 440px;
-    height: 355px;
-    background: rgba(255,255,255,0.88);
-    border: 1px solid #d9d9d9;
-    border-radius: 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
-  }
-
-  .card-1 {
-    left: 890px;
-    top: 108px;
-  }
-
-  .card-2 {
-    left: 1365px;
-    top: 108px;
-  }
-
-  .card-3 {
-    left: 890px;
-    top: 488px;
-  }
-
-  .card-4 {
-    left: 1365px;
-    top: 488px;
-  }
-
-  .icon-box {
-    width: 160px;
-    height: 160px;
-    margin-top: 28px;
+    left: 0;
+    bottom: 54px;
+    width: 100%;
+    height: 90px;
+    background: linear-gradient(90deg, #a60000, #c30000, #a60000);
+    color: #fff;
     display: flex;
     align-items: center;
-    justify-content: center;
+    padding-left: 88px;
+    font-size: 36px;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+  }
+
+  .red-bottom .icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 7px solid #fff;
+    margin-right: 24px;
+    position: relative;
+  }
+
+  .red-bottom .icon::after {
+    content: "";
+    position: absolute;
+    width: 22px;
+    height: 7px;
+    background: #fff;
+    right: -14px;
+    top: 8px;
+    transform: rotate(-45deg);
+  }
+
+  .red-bottom .yellow {
+    color: #fff200;
+  }
+
+  .footer-logo {
+    position: absolute;
+    left: 56px;
+    bottom: 20px;
+    font-size: 19px;
+    font-weight: 900;
     color: #b00000;
   }
 
-  .card-line {
-    width: 50px;
-    height: 3px;
-    background: #b00000;
-    margin-top: 7px;
-    margin-bottom: 20px;
+  .mock-image {
+    position: absolute;
+    border-radius: 18px;
+    background:
+      linear-gradient(135deg, rgba(190,190,190,0.28), rgba(255,255,255,0.75)),
+      repeating-linear-gradient(-45deg, rgba(0,0,0,0.035) 0 8px, transparent 8px 16px);
+    border: 2px dashed rgba(80,80,80,0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+  }
+
+  .card {
+    position: absolute;
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 18px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+    padding: 28px;
   }
 
   .card-title {
-    font-size: 38px;
-    line-height: 1.15;
+    font-size: 32px;
+    line-height: 1.2;
     font-weight: 900;
-    color: #000000;
     letter-spacing: -0.06em;
-    text-align: center;
   }
 
   .card-sub {
     margin-top: 14px;
-    font-size: 27px;
-    line-height: 1.15;
-    font-weight: 500;
-    color: #111111;
+    font-size: 22px;
+    line-height: 1.35;
+    color: #444;
+    letter-spacing: -0.04em;
+  }
+
+  .metric-grid {
+    position: absolute;
+    left: 74px;
+    right: 74px;
+    bottom: 165px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+
+  .metric-card {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e6e6e6;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    padding: 24px 30px;
+    min-height: 130px;
+  }
+
+  .metric-name {
+    font-size: 21px;
+    font-weight: 800;
+    color: #555;
+    letter-spacing: -0.04em;
+  }
+
+  .metric-value {
+    margin-top: 14px;
+    font-size: 43px;
+    font-weight: 900;
+    color: #b00000;
+    letter-spacing: -0.07em;
+  }
+
+  .metric-desc {
+    margin-top: 8px;
+    font-size: 17px;
+    color: #666;
+  }
+
+  .two-col {
+    position: absolute;
+    left: 90px;
+    top: 205px;
+    right: 90px;
+    bottom: 180px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 42px;
+  }
+
+  .compare-card {
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.09);
+    padding: 36px;
+    border-top: 12px solid #ffc400;
+  }
+
+  .compare-card.off {
+    border-top-color: #b00000;
+  }
+
+  .compare-title {
+    font-size: 39px;
+    font-weight: 900;
+    letter-spacing: -0.07em;
+    margin-bottom: 24px;
+  }
+
+  .check-list {
+    display: flex;
+    flex-direction: column;
+    gap: 17px;
+    font-size: 28px;
+    font-weight: 700;
     letter-spacing: -0.05em;
+  }
+
+  .check-list span::before {
+    content: "✓";
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 31px;
+    height: 31px;
+    margin-right: 13px;
+    border-radius: 50%;
+    background: #b00000;
+    color: #fff;
+    font-size: 19px;
+  }
+
+  .flow {
+    position: absolute;
+    left: 100px;
+    right: 100px;
+    top: 245px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 22px;
+  }
+
+  .flow-step {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px 20px;
+    min-height: 240px;
+    border: 1px solid #e3e3e3;
     text-align: center;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.07);
   }
 
-  svg {
-    width: 100%;
-    height: 100%;
+  .flow-num {
+    width: 54px;
+    height: 54px;
+    margin: 0 auto 22px;
+    border-radius: 50%;
+    background: #b00000;
+    color: #fff;
+    font-size: 25px;
+    font-weight: 900;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  .svg-red {
-    stroke: #b00000;
-    fill: none;
-    stroke-width: 8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-
-  .svg-fill-red {
-    fill: #b00000;
-  }
-
-  /* ===== Bottom Banner ===== */
-
-  .bottom-banner {
-    position: absolute;
-    left: 0;
-    top: 842px;
-    width: 1920px;
-    height: 158px;
-    background: linear-gradient(90deg, #a80000 0%, #c40000 45%, #a80000 100%);
-    overflow: hidden;
-  }
-
-  .bottom-banner::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 380px;
-    height: 158px;
-    background-image: radial-gradient(rgba(255,255,255,0.22) 1.2px, transparent 1.2px);
-    background-size: 12px 12px;
-    opacity: 0.55;
-  }
-
-  .bottom-banner::after {
-    content: "";
-    position: absolute;
-    right: 0;
-    top: 0;
-    width: 390px;
-    height: 158px;
-    background-image: radial-gradient(rgba(255,255,255,0.20) 1.2px, transparent 1.2px);
-    background-size: 12px 12px;
-    opacity: 0.5;
-  }
-
-  .target-icon {
-    position: absolute;
-    left: 147px;
-    top: 31px;
-    width: 105px;
-    height: 105px;
-    color: #ffffff;
-    z-index: 2;
-  }
-
-  .banner-text {
-    position: absolute;
-    left: 342px;
-    top: 40px;
-    color: #ffffff;
-    font-size: 60px;
-    line-height: 1;
+  .flow-title {
+    font-size: 29px;
+    line-height: 1.2;
     font-weight: 900;
     letter-spacing: -0.06em;
-    z-index: 3;
-    white-space: nowrap;
   }
 
-  .banner-text .yellow {
-    color: #fff200;
+  .flow-desc {
+    margin-top: 16px;
+    font-size: 19px;
+    line-height: 1.35;
+    color: #555;
+    letter-spacing: -0.04em;
   }
 
-  /* ===== Footer ===== */
+  .mini-icon {
+    width: 62px;
+    height: 62px;
+    margin: 0 auto 18px;
+    border: 6px solid #b00000;
+    border-radius: 50%;
+    position: relative;
+  }
 
-  .logo {
+  .mini-icon::after {
+    content: "";
     position: absolute;
-    left: 48px;
-    bottom: 23px;
+    left: 17px;
+    top: 17px;
+    width: 16px;
+    height: 16px;
+    background: #b00000;
+    border-radius: 50%;
+  }
+
+  .kpi-grid {
+    position: absolute;
+    left: 610px;
+    top: 150px;
+    right: 80px;
+    bottom: 175px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 26px;
+  }
+
+  .kpi-card {
+    background: #fff;
+    border-radius: 18px;
+    border: 1px solid #e5e5e5;
+    padding: 28px;
+    box-shadow: 0 7px 24px rgba(0,0,0,0.07);
+  }
+
+  .kpi-number {
     color: #b00000;
-    font-size: 38px;
-    line-height: 1;
+    font-size: 24px;
     font-weight: 900;
+  }
+
+  .kpi-title {
+    margin-top: 10px;
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+  }
+
+  .kpi-value {
+    margin-top: 20px;
+    font-size: 40px;
+    font-weight: 900;
+    color: #b00000;
+    letter-spacing: -0.07em;
+  }
+
+  .chart-bars {
+    display: flex;
+    gap: 9px;
+    align-items: flex-end;
+    height: 70px;
+    margin-top: 18px;
+  }
+
+  .bar {
+    flex: 1;
+    background: #b00000;
+    border-radius: 4px 4px 0 0;
+    opacity: 0.8;
+  }
+
+  .roadmap {
+    position: absolute;
+    left: 750px;
+    top: 185px;
+    right: 80px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 26px;
+  }
+
+  .road-card {
+    background: #fff;
+    border-radius: 20px;
+    border: 1px solid #e7e7e7;
+    box-shadow: 0 7px 24px rgba(0,0,0,0.07);
+    padding: 30px 22px;
+    text-align: center;
+    min-height: 315px;
+  }
+
+  .road-year {
+    display: inline-block;
+    background: #ffc400;
+    padding: 8px 22px;
+    border-radius: 999px;
+    font-size: 22px;
+    font-weight: 900;
+  }
+
+  .road-title {
+    margin-top: 28px;
+    font-size: 29px;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    line-height: 1.2;
+  }
+
+  .road-desc {
+    margin-top: 18px;
+    font-size: 18px;
+    line-height: 1.35;
+    color: #555;
+  }
+
+  .conclusion-grid {
+    position: absolute;
+    left: 1005px;
+    top: 145px;
+    right: 90px;
+    bottom: 192px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .conclusion-card {
+    background: #fff;
+    border: 1px solid #e4e4e4;
+    border-radius: 20px;
+    padding: 34px 22px;
+    text-align: center;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.08);
+  }
+
+  .conclusion-card .mini-icon {
+    margin-bottom: 24px;
+  }
+
+  .conclusion-card strong {
+    display: block;
+    font-size: 27px;
+    line-height: 1.2;
+    font-weight: 900;
+    letter-spacing: -0.06em;
+  }
+
+  .conclusion-card span {
+    display: block;
+    margin-top: 12px;
+    font-size: 18px;
+    line-height: 1.35;
+    color: #555;
     letter-spacing: -0.04em;
   }
 
   .thanks {
     position: absolute;
-    right: 98px;
-    bottom: 28px;
-    color: #111111;
-    font-size: 32px;
-    line-height: 1;
-    font-weight: 500;
-    letter-spacing: -0.05em;
+    right: 95px;
+    bottom: 18px;
+    font-size: 25px;
+    font-weight: 600;
+  }
+
+  @media print {
+    body {
+      background: #fff;
+    }
+
+    .toolbar,
+    .slide-control {
+      display: none;
+    }
+
+    .deck {
+      width: 100%;
+      margin: 0;
+      gap: 0;
+    }
+
+    .slide-wrap {
+      padding: 0;
+      box-shadow: none;
+      border-radius: 0;
+      page-break-after: always;
+    }
   }
 </style>
 </head>
 
 <body>
 
-<div class="page">
-
-  <div class="toolbar">
-    <button onclick="downloadSlide()">14페이지 PNG 다운로드</button>
-  </div>
-
-  <div class="slide-scale" id="slideScale">
-    <section class="slide" id="slide14">
-
-      <!-- Top Ribbon -->
-      <div class="top-red">
-        <div class="page-num">14</div>
-      </div>
-
-      <div class="top-yellow">
-        <div class="section-name">CONCLUSION</div>
-      </div>
-
-      <!-- Main Text -->
-      <div class="main-title">
-        우리는 <span class="red">광고판</span>을<br>
-        만드는 회사가 아닙니다.<br>
-        <br>
-        <span class="red">광고 성과</span>를 측정하는<br>
-        <span class="red">데이터 회사</span>입니다.
-      </div>
-
-      <div class="body-copy">
-        인웨이브는 AI 시선분석 기반으로<br>
-        오프라인 광고를 측정 가능한 데이터로 바꾸고,<br>
-        광고주의 의사결정을 돕습니다.
-      </div>
-
-      <!-- Right Card 01 -->
-      <div class="card card-1">
-        <div class="icon-box">
-          <svg viewBox="0 0 160 160" aria-hidden="true">
-            <circle class="svg-red" cx="80" cy="70" r="55"></circle>
-            <line class="svg-red" x1="80" y1="5" x2="80" y2="25"></line>
-            <line class="svg-red" x1="80" y1="115" x2="80" y2="138"></line>
-            <line class="svg-red" x1="15" y1="70" x2="38" y2="70"></line>
-            <line class="svg-red" x1="122" y1="70" x2="145" y2="70"></line>
-            <circle class="svg-fill-red" cx="80" cy="57" r="13"></circle>
-            <circle class="svg-fill-red" cx="55" cy="67" r="12"></circle>
-            <circle class="svg-fill-red" cx="105" cy="67" r="12"></circle>
-            <path class="svg-fill-red" d="M58 88c0-13 11-23 22-23s22 10 22 23v14H58z"></path>
-            <path class="svg-fill-red" d="M32 96c0-13 10-22 23-22 6 0 11 2 15 5-8 6-13 15-13 26H32z"></path>
-            <path class="svg-fill-red" d="M103 79c4-3 9-5 15-5 13 0 23 9 23 22v9h-25c0-11-5-20-13-26z"></path>
-          </svg>
-        </div>
-        <div class="card-line"></div>
-        <div class="card-title">실제 시청자 측정</div>
-        <div class="card-sub">본 사람만 데이터화</div>
-      </div>
-
-      <!-- Right Card 02 -->
-      <div class="card card-2">
-        <div class="icon-box">
-          <svg viewBox="0 0 160 160" aria-hidden="true">
-            <rect class="svg-red" x="28" y="20" width="104" height="70" rx="6"></rect>
-            <line class="svg-red" x1="80" y1="90" x2="80" y2="118"></line>
-            <line class="svg-red" x1="55" y1="122" x2="105" y2="122"></line>
-            <rect class="svg-fill-red" x="45" y="60" width="12" height="20"></rect>
-            <rect class="svg-fill-red" x="65" y="48" width="12" height="32"></rect>
-            <rect class="svg-fill-red" x="85" y="34" width="12" height="46"></rect>
-            <circle class="svg-fill-red" cx="108" cy="44" r="22"></circle>
-            <path d="M108 22v22h22" fill="#fbfbfb"></path>
-          </svg>
-        </div>
-        <div class="card-line"></div>
-        <div class="card-title">성과 리포트 제공</div>
-        <div class="card-sub">광고 효과를 한눈에</div>
-      </div>
-
-      <!-- Right Card 03 -->
-      <div class="card card-3">
-        <div class="icon-box">
-          <svg viewBox="0 0 160 160" aria-hidden="true">
-            <ellipse class="svg-red" cx="80" cy="50" rx="34" ry="15"></ellipse>
-            <path class="svg-red" d="M46 50v44c0 9 15 16 34 16s34-7 34-16V50"></path>
-            <ellipse class="svg-red" cx="80" cy="72" rx="34" ry="15"></ellipse>
-            <ellipse class="svg-red" cx="80" cy="94" rx="34" ry="15"></ellipse>
-            <path class="svg-red" d="M32 57c-14 13-20 33-12 51"></path>
-            <path class="svg-red" d="M21 108l-14-1 8 13"></path>
-            <path class="svg-red" d="M128 102c14-13 20-33 12-51"></path>
-            <path class="svg-red" d="M139 51l14 1-8-13"></path>
-          </svg>
-        </div>
-        <div class="card-line"></div>
-        <div class="card-title">데이터 구독 확장</div>
-        <div class="card-sub">반복 수익 구조</div>
-      </div>
-
-      <!-- Right Card 04 -->
-      <div class="card card-4">
-        <div class="icon-box">
-          <svg viewBox="0 0 160 160" aria-hidden="true">
-            <rect class="svg-fill-red" x="35" y="100" width="18" height="30"></rect>
-            <rect class="svg-fill-red" x="65" y="82" width="18" height="48"></rect>
-            <rect class="svg-fill-red" x="95" y="58" width="18" height="72"></rect>
-            <path class="svg-red" d="M30 72c34-10 62-30 91-66"></path>
-            <path class="svg-red" d="M112 8h25v25"></path>
-            <line class="svg-red" x1="30" y1="138" x2="130" y2="138"></line>
-          </svg>
-        </div>
-        <div class="card-line"></div>
-        <div class="card-title">지속 가능한 성장</div>
-        <div class="card-sub">실증 기반 확장</div>
-      </div>
-
-      <!-- Bottom Banner -->
-      <div class="bottom-banner">
-        <div class="target-icon">
-          <svg viewBox="0 0 120 120" aria-hidden="true">
-            <circle cx="55" cy="65" r="38" stroke="#ffffff" stroke-width="10" fill="none"></circle>
-            <circle cx="55" cy="65" r="20" stroke="#ffffff" stroke-width="10" fill="none"></circle>
-            <circle cx="55" cy="65" r="6" fill="#ffffff"></circle>
-            <path d="M59 61L103 17" stroke="#ffffff" stroke-width="9" stroke-linecap="round"></path>
-            <path d="M95 14l12-8-1 15 12-1-8 12-17 0z" fill="#ffffff"></path>
-          </svg>
-        </div>
-
-        <div class="banner-text">
-          오프라인 광고의 기준을 <span class="yellow">데이터</span>로 바꾸겠습니다
-        </div>
-      </div>
-
-      <!-- Footer -->
-      <div class="logo">INWAVE</div>
-      <div class="thanks">감사합니다</div>
-
-    </section>
-  </div>
-
+<div class="toolbar">
+  <button onclick="downloadAll()">전체 장표 PNG 다운로드</button>
+  <button class="gray" onclick="window.print()">PDF 저장 / 인쇄</button>
 </div>
 
+<div class="deck" id="deck"></div>
+
 <script>
-  function resizeSlide() {
-    const scaleBox = document.getElementById("slideScale");
-    const slide = document.getElementById("slide14");
-    const scale = scaleBox.clientWidth / 1920;
-    slide.style.transform = `scale(${scale})`;
+const slides = [
+  {
+    no: "01",
+    section: "INTRODUCTION",
+    type: "cover",
+    title: `실제 광고를 본 사람은<br><span class="red">몇 명일까요?</span>`,
+    subtitle: "AI 시선분석 기반 광고 성과 측정 플랫폼",
+    desc: "AI 시선분석 기반<br>오프라인 광고 성과 측정 플랫폼",
+    bottom: "",
+    metrics: [
+      ["누적 운영시간", "57,600+", "실증 운영 중"],
+      ["누적 분석 프레임", "100만+", "실증 데이터 확보"],
+      ["기술 보호", "특허 출원 중", "핵심 기술 보호"]
+    ]
+  },
+  {
+    no: "02",
+    section: "PROBLEM",
+    type: "compare",
+    title: `오프라인 광고는<br>아직도 <span class="red">“추정”</span>으로 운영됩니다`,
+    leftTitle: "온라인 광고",
+    rightTitle: "오프라인 광고",
+    leftItems: ["클릭 수 확인 가능", "체류시간 확인 가능", "전환율 확인 가능", "ROI 측정 가능"],
+    rightItems: ["실제 시청자 수 확인 불가", "시청시간 확인 불가", "광고효과 설명 불가", "성과 분석 어려움"],
+    bottom: `광고비는 쓰지만, <span class="yellow">성과는 설명하기 어렵습니다</span>`
+  },
+  {
+    no: "03",
+    section: "SOLUTION",
+    type: "solution",
+    title: `오프라인 광고를<br><span class="red">측정 가능한 데이터</span>로<br>바꾸는 AI`,
+    desc: "카메라 기반 AI 분석으로 실제 광고를 본 사람, 시청 시간, 성별·연령 데이터를 측정합니다.",
+    imageText: "AI 시선 분석 장면",
+    metrics: [
+      ["특허 출원", "1건", "핵심 기술 보호 완료"],
+      ["누적 분석 프레임", "100만+", "시선 데이터 확보"],
+      ["누적 운영 분석 시간", "57,600+", "실제 운영 데이터 시간"]
+    ],
+    bottom: `실제 시청 <span class="yellow">데이터가</span> 광고 성과 측정의 출발점입니다`
+  },
+  {
+    no: "04",
+    section: "SOLUTION",
+    type: "flow",
+    title: `AI가 광고 시청 여부를<br><span class="red">판별하는 방식</span>`,
+    desc: "얼굴 검출, 시선 방향, 체류시간, 광고 송출 정보를 결합해 실제 시청 여부를 판단합니다.",
+    steps: [
+      ["얼굴 검출", "카메라 영상에서 얼굴 영역을 탐지"],
+      ["시선 분석", "눈과 얼굴 방향 벡터값 분석"],
+      ["시청 판단", "광고 화면을 본 사람만 분류"],
+      ["광고 매칭", "시청 시간과 송출 광고 연결"],
+      ["성과 리포트", "광고별 성과 데이터 생성"]
+    ],
+    bottom: `데이터로 <span class="yellow">광고 성과를</span> 측정하는 구조`
+  },
+  {
+    no: "05",
+    section: "TECHNOLOGY",
+    type: "validation",
+    title: `이미 현장에서<br><span class="red">검증된 데이터 기술</span>`,
+    desc: "아이디어가 아니라 실제 운영 데이터를 확보한 기술입니다.",
+    metrics: [
+      ["특허", "1건", "핵심 기술 보호"],
+      ["운영 데이터", "57,600+", "운영 분석 시간"],
+      ["분석 프레임", "100만+", "누적 분석 데이터"]
+    ],
+    bottom: `숫자가 먼저 <span class="yellow">신뢰를 증명합니다</span>`
+  },
+  {
+    no: "06",
+    section: "VALIDATION",
+    type: "operation",
+    title: `이미 부천 현장에서<br><span class="red">운영 중입니다</span>`,
+    desc: "부천 실증 운영을 통해 광고 송출과 시선 분석 데이터를 실제로 확보하고 있습니다.",
+    imageText: "실증 운영 현장 이미지 영역",
+    metrics: [
+      ["운영 분석 시간", "57,600+", "실제 운영 기반"],
+      ["분석 프레임", "100만+", "누적 분석 데이터"],
+      ["운영 상태", "실증 운영", "서비스 가치 검증"]
+    ],
+    bottom: `실제 운영 데이터가 <span class="yellow">서비스 가치를</span> 증명합니다`
+  },
+  {
+    no: "07",
+    section: "COMPETITIVENESS",
+    type: "difference",
+    title: `일반 광고판과<br><span class="red">인웨이브의 차이</span>`,
+    desc: "단순 송출 중심 광고판이 아니라, 실제 시청 데이터를 기반으로 광고 효과를 설명합니다.",
+    leftTitle: "일반 광고판",
+    rightTitle: "INWAVE",
+    leftItems: ["노출 중심", "시간 판매", "성과 확인 어려움", "광고주 설득 한계"],
+    rightItems: ["실제 시청자 측정", "데이터 기반 과금", "ROI 리포트 제공", "광고 성과 설명 가능"],
+    bottom: `인웨이브는 <span class="yellow">실제 시청 데이터로</span> 오프라인 광고의 가치를 증명합니다`
+  },
+  {
+    no: "08",
+    section: "BUSINESS MODEL",
+    type: "bm",
+    title: `광고 송출을 넘어<br><span class="red">데이터로 수익</span>을 만듭니다`,
+    desc: "광고 송출 수익에 AI 데이터 분석 패키지를 결합해 반복 매출 구조를 만듭니다.",
+    steps: [
+      ["기본 송출 패키지", "월 30만원"],
+      ["AI 데이터 분석", "월 50만원"],
+      ["성과 리포트", "월 70만원"],
+      ["확장형 패키지", "프로모션/대행 연계"]
+    ],
+    bottom: `데이터 분석형 패키지가 <span class="yellow">반복 매출의 시작점</span>입니다`
+  },
+  {
+    no: "09",
+    section: "PRODUCT",
+    type: "product",
+    title: `광고 <span class="red">성과를</span><br>한눈에 확인합니다`,
+    desc: "시청자 수, 시청시간, 시간대별 반응, 광고별 성과를 대시보드로 확인합니다.",
+    imageText: "대시보드 UI 영역",
+    metrics: [
+      ["시청자 수", "12,458명", "광고별 실제 시청자"],
+      ["평균 시청시간", "00:45", "광고 반응 시간"],
+      ["성과 분석", "리포트", "광고주 제공"]
+    ],
+    bottom: `데이터를 한눈에, <span class="yellow">성과를 더 빠르게</span>`
+  },
+  {
+    no: "10",
+    section: "USE CASE",
+    type: "usecase",
+    title: `데이터는<br>광고 위치와 시간을<br><span class="red">바꿉니다</span>`,
+    desc: "시청 데이터는 광고 위치 선정, 시간대별 편성, 광고 소재 개선에 활용됩니다.",
+    steps: [
+      ["어디서 반응이 높은가", "위치별 시청 데이터를 분석"],
+      ["언제 가장 많이 보는가", "시간대별 반응을 분석"],
+      ["어떤 고객층이 보는가", "연령·성별 반응을 확인"],
+      ["어떤 광고가 좋은가", "소재별 성과를 비교"]
+    ],
+    bottom: `성과 확인을 넘어 <span class="yellow">광고 전략을 최적화합니다</span>`
+  },
+  {
+    no: "11",
+    section: "MARKETING STRATEGY",
+    type: "strategy",
+    title: `부천 실증을 기반으로<br><span class="red">생활밀착 상권부터</span><br>확장합니다`,
+    desc: "검증된 지역 데이터를 기반으로 카페, 음식점, 생활업종, 광고 대행사로 확장합니다.",
+    steps: [
+      ["1단계", "부천 데이터 기반 영업"],
+      ["2단계", "지역 상권 광고 상품화"],
+      ["3단계", "대행사/프랜차이즈 확장"]
+    ],
+    bottom: `유료 고객을 확보하고, <span class="yellow">데이터 구독으로 확장합니다</span>`
+  },
+  {
+    no: "12",
+    section: "ROADMAP",
+    type: "roadmap",
+    title: `부천에서 검증하고<br><span class="red">전국으로 확장합니다</span>`,
+    desc: "실증 데이터를 기반으로 설치 지점 확대, 업종별 패키지, SaaS형 데이터 구독으로 확장합니다.",
+    roads: [
+      ["2026", "부천 실증 고도화", "운영 데이터 확보 및 광고주 검증"],
+      ["2027", "수도권 외부 확장", "생활밀착 상권 중심 확장"],
+      ["2028", "데이터 SaaS 전환", "광고 성과 데이터 구독 모델 구축"]
+    ],
+    bottom: `실증에서 구독으로, <span class="yellow">지속 가능한 수익 구조를 만듭니다</span>`
+  },
+  {
+    no: "13",
+    section: "KEY METRICS",
+    type: "kpi",
+    title: `우리가 측정하는<br><span class="red">핵심 지표</span>`,
+    desc: "단순 송출 횟수가 아니라 실제 시청과 광고 반응을 수치로 측정합니다.",
+    kpis: [
+      ["1", "시청자 수", "12,458명", "광고를 실제로 본 사람"],
+      ["2", "평균 시청시간", "00:45", "광고별 평균 반응 시간"],
+      ["3", "반응 시간대", "시간별 분석", "고객 반응이 높은 시간"],
+      ["4", "광고별 관심도", "성과 비교", "소재별 효율 비교"]
+    ],
+    bottom: `측정 가능한 <span class="yellow">데이터가</span> 광고 의사결정을 바꿉니다`
+  },
+  {
+    no: "14",
+    section: "CONCLUSION",
+    type: "conclusion",
+    title: `우리는 <span class="red">광고판</span>을<br>만드는 회사가 아닙니다.<br><br><span class="red">광고 성과</span>를 측정하는<br><span class="red">데이터 회사</span>입니다.`,
+    desc: "인웨이브는 AI 시선분석 기반으로 오프라인 광고를 측정 가능한 데이터로 바꾸고, 광고주의 의사결정을 돕습니다.",
+    cards: [
+      ["실제 시청자 측정", "본 사람만 데이터화"],
+      ["성과 리포트 제공", "광고 효과를 한눈에"],
+      ["데이터 구독 확장", "반복 수익 구조"],
+      ["지속 가능한 성장", "실증 기반 확장"]
+    ],
+    bottom: `오프라인 광고의 기준을 <span class="yellow">데이터</span>로 바꾸겠습니다`
   }
+];
 
-  window.addEventListener("resize", resizeSlide);
-  window.addEventListener("load", resizeSlide);
+function label(slide) {
+  return `
+    <div class="page-label">
+      <div class="page-no">${slide.no}</div>
+      <div class="section-label">${slide.section}</div>
+    </div>
+  `;
+}
 
-  async function downloadSlide() {
-    const slide = document.getElementById("slide14");
+function bottom(slide) {
+  return `
+    <div class="red-bottom">
+      <div class="icon"></div>
+      <div>${slide.bottom || ""}</div>
+    </div>
+    <div class="footer-logo">INWAVE</div>
+  `;
+}
 
-    const originalTransform = slide.style.transform;
-    slide.style.transform = "scale(1)";
+function renderCover(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title large">${slide.title}</div>
+    <div class="sub-text" style="top:430px;font-size:31px;font-weight:800;">${slide.subtitle}</div>
+    <div class="sub-text" style="top:510px;">${slide.desc}</div>
+    <div class="mock-image" style="left:1040px;top:0;width:880px;height:1080px;border-radius:0;">프리미엄 광고 디스플레이 이미지 영역</div>
+    <div class="metric-grid">
+      ${slide.metrics.map(m => metric(m)).join("")}
+    </div>
+    <div class="footer-logo">INWAVE</div>
+  `;
+}
 
-    const canvas = await html2canvas(slide, {
-      width: 1920,
-      height: 1080,
-      scale: 1,
-      backgroundColor: "#fbfbfb"
-    });
+function renderCompare(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title small" style="left:480px;top:115px;width:960px;text-align:center;">${slide.title}</div>
+    <div class="two-col">
+      <div class="compare-card">
+        <div class="compare-title">${slide.leftTitle}</div>
+        <div class="check-list">${slide.leftItems.map(x=>`<span>${x}</span>`).join("")}</div>
+        <div class="mock-image" style="position:relative;left:auto;top:auto;width:100%;height:190px;margin-top:30px;">온라인 광고 대시보드 영역</div>
+      </div>
+      <div class="compare-card off">
+        <div class="compare-title">${slide.rightTitle}</div>
+        <div class="check-list">${slide.rightItems.map(x=>`<span>${x}</span>`).join("")}</div>
+        <div class="mock-image" style="position:relative;left:auto;top:auto;width:100%;height:190px;margin-top:30px;">오프라인 광고 현장 영역</div>
+      </div>
+    </div>
+    ${bottom(slide)}
+  `;
+}
 
-    slide.style.transform = originalTransform;
+function renderSolution(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="mock-image" style="left:1030px;top:145px;width:760px;height:440px;">${slide.imageText}</div>
+    <div class="metric-grid">
+      ${slide.metrics.map(m => metric(m)).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
 
-    const link = document.createElement("a");
-    link.download = "inwave_slide_14_conclusion.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
+function renderFlow(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title small" style="width:820px;">${slide.title}</div>
+    <div class="sub-text" style="left:1020px;top:150px;width:760px;">${slide.desc}</div>
+    <div class="flow">
+      ${slide.steps.map((s,i)=>`
+        <div class="flow-step">
+          <div class="flow-num">${String(i+1).padStart(2,"0")}</div>
+          <div class="flow-title">${s[0]}</div>
+          <div class="flow-desc">${s[1]}</div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderValidation(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="mock-image" style="left:760px;top:280px;width:460px;height:270px;">현장 이미지</div>
+    <div class="mock-image" style="left:1250px;top:280px;width:460px;height:270px;">리포트 화면</div>
+    <div class="metric-grid">
+      ${slide.metrics.map(m => metric(m)).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderOperation(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="mock-image" style="left:90px;top:520px;width:720px;height:240px;">${slide.imageText}</div>
+    <div class="metric-grid" style="left:890px;right:70px;top:190px;bottom:auto;grid-template-columns:repeat(3,1fr);">
+      ${slide.metrics.map(m => metric(m)).join("")}
+    </div>
+    <div class="mock-image" style="left:930px;top:445px;width:780px;height:300px;">운영 데이터 화면 영역</div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderDifference(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="two-col" style="left:760px;right:80px;top:170px;bottom:190px;">
+      <div class="compare-card">
+        <div class="compare-title">${slide.leftTitle}</div>
+        <div class="check-list" style="font-size:24px;">${slide.leftItems.map(x=>`<span>${x}</span>`).join("")}</div>
+      </div>
+      <div class="compare-card off">
+        <div class="compare-title">${slide.rightTitle}</div>
+        <div class="check-list" style="font-size:24px;">${slide.rightItems.map(x=>`<span>${x}</span>`).join("")}</div>
+      </div>
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderBM(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="flow" style="left:760px;right:70px;top:170px;grid-template-columns:repeat(4,1fr);">
+      ${slide.steps.map((s,i)=>`
+        <div class="flow-step" style="min-height:430px;">
+          <div class="flow-num">${i+1}</div>
+          <div class="flow-title">${s[0]}</div>
+          <div class="flow-desc" style="font-size:27px;font-weight:900;color:#b00000;">${s[1]}</div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderProduct(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="mock-image" style="left:620px;top:175px;width:850px;height:500px;">${slide.imageText}</div>
+    <div style="position:absolute;left:1485px;top:205px;width:330px;">
+      ${slide.metrics.map(m => `
+        <div class="card" style="position:relative;left:auto;top:auto;width:100%;margin-bottom:24px;padding:22px;">
+          <div class="card-title" style="font-size:25px;">${m[0]}</div>
+          <div class="metric-value" style="font-size:31px;">${m[1]}</div>
+          <div class="card-sub" style="font-size:17px;">${m[2]}</div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderUsecase(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="flow" style="left:700px;right:80px;top:165px;grid-template-columns:repeat(4,1fr);">
+      ${slide.steps.map((s,i)=>`
+        <div class="flow-step" style="min-height:430px;">
+          <div class="mini-icon"></div>
+          <div class="flow-title">${s[0]}</div>
+          <div class="flow-desc">${s[1]}</div>
+          <div class="chart-bars">
+            <div class="bar" style="height:${30+i*10}px"></div>
+            <div class="bar" style="height:${55+i*6}px"></div>
+            <div class="bar" style="height:${45+i*8}px"></div>
+            <div class="bar" style="height:${68-i*3}px"></div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderStrategy(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="flow" style="left:790px;right:90px;top:190px;grid-template-columns:repeat(3,1fr);">
+      ${slide.steps.map((s,i)=>`
+        <div class="flow-step" style="min-height:360px;">
+          <div class="flow-num">${s[0]}</div>
+          <div class="flow-title">${s[1]}</div>
+          <div class="flow-desc">영업 → 운영 → 데이터 구독으로 연결</div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderRoadmap(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="roadmap">
+      ${slide.roads.map(r=>`
+        <div class="road-card">
+          <div class="road-year">${r[0]}</div>
+          <div class="road-title">${r[1]}</div>
+          <div class="road-desc">${r[2]}</div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderKPI(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title">${slide.title}</div>
+    <div class="sub-text">${slide.desc}</div>
+    <div class="kpi-grid">
+      ${slide.kpis.map(k=>`
+        <div class="kpi-card">
+          <div class="kpi-number">${k[0]}</div>
+          <div class="kpi-title">${k[1]}</div>
+          <div class="kpi-value">${k[2]}</div>
+          <div class="card-sub">${k[3]}</div>
+          <div class="chart-bars">
+            <div class="bar" style="height:28px"></div>
+            <div class="bar" style="height:42px"></div>
+            <div class="bar" style="height:62px"></div>
+            <div class="bar" style="height:48px"></div>
+            <div class="bar" style="height:70px"></div>
+          </div>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+  `;
+}
+
+function renderConclusion(slide) {
+  return `
+    ${label(slide)}
+    <div class="main-title" style="font-size:56px;width:820px;">${slide.title}</div>
+    <div class="sub-text" style="top:650px;">${slide.desc}</div>
+    <div class="conclusion-grid">
+      ${slide.cards.map(c=>`
+        <div class="conclusion-card">
+          <div class="mini-icon"></div>
+          <strong>${c[0]}</strong>
+          <span>${c[1]}</span>
+        </div>
+      `).join("")}
+    </div>
+    ${bottom(slide)}
+    <div class="thanks">감사합니다</div>
+  `;
+}
+
+function metric(m) {
+  return `
+    <div class="metric-card">
+      <div class="metric-name">${m[0]}</div>
+      <div class="metric-value">${m[1]}</div>
+      <div class="metric-desc">${m[2]}</div>
+    </div>
+  `;
+}
+
+function renderSlide(slide) {
+  if (slide.type === "cover") return renderCover(slide);
+  if (slide.type === "compare") return renderCompare(slide);
+  if (slide.type === "solution") return renderSolution(slide);
+  if (slide.type === "flow") return renderFlow(slide);
+  if (slide.type === "validation") return renderValidation(slide);
+  if (slide.type === "operation") return renderOperation(slide);
+  if (slide.type === "difference") return renderDifference(slide);
+  if (slide.type === "bm") return renderBM(slide);
+  if (slide.type === "product") return renderProduct(slide);
+  if (slide.type === "usecase") return renderUsecase(slide);
+  if (slide.type === "strategy") return renderStrategy(slide);
+  if (slide.type === "roadmap") return renderRoadmap(slide);
+  if (slide.type === "kpi") return renderKPI(slide);
+  if (slide.type === "conclusion") return renderConclusion(slide);
+}
+
+function createDeck() {
+  const deck = document.getElementById("deck");
+  deck.innerHTML = slides.map((slide, index) => `
+    <div class="slide-wrap">
+      <div class="slide-control">
+        <span>${slide.no} / 14 · ${slide.section}</span>
+        <button onclick="downloadSlide(${index})">${slide.no} 페이지 PNG 다운로드</button>
+      </div>
+      <div class="slide">
+        <section class="slide-inner" id="slide-${index}">
+          ${renderSlide(slide)}
+        </section>
+      </div>
+    </div>
+  `).join("");
+
+  resizeSlides();
+}
+
+function resizeSlides() {
+  document.querySelectorAll(".slide").forEach(box => {
+    const inner = box.querySelector(".slide-inner");
+    const scale = box.clientWidth / 1920;
+    inner.style.transform = `scale(${scale})`;
+  });
+}
+
+async function downloadSlide(index) {
+  const slide = document.getElementById(`slide-${index}`);
+  const oldTransform = slide.style.transform;
+
+  slide.style.transform = "scale(1)";
+
+  const canvas = await html2canvas(slide, {
+    width: 1920,
+    height: 1080,
+    scale: 1,
+    backgroundColor: "#f7f7f7"
+  });
+
+  slide.style.transform = oldTransform;
+
+  const link = document.createElement("a");
+  link.download = `inwave_slide_${String(index + 1).padStart(2, "0")}.png`;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
+}
+
+async function downloadAll() {
+  for (let i = 0; i < slides.length; i++) {
+    await downloadSlide(i);
+    await new Promise(resolve => setTimeout(resolve, 400));
   }
+}
+
+window.addEventListener("resize", resizeSlides);
+window.addEventListener("load", createDeck);
 </script>
 
 </body>
