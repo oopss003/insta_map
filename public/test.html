@@ -1,410 +1,296 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>3단계 확장 전략</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>문제 인식 슬라이드</title>
 
-    body {
-      margin: 0;
-      background:
-        radial-gradient(circle at 20% 50%, rgba(31, 78, 168, 0.22), transparent 35%),
-        radial-gradient(circle at 85% 85%, rgba(0, 220, 255, 0.14), transparent 28%),
-        linear-gradient(90deg, #0d1727 0%, #111c2f 45%, #0f1a2c 100%);
-      font-family: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
-      color: #f3f7ff;
-    }
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
 
-    .slide {
-      width: 1600px;
-      height: 900px;
-      margin: 0 auto;
-      position: relative;
-      overflow: hidden;
-      padding: 26px 34px;
-    }
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-    .panel {
-      width: 100%;
-      height: 100%;
-      border-radius: 34px;
-      background: linear-gradient(180deg, rgba(35, 47, 69, 0.94) 0%, rgba(28, 40, 60, 0.96) 100%);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 30px 80px rgba(0,0,0,0.28);
-      border: 1px solid rgba(255,255,255,0.04);
-      padding: 34px 44px 28px;
-      position: relative;
-      overflow: hidden;
-    }
+body {
+  width: 1920px;
+  height: 1080px;
+  overflow: hidden;
+  font-family: 'Noto Sans KR', 'Pretendard', sans-serif;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.28), transparent 34%),
+    radial-gradient(circle at 82% 68%, rgba(249, 115, 22, 0.13), transparent 30%),
+    linear-gradient(135deg, #061428 0%, #071b38 45%, #03101f 100%);
+  color: #fff;
+}
 
-    .title {
-      margin: 0;
-      font-size: 54px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      color: #f7fbff;
-      line-height: 1.1;
-    }
+.slide {
+  position: relative;
+  width: 1920px;
+  height: 1080px;
+  padding: 78px 118px 72px;
+}
 
-    .subtitle {
-      margin-top: 14px;
-      font-size: 19px;
-      font-weight: 500;
-      color: rgba(223, 232, 248, 0.78);
-      letter-spacing: -0.02em;
-      line-height: 1.5;
-    }
+.grid-bg {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  opacity: 0.45;
+}
 
-    .tag {
-      position: absolute;
-      top: 42px;
-      right: 44px;
-      padding: 12px 22px;
-      border-radius: 999px;
-      font-size: 16px;
-      font-weight: 700;
-      color: #dbe9ff;
-      background: rgba(110, 136, 184, 0.18);
-      border: 1px solid rgba(171, 198, 255, 0.12);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    }
+.header {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+}
 
-    .cards {
-      margin-top: 28px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-      height: 630px;
-    }
+.kicker {
+  display: inline-block;
+  padding: 10px 24px;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: #fbbf24;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 26px;
+}
 
-    .card {
-      position: relative;
-      border-radius: 28px;
-      background: linear-gradient(180deg, rgba(55, 68, 92, 0.64) 0%, rgba(44, 56, 78, 0.78) 100%);
-      border: 1px solid rgba(255,255,255,0.05);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.04),
-        0 18px 40px rgba(0,0,0,0.18);
-      padding: 28px 28px 30px;
-      overflow: hidden;
-    }
+h1 {
+  font-size: 76px;
+  line-height: 1.18;
+  font-weight: 900;
+  letter-spacing: -0.055em;
+}
 
-    .card.active {
-      border: 1px solid rgba(94, 245, 230, 0.65);
-      box-shadow:
-        inset 0 1px 0 rgba(255,255,255,0.05),
-        0 0 0 1px rgba(94, 245, 230, 0.16),
-        0 18px 40px rgba(0,0,0,0.24);
-      background: linear-gradient(180deg, rgba(67, 81, 107, 0.76) 0%, rgba(51, 65, 89, 0.88) 100%);
-    }
+h1 span {
+  color: #fbbf24;
+}
 
-    .step-badge {
-      width: 54px;
-      height: 54px;
-      border-radius: 16px;
-      background: linear-gradient(180deg, #6b96ff 0%, #4d72f0 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      font-weight: 800;
-      color: white;
-      box-shadow: 0 8px 20px rgba(76, 118, 255, 0.28);
-      position: relative;
-      z-index: 2;
-    }
+.compare-area {
+  position: relative;
+  z-index: 2;
+  margin-top: 82px;
+  display: grid;
+  grid-template-columns: 1fr 170px 1fr;
+  align-items: center;
+  gap: 34px;
+}
 
-    .line-deco {
-      position: absolute;
-      left: 26px;
-      right: 26px;
-      top: 138px;
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(112, 157, 255, 0.38) 25%,
-        rgba(112, 157, 255, 0.18) 50%,
-        transparent 100%
-      );
-      opacity: 0.8;
-    }
+.card {
+  height: 390px;
+  padding: 44px 50px;
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(15, 39, 76, 0.82), rgba(6, 22, 45, 0.72));
+  border: 1px solid rgba(255,255,255,0.13);
+  box-shadow: 0 28px 70px rgba(0,0,0,0.25);
+  backdrop-filter: blur(10px);
+}
 
-    .icon-area {
-      height: 170px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      margin-top: 10px;
-      margin-bottom: 6px;
-    }
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 42px;
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  margin-bottom: 36px;
+}
 
-    .icon-glow {
-      position: absolute;
-      width: 180px;
-      height: 180px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(92, 243, 228, 0.16) 0%, rgba(92, 243, 228, 0.04) 35%, transparent 70%);
-      filter: blur(4px);
-    }
+.online .card-title {
+  color: #60a5fa;
+}
 
-    .card h3 {
-      margin: 0;
-      font-size: 31px;
-      line-height: 1.28;
-      font-weight: 800;
-      color: #f3f7ff;
-      letter-spacing: -0.03em;
-      position: relative;
-      z-index: 2;
-      word-break: keep-all;
-    }
+.offline .card-title {
+  color: #fb923c;
+}
 
-    .card p {
-      margin: 18px 0 0;
-      font-size: 20px;
-      line-height: 1.65;
-      font-weight: 500;
-      color: rgba(223, 232, 248, 0.83);
-      letter-spacing: -0.02em;
-      position: relative;
-      z-index: 2;
-      word-break: keep-all;
-    }
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
 
-    .emphasis {
-      color: #83fff1;
-      font-weight: 800;
-    }
+.item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 31px;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  color: rgba(255,255,255,0.92);
+}
 
-    .emphasis-blue {
-      color: #8fb7ff;
-      font-weight: 800;
-    }
+.check {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  font-weight: 900;
+  background: rgba(96, 165, 250, 0.18);
+  color: #93c5fd;
+  border: 1px solid rgba(147,197,253,0.35);
+}
 
-    .bg-number {
-      position: absolute;
-      right: 18px;
-      bottom: -2px;
-      font-size: 150px;
-      font-weight: 900;
-      color: rgba(255,255,255,0.03);
-      letter-spacing: -0.06em;
-      z-index: 0;
-      user-select: none;
-      line-height: 1;
-    }
+.no {
+  background: rgba(251, 146, 60, 0.16);
+  color: #fdba74;
+  border-color: rgba(251,146,60,0.35);
+}
 
-    .footer-line {
-      position: absolute;
-      left: 44px;
-      right: 44px;
-      bottom: 20px;
-      height: 1px;
-      background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(115, 153, 222, 0.25) 20%,
-        rgba(115, 153, 222, 0.1) 80%,
-        transparent 100%
-      );
-    }
+.icon-dashboard,
+.icon-billboard {
+  width: 110px;
+  height: 78px;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+  position: relative;
+}
 
-    /* 아이콘 1 */
-    .icon-bars {
-      width: 180px;
-      height: 110px;
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 14px;
-      position: relative;
-      z-index: 2;
-    }
+.icon-dashboard::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  bottom: 18px;
+  width: 16px;
+  height: 28px;
+  background: #60a5fa;
+  border-radius: 5px;
+  box-shadow: 27px -15px 0 #93c5fd, 54px -4px 0 #38bdf8;
+}
 
-    .icon-bars span {
-      width: 34px;
-      border-radius: 10px 10px 6px 6px;
-      background: linear-gradient(180deg, rgba(144, 176, 255, 0.95) 0%, rgba(97, 131, 232, 0.85) 100%);
-      box-shadow: 0 8px 18px rgba(93, 130, 229, 0.16);
-    }
+.icon-billboard::before {
+  content: "?";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 52px;
+  font-weight: 900;
+  color: #fbbf24;
+}
 
-    .icon-bars span:nth-child(1) { height: 44px; }
-    .icon-bars span:nth-child(2) { height: 78px; }
-    .icon-bars span:nth-child(3) { height: 58px; }
-    .icon-bars span:nth-child(4) { height: 92px; }
+.icon-billboard::after {
+  content: "";
+  position: absolute;
+  left: 45px;
+  bottom: -34px;
+  width: 20px;
+  height: 34px;
+  background: rgba(255,255,255,0.22);
+  border-radius: 8px;
+}
 
-    /* 아이콘 2 */
-    .icon-monitor {
-      width: 190px;
-      height: 120px;
-      position: relative;
-      z-index: 2;
-    }
+.center-question {
+  height: 170px;
+  border-radius: 999px;
+  background: rgba(251, 191, 36, 0.12);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 24px;
+  color: #fbbf24;
+  font-size: 32px;
+  font-weight: 900;
+  line-height: 1.25;
+  letter-spacing: -0.045em;
+  box-shadow: 0 0 55px rgba(251, 191, 36, 0.12);
+}
 
-    .icon-monitor .screen {
-      width: 140px;
-      height: 84px;
-      margin: 0 auto;
-      border-radius: 18px;
-      background: linear-gradient(180deg, rgba(73, 87, 113, 0.95) 0%, rgba(48, 59, 79, 0.95) 100%);
-      border: 1px solid rgba(156, 183, 255, 0.12);
-      position: relative;
-      box-shadow: inset 0 1px 0 rgba(255,255,255,0.04);
-    }
+.footer-message {
+  position: relative;
+  z-index: 2;
+  margin: 72px auto 0;
+  width: 1120px;
+  padding: 26px 42px;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.13);
+  text-align: center;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: -0.045em;
+}
 
-    .icon-monitor .screen::after {
-      content: "";
-      position: absolute;
-      left: 26px;
-      right: 26px;
-      top: 34px;
-      height: 12px;
-      border-radius: 12px;
-      background: linear-gradient(
-        90deg,
-        rgba(105, 255, 234, 0.12) 0%,
-        rgba(105, 255, 234, 0.7) 45%,
-        rgba(105, 255, 234, 0.12) 100%
-      );
-      filter: blur(0.3px);
-    }
+.footer-message strong {
+  color: #fbbf24;
+}
 
-    .icon-monitor .stand {
-      width: 26px;
-      height: 18px;
-      margin: 0 auto;
-      background: rgba(118, 132, 157, 0.8);
-      border-radius: 0 0 8px 8px;
-    }
-
-    .icon-monitor .base {
-      width: 70px;
-      height: 8px;
-      margin: 8px auto 0;
-      border-radius: 10px;
-      background: rgba(118, 132, 157, 0.78);
-    }
-
-    /* 아이콘 3 */
-    .icon-growth {
-      width: 200px;
-      height: 110px;
-      position: relative;
-      z-index: 2;
-    }
-
-    .icon-growth svg {
-      width: 100%;
-      height: 100%;
-      overflow: visible;
-      filter: drop-shadow(0 8px 18px rgba(67, 241, 221, 0.18));
-    }
-  </style>
+.accent-line {
+  position: absolute;
+  left: 118px;
+  bottom: 52px;
+  width: 1684px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(96,165,250,0.55), rgba(251,191,36,0.55), transparent);
+  z-index: 1;
+}
+</style>
 </head>
+
 <body>
-  <div class="slide">
-    <div class="panel">
-      <div class="tag">3 STEP STRATEGY</div>
+  <section class="slide">
+    <div class="grid-bg"></div>
 
-      <h1 class="title">Inwave Growth Roadmap</h1>
-      <div class="subtitle">
-        인웨이브는 실증 확보부터 전국 확장, 데이터 기반 성장까지 단계적으로 시장을 확대합니다.
-      </div>
+    <header class="header">
+      <div class="kicker">PROBLEM RECOGNITION</div>
+      <h1>
+        광고비는 지출되지만<br />
+        <span>광고효과는 측정되지 않습니다</span>
+      </h1>
+    </header>
 
-      <div class="cards">
-        <!-- 1단계 -->
-        <div class="card">
-          <div class="step-badge">01</div>
-          <div class="line-deco"></div>
-
-          <div class="icon-area">
-            <div class="icon-glow"></div>
-            <div class="icon-bars">
-              <span></span>
-              <span></span>
-              <span></span>
-              <span></span>
-            </div>
-          </div>
-
-          <h3>부천 실증(파일럿)</h3>
-          <p>
-            <span class="emphasis-blue">단위면적당 인구수가 전국 1위</span>인 부천을 시작점으로,
-            <span class="emphasis">빠른 데이터 확보와 레퍼런스 구축</span>을 진행합니다.
-          </p>
-
-          <div class="bg-number">1</div>
+    <main class="compare-area">
+      <div class="card online">
+        <div class="card-title">
+          <span>온라인 광고</span>
+          <div class="icon-dashboard"></div>
         </div>
-
-        <!-- 2단계 -->
-        <div class="card">
-          <div class="step-badge">02</div>
-          <div class="line-deco"></div>
-
-          <div class="icon-area">
-            <div class="icon-glow"></div>
-            <div class="icon-monitor">
-              <div class="screen"></div>
-              <div class="stand"></div>
-              <div class="base"></div>
-            </div>
-          </div>
-
-          <h3>전국 단위 모니터 확장</h3>
-          <p>
-            <span class="emphasis">검증된 AI 성과 데이터</span>를 기반으로
-            생활밀착형 상권과 주요 거점으로 모니터 설치를 확대합니다.
-          </p>
-
-          <div class="bg-number">2</div>
-        </div>
-
-        <!-- 3단계 -->
-        <div class="card active">
-          <div class="step-badge">03</div>
-          <div class="line-deco"></div>
-
-          <div class="icon-area">
-            <div class="icon-glow"></div>
-            <div class="icon-growth">
-              <svg viewBox="0 0 200 110" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M20 88 L55 76 L90 72 L122 54 L160 58 L185 30"
-                  fill="none"
-                  stroke="#74ffd9"
-                  stroke-width="6"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                />
-                <circle cx="185" cy="30" r="7" fill="#74ffd9" />
-                <path
-                  d="M20 88 L55 76 L90 72 L122 54 L160 58 L185 30 L185 100 L20 100 Z"
-                  fill="rgba(116,255,217,0.12)"
-                />
-              </svg>
-            </div>
-          </div>
-
-          <h3>데이터 기반 기업 성장</h3>
-          <p>
-            축적된 시선 데이터를 바탕으로
-            <span class="emphasis">소상공인 및 브랜드 대상 데이터 리포트</span>를 생성하고,
-            구독형 수익 구조로 확장합니다.
-          </p>
-
-          <div class="bg-number">3</div>
+        <div class="items">
+          <div class="item"><span class="check">✓</span>클릭 수 확인 가능</div>
+          <div class="item"><span class="check">✓</span>체류시간 확인 가능</div>
+          <div class="item"><span class="check">✓</span>전환율 확인 가능</div>
         </div>
       </div>
 
-      <div class="footer-line"></div>
+      <div class="center-question">
+        “실제로 광고를 본<br />사람은 몇 명일까?”
+      </div>
+
+      <div class="card offline">
+        <div class="card-title">
+          <span>오프라인 광고</span>
+          <div class="icon-billboard"></div>
+        </div>
+        <div class="items">
+          <div class="item"><span class="check no">!</span>실제 시청자 수 확인 불가</div>
+          <div class="item"><span class="check no">!</span>시청시간 확인 불가</div>
+          <div class="item"><span class="check no">!</span>광고효과 설명 불가</div>
+        </div>
+      </div>
+    </main>
+
+    <div class="footer-message">
+      온라인 광고는 <strong>측정</strong>되지만,<br />
+      오프라인 광고는 아직도 <strong>추정</strong>하고 있습니다.
     </div>
-  </div>
+
+    <div class="accent-line"></div>
+  </section>
 </body>
 </html>
+```
+
