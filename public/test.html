@@ -6,7 +6,7 @@
 <title>INWAVE Slide 01 - Problem</title>
 
 <style>
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+@import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css");
 
 * {
   margin: 0;
@@ -18,380 +18,451 @@ body {
   width: 1920px;
   height: 1080px;
   overflow: hidden;
-  font-family: 'Pretendard', 'Noto Sans KR', sans-serif;
-  background: #031126;
-  color: #ffffff;
+  font-family: "Pretendard", "Noto Sans KR", sans-serif;
+  background: #f4efe3;
+  color: #172033;
 }
 
 .slide {
   position: relative;
   width: 1920px;
   height: 1080px;
-  padding: 70px 90px;
+  padding: 72px 88px 64px;
   background:
-    radial-gradient(circle at 18% 22%, rgba(10,46,255,0.45), transparent 34%),
-    radial-gradient(circle at 82% 28%, rgba(255,199,44,0.16), transparent 30%),
-    linear-gradient(135deg, #031126 0%, #071A3D 52%, #020914 100%);
+    radial-gradient(circle at 12% 12%, rgba(255, 255, 255, 0.9), transparent 26%),
+    radial-gradient(circle at 88% 18%, rgba(10, 46, 255, 0.08), transparent 30%),
+    radial-gradient(circle at 48% 98%, rgba(255, 199, 44, 0.18), transparent 34%),
+    linear-gradient(135deg, #f7f1e6 0%, #f4efe3 55%, #eadfcd 100%);
   overflow: hidden;
 }
 
-.grid-bg {
+.slide::before {
+  content: "";
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(255,255,255,0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.045) 1px, transparent 1px);
-  background-size: 64px 64px;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent 82%);
+    linear-gradient(rgba(7, 26, 61, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(7, 26, 61, 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
   opacity: 0.45;
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent 85%);
 }
 
-.noise {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(circle, rgba(255,255,255,0.08) 1px, transparent 1px);
-  background-size: 6px 6px;
-  opacity: 0.08;
-}
-
-.header {
+.top-row {
   position: relative;
   z-index: 2;
-  height: 190px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .category {
+  height: 42px;
+  padding: 0 22px;
   display: inline-flex;
   align-items: center;
-  height: 44px;
-  padding: 0 24px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.14);
-  backdrop-filter: blur(20px);
+  background: #ffffff;
+  border: 1px solid rgba(7, 26, 61, 0.08);
+  box-shadow:
+    0 14px 28px rgba(91, 72, 42, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  color: #007481;
+}
+
+.slide-no {
   font-size: 22px;
   font-weight: 700;
-  letter-spacing: 0.14em;
-  color: #FFC72C;
+  color: rgba(23, 32, 51, 0.42);
+}
+
+.main {
+  position: relative;
+  z-index: 2;
+  height: 706px;
+  display: grid;
+  grid-template-columns: 1.35fr 0.9fr;
+  gap: 66px;
+  align-items: center;
+}
+
+.copy {
+  padding-top: 10px;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 800;
+  color: #007481;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 52px;
+  height: 4px;
+  border-radius: 999px;
+  background: #0a2eff;
 }
 
 .title {
-  margin-top: 30px;
-  font-size: 82px;
-  line-height: 1.12;
-  font-weight: 800;
+  font-size: 92px;
+  line-height: 1.08;
+  letter-spacing: -0.06em;
+  font-weight: 900;
+  color: #111827;
+}
+
+.title .accent {
+  color: #ffc72c;
+  text-shadow: 0 8px 22px rgba(255, 199, 44, 0.28);
+}
+
+.subtitle {
+  margin-top: 34px;
+  width: 820px;
+  font-size: 32px;
+  line-height: 1.45;
+  letter-spacing: -0.035em;
+  font-weight: 500;
+  color: rgba(23, 32, 51, 0.68);
+}
+
+.image-card {
+  position: relative;
+  height: 610px;
+  border-radius: 32px;
+  overflow: hidden;
+  background: #fffaf0;
+  border: 1px solid rgba(7, 26, 61, 0.08);
+  box-shadow:
+    0 30px 70px rgba(91, 72, 42, 0.18),
+    0 10px 24px rgba(91, 72, 42, 0.10),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+}
+
+.ad-scene {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.18), rgba(0,0,0,0.08)),
+    linear-gradient(135deg, #d9c7a8 0%, #aa9474 52%, #6d5f54 100%);
+}
+
+.billboard {
+  position: absolute;
+  left: 64px;
+  top: 72px;
+  width: 470px;
+  height: 255px;
+  border-radius: 24px;
+  background:
+    linear-gradient(135deg, rgba(10,46,255,0.92), rgba(0,116,129,0.92)),
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.35), transparent 30%);
+  box-shadow:
+    0 24px 48px rgba(0,0,0,0.24),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+  padding: 34px;
+  color: white;
+}
+
+.billboard small {
+  display: block;
+  font-size: 22px;
+  font-weight: 700;
+  opacity: 0.78;
+  letter-spacing: 0.06em;
+}
+
+.billboard strong {
+  display: block;
+  margin-top: 18px;
+  font-size: 48px;
+  line-height: 1.05;
   letter-spacing: -0.045em;
 }
 
-.title span {
-  color: #D6DCE5;
-}
-
-.hero {
-  position: relative;
-  z-index: 2;
-  height: 650px;
-  display: grid;
-  grid-template-columns: 1fr 130px 1fr;
-  gap: 28px;
-  align-items: center;
-}
-
-.panel {
-  position: relative;
-  height: 560px;
-  border-radius: 34px;
-  overflow: hidden;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.online {
-  background:
-    radial-gradient(circle at 30% 18%, rgba(10,46,255,0.5), transparent 42%),
-    linear-gradient(135deg, rgba(20,78,255,0.28), rgba(255,255,255,0.045));
-}
-
-.offline {
-  background:
-    radial-gradient(circle at 72% 38%, rgba(255,199,44,0.12), transparent 36%),
-    linear-gradient(135deg, rgba(2,8,22,0.9), rgba(7,26,61,0.75));
-}
-
-.panel-inner {
-  position: relative;
-  z-index: 2;
-  padding: 42px;
-  height: 100%;
-}
-
-.panel-label {
-  font-size: 30px;
-  font-weight: 800;
-  letter-spacing: -0.025em;
-}
-
-.panel-sub {
-  margin-top: 10px;
-  font-size: 22px;
-  color: rgba(214,220,229,0.78);
-}
-
-.dashboard {
-  margin-top: 42px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 22px;
-}
-
-.metric {
-  height: 112px;
-  padding: 24px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-}
-
-.metric-name {
-  font-size: 21px;
-  color: rgba(214,220,229,0.82);
-}
-
-.metric-value {
-  margin-top: 12px;
-  font-size: 34px;
-  font-weight: 800;
-}
-
-.graph {
+.walkway {
   position: absolute;
-  left: 42px;
-  right: 42px;
-  bottom: 42px;
-  height: 160px;
-  border-radius: 24px;
-  background: rgba(0,0,0,0.22);
-  border: 1px solid rgba(255,255,255,0.1);
-  overflow: hidden;
-}
-
-.graph svg {
-  width: 100%;
-  height: 100%;
-}
-
-.empty-data {
-  margin-top: 52px;
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-}
-
-.empty-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.11);
-}
-
-.empty-row strong {
-  font-size: 28px;
-  font-weight: 700;
-}
-
-.empty-row span {
-  font-size: 34px;
-  font-weight: 900;
-  color: rgba(255,255,255,0.28);
-}
-
-.people-shadow {
-  position: absolute;
-  right: 40px;
+  left: 0;
+  right: 0;
   bottom: 0;
-  width: 420px;
-  height: 310px;
-  opacity: 0.22;
+  height: 255px;
+  background:
+    linear-gradient(180deg, transparent 0%, rgba(40,30,22,0.26) 100%),
+    repeating-linear-gradient(90deg, rgba(255,255,255,0.16) 0 2px, transparent 2px 72px);
 }
 
-.people-shadow::before,
-.people-shadow::after {
+.person {
+  position: absolute;
+  bottom: 72px;
+  width: 54px;
+  height: 150px;
+  opacity: 0.42;
+  filter: blur(0.2px);
+}
+
+.person::before {
   content: "";
   position: absolute;
-  bottom: 0;
-  width: 92px;
-  height: 230px;
-  background: linear-gradient(to bottom, rgba(255,255,255,0.35), rgba(255,255,255,0));
-  border-radius: 60px 60px 0 0;
-  filter: blur(1px);
+  top: 0;
+  left: 13px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(25,25,25,0.68);
 }
 
-.people-shadow::before {
-  right: 160px;
+.person::after {
+  content: "";
+  position: absolute;
+  top: 36px;
+  left: 7px;
+  width: 40px;
+  height: 92px;
+  border-radius: 20px 20px 8px 8px;
+  background: rgba(25,25,25,0.62);
 }
 
-.people-shadow::after {
-  right: 50px;
-  height: 280px;
-}
+.p1 { left: 140px; transform: scale(1.12); }
+.p2 { left: 255px; transform: scale(0.88); opacity: 0.28; }
+.p3 { left: 410px; transform: scale(1.28); opacity: 0.52; }
+.p4 { left: 535px; transform: scale(0.94); opacity: 0.34; }
 
-.divider {
-  height: 560px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.vs {
-  width: 118px;
-  height: 118px;
+.data-overlay {
+  position: absolute;
+  left: 34px;
+  right: 34px;
+  bottom: 34px;
+  padding: 26px;
   border-radius: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255,199,44,0.12);
-  border: 1px solid rgba(255,199,44,0.35);
-  box-shadow: 0 0 70px rgba(255,199,44,0.18);
-  font-size: 38px;
-  font-weight: 900;
-  color: #FFC72C;
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(255,255,255,0.8);
+  box-shadow: 0 22px 46px rgba(70, 55, 32, 0.18);
 }
 
-.footer {
+.overlay-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #007481;
+}
+
+.status-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffc72c;
+  box-shadow: 0 0 0 8px rgba(255,199,44,0.18);
+}
+
+.overlay-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.overlay-item {
+  min-height: 82px;
+  padding: 18px;
+  border-radius: 18px;
+  background: rgba(244,239,227,0.76);
+  border: 1px solid rgba(7,26,61,0.06);
+}
+
+.overlay-label {
+  font-size: 19px;
+  font-weight: 700;
+  color: rgba(23,32,51,0.52);
+}
+
+.overlay-value {
+  margin-top: 7px;
+  font-size: 30px;
+  line-height: 1;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  color: #172033;
+}
+
+.overlay-value.unknown {
+  color: #ffc72c;
+  text-shadow: 0 5px 16px rgba(255,199,44,0.22);
+}
+
+.kpi-row {
   position: relative;
   z-index: 2;
+  height: 170px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+  margin-top: 10px;
+}
+
+.kpi-card {
+  position: relative;
+  padding: 30px 34px;
+  border-radius: 24px;
+  background: #ffffff;
+  border: 1px solid rgba(7, 26, 61, 0.07);
+  box-shadow:
+    0 22px 44px rgba(91, 72, 42, 0.12),
+    0 8px 18px rgba(91, 72, 42, 0.08),
+    inset 0 1px 0 rgba(255,255,255,0.9);
+  overflow: hidden;
+}
+
+.kpi-card::after {
+  content: "";
+  position: absolute;
+  right: -44px;
+  top: -44px;
+  width: 140px;
   height: 140px;
+  border-radius: 40px;
+  background: rgba(0,116,129,0.08);
+  transform: rotate(18deg);
+}
+
+.kpi-label {
+  position: relative;
+  z-index: 2;
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  color: rgba(23,32,51,0.72);
+}
+
+.kpi-value {
+  position: relative;
+  z-index: 2;
+  margin-top: 18px;
+  font-size: 58px;
+  line-height: 1;
+  font-weight: 900;
+  color: #ffc72c;
+  letter-spacing: -0.03em;
+}
+
+.bottom-message {
+  position: relative;
+  z-index: 2;
+  margin-top: 28px;
+  height: 68px;
   display: flex;
   align-items: center;
-}
-
-.footer-text {
-  width: 100%;
-  padding: 34px 44px;
-  border-radius: 28px;
-  background: rgba(255,255,255,0.06);
-  border: 1px solid rgba(255,255,255,0.1);
-  backdrop-filter: blur(20px);
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  font-size: 34px;
-  font-weight: 700;
+  justify-content: center;
+  font-size: 31px;
+  line-height: 1.35;
+  font-weight: 800;
   letter-spacing: -0.035em;
-  text-align: center;
+  color: #172033;
 }
 
-.footer-text span {
-  color: #FFC72C;
+.bottom-message span {
+  color: #007481;
 }
 </style>
 </head>
 
 <body>
   <section class="slide">
-    <div class="grid-bg"></div>
-    <div class="noise"></div>
-
-    <header class="header">
+    <div class="top-row">
       <div class="category">PROBLEM</div>
-      <h1 class="title">
-        광고는 송출되지만<br />
-        <span>시청은 측정되지 않습니다</span>
-      </h1>
-    </header>
+      <div class="slide-no">01</div>
+    </div>
 
-    <main class="hero">
-      <section class="panel online">
-        <div class="panel-inner">
-          <div class="panel-label">온라인 광고</div>
-          <div class="panel-sub">Data Visible</div>
+    <main class="main">
+      <section class="copy">
+        <div class="eyebrow">Measurement Gap</div>
 
-          <div class="dashboard">
-            <div class="metric">
-              <div class="metric-name">클릭</div>
-              <div class="metric-value">12,486</div>
-            </div>
-            <div class="metric">
-              <div class="metric-name">체류시간</div>
-              <div class="metric-value">38.2s</div>
-            </div>
-            <div class="metric">
-              <div class="metric-name">전환율</div>
-              <div class="metric-value">4.8%</div>
-            </div>
-            <div class="metric">
-              <div class="metric-name">ROI</div>
-              <div class="metric-value">312%</div>
-            </div>
-          </div>
+        <h1 class="title">
+          광고는 송출되지만<br />
+          시청은 <span class="accent">측정되지 않습니다</span>
+        </h1>
 
-          <div class="graph">
-            <svg viewBox="0 0 700 160" preserveAspectRatio="none">
-              <defs>
-                <linearGradient id="lineGlow" x1="0" x2="1">
-                  <stop offset="0%" stop-color="#0A2EFF"/>
-                  <stop offset="100%" stop-color="#FFC72C"/>
-                </linearGradient>
-              </defs>
-              <polyline
-                points="0,120 80,98 160,112 240,62 320,76 400,38 500,54 600,26 700,42"
-                fill="none"
-                stroke="url(#lineGlow)"
-                stroke-width="6"
-                stroke-linecap="round"
-              />
-              <path
-                d="M0 120 L80 98 L160 112 L240 62 L320 76 L400 38 L500 54 L600 26 L700 42 L700 160 L0 160 Z"
-                fill="rgba(10,46,255,0.22)"
-              />
-            </svg>
-          </div>
-        </div>
+        <p class="subtitle">
+          광고비는 집행되지만, 실제 광고를 본 사람은 알 수 없습니다.
+        </p>
       </section>
 
-      <div class="divider">
-        <div class="vs">VS</div>
-      </div>
-
-      <section class="panel offline">
-        <div class="panel-inner">
-          <div class="panel-label">오프라인 광고</div>
-          <div class="panel-sub">Data Blind Spot</div>
-
-          <div class="empty-data">
-            <div class="empty-row">
-              <strong>광고 송출</strong>
-              <span>ON</span>
-            </div>
-            <div class="empty-row">
-              <strong>유동인구</strong>
-              <span>추정</span>
-            </div>
-            <div class="empty-row">
-              <strong>실제 시청자 수</strong>
-              <span>?</span>
-            </div>
-            <div class="empty-row">
-              <strong>시청시간</strong>
-              <span>?</span>
-            </div>
-            <div class="empty-row">
-              <strong>광고효과</strong>
-              <span>?</span>
-            </div>
+      <section class="image-card">
+        <div class="ad-scene">
+          <div class="billboard">
+            <small>OFFLINE AD</small>
+            <strong>Campaign<br />Running</strong>
           </div>
 
-          <div class="people-shadow"></div>
+          <div class="walkway"></div>
+          <div class="person p1"></div>
+          <div class="person p2"></div>
+          <div class="person p3"></div>
+          <div class="person p4"></div>
+        </div>
+
+        <div class="data-overlay">
+          <div class="overlay-title">
+            <span>Advertising Measurement</span>
+            <span class="status-dot"></span>
+          </div>
+
+          <div class="overlay-grid">
+            <div class="overlay-item">
+              <div class="overlay-label">Daily Traffic</div>
+              <div class="overlay-value">1,248</div>
+            </div>
+
+            <div class="overlay-item">
+              <div class="overlay-label">Actual Viewers</div>
+              <div class="overlay-value unknown">???</div>
+            </div>
+
+            <div class="overlay-item">
+              <div class="overlay-label">Watch Time</div>
+              <div class="overlay-value unknown">???</div>
+            </div>
+
+            <div class="overlay-item">
+              <div class="overlay-label">Engagement</div>
+              <div class="overlay-value unknown">???</div>
+            </div>
+          </div>
         </div>
       </section>
     </main>
 
-    <footer class="footer">
-      <div class="footer-text">
-        온라인 광고는 <span>측정</span>되지만, 오프라인 광고는 여전히 <span>추정</span>하고 있습니다.
+    <section class="kpi-row">
+      <div class="kpi-card">
+        <div class="kpi-label">실제 시청자 수</div>
+        <div class="kpi-value">???</div>
       </div>
-    </footer>
+
+      <div class="kpi-card">
+        <div class="kpi-label">평균 시청시간</div>
+        <div class="kpi-value">???</div>
+      </div>
+
+      <div class="kpi-card">
+        <div class="kpi-label">광고 반응률</div>
+        <div class="kpi-value">???</div>
+      </div>
+    </section>
+
+    <div class="bottom-message">
+      오프라인 광고의 가장 큰 문제는 <span>&nbsp;“본 사람 수를 알 수 없다”&nbsp;</span>는 것입니다.
+    </div>
   </section>
 </body>
 </html>
