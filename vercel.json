@@ -8,6 +8,5 @@
       "source": "/callback_apple.html",
       "destination": "/api/callback_apple"
     }
-  ],
-  "public": true
+  ]
 }
