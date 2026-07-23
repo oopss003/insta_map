@@ -9,11 +9,7 @@ function clampNumber(value, min, max, fallback) {
 }
 
 function normalizeAlign(value) {
-    if (
-        value === "left" ||
-        value === "center" ||
-        value === "right"
-    ) {
+    if (value === "left" || value === "center" || value === "right") {
         return value;
     }
 
@@ -66,34 +62,30 @@ export default async function handler(req, res) {
                             content: `
 너는 인스타그램 광고 이미지 레이아웃 분석가다.
 
-사용자가 제공한 이미지를 보고 제목과 설명을 자연스럽게 배치할 위치를 추천한다.
-사람 얼굴, 핵심 제품, 중심 피사체를 최대한 가리지 말아야 한다.
-글씨는 잘 보여야 하고, 너무 복잡한 배경은 피해야 한다.
+사용자가 고른 이미지를 보고 제목과 설명을 배치할 가장 적절한 위치를 추천한다.
+사람 얼굴, 핵심 피사체, 제품 중심부를 피해야 한다.
 
-반드시 아래 JSON 형식으로만 답한다:
+반드시 아래 JSON 형식으로만 응답한다.
 {
   "x": 8,
   "y": 58,
   "width": 70,
   "align": "left",
-  "titleSize": 72,
+  "titleSize": 74,
   "subtitleSize": 34,
   "textColor": "#ffffff",
-  "positionReason": "추천 이유"
+  "positionReason": "설명"
 }
 
 규칙:
-- x, y, width는 퍼센트 값
-- x 범위: 3~55
-- y 범위: 5~75
-- width 범위: 40~82
-- align: left, center, right 중 하나
-- titleSize: 56~84
-- subtitleSize: 26~40
+- x: 3~55
+- y: 5~78
+- width: 38~84
+- align: left / center / right
+- titleSize: 58~86
+- subtitleSize: 26~42
 - textColor: #ffffff 또는 #000000
-- 가급적 제목은 하단 또는 상단의 빈 공간에 배치
-- 이미지의 핵심 피사체를 가리지 않기
-- 한글 제목이 들어갈 수 있게 충분한 공간 확보
+- 제목은 잘 보여야 하고 피사체를 최대한 가리지 말 것
 `
                         },
                         {
@@ -106,7 +98,7 @@ export default async function handler(req, res) {
 제목: ${title}
 설명: ${subtitle}
 
-이 이미지에 제목과 설명을 자연스럽게 배치할 위치를 추천해줘.
+이 이미지에서 글씨를 자연스럽게 올릴 위치를 추천해줘.
 `
                                 },
                                 {
@@ -128,59 +120,38 @@ export default async function handler(req, res) {
             return res.status(response.status).json({
                 error:
                     data?.error?.message ||
-                    "이미지 레이아웃 분석 요청에 실패했습니다."
+                    "이미지 레이아웃 분석에 실패했습니다."
             });
         }
 
-        const content =
-            data?.choices?.[0]?.message?.content;
+        const content = data?.choices?.[0]?.message?.content;
 
         if (!content) {
             return res.status(500).json({
-                error: "AI 응답 내용이 없습니다."
+                error: "AI 분석 응답이 없습니다."
             });
         }
 
         const parsed = JSON.parse(content);
 
-        const result = {
+        return res.status(200).json({
             x: clampNumber(parsed.x, 3, 55, 8),
-            y: clampNumber(parsed.y, 5, 75, 58),
-            width: clampNumber(
-                parsed.width,
-                40,
-                82,
-                70
-            ),
+            y: clampNumber(parsed.y, 5, 78, 58),
+            width: clampNumber(parsed.width, 38, 84, 70),
             align: normalizeAlign(parsed.align),
-            titleSize: clampNumber(
-                parsed.titleSize,
-                56,
-                84,
-                72
-            ),
-            subtitleSize: clampNumber(
-                parsed.subtitleSize,
-                26,
-                40,
-                34
-            ),
+            titleSize: clampNumber(parsed.titleSize, 58, 86, 74),
+            subtitleSize: clampNumber(parsed.subtitleSize, 26, 42, 34),
             textColor:
-                parsed.textColor === "#000000"
-                    ? "#000000"
-                    : "#ffffff",
+                parsed.textColor === "#000000" ? "#000000" : "#ffffff",
             positionReason:
                 parsed.positionReason ||
-                "피사체를 피하고 가독성이 좋은 영역에 배치했습니다."
-        };
-
-        return res.status(200).json(result);
+                "피사체를 피하고 가독성이 좋은 위치에 배치했습니다."
+        });
     } catch (error) {
         console.error(error);
 
         return res.status(500).json({
-            error:
-                "이미지 레이아웃 분석 중 오류가 발생했습니다."
+            error: "이미지 레이아웃 분석 중 오류가 발생했습니다."
         });
     }
 }
