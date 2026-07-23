@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+    <title>INWAVE 콘텐츠 스튜디오</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, "Noto Sans KR", sans-serif;
+            background: #f5f1e8;
+            color: #17243d;
+        }
+
+        header {
+            padding: 22px 30px;
+            background: #17243d;
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #d9d4c8;
+        }
+
+        main {
+            width: min(1200px, calc(100% - 32px));
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: 1fr 460px;
+            gap: 24px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            margin-top: 0;
+        }
+
+        textarea,
+        input {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .concepts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .concept {
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 16px 12px;
+            background: #f5f5f5;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .concept.active {
+            border-color: #f58220;
+            background: #fff4e8;
+        }
+
+        .concept strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .primary-button {
+            width: 100%;
+            margin-top: 18px;
+            background: #f58220;
+            color: white;
+        }
+
+        .secondary-button {
+            width: 100%;
+            margin-top: 10px;
+            background: #17243d;
+            color: white;
+        }
+
+        .preview {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 0.92),
+                    rgba(0, 0, 0, 0.1)
+                ),
+                url("https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80")
+                center / cover;
+        }
+
+        .preview-text {
+            position: absolute;
+            left: 34px;
+            right: 34px;
+            bottom: 42px;
+            color: white;
+        }
+
+        .preview-text .label {
+            color: #ff9a3c;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .preview-text h3 {
+            margin: 0;
+            font-size: 38px;
+            line-height: 1.15;
+            word-break: keep-all;
+        }
+
+        .preview-text p {
+            margin: 12px 0 0;
+            font-size: 17px;
+            line-height: 1.5;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #eef1f5;
+            font-size: 14px;
+        }
+
+        @media (max-width: 900px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .concepts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1>INWAVE 콘텐츠 스튜디오</h1>
+    <p>대화로 주제를 정리하고 인스타그램 이미지를 제작합니다.</p>
+</header>
+
+<main>
+    <section class="panel">
+        <h2>1. 만들고 싶은 주제를 입력하세요</h2>
+
+        <textarea
+            id="topicInput"
+            placeholder="예: 오프라인 광고를 집행했지만 실제로 몇 명이 광고를 봤는지 알기 어렵다는 내용으로 만들고 싶어."
+        ></textarea>
+
+        <h2 style="margin-top: 28px;">2. 이미지 제목</h2>
+
+        <input
+            id="titleInput"
+            type="text"
+            value="광고비는 나갔는데, 누가 봤는지는 아세요?"
+        >
+
+        <h2 style="margin-top: 28px;">3. 컨셉 선택</h2>
+
+        <div class="concepts">
+            <button class="concept active" data-concept="hook">
+                <strong>강한 후킹형</strong>
+                높은 대비와 굵은 제목
+            </button>
+
+            <button class="concept" data-concept="insight">
+                <strong>전문 인사이트형</strong>
+                네이비·아이보리 중심
+            </button>
+
+            <button class="concept" data-concept="magazine">
+                <strong>트렌드 매거진형</strong>
+                감각적이고 세련된 구성
+            </button>
+        </div>
+
+        <button class="primary-button" id="previewButton">
+            미리보기 반영
+        </button>
+
+        <button class="secondary-button" id="generateButton">
+            AI 이미지 생성
+        </button>
+
+        <div class="status" id="status">
+            현재는 화면 테스트 단계입니다. 다음 단계에서 API를 연결합니다.
+        </div>
+    </section>
+
+    <section class="panel">
+        <h2>미리보기</h2>
+
+        <div class="preview" id="preview">
+            <div class="preview-text">
+                <div class="label">광고 인사이트</div>
+
+                <h3 id="previewTitle">
+                    광고비는 나갔는데,<br>
+                    누가 봤는지는 아세요?
+                </h3>
+
+                <p id="previewSubtitle">
+                    광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.
+                </p>
+            </div>
+        </div>
+    </section>
+</main>
+
+<script>
+    const concepts = document.querySelectorAll(".concept");
+    const titleInput = document.getElementById("titleInput");
+    const topicInput = document.getElementById("topicInput");
+    const previewTitle = document.getElementById("previewTitle");
+    const previewSubtitle = document.getElementById("previewSubtitle");
+    const previewButton = document.getElementById("previewButton");
+    const generateButton = document.getElementById("generateButton");
+    const status = document.getElementById("status");
+
+    let selectedConcept = "hook";
+
+    concepts.forEach((button) => {
+        button.addEventListener("click", () => {
+            concepts.forEach((item) => item.classList.remove("active"));
+            button.classList.add("active");
+            selectedConcept = button.dataset.concept;
+        });
+    });
+
+    previewButton.addEventListener("click", () => {
+        const title = titleInput.value.trim();
+        const topic = topicInput.value.trim();
+
+        previewTitle.textContent =
+            title || "제목을 입력해 주세요.";
+
+        previewSubtitle.textContent =
+            topic || "작성한 주제 설명이 여기에 표시됩니다.";
+
+        status.textContent =
+            "선택한 컨셉: " + selectedConcept +
+            " · 미리보기에 반영되었습니다.";
+    });
+
+    generateButton.addEventListener("click", () => {
+        status.textContent =
+            "아직 이미지 API가 연결되지 않았습니다. 화면 확인 후 다음 단계에서 연결합니다.";
+    });
+</script>
+</body>
+</html>
