@@ -340,42 +340,8 @@
             text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
-        /*
-         * 전문 인사이트형 미리보기
-         */
-        .preview.concept-insight {
-            background:
-                linear-gradient(
-                    to top,
-                    rgba(14, 31, 55, 0.97) 0%,
-                    rgba(14, 31, 55, 0.62) 36%,
-                    rgba(14, 31, 55, 0.08) 70%
-                ),
-                url(
-                    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80"
-                )
-                center / cover no-repeat;
-        }
-
         .preview.concept-insight .label {
             color: #ff9b42;
-        }
-
-        /*
-         * 트렌드 매거진형 미리보기
-         */
-        .preview.concept-magazine {
-            background:
-                linear-gradient(
-                    to top,
-                    rgba(8, 8, 8, 0.92) 0%,
-                    rgba(8, 8, 8, 0.32) 45%,
-                    transparent 75%
-                ),
-                url(
-                    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80"
-                )
-                center / cover no-repeat;
         }
 
         .preview.concept-magazine .preview-text {
@@ -798,19 +764,77 @@
 
         generateButton.addEventListener(
             "click",
-            () => {
+            async () => {
                 if (!generatedImagePrompt) {
                     setStatus(
-                        "먼저 AI로 주제를 정리해 이미지 생성 정보를 만들어 주세요.",
+                        "먼저 AI로 주제를 정리해서 이미지 생성 프롬프트를 만들어 주세요.",
                         "error"
                     );
-
                     return;
                 }
 
+                generateButton.disabled = true;
+                generateButton.innerHTML =
+                    '<span class="loading-dots">AI 이미지를 생성하고 있습니다</span>';
+
                 setStatus(
-                    "다음 단계에서 이미지 생성 API를 이 버튼에 연결합니다."
+                    "이미지 생성에는 약 10초~1분 정도 걸릴 수 있습니다."
                 );
+
+                try {
+                    const response = await fetch(
+                        "/api/generate-image",
+                        {
+                            method: "POST",
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+                            body: JSON.stringify({
+                                prompt:
+                                    generatedImagePrompt,
+                                concept:
+                                    selectedConcept
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error ||
+                            "이미지 생성 요청에 실패했습니다."
+                        );
+                    }
+
+                    if (!data.imageUrl) {
+                        throw new Error(
+                            "생성된 이미지 주소를 받지 못했습니다."
+                        );
+                    }
+
+                    applyGeneratedImage(
+                        data.imageUrl
+                    );
+
+                    setStatus(
+                        "AI 이미지 생성이 완료되었습니다.",
+                        "success"
+                    );
+                } catch (error) {
+                    console.error(error);
+
+                    setStatus(
+                        error.message ||
+                        "이미지 생성 중 오류가 발생했습니다.",
+                        "error"
+                    );
+                } finally {
+                    generateButton.disabled = false;
+                    generateButton.textContent =
+                        "AI 이미지 생성";
+                }
             }
         );
 
@@ -992,6 +1016,41 @@
             });
         }
 
+        function getPreviewOverlay(
+            conceptName
+        ) {
+            if (conceptName === "insight") {
+                return `
+                    linear-gradient(
+                        to top,
+                        rgba(14, 31, 55, 0.96) 0%,
+                        rgba(14, 31, 55, 0.58) 34%,
+                        rgba(14, 31, 55, 0.08) 70%
+                    )
+                `;
+            }
+
+            if (conceptName === "magazine") {
+                return `
+                    linear-gradient(
+                        to top,
+                        rgba(8, 8, 8, 0.92) 0%,
+                        rgba(8, 8, 8, 0.38) 42%,
+                        rgba(8, 8, 8, 0.06) 74%
+                    )
+                `;
+            }
+
+            return `
+                linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 0.95) 0%,
+                    rgba(0, 0, 0, 0.55) 32%,
+                    rgba(0, 0, 0, 0.08) 70%
+                )
+            `;
+        }
+
         function applyConceptToPreview() {
             preview.classList.remove(
                 "concept-hook",
@@ -1007,6 +1066,14 @@
                 conceptInformation[
                     selectedConcept
                 ].label;
+
+            if (
+                preview.dataset.generatedImage
+            ) {
+                applyGeneratedImage(
+                    preview.dataset.generatedImage
+                );
+            }
         }
 
         function applyInputsToPreview() {
@@ -1035,6 +1102,32 @@
             }
 
             applyConceptToPreview();
+        }
+
+        function applyGeneratedImage(
+            imageUrl
+        ) {
+            preview.dataset.generatedImage =
+                imageUrl;
+
+            const overlay =
+                getPreviewOverlay(
+                    selectedConcept
+                );
+
+            preview.style.backgroundImage = `
+                ${overlay},
+                url("${imageUrl}")
+            `;
+
+            preview.style.backgroundPosition =
+                "center";
+
+            preview.style.backgroundSize =
+                "cover";
+
+            preview.style.backgroundRepeat =
+                "no-repeat";
         }
 
         function setPlanningLoading(
