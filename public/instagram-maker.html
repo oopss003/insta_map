@@ -2,10 +2,12 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
+
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
+
     <title>INWAVE 콘텐츠 스튜디오</title>
 
     <style>
@@ -15,7 +17,11 @@
 
         body {
             margin: 0;
-            font-family: Arial, "Noto Sans KR", sans-serif;
+            font-family:
+                Arial,
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                sans-serif;
             background: #f5f1e8;
             color: #17243d;
         }
@@ -40,8 +46,9 @@
             width: min(1200px, calc(100% - 32px));
             margin: 30px auto;
             display: grid;
-            grid-template-columns: 1fr 460px;
+            grid-template-columns: minmax(0, 1fr) 460px;
             gap: 24px;
+            align-items: start;
         }
 
         .panel {
@@ -53,6 +60,8 @@
 
         h2 {
             margin-top: 0;
+            margin-bottom: 16px;
+            font-size: 23px;
         }
 
         textarea,
@@ -61,28 +70,49 @@
             padding: 14px;
             border: 1px solid #d6d6d6;
             border-radius: 10px;
+            background: white;
+            color: #17243d;
             font-size: 16px;
+            outline: none;
+        }
+
+        textarea:focus,
+        input:focus {
+            border-color: #f58220;
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.12);
         }
 
         textarea {
             min-height: 150px;
             resize: vertical;
+            line-height: 1.5;
+        }
+
+        .section-title {
+            margin-top: 28px;
         }
 
         .concepts {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 12px;
             margin-top: 14px;
         }
 
         .concept {
+            min-height: 92px;
             border: 2px solid transparent;
             border-radius: 14px;
             padding: 16px 12px;
             background: #f5f5f5;
+            color: #17243d;
             cursor: pointer;
             text-align: left;
+            line-height: 1.45;
+        }
+
+        .concept:hover {
+            background: #f0f0f0;
         }
 
         .concept.active {
@@ -93,6 +123,7 @@
         .concept strong {
             display: block;
             margin-bottom: 8px;
+            font-size: 16px;
         }
 
         button {
@@ -102,6 +133,20 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
+            transition:
+                opacity 0.2s,
+                transform 0.2s,
+                background 0.2s;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
         }
 
         .primary-button {
@@ -111,11 +156,122 @@
             color: white;
         }
 
+        .primary-button:hover:not(:disabled) {
+            background: #e97312;
+        }
+
         .secondary-button {
             width: 100%;
-            margin-top: 10px;
+            margin-top: 14px;
             background: #17243d;
             color: white;
+        }
+
+        .secondary-button:hover:not(:disabled) {
+            background: #263957;
+        }
+
+        .plan-button {
+            margin-top: 14px;
+        }
+
+        .plan-result {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid #e2e2e2;
+            border-radius: 14px;
+            background: #fafafa;
+        }
+
+        .plan-result.visible {
+            display: block;
+        }
+
+        .plan-result h3 {
+            margin: 0 0 14px;
+            font-size: 19px;
+        }
+
+        .result-item {
+            padding: 14px;
+            border-radius: 10px;
+            background: #eef1f5;
+        }
+
+        .result-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: #17243d;
+        }
+
+        .result-item p {
+            margin: 0;
+            line-height: 1.55;
+        }
+
+        .title-candidates-heading {
+            margin: 18px 0 8px;
+            font-size: 16px;
+        }
+
+        .title-candidate {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            background: white;
+            color: #17243d;
+            text-align: left;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .title-candidate:hover {
+            border-color: #f58220;
+            background: #fff4e8;
+        }
+
+        .title-candidate.selected {
+            border-color: #f58220;
+            background: #fff4e8;
+        }
+
+        .recommended-concept {
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-left: 4px solid #f58220;
+            border-radius: 8px;
+            background: #fff4e8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #eef1f5;
+            color: #17243d;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status.success {
+            background: #e9f7ef;
+            color: #176b3a;
+        }
+
+        .status.error {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .preview-panel {
+            position: sticky;
+            top: 20px;
         }
 
         .preview {
@@ -127,15 +283,32 @@
             background:
                 linear-gradient(
                     to top,
-                    rgba(0, 0, 0, 0.92),
-                    rgba(0, 0, 0, 0.1)
+                    rgba(0, 0, 0, 0.95) 0%,
+                    rgba(0, 0, 0, 0.55) 32%,
+                    rgba(0, 0, 0, 0.08) 70%
                 ),
-                url("https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80")
-                center / cover;
+                url(
+                    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80"
+                )
+                center / cover no-repeat;
+        }
+
+        .preview::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(0, 0, 0, 0.22),
+                    transparent 48%
+                );
+            pointer-events: none;
         }
 
         .preview-text {
             position: absolute;
+            z-index: 2;
             left: 34px;
             right: 34px;
             bottom: 42px;
@@ -143,30 +316,106 @@
         }
 
         .preview-text .label {
-            color: #ff9a3c;
-            font-weight: bold;
             margin-bottom: 10px;
+            color: #ff8a1f;
+            font-size: 16px;
+            font-weight: 800;
         }
 
         .preview-text h3 {
             margin: 0;
             font-size: 38px;
             line-height: 1.15;
+            letter-spacing: -1.4px;
             word-break: keep-all;
+            overflow-wrap: break-word;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
         }
 
         .preview-text p {
-            margin: 12px 0 0;
+            margin: 14px 0 0;
             font-size: 17px;
             line-height: 1.5;
+            word-break: keep-all;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
         }
 
-        .status {
-            margin-top: 14px;
-            padding: 12px;
-            border-radius: 10px;
-            background: #eef1f5;
-            font-size: 14px;
+        /*
+         * 전문 인사이트형 미리보기
+         */
+        .preview.concept-insight {
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(14, 31, 55, 0.97) 0%,
+                    rgba(14, 31, 55, 0.62) 36%,
+                    rgba(14, 31, 55, 0.08) 70%
+                ),
+                url(
+                    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80"
+                )
+                center / cover no-repeat;
+        }
+
+        .preview.concept-insight .label {
+            color: #ff9b42;
+        }
+
+        /*
+         * 트렌드 매거진형 미리보기
+         */
+        .preview.concept-magazine {
+            background:
+                linear-gradient(
+                    to top,
+                    rgba(8, 8, 8, 0.92) 0%,
+                    rgba(8, 8, 8, 0.32) 45%,
+                    transparent 75%
+                ),
+                url(
+                    "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80"
+                )
+                center / cover no-repeat;
+        }
+
+        .preview.concept-magazine .preview-text {
+            left: 38px;
+            right: 38px;
+            bottom: 48px;
+        }
+
+        .preview.concept-magazine .label {
+            color: #f6d86b;
+            letter-spacing: 1px;
+        }
+
+        .preview.concept-magazine h3 {
+            font-size: 36px;
+            font-weight: 700;
+        }
+
+        .loading-dots::after {
+            content: "";
+            animation: loadingDots 1.4s infinite;
+        }
+
+        @keyframes loadingDots {
+            0% {
+                content: "";
+            }
+
+            25% {
+                content: ".";
+            }
+
+            50% {
+                content: "..";
+            }
+
+            75%,
+            100% {
+                content: "...";
+            }
         }
 
         @media (max-width: 900px) {
@@ -174,128 +423,657 @@
                 grid-template-columns: 1fr;
             }
 
+            .preview-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 640px) {
+            header {
+                padding: 20px;
+            }
+
+            header h1 {
+                font-size: 21px;
+            }
+
+            main {
+                width: min(100% - 20px, 1200px);
+                margin: 18px auto;
+                gap: 16px;
+            }
+
+            .panel {
+                padding: 18px;
+                border-radius: 14px;
+            }
+
+            h2 {
+                font-size: 20px;
+            }
+
             .concepts {
                 grid-template-columns: 1fr;
+            }
+
+            .concept {
+                min-height: auto;
+            }
+
+            .preview-text {
+                left: 25px;
+                right: 25px;
+                bottom: 32px;
+            }
+
+            .preview-text h3 {
+                font-size: 30px;
+            }
+
+            .preview-text p {
+                font-size: 15px;
             }
         }
     </style>
 </head>
 
 <body>
-<header>
-    <h1>INWAVE 콘텐츠 스튜디오</h1>
-    <p>대화로 주제를 정리하고 인스타그램 이미지를 제작합니다.</p>
-</header>
+    <header>
+        <h1>INWAVE 콘텐츠 스튜디오</h1>
 
-<main>
-    <section class="panel">
-        <h2>1. 만들고 싶은 주제를 입력하세요</h2>
+        <p>
+            대화로 주제를 정리하고 인스타그램 이미지를 제작합니다.
+        </p>
+    </header>
 
-        <textarea
-            id="topicInput"
-            placeholder="예: 오프라인 광고를 집행했지만 실제로 몇 명이 광고를 봤는지 알기 어렵다는 내용으로 만들고 싶어."
-        ></textarea>
+    <main>
+        <section class="panel">
+            <h2>1. 만들고 싶은 주제를 입력하세요</h2>
 
-        <h2 style="margin-top: 28px;">2. 이미지 제목</h2>
+            <textarea
+                id="topicInput"
+                placeholder="예: 오프라인 광고를 집행했지만 실제로 몇 명이 광고를 봤는지 알기 어렵다는 내용으로 광고주가 클릭하고 저장할 만한 콘텐츠를 만들고 싶어."
+            ></textarea>
 
-        <input
-            id="titleInput"
-            type="text"
-            value="광고비는 나갔는데, 누가 봤는지는 아세요?"
-        >
-
-        <h2 style="margin-top: 28px;">3. 컨셉 선택</h2>
-
-        <div class="concepts">
-            <button class="concept active" data-concept="hook">
-                <strong>강한 후킹형</strong>
-                높은 대비와 굵은 제목
+            <button
+                class="secondary-button plan-button"
+                id="planButton"
+                type="button"
+            >
+                AI로 주제 정리
             </button>
 
-            <button class="concept" data-concept="insight">
-                <strong>전문 인사이트형</strong>
-                네이비·아이보리 중심
-            </button>
+            <div
+                class="plan-result"
+                id="planResult"
+            >
+                <h3>AI 기획 결과</h3>
 
-            <button class="concept" data-concept="magazine">
-                <strong>트렌드 매거진형</strong>
-                감각적이고 세련된 구성
-            </button>
-        </div>
+                <div class="result-item">
+                    <strong>핵심 메시지</strong>
 
-        <button class="primary-button" id="previewButton">
-            미리보기 반영
-        </button>
+                    <p id="mainMessage">
+                        AI가 정리한 핵심 메시지가 표시됩니다.
+                    </p>
+                </div>
 
-        <button class="secondary-button" id="generateButton">
-            AI 이미지 생성
-        </button>
+                <div
+                    class="recommended-concept"
+                    id="recommendedConceptText"
+                ></div>
 
-        <div class="status" id="status">
-            현재는 화면 테스트 단계입니다. 다음 단계에서 API를 연결합니다.
-        </div>
-    </section>
+                <h4 class="title-candidates-heading">
+                    제목 후보를 선택하세요
+                </h4>
 
-    <section class="panel">
-        <h2>미리보기</h2>
-
-        <div class="preview" id="preview">
-            <div class="preview-text">
-                <div class="label">광고 인사이트</div>
-
-                <h3 id="previewTitle">
-                    광고비는 나갔는데,<br>
-                    누가 봤는지는 아세요?
-                </h3>
-
-                <p id="previewSubtitle">
-                    광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.
-                </p>
+                <div id="titleCandidates"></div>
             </div>
-        </div>
-    </section>
-</main>
 
-<script>
-    const concepts = document.querySelectorAll(".concept");
-    const titleInput = document.getElementById("titleInput");
-    const topicInput = document.getElementById("topicInput");
-    const previewTitle = document.getElementById("previewTitle");
-    const previewSubtitle = document.getElementById("previewSubtitle");
-    const previewButton = document.getElementById("previewButton");
-    const generateButton = document.getElementById("generateButton");
-    const status = document.getElementById("status");
+            <h2 class="section-title">2. 이미지 제목</h2>
 
-    let selectedConcept = "hook";
+            <input
+                id="titleInput"
+                type="text"
+                value="광고비는 나갔는데, 누가 봤는지는 아세요?"
+                placeholder="이미지에 표시할 제목"
+            >
 
-    concepts.forEach((button) => {
-        button.addEventListener("click", () => {
-            concepts.forEach((item) => item.classList.remove("active"));
-            button.classList.add("active");
-            selectedConcept = button.dataset.concept;
+            <h2 class="section-title">3. 컨셉 선택</h2>
+
+            <div class="concepts">
+                <button
+                    class="concept active"
+                    data-concept="hook"
+                    type="button"
+                >
+                    <strong>강한 후킹형</strong>
+                    높은 대비와 굵은 제목
+                </button>
+
+                <button
+                    class="concept"
+                    data-concept="insight"
+                    type="button"
+                >
+                    <strong>전문 인사이트형</strong>
+                    네이비·아이보리 중심
+                </button>
+
+                <button
+                    class="concept"
+                    data-concept="magazine"
+                    type="button"
+                >
+                    <strong>트렌드 매거진형</strong>
+                    감각적이고 세련된 구성
+                </button>
+            </div>
+
+            <button
+                class="primary-button"
+                id="previewButton"
+                type="button"
+            >
+                미리보기 반영
+            </button>
+
+            <button
+                class="secondary-button"
+                id="generateButton"
+                type="button"
+            >
+                AI 이미지 생성
+            </button>
+
+            <div
+                class="status"
+                id="status"
+            >
+                주제를 입력한 후 ‘AI로 주제 정리’를 눌러주세요.
+            </div>
+        </section>
+
+        <section class="panel preview-panel">
+            <h2>미리보기</h2>
+
+            <div
+                class="preview concept-hook"
+                id="preview"
+            >
+                <div class="preview-text">
+                    <div
+                        class="label"
+                        id="previewLabel"
+                    >
+                        광고 인사이트
+                    </div>
+
+                    <h3 id="previewTitle">
+                        광고비는 나갔는데,<br>
+                        누가 봤는지는 아세요?
+                    </h3>
+
+                    <p id="previewSubtitle">
+                        광고 노출이 실제 시청으로 이어졌는지
+                        확인해야 합니다.
+                    </p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const concepts =
+            document.querySelectorAll(".concept");
+
+        const topicInput =
+            document.getElementById("topicInput");
+
+        const titleInput =
+            document.getElementById("titleInput");
+
+        const preview =
+            document.getElementById("preview");
+
+        const previewTitle =
+            document.getElementById("previewTitle");
+
+        const previewSubtitle =
+            document.getElementById("previewSubtitle");
+
+        const previewLabel =
+            document.getElementById("previewLabel");
+
+        const previewButton =
+            document.getElementById("previewButton");
+
+        const generateButton =
+            document.getElementById("generateButton");
+
+        const planButton =
+            document.getElementById("planButton");
+
+        const planResult =
+            document.getElementById("planResult");
+
+        const mainMessage =
+            document.getElementById("mainMessage");
+
+        const titleCandidates =
+            document.getElementById("titleCandidates");
+
+        const recommendedConceptText =
+            document.getElementById(
+                "recommendedConceptText"
+            );
+
+        const status =
+            document.getElementById("status");
+
+        let selectedConcept = "hook";
+        let generatedImagePrompt = "";
+
+        const conceptInformation = {
+            hook: {
+                name: "강한 후킹형",
+                label: "광고 인사이트"
+            },
+
+            insight: {
+                name: "전문 인사이트형",
+                label: "MARKETING INSIGHT"
+            },
+
+            magazine: {
+                name: "트렌드 매거진형",
+                label: "INWAVE TREND"
+            }
+        };
+
+        concepts.forEach((button) => {
+            button.addEventListener("click", () => {
+                selectRecommendedConcept(
+                    button.dataset.concept
+                );
+
+                applyConceptToPreview();
+
+                setStatus(
+                    `${conceptInformation[selectedConcept].name} 컨셉을 선택했습니다.`,
+                    "success"
+                );
+            });
         });
-    });
 
-    previewButton.addEventListener("click", () => {
-        const title = titleInput.value.trim();
-        const topic = topicInput.value.trim();
+        planButton.addEventListener(
+            "click",
+            async () => {
+                const message =
+                    topicInput.value.trim();
 
-        previewTitle.textContent =
-            title || "제목을 입력해 주세요.";
+                if (!message) {
+                    setStatus(
+                        "먼저 만들고 싶은 주제를 입력해 주세요.",
+                        "error"
+                    );
 
-        previewSubtitle.textContent =
-            topic || "작성한 주제 설명이 여기에 표시됩니다.";
+                    topicInput.focus();
+                    return;
+                }
 
-        status.textContent =
-            "선택한 컨셉: " + selectedConcept +
-            " · 미리보기에 반영되었습니다.";
-    });
+                setPlanningLoading(true);
 
-    generateButton.addEventListener("click", () => {
-        status.textContent =
-            "아직 이미지 API가 연결되지 않았습니다. 화면 확인 후 다음 단계에서 연결합니다.";
-    });
-</script>
+                setStatus(
+                    "AI가 주제와 제목 후보를 정리하고 있습니다."
+                );
+
+                try {
+                    const response = await fetch(
+                        "/api/plan-content",
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body: JSON.stringify({
+                                message
+                            })
+                        }
+                    );
+
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(
+                            data.error ||
+                            "AI 기획 요청에 실패했습니다."
+                        );
+                    }
+
+                    displayPlanningResult(data);
+
+                    setStatus(
+                        "AI 기획이 완료되었습니다. 원하는 제목을 선택하세요.",
+                        "success"
+                    );
+                } catch (error) {
+                    console.error(error);
+
+                    setStatus(
+                        error.message ||
+                        "AI 기획 중 오류가 발생했습니다.",
+                        "error"
+                    );
+                } finally {
+                    setPlanningLoading(false);
+                }
+            }
+        );
+
+        previewButton.addEventListener(
+            "click",
+            () => {
+                applyInputsToPreview();
+
+                setStatus(
+                    `${conceptInformation[selectedConcept].name} 컨셉으로 미리보기에 반영했습니다.`,
+                    "success"
+                );
+            }
+        );
+
+        titleInput.addEventListener(
+            "input",
+            () => {
+                const title =
+                    titleInput.value.trim();
+
+                previewTitle.textContent =
+                    title || "제목을 입력해 주세요.";
+            }
+        );
+
+        generateButton.addEventListener(
+            "click",
+            () => {
+                if (!generatedImagePrompt) {
+                    setStatus(
+                        "먼저 AI로 주제를 정리해 이미지 생성 정보를 만들어 주세요.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                setStatus(
+                    "다음 단계에서 이미지 생성 API를 이 버튼에 연결합니다."
+                );
+            }
+        );
+
+        function displayPlanningResult(data) {
+            const message =
+                typeof data.mainMessage === "string"
+                    ? data.mainMessage.trim()
+                    : "";
+
+            const titles =
+                Array.isArray(data.titles)
+                    ? data.titles.filter(
+                        (title) =>
+                            typeof title === "string" &&
+                            title.trim()
+                    )
+                    : [];
+
+            generatedImagePrompt =
+                typeof data.imagePrompt === "string"
+                    ? data.imagePrompt.trim()
+                    : "";
+
+            mainMessage.textContent =
+                message ||
+                "핵심 메시지가 생성되지 않았습니다.";
+
+            titleCandidates.innerHTML = "";
+
+            if (titles.length === 0) {
+                const emptyMessage =
+                    document.createElement("div");
+
+                emptyMessage.className =
+                    "status error";
+
+                emptyMessage.textContent =
+                    "제목 후보가 생성되지 않았습니다.";
+
+                titleCandidates.appendChild(
+                    emptyMessage
+                );
+            } else {
+                titles.forEach(
+                    (title, index) => {
+                        const button =
+                            document.createElement(
+                                "button"
+                            );
+
+                        button.type = "button";
+                        button.className =
+                            "title-candidate";
+
+                        button.textContent =
+                            `${index + 1}. ${title}`;
+
+                        button.addEventListener(
+                            "click",
+                            () => {
+                                document
+                                    .querySelectorAll(
+                                        ".title-candidate"
+                                    )
+                                    .forEach(
+                                        (candidate) => {
+                                            candidate.classList.remove(
+                                                "selected"
+                                            );
+                                        }
+                                    );
+
+                                button.classList.add(
+                                    "selected"
+                                );
+
+                                titleInput.value =
+                                    title;
+
+                                previewTitle.textContent =
+                                    title;
+
+                                if (message) {
+                                    previewSubtitle.textContent =
+                                        message;
+                                }
+
+                                setStatus(
+                                    "선택한 제목을 미리보기에 반영했습니다.",
+                                    "success"
+                                );
+                            }
+                        );
+
+                        titleCandidates.appendChild(
+                            button
+                        );
+                    }
+                );
+            }
+
+            const recommendedConcept =
+                normalizeConcept(
+                    data.recommendedConcept
+                );
+
+            selectRecommendedConcept(
+                recommendedConcept
+            );
+
+            recommendedConceptText.textContent =
+                `AI 추천 컨셉: ${
+                    conceptInformation[
+                        recommendedConcept
+                    ].name
+                }`;
+
+            if (titles.length > 0) {
+                titleInput.value =
+                    titles[0];
+
+                previewTitle.textContent =
+                    titles[0];
+
+                const firstCandidate =
+                    titleCandidates.querySelector(
+                        ".title-candidate"
+                    );
+
+                if (firstCandidate) {
+                    firstCandidate.classList.add(
+                        "selected"
+                    );
+                }
+            }
+
+            if (message) {
+                previewSubtitle.textContent =
+                    message;
+            }
+
+            applyConceptToPreview();
+
+            planResult.classList.add(
+                "visible"
+            );
+        }
+
+        function normalizeConcept(conceptName) {
+            const validConcepts = [
+                "hook",
+                "insight",
+                "magazine"
+            ];
+
+            if (
+                validConcepts.includes(
+                    conceptName
+                )
+            ) {
+                return conceptName;
+            }
+
+            return "hook";
+        }
+
+        function selectRecommendedConcept(
+            conceptName
+        ) {
+            selectedConcept =
+                normalizeConcept(conceptName);
+
+            concepts.forEach((button) => {
+                button.classList.toggle(
+                    "active",
+                    button.dataset.concept ===
+                        selectedConcept
+                );
+            });
+        }
+
+        function applyConceptToPreview() {
+            preview.classList.remove(
+                "concept-hook",
+                "concept-insight",
+                "concept-magazine"
+            );
+
+            preview.classList.add(
+                `concept-${selectedConcept}`
+            );
+
+            previewLabel.textContent =
+                conceptInformation[
+                    selectedConcept
+                ].label;
+        }
+
+        function applyInputsToPreview() {
+            const title =
+                titleInput.value.trim();
+
+            const topic =
+                topicInput.value.trim();
+
+            previewTitle.textContent =
+                title ||
+                "제목을 입력해 주세요.";
+
+            if (
+                mainMessage.textContent &&
+                planResult.classList.contains(
+                    "visible"
+                )
+            ) {
+                previewSubtitle.textContent =
+                    mainMessage.textContent;
+            } else {
+                previewSubtitle.textContent =
+                    topic ||
+                    "작성한 주제 설명이 여기에 표시됩니다.";
+            }
+
+            applyConceptToPreview();
+        }
+
+        function setPlanningLoading(
+            isLoading
+        ) {
+            planButton.disabled = isLoading;
+
+            if (isLoading) {
+                planButton.innerHTML =
+                    '<span class="loading-dots">AI가 주제를 정리하고 있습니다</span>';
+            } else {
+                planButton.textContent =
+                    "AI로 주제 정리";
+            }
+        }
+
+        function setStatus(
+            message,
+            type = "normal"
+        ) {
+            status.textContent = message;
+
+            status.classList.remove(
+                "success",
+                "error"
+            );
+
+            if (type === "success") {
+                status.classList.add(
+                    "success"
+                );
+            }
+
+            if (type === "error") {
+                status.classList.add(
+                    "error"
+                );
+            }
+        }
+    </script>
 </body>
 </html>
-
