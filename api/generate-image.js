@@ -16,7 +16,7 @@ High-impact social media advertising photography.
 Strong visual contrast, dramatic lighting, bold composition,
 clear main subject, visually surprising scene,
 attention-grabbing Instagram thumbnail style.
-Leave clean dark space in the lower third for a large Korean headline.
+Leave clean visual space for a Korean headline.
 `,
 
     insight: `
@@ -51,7 +51,8 @@ export default async function handler(req, res) {
 
     const {
         prompt,
-        concept = "hook"
+        concept = "hook",
+        count = 4
     } = req.body || {};
 
     if (
@@ -69,6 +70,11 @@ export default async function handler(req, res) {
             ? concept
             : "hook";
 
+    const normalizedCount = Math.max(
+        1,
+        Math.min(Number(count) || 4, 6)
+    );
+
     const finalPrompt = `
 ${prompt.trim()}
 
@@ -79,7 +85,7 @@ Required output:
 - photorealistic professional advertising image
 - one clear main visual subject
 - visually strong at thumbnail size
-- clean space for Korean headline
+- some clean space for Korean headline
 - no text
 - no Korean letters
 - no English letters
@@ -97,22 +103,18 @@ Required output:
             {
                 input: {
                     prompt: finalPrompt,
-
                     image_size: {
                         width: 1080,
                         height: 1350
                     },
-
                     num_inference_steps: 28,
                     guidance_scale: 3.5,
-                    num_images: 1,
+                    num_images: normalizedCount,
                     enable_safety_checker: true,
                     output_format: "jpeg",
                     acceleration: "none"
                 },
-
                 logs: true,
-
                 onQueueUpdate: (update) => {
                     if (
                         update.status ===
@@ -136,10 +138,21 @@ Required output:
             }
         );
 
-        const image =
-            result?.data?.images?.[0];
+        const images =
+            Array.isArray(result?.data?.images)
+                ? result.data.images
+                      .filter((item) => item?.url)
+                      .map((item, index) => ({
+                          id: `fal-${Date.now()}-${index}`,
+                          provider: "fal",
+                          imageUrl: item.url,
+                          contentType:
+                              item.content_type ||
+                              "image/jpeg"
+                      }))
+                : [];
 
-        if (!image?.url) {
+        if (images.length === 0) {
             console.error(
                 "FAL result:",
                 JSON.stringify(result)
@@ -153,19 +166,13 @@ Required output:
 
         return res.status(200).json({
             success: true,
-            imageUrl: image.url,
-            contentType:
-                image.content_type ||
-                "image/jpeg",
-            seed:
-                result?.data?.seed ?? null,
+            images,
+            concept: normalizedConcept,
             prompt:
                 result?.data?.prompt ||
                 finalPrompt,
             requestId:
-                result?.requestId || null,
-            concept:
-                normalizedConcept
+                result?.requestId || null
         });
     } catch (error) {
         console.error(
