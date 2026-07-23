@@ -1,0 +1,3024 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>INWAVE 콘텐츠 스튜디오</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --navy: #17243d;
+            --navy-light: #263957;
+            --orange: #f58220;
+            --orange-dark: #e97312;
+            --ivory: #f5f1e8;
+            --green: #176b3a;
+            --green-dark: #12572f;
+            --border: #e1e1e1;
+            --muted: #667085;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                Arial,
+                "Noto Sans KR",
+                "Apple SD Gothic Neo",
+                sans-serif;
+            background: var(--ivory);
+            color: var(--navy);
+        }
+
+        header {
+            padding: 22px 30px;
+            background: var(--navy);
+            color: white;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+            color: #d9d4c8;
+            line-height: 1.5;
+        }
+
+        main {
+            width: min(1400px, calc(100% - 32px));
+            margin: 30px auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 500px;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+        }
+
+        .preview-panel {
+            position: sticky;
+            top: 20px;
+        }
+
+        h2 {
+            margin: 0 0 16px;
+            font-size: 23px;
+        }
+
+        h3 {
+            margin: 0 0 12px;
+            font-size: 18px;
+        }
+
+        label {
+            font-weight: 700;
+        }
+
+        .section-title {
+            margin-top: 28px;
+        }
+
+        textarea,
+        input,
+        select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d6d6d6;
+            border-radius: 10px;
+            background: white;
+            color: var(--navy);
+            font-size: 16px;
+            outline: none;
+        }
+
+        textarea:focus,
+        input:focus,
+        select:focus {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.12);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+            line-height: 1.5;
+        }
+
+        .concepts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .concept {
+            min-height: 92px;
+            border: 2px solid transparent;
+            border-radius: 14px;
+            padding: 16px 12px;
+            background: #f5f5f5;
+            color: var(--navy);
+            cursor: pointer;
+            text-align: left;
+            line-height: 1.45;
+        }
+
+        .concept:hover {
+            background: #f0f0f0;
+        }
+
+        .concept.active {
+            border-color: var(--orange);
+            background: #fff4e8;
+        }
+
+        .concept strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 10px;
+            padding: 14px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition:
+                opacity 0.2s,
+                transform 0.2s,
+                background 0.2s;
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .primary-button {
+            width: 100%;
+            margin-top: 14px;
+            background: var(--orange);
+            color: white;
+        }
+
+        .primary-button:hover:not(:disabled) {
+            background: var(--orange-dark);
+        }
+
+        .secondary-button {
+            width: 100%;
+            margin-top: 14px;
+            background: var(--navy);
+            color: white;
+        }
+
+        .secondary-button:hover:not(:disabled) {
+            background: var(--navy-light);
+        }
+
+        .download-button {
+            background: var(--green);
+        }
+
+        .download-button:hover:not(:disabled) {
+            background: var(--green-dark);
+        }
+
+        .plan-result {
+            display: none;
+            margin-top: 18px;
+            padding: 18px;
+            border: 1px solid #e2e2e2;
+            border-radius: 14px;
+            background: #fafafa;
+        }
+
+        .plan-result.visible {
+            display: block;
+        }
+
+        .result-item {
+            padding: 14px;
+            border-radius: 10px;
+            background: #eef1f5;
+        }
+
+        .result-item strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .result-item p {
+            margin: 0;
+            line-height: 1.55;
+        }
+
+        .title-candidates-heading {
+            margin: 18px 0 8px;
+            font-size: 16px;
+        }
+
+        .title-candidate {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 14px;
+            border: 1px solid #d8d8d8;
+            border-radius: 10px;
+            background: white;
+            color: var(--navy);
+            text-align: left;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .title-candidate:hover {
+            border-color: var(--orange);
+            background: #fff4e8;
+        }
+
+        .title-candidate.selected {
+            border-color: var(--orange);
+            background: #fff4e8;
+        }
+
+        .recommended-concept {
+            margin-top: 14px;
+            padding: 11px 13px;
+            border-left: 4px solid var(--orange);
+            border-radius: 8px;
+            background: #fff4e8;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .provider-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .provider-option {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 14px;
+            align-items: center;
+            padding: 14px;
+            border: 1px solid #ececec;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        .provider-option strong {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 16px;
+        }
+
+        .provider-option span {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.45;
+        }
+
+        .count-summary {
+            margin-top: 12px;
+            padding: 11px 13px;
+            border-radius: 10px;
+            background: #eef1f5;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 12px;
+            border-radius: 10px;
+            background: #eef1f5;
+            color: var(--navy);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .status.success {
+            background: #e9f7ef;
+            color: var(--green);
+        }
+
+        .status.error {
+            background: #fff0f0;
+            color: #b42318;
+        }
+
+        .gallery-wrap {
+            display: none;
+            margin-top: 24px;
+        }
+
+        .gallery-wrap.visible {
+            display: block;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .gallery-card {
+            border: 2px solid transparent;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #f8f8f8;
+            cursor: pointer;
+        }
+
+        .gallery-card:hover {
+            transform: translateY(-1px);
+        }
+
+        .gallery-card.active {
+            border-color: var(--orange);
+            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            aspect-ratio: 4 / 5;
+            object-fit: cover;
+            display: block;
+        }
+
+        .gallery-card-footer {
+            padding: 10px;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .canvas-wrap {
+            border-radius: 16px;
+            overflow: hidden;
+            background: #111;
+        }
+
+        #editorCanvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            aspect-ratio: 4 / 5;
+            cursor: default;
+            touch-action: none;
+        }
+
+        .editor-controls {
+            margin-top: 14px;
+            padding: 14px;
+            border: 1px solid #ececec;
+            border-radius: 12px;
+            background: #fafafa;
+        }
+
+        .editor-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .editor-controls label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .small-button-row {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .small-button {
+            padding: 10px 8px;
+            background: #eef1f5;
+            color: var(--navy);
+            font-size: 13px;
+        }
+
+        .small-button.active {
+            background: var(--orange);
+            color: white;
+        }
+
+        .tip-box {
+            margin-top: 14px;
+            font-size: 13px;
+            line-height: 1.5;
+            color: var(--muted);
+            background: #fafafa;
+            border: 1px solid #ececec;
+            border-radius: 12px;
+            padding: 12px;
+        }
+
+        .api-links {
+            margin-top: 20px;
+            padding: 18px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            background: #fafafa;
+        }
+
+        .api-links h3 {
+            margin: 0 0 8px;
+        }
+
+        .api-links p {
+            margin: 0 0 14px;
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .api-link-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .api-link-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            text-decoration: none;
+            text-align: center;
+            transition:
+                opacity 0.2s,
+                transform 0.2s;
+        }
+
+        .api-link-button:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .api-link-button.openai {
+            background: #111827;
+        }
+
+        .api-link-button.replicate {
+            background: #334155;
+        }
+
+        .api-link-button.fal {
+            background: #6d28d9;
+        }
+
+        .api-link-button.civitai {
+            background: #2563eb;
+        }
+
+        .loading-dots::after {
+            content: "";
+            animation: loadingDots 1.4s infinite;
+        }
+
+        @keyframes loadingDots {
+            0% {
+                content: "";
+            }
+
+            25% {
+                content: ".";
+            }
+
+            50% {
+                content: "..";
+            }
+
+            75%,
+            100% {
+                content: "...";
+            }
+        }
+
+        @media (max-width: 1100px) {
+            main {
+                grid-template-columns: 1fr;
+            }
+
+            .preview-panel {
+                position: static;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .concepts,
+            .gallery-grid,
+            .api-link-grid,
+            .editor-controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .provider-option {
+                grid-template-columns: 1fr;
+            }
+
+            .small-button-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>INWAVE 콘텐츠 스튜디오</h1>
+
+        <p>
+            여러 API로 이미지를 생성한 뒤 마음에 드는 한 장을 선택하고,
+            글씨를 자동 배치한 후 미세 조정하여 저장합니다.
+        </p>
+    </header>
+
+    <main>
+        <section class="panel">
+            <h2>1. 만들고 싶은 주제를 입력하세요</h2>
+
+            <textarea
+                id="topicInput"
+                placeholder="예: 오프라인 광고를 집행했지만 실제로 몇 명이 광고를 봤는지 알기 어렵다는 내용으로 광고주가 클릭하고 저장할 만한 콘텐츠를 만들고 싶어."
+            ></textarea>
+
+            <button
+                class="secondary-button"
+                id="planButton"
+                type="button"
+            >
+                AI로 주제 정리
+            </button>
+
+            <div
+                class="plan-result"
+                id="planResult"
+            >
+                <h3>AI 기획 결과</h3>
+
+                <div class="result-item">
+                    <strong>핵심 메시지</strong>
+
+                    <p id="mainMessage">
+                        AI가 정리한 핵심 메시지가 표시됩니다.
+                    </p>
+                </div>
+
+                <div
+                    class="recommended-concept"
+                    id="recommendedConceptText"
+                ></div>
+
+                <h4 class="title-candidates-heading">
+                    제목 후보를 선택하세요
+                </h4>
+
+                <div id="titleCandidates"></div>
+            </div>
+
+            <h2 class="section-title">2. 이미지 제목</h2>
+
+            <input
+                id="titleInput"
+                type="text"
+                value="광고비는 나갔는데, 누가 봤는지는 아세요?"
+                placeholder="이미지에 표시할 제목"
+            >
+
+            <h2 class="section-title">3. 컨셉 선택</h2>
+
+            <div class="concepts">
+                <button
+                    class="concept active"
+                    data-concept="hook"
+                    type="button"
+                >
+                    <strong>강한 후킹형</strong>
+                    높은 대비와 굵은 제목
+                </button>
+
+                <button
+                    class="concept"
+                    data-concept="insight"
+                    type="button"
+                >
+                    <strong>전문 인사이트형</strong>
+                    네이비·아이보리 중심
+                </button>
+
+                <button
+                    class="concept"
+                    data-concept="magazine"
+                    type="button"
+                >
+                    <strong>트렌드 매거진형</strong>
+                    감각적이고 세련된 구성
+                </button>
+            </div>
+
+            <h2 class="section-title">4. API별 생성 장수 선택</h2>
+
+            <div class="provider-grid">
+                <div class="provider-option">
+                    <div>
+                        <strong>FAL</strong>
+                        <span>현재 연결된 FAL 이미지 생성 모델을 사용합니다.</span>
+                    </div>
+
+                    <select id="falCount">
+                        <option value="0">0장</option>
+                        <option value="1">1장</option>
+                        <option value="2" selected>2장</option>
+                    </select>
+                </div>
+
+                <div class="provider-option">
+                    <div>
+                        <strong>Replicate</strong>
+                        <span>REPLICATE_API_TOKEN과 서버 생성 코드가 연결되어 있어야 합니다.</span>
+                    </div>
+
+                    <select id="replicateCount">
+                        <option value="0" selected>0장</option>
+                        <option value="1">1장</option>
+                        <option value="2">2장</option>
+                    </select>
+                </div>
+
+                <div class="provider-option">
+                    <div>
+                        <strong>Civitai</strong>
+                        <span>CIVITAI_API_TOKEN과 모델 버전 설정이 연결되어 있어야 합니다.</span>
+                    </div>
+
+                    <select id="civitaiCount">
+                        <option value="0" selected>0장</option>
+                        <option value="1">1장</option>
+                        <option value="2">2장</option>
+                    </select>
+                </div>
+            </div>
+
+            <div
+                class="count-summary"
+                id="countSummary"
+            >
+                총 선택 이미지 수: 2장
+            </div>
+
+            <button
+                class="primary-button"
+                id="previewButton"
+                type="button"
+            >
+                미리보기 반영
+            </button>
+
+            <button
+                class="secondary-button"
+                id="generateButton"
+                type="button"
+            >
+                선택한 API로 이미지 생성
+            </button>
+
+            <button
+                class="secondary-button"
+                id="autoLayoutButton"
+                type="button"
+            >
+                선택 이미지 글씨 자동 배치
+            </button>
+
+            <button
+                class="primary-button download-button"
+                id="downloadButton"
+                type="button"
+            >
+                인스타 이미지 PNG 저장
+            </button>
+
+            <div
+                class="status"
+                id="status"
+            >
+                주제를 입력한 후 ‘AI로 주제 정리’를 눌러주세요.
+            </div>
+
+            <div
+                class="gallery-wrap"
+                id="galleryWrap"
+            >
+                <h2 class="section-title">5. 생성된 이미지 선택</h2>
+
+                <div
+                    class="gallery-grid"
+                    id="galleryGrid"
+                ></div>
+            </div>
+
+            <div class="api-links">
+                <h3>API 사용량 및 잔액 확인</h3>
+
+                <p>
+                    각 서비스의 공식 관리 페이지가 새 창으로 열립니다.
+                </p>
+
+                <div class="api-link-grid">
+                    <a
+                        class="api-link-button openai"
+                        href="https://platform.openai.com/usage"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        OpenAI 사용량 확인
+                    </a>
+
+                    <a
+                        class="api-link-button replicate"
+                        href="https://replicate.com/account/billing"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Replicate 잔액 확인
+                    </a>
+
+                    <a
+                        class="api-link-button fal"
+                        href="https://fal.ai/dashboard/usage-billing/credits"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        FAL 크레딧 확인
+                    </a>
+
+                    <a
+                        class="api-link-button civitai"
+                        href="https://civitai.com/user/account"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Civitai 계정 확인
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="panel preview-panel">
+            <h2>미리보기</h2>
+
+            <div class="canvas-wrap">
+                <canvas
+                    id="editorCanvas"
+                    width="1080"
+                    height="1350"
+                ></canvas>
+            </div>
+
+            <div class="editor-controls">
+                <div class="editor-controls-grid">
+                    <div>
+                        <label for="titleSizeInput">제목 크기</label>
+
+                        <input
+                            id="titleSizeInput"
+                            type="range"
+                            min="48"
+                            max="100"
+                            value="74"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="subtitleSizeInput">설명 크기</label>
+
+                        <input
+                            id="subtitleSizeInput"
+                            type="range"
+                            min="22"
+                            max="48"
+                            value="34"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="textWidthInput">글씨 영역 폭</label>
+
+                        <input
+                            id="textWidthInput"
+                            type="range"
+                            min="35"
+                            max="90"
+                            value="70"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="overlayOpacityInput">배경 어둡기</label>
+
+                        <input
+                            id="overlayOpacityInput"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="100"
+                        >
+                    </div>
+                </div>
+
+                <div class="small-button-row">
+                    <button
+                        class="small-button active"
+                        data-align="left"
+                        type="button"
+                    >
+                        왼쪽 정렬
+                    </button>
+
+                    <button
+                        class="small-button"
+                        data-align="center"
+                        type="button"
+                    >
+                        가운데 정렬
+                    </button>
+
+                    <button
+                        class="small-button"
+                        data-align="right"
+                        type="button"
+                    >
+                        오른쪽 정렬
+                    </button>
+                </div>
+            </div>
+
+            <div class="tip-box">
+                미리보기와 다운로드는 동일한 1080×1350 Canvas를 사용합니다.
+                자동 배치 후 글씨 영역을 마우스나 손가락으로 잡아 이동할 수 있습니다.
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const DEFAULT_IMAGE_URL =
+            "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80";
+
+        const topicInput =
+            document.getElementById("topicInput");
+
+        const titleInput =
+            document.getElementById("titleInput");
+
+        const planButton =
+            document.getElementById("planButton");
+
+        const planResult =
+            document.getElementById("planResult");
+
+        const mainMessage =
+            document.getElementById("mainMessage");
+
+        const titleCandidates =
+            document.getElementById("titleCandidates");
+
+        const recommendedConceptText =
+            document.getElementById(
+                "recommendedConceptText"
+            );
+
+        const previewButton =
+            document.getElementById("previewButton");
+
+        const generateButton =
+            document.getElementById("generateButton");
+
+        const autoLayoutButton =
+            document.getElementById("autoLayoutButton");
+
+        const downloadButton =
+            document.getElementById("downloadButton");
+
+        const galleryWrap =
+            document.getElementById("galleryWrap");
+
+        const galleryGrid =
+            document.getElementById("galleryGrid");
+
+        const status =
+            document.getElementById("status");
+
+        const falCount =
+            document.getElementById("falCount");
+
+        const replicateCount =
+            document.getElementById("replicateCount");
+
+        const civitaiCount =
+            document.getElementById("civitaiCount");
+
+        const countSummary =
+            document.getElementById("countSummary");
+
+        const titleSizeInput =
+            document.getElementById("titleSizeInput");
+
+        const subtitleSizeInput =
+            document.getElementById("subtitleSizeInput");
+
+        const textWidthInput =
+            document.getElementById("textWidthInput");
+
+        const overlayOpacityInput =
+            document.getElementById("overlayOpacityInput");
+
+        const conceptButtons =
+            document.querySelectorAll(".concept");
+
+        const alignButtons =
+            document.querySelectorAll("[data-align]");
+
+        const canvas =
+            document.getElementById("editorCanvas");
+
+        const ctx =
+            canvas.getContext("2d");
+
+        const conceptInformation = {
+            hook: {
+                name: "강한 후킹형",
+                label: "광고 인사이트",
+                labelColor: "#ff8a1f"
+            },
+
+            insight: {
+                name: "전문 인사이트형",
+                label: "MARKETING INSIGHT",
+                labelColor: "#ff9b42"
+            },
+
+            magazine: {
+                name: "트렌드 매거진형",
+                label: "INWAVE TREND",
+                labelColor: "#f6d86b"
+            }
+        };
+
+        const state = {
+            selectedConcept: "hook",
+            mainMessage:
+                "광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.",
+            generatedImagePrompt: "",
+            generatedImages: [],
+            selectedImageUrl: "",
+            backgroundImage: null,
+
+            textLayout: {
+                x: 8,
+                y: 58,
+                width: 70,
+                align: "left",
+                titleSize: 74,
+                subtitleSize: 34,
+                textColor: "#ffffff",
+                overlayOpacity: 1
+            },
+
+            drag: {
+                active: false,
+                startPointerX: 0,
+                startPointerY: 0,
+                startX: 8,
+                startY: 58
+            },
+
+            textBoxRect: {
+                x: 0,
+                y: 0,
+                width: 0,
+                height: 0
+            }
+        };
+
+        function getProviderName(provider) {
+            if (provider === "fal") {
+                return "FAL";
+            }
+
+            if (provider === "replicate") {
+                return "Replicate";
+            }
+
+            if (provider === "civitai") {
+                return "Civitai";
+            }
+
+            return provider || "이미지";
+        }
+
+        function normalizeConcept(conceptName) {
+            const validConcepts = [
+                "hook",
+                "insight",
+                "magazine"
+            ];
+
+            if (
+                validConcepts.includes(
+                    conceptName
+                )
+            ) {
+                return conceptName;
+            }
+
+            return "hook";
+        }
+
+        function clampNumber(
+            value,
+            min,
+            max,
+            fallback
+        ) {
+            const number =
+                Number(value);
+
+            if (
+                Number.isNaN(number)
+            ) {
+                return fallback;
+            }
+
+            return Math.max(
+                min,
+                Math.min(max, number)
+            );
+        }
+
+        function setStatus(
+            message,
+            type = "normal"
+        ) {
+            status.textContent =
+                message;
+
+            status.classList.remove(
+                "success",
+                "error"
+            );
+
+            if (
+                type === "success"
+            ) {
+                status.classList.add(
+                    "success"
+                );
+            }
+
+            if (
+                type === "error"
+            ) {
+                status.classList.add(
+                    "error"
+                );
+            }
+        }
+
+        function setButtonLoading(
+            button,
+            isLoading,
+            loadingText,
+            normalText
+        ) {
+            button.disabled =
+                isLoading;
+
+            if (isLoading) {
+                button.innerHTML =
+                    `<span class="loading-dots">${loadingText}</span>`;
+            } else {
+                button.textContent =
+                    normalText;
+            }
+        }
+
+        async function readJsonResponse(
+            response
+        ) {
+            const contentType =
+                response.headers.get(
+                    "content-type"
+                ) || "";
+
+            if (
+                !contentType.includes(
+                    "application/json"
+                )
+            ) {
+                const text =
+                    await response.text();
+
+                throw new Error(
+                    text ||
+                    "서버가 올바른 JSON 응답을 반환하지 않았습니다."
+                );
+            }
+
+            return response.json();
+        }
+
+        function updateCountSummary() {
+            const total =
+                Number(falCount.value) +
+                Number(replicateCount.value) +
+                Number(civitaiCount.value);
+
+            countSummary.textContent =
+                `총 선택 이미지 수: ${total}장`;
+        }
+
+        function updateControlValues() {
+            titleSizeInput.value =
+                String(
+                    state.textLayout.titleSize
+                );
+
+            subtitleSizeInput.value =
+                String(
+                    state.textLayout.subtitleSize
+                );
+
+            textWidthInput.value =
+                String(
+                    state.textLayout.width
+                );
+
+            overlayOpacityInput.value =
+                String(
+                    Math.round(
+                        state.textLayout.overlayOpacity *
+                        100
+                    )
+                );
+
+            alignButtons.forEach(
+                (button) => {
+                    button.classList.toggle(
+                        "active",
+                        button.dataset.align ===
+                        state.textLayout.align
+                    );
+                }
+            );
+        }
+
+        function getTitleText() {
+            return (
+                titleInput.value.trim() ||
+                "제목을 입력해 주세요."
+            );
+        }
+
+        function getSubtitleText() {
+            const plannedMessage =
+                mainMessage.textContent.trim();
+
+            if (
+                planResult.classList.contains(
+                    "visible"
+                ) &&
+                plannedMessage
+            ) {
+                return plannedMessage;
+            }
+
+            return (
+                topicInput.value.trim() ||
+                state.mainMessage ||
+                "설명을 입력해 주세요."
+            );
+        }
+
+        function getOverlayStops() {
+            const opacity =
+                state.textLayout.overlayOpacity;
+
+            if (
+                state.selectedConcept ===
+                "insight"
+            ) {
+                return [
+                    {
+                        stop: 0,
+                        color:
+                            `rgba(14,31,55,${0.96 * opacity})`
+                    },
+                    {
+                        stop: 0.35,
+                        color:
+                            `rgba(14,31,55,${0.58 * opacity})`
+                    },
+                    {
+                        stop: 0.75,
+                        color:
+                            `rgba(14,31,55,${0.08 * opacity})`
+                    }
+                ];
+            }
+
+            if (
+                state.selectedConcept ===
+                "magazine"
+            ) {
+                return [
+                    {
+                        stop: 0,
+                        color:
+                            `rgba(8,8,8,${0.92 * opacity})`
+                    },
+                    {
+                        stop: 0.42,
+                        color:
+                            `rgba(8,8,8,${0.38 * opacity})`
+                    },
+                    {
+                        stop: 0.75,
+                        color:
+                            `rgba(8,8,8,${0.06 * opacity})`
+                    }
+                ];
+            }
+
+            return [
+                {
+                    stop: 0,
+                    color:
+                        `rgba(0,0,0,${0.95 * opacity})`
+                },
+                {
+                    stop: 0.32,
+                    color:
+                        `rgba(0,0,0,${0.55 * opacity})`
+                },
+                {
+                    stop: 0.70,
+                    color:
+                        `rgba(0,0,0,${0.08 * opacity})`
+                }
+            ];
+        }
+
+        function drawCoverImage(
+            context,
+            image,
+            x,
+            y,
+            width,
+            height
+        ) {
+            const imageRatio =
+                image.width /
+                image.height;
+
+            const canvasRatio =
+                width /
+                height;
+
+            let drawWidth;
+            let drawHeight;
+            let offsetX;
+            let offsetY;
+
+            if (
+                imageRatio >
+                canvasRatio
+            ) {
+                drawHeight =
+                    height;
+
+                drawWidth =
+                    image.width *
+                    (
+                        height /
+                        image.height
+                    );
+
+                offsetX =
+                    x +
+                    (
+                        width -
+                        drawWidth
+                    ) / 2;
+
+                offsetY =
+                    y;
+            } else {
+                drawWidth =
+                    width;
+
+                drawHeight =
+                    image.height *
+                    (
+                        width /
+                        image.width
+                    );
+
+                offsetX =
+                    x;
+
+                offsetY =
+                    y +
+                    (
+                        height -
+                        drawHeight
+                    ) / 2;
+            }
+
+            context.drawImage(
+                image,
+                offsetX,
+                offsetY,
+                drawWidth,
+                drawHeight
+            );
+        }
+
+        function wrapKoreanText(
+            context,
+            text,
+            maxWidth,
+            maxLines
+        ) {
+            if (!text) {
+                return [];
+            }
+
+            const normalizedText =
+                text
+                    .replace(/\s+/g, " ")
+                    .trim();
+
+            const lines = [];
+            let currentLine = "";
+            let consumedCharacters = 0;
+
+            for (
+                let index = 0;
+                index <
+                normalizedText.length;
+                index += 1
+            ) {
+                const character =
+                    normalizedText[index];
+
+                const testLine =
+                    currentLine +
+                    character;
+
+                const testWidth =
+                    context
+                        .measureText(
+                            testLine
+                        )
+                        .width;
+
+                if (
+                    testWidth >
+                        maxWidth &&
+                    currentLine
+                ) {
+                    lines.push(
+                        currentLine.trim()
+                    );
+
+                    consumedCharacters =
+                        index;
+
+                    currentLine =
+                        character
+                            .trimStart();
+
+                    if (
+                        lines.length ===
+                        maxLines - 1
+                    ) {
+                        break;
+                    }
+                } else {
+                    currentLine =
+                        testLine;
+
+                    consumedCharacters =
+                        index + 1;
+                }
+            }
+
+            if (
+                lines.length <
+                    maxLines &&
+                currentLine
+            ) {
+                lines.push(
+                    currentLine.trim()
+                );
+            }
+
+            const hasMoreText =
+                consumedCharacters <
+                normalizedText.length;
+
+            if (
+                hasMoreText &&
+                lines.length > 0
+            ) {
+                let lastLine =
+                    lines[
+                        lines.length - 1
+                    ];
+
+                while (
+                    context
+                        .measureText(
+                            lastLine + "…"
+                        )
+                        .width >
+                        maxWidth &&
+                    lastLine.length > 1
+                ) {
+                    lastLine =
+                        lastLine.slice(
+                            0,
+                            -1
+                        );
+                }
+
+                lines[
+                    lines.length - 1
+                ] =
+                    lastLine + "…";
+            }
+
+            return lines.slice(
+                0,
+                maxLines
+            );
+        }
+
+        function drawTextBlock() {
+            const layout =
+                state.textLayout;
+
+            const x =
+                (
+                    layout.x /
+                    100
+                ) *
+                canvas.width;
+
+            const y =
+                (
+                    layout.y /
+                    100
+                ) *
+                canvas.height;
+
+            const maxWidth =
+                (
+                    layout.width /
+                    100
+                ) *
+                canvas.width;
+
+            const info =
+                conceptInformation[
+                    state.selectedConcept
+                ];
+
+            const alignX =
+                layout.align ===
+                    "center"
+                    ? x +
+                      maxWidth / 2
+                    : layout.align ===
+                      "right"
+                    ? x +
+                      maxWidth
+                    : x;
+
+            ctx.textBaseline =
+                "top";
+
+            ctx.textAlign =
+                layout.align;
+
+            ctx.shadowColor =
+                "rgba(0,0,0,0.55)";
+
+            ctx.shadowBlur =
+                14;
+
+            ctx.shadowOffsetY =
+                4;
+
+            ctx.fillStyle =
+                info.labelColor;
+
+            ctx.font =
+                '800 38px Arial, "Noto Sans KR", sans-serif';
+
+            ctx.fillText(
+                info.label,
+                alignX,
+                y
+            );
+
+            let currentY =
+                y + 64;
+
+            ctx.fillStyle =
+                layout.textColor;
+
+            ctx.font =
+                `800 ${layout.titleSize}px Arial, "Noto Sans KR", sans-serif`;
+
+            const titleLines =
+                wrapKoreanText(
+                    ctx,
+                    getTitleText(),
+                    maxWidth,
+                    4
+                );
+
+            const titleLineHeight =
+                layout.titleSize *
+                1.12;
+
+            titleLines.forEach(
+                (line) => {
+                    ctx.fillText(
+                        line,
+                        alignX,
+                        currentY
+                    );
+
+                    currentY +=
+                        titleLineHeight;
+                }
+            );
+
+            currentY +=
+                18;
+
+            ctx.font =
+                `500 ${layout.subtitleSize}px Arial, "Noto Sans KR", sans-serif`;
+
+            const subtitleLines =
+                wrapKoreanText(
+                    ctx,
+                    getSubtitleText(),
+                    maxWidth,
+                    3
+                );
+
+            const subtitleLineHeight =
+                layout.subtitleSize *
+                1.36;
+
+            subtitleLines.forEach(
+                (line) => {
+                    ctx.fillText(
+                        line,
+                        alignX,
+                        currentY
+                    );
+
+                    currentY +=
+                        subtitleLineHeight;
+                }
+            );
+
+            state.textBoxRect = {
+                x,
+                y,
+                width:
+                    maxWidth,
+                height:
+                    currentY -
+                    y +
+                    10
+            };
+
+            ctx.shadowColor =
+                "transparent";
+
+            ctx.shadowBlur =
+                0;
+
+            ctx.shadowOffsetY =
+                0;
+        }
+
+        function drawCanvas() {
+            if (!ctx) {
+                return;
+            }
+
+            ctx.clearRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            if (
+                state.backgroundImage
+            ) {
+                drawCoverImage(
+                    ctx,
+                    state.backgroundImage,
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+            } else {
+                ctx.fillStyle =
+                    "#1b2435";
+
+                ctx.fillRect(
+                    0,
+                    0,
+                    canvas.width,
+                    canvas.height
+                );
+            }
+
+            const gradient =
+                ctx.createLinearGradient(
+                    0,
+                    canvas.height,
+                    0,
+                    0
+                );
+
+            getOverlayStops()
+                .forEach(
+                    (item) => {
+                        gradient.addColorStop(
+                            item.stop,
+                            item.color
+                        );
+                    }
+                );
+
+            ctx.fillStyle =
+                gradient;
+
+            ctx.fillRect(
+                0,
+                0,
+                canvas.width,
+                canvas.height
+            );
+
+            drawTextBlock();
+        }
+
+        async function loadImageObject(
+            imageUrl
+        ) {
+            return new Promise(
+                (resolve, reject) => {
+                    const image =
+                        new Image();
+
+                    image.crossOrigin =
+                        "anonymous";
+
+                    image.onload =
+                        () =>
+                            resolve(
+                                image
+                            );
+
+                    image.onerror =
+                        () =>
+                            reject(
+                                new Error(
+                                    "이미지를 불러오지 못했습니다. 이미지 서버의 CORS 설정을 확인해 주세요."
+                                )
+                            );
+
+                    image.src =
+                        imageUrl;
+                }
+            );
+        }
+
+        async function setBackgroundImage(
+            imageUrl
+        ) {
+            state.selectedImageUrl =
+                imageUrl;
+
+            state.backgroundImage =
+                await loadImageObject(
+                    imageUrl
+                );
+
+            drawCanvas();
+        }
+
+        function displayPlanningResult(
+            data
+        ) {
+            const message =
+                typeof data.mainMessage ===
+                    "string"
+                    ? data.mainMessage.trim()
+                    : "";
+
+            const titles =
+                Array.isArray(
+                    data.titles
+                )
+                    ? data.titles.filter(
+                          (title) =>
+                              typeof title ===
+                                  "string" &&
+                              title.trim()
+                      )
+                    : [];
+
+            state.generatedImagePrompt =
+                typeof data.imagePrompt ===
+                    "string"
+                    ? data.imagePrompt.trim()
+                    : "";
+
+            state.mainMessage =
+                message ||
+                state.mainMessage;
+
+            mainMessage.textContent =
+                state.mainMessage;
+
+            titleCandidates.innerHTML =
+                "";
+
+            titles.forEach(
+                (title, index) => {
+                    const button =
+                        document.createElement(
+                            "button"
+                        );
+
+                    button.type =
+                        "button";
+
+                    button.className =
+                        "title-candidate";
+
+                    button.textContent =
+                        `${index + 1}. ${title}`;
+
+                    if (
+                        index === 0
+                    ) {
+                        button.classList.add(
+                            "selected"
+                        );
+                    }
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+                            document
+                                .querySelectorAll(
+                                    ".title-candidate"
+                                )
+                                .forEach(
+                                    (
+                                        candidate
+                                    ) => {
+                                        candidate
+                                            .classList
+                                            .remove(
+                                                "selected"
+                                            );
+                                    }
+                                );
+
+                            button.classList.add(
+                                "selected"
+                            );
+
+                            titleInput.value =
+                                title;
+
+                            drawCanvas();
+
+                            setStatus(
+                                "선택한 제목을 반영했습니다.",
+                                "success"
+                            );
+                        }
+                    );
+
+                    titleCandidates.appendChild(
+                        button
+                    );
+                }
+            );
+
+            if (
+                titles.length > 0
+            ) {
+                titleInput.value =
+                    titles[0];
+            }
+
+            state.selectedConcept =
+                normalizeConcept(
+                    data.recommendedConcept
+                );
+
+            conceptButtons.forEach(
+                (button) => {
+                    button.classList.toggle(
+                        "active",
+                        button.dataset.concept ===
+                            state.selectedConcept
+                    );
+                }
+            );
+
+            recommendedConceptText.textContent =
+                `AI 추천 컨셉: ${
+                    conceptInformation[
+                        state.selectedConcept
+                    ].name
+                }`;
+
+            planResult.classList.add(
+                "visible"
+            );
+
+            drawCanvas();
+        }
+
+        function renderGallery(
+            images
+        ) {
+            galleryGrid.innerHTML =
+                "";
+
+            if (
+                !Array.isArray(images) ||
+                images.length === 0
+            ) {
+                galleryWrap.classList.remove(
+                    "visible"
+                );
+
+                return;
+            }
+
+            const providerCounter = {
+                fal: 0,
+                replicate: 0,
+                civitai: 0
+            };
+
+            images.forEach(
+                (item) => {
+                    const provider =
+                        item.provider ||
+                        "unknown";
+
+                    providerCounter[
+                        provider
+                    ] =
+                        (
+                            providerCounter[
+                                provider
+                            ] || 0
+                        ) + 1;
+
+                    const card =
+                        document.createElement(
+                            "div"
+                        );
+
+                    card.className =
+                        "gallery-card";
+
+                    const image =
+                        document.createElement(
+                            "img"
+                        );
+
+                    image.src =
+                        item.imageUrl;
+
+                    image.alt =
+                        `${getProviderName(provider)} 생성 이미지`;
+
+                    const footer =
+                        document.createElement(
+                            "div"
+                        );
+
+                    footer.className =
+                        "gallery-card-footer";
+
+                    footer.textContent =
+                        `${getProviderName(provider)} 이미지 ${providerCounter[provider]}`;
+
+                    card.appendChild(
+                        image
+                    );
+
+                    card.appendChild(
+                        footer
+                    );
+
+                    card.addEventListener(
+                        "click",
+                        async () => {
+                            document
+                                .querySelectorAll(
+                                    ".gallery-card"
+                                )
+                                .forEach(
+                                    (
+                                        galleryCard
+                                    ) => {
+                                        galleryCard
+                                            .classList
+                                            .remove(
+                                                "active"
+                                            );
+                                    }
+                                );
+
+                            card.classList.add(
+                                "active"
+                            );
+
+                            try {
+                                await setBackgroundImage(
+                                    item.imageUrl
+                                );
+
+                                setStatus(
+                                    "이미지를 선택했습니다. 글씨 자동 배치를 진행합니다.",
+                                    "success"
+                                );
+
+                                await autoPlaceText();
+                            } catch (
+                                error
+                            ) {
+                                console.error(
+                                    error
+                                );
+
+                                setStatus(
+                                    error.message,
+                                    "error"
+                                );
+                            }
+                        }
+                    );
+
+                    galleryGrid.appendChild(
+                        card
+                    );
+                }
+            );
+
+            galleryWrap.classList.add(
+                "visible"
+            );
+        }
+
+        async function autoPlaceText() {
+            if (
+                !state.selectedImageUrl
+            ) {
+                setStatus(
+                    "먼저 생성된 이미지 중 한 장을 선택해 주세요.",
+                    "error"
+                );
+
+                return;
+            }
+
+            setButtonLoading(
+                autoLayoutButton,
+                true,
+                "글씨 위치를 분석하고 있습니다",
+                "선택 이미지 글씨 자동 배치"
+            );
+
+            try {
+                const response =
+                    await fetch(
+                        "/api/analyze-image-layout",
+                        {
+                            method:
+                                "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify(
+                                    {
+                                        imageUrl:
+                                            state.selectedImageUrl,
+
+                                        title:
+                                            getTitleText(),
+
+                                        subtitle:
+                                            getSubtitleText(),
+
+                                        concept:
+                                            state.selectedConcept
+                                    }
+                                )
+                        }
+                    );
+
+                const data =
+                    await readJsonResponse(
+                        response
+                    );
+
+                if (
+                    !response.ok
+                ) {
+                    throw new Error(
+                        data.error ||
+                        "이미지 자동 배치 분석에 실패했습니다."
+                    );
+                }
+
+                state.textLayout = {
+                    x:
+                        clampNumber(
+                            data.x,
+                            0,
+                            65,
+                            8
+                        ),
+
+                    y:
+                        clampNumber(
+                            data.y,
+                            0,
+                            84,
+                            58
+                        ),
+
+                    width:
+                        clampNumber(
+                            data.width,
+                            35,
+                            90,
+                            70
+                        ),
+
+                    align:
+                        [
+                            "left",
+                            "center",
+                            "right"
+                        ].includes(
+                            data.align
+                        )
+                            ? data.align
+                            : "left",
+
+                    titleSize:
+                        clampNumber(
+                            data.titleSize,
+                            48,
+                            100,
+                            74
+                        ),
+
+                    subtitleSize:
+                        clampNumber(
+                            data.subtitleSize,
+                            22,
+                            48,
+                            34
+                        ),
+
+                    textColor:
+                        data.textColor ===
+                            "#000000"
+                            ? "#000000"
+                            : "#ffffff",
+
+                    overlayOpacity:
+                        state.textLayout
+                            .overlayOpacity
+                };
+
+                updateControlValues();
+                drawCanvas();
+
+                setStatus(
+                    data.positionReason ||
+                        "글씨를 자동 배치했습니다. 필요하면 조금 이동해 주세요.",
+                    "success"
+                );
+            } catch (
+                error
+            ) {
+                console.error(
+                    error
+                );
+
+                setStatus(
+                    error.message ||
+                    "자동 배치 중 오류가 발생했습니다.",
+                    "error"
+                );
+            } finally {
+                setButtonLoading(
+                    autoLayoutButton,
+                    false,
+                    "",
+                    "선택 이미지 글씨 자동 배치"
+                );
+            }
+        }
+
+        function getCanvasPoint(
+            event
+        ) {
+            const rect =
+                canvas.getBoundingClientRect();
+
+            const scaleX =
+                canvas.width /
+                rect.width;
+
+            const scaleY =
+                canvas.height /
+                rect.height;
+
+            return {
+                x:
+                    (
+                        event.clientX -
+                        rect.left
+                    ) *
+                    scaleX,
+
+                y:
+                    (
+                        event.clientY -
+                        rect.top
+                    ) *
+                    scaleY
+            };
+        }
+
+        function isInsideTextBox(
+            canvasX,
+            canvasY
+        ) {
+            const rect =
+                state.textBoxRect;
+
+            return (
+                canvasX >=
+                    rect.x &&
+                canvasX <=
+                    rect.x +
+                    rect.width &&
+                canvasY >=
+                    rect.y &&
+                canvasY <=
+                    rect.y +
+                    rect.height
+            );
+        }
+
+        function stopCanvasDrag() {
+            state.drag.active =
+                false;
+
+            canvas.style.cursor =
+                "default";
+        }
+
+        function createDownloadFileName() {
+            const now =
+                new Date();
+
+            const date =
+                `${now.getFullYear()}${String(
+                    now.getMonth() + 1
+                ).padStart(2, "0")}${String(
+                    now.getDate()
+                ).padStart(2, "0")}`;
+
+            const time =
+                `${String(
+                    now.getHours()
+                ).padStart(2, "0")}${String(
+                    now.getMinutes()
+                ).padStart(2, "0")}`;
+
+            return (
+                `inwave-instagram-${date}-${time}.png`
+            );
+        }
+
+        async function downloadCanvasImage() {
+            drawCanvas();
+
+            const blob =
+                await new Promise(
+                    (
+                        resolve,
+                        reject
+                    ) => {
+                        canvas.toBlob(
+                            (
+                                result
+                            ) => {
+                                if (
+                                    !result
+                                ) {
+                                    reject(
+                                        new Error(
+                                            "PNG 파일 생성에 실패했습니다."
+                                        )
+                                    );
+
+                                    return;
+                                }
+
+                                resolve(
+                                    result
+                                );
+                            },
+
+                            "image/png"
+                        );
+                    }
+                );
+
+            const objectUrl =
+                URL.createObjectURL(
+                    blob
+                );
+
+            const link =
+                document.createElement(
+                    "a"
+                );
+
+            link.href =
+                objectUrl;
+
+            link.download =
+                createDownloadFileName();
+
+            document.body.appendChild(
+                link
+            );
+
+            link.click();
+            link.remove();
+
+            setTimeout(
+                () => {
+                    URL.revokeObjectURL(
+                        objectUrl
+                    );
+                },
+
+                1000
+            );
+        }
+
+        async function initializeDefaultImage() {
+            try {
+                state.backgroundImage =
+                    await loadImageObject(
+                        DEFAULT_IMAGE_URL
+                    );
+            } catch (
+                error
+            ) {
+                console.error(
+                    error
+                );
+
+                state.backgroundImage =
+                    null;
+            }
+
+            updateControlValues();
+            drawCanvas();
+        }
+
+        [
+            falCount,
+            replicateCount,
+            civitaiCount
+        ].forEach(
+            (select) => {
+                select.addEventListener(
+                    "change",
+                    updateCountSummary
+                );
+            }
+        );
+
+        conceptButtons.forEach(
+            (button) => {
+                button.addEventListener(
+                    "click",
+                    () => {
+                        state.selectedConcept =
+                            normalizeConcept(
+                                button.dataset.concept
+                            );
+
+                        conceptButtons.forEach(
+                            (
+                                conceptButton
+                            ) => {
+                                conceptButton
+                                    .classList
+                                    .toggle(
+                                        "active",
+                                        conceptButton
+                                            .dataset
+                                            .concept ===
+                                            state
+                                                .selectedConcept
+                                    );
+                            }
+                        );
+
+                        drawCanvas();
+
+                        setStatus(
+                            `${
+                                conceptInformation[
+                                    state.selectedConcept
+                                ].name
+                            } 컨셉을 선택했습니다.`,
+                            "success"
+                        );
+                    }
+                );
+            }
+        );
+
+        alignButtons.forEach(
+            (button) => {
+                button.addEventListener(
+                    "click",
+                    () => {
+                        state.textLayout.align =
+                            button.dataset.align;
+
+                        updateControlValues();
+                        drawCanvas();
+                    }
+                );
+            }
+        );
+
+        titleSizeInput.addEventListener(
+            "input",
+            () => {
+                state.textLayout.titleSize =
+                    clampNumber(
+                        titleSizeInput.value,
+                        48,
+                        100,
+                        74
+                    );
+
+                drawCanvas();
+            }
+        );
+
+        subtitleSizeInput.addEventListener(
+            "input",
+            () => {
+                state.textLayout.subtitleSize =
+                    clampNumber(
+                        subtitleSizeInput.value,
+                        22,
+                        48,
+                        34
+                    );
+
+                drawCanvas();
+            }
+        );
+
+        textWidthInput.addEventListener(
+            "input",
+            () => {
+                state.textLayout.width =
+                    clampNumber(
+                        textWidthInput.value,
+                        35,
+                        90,
+                        70
+                    );
+
+                state.textLayout.x =
+                    Math.min(
+                        state.textLayout.x,
+                        100 -
+                        state.textLayout.width
+                    );
+
+                drawCanvas();
+            }
+        );
+
+        overlayOpacityInput.addEventListener(
+            "input",
+            () => {
+                state.textLayout.overlayOpacity =
+                    clampNumber(
+                        overlayOpacityInput.value,
+                        0,
+                        100,
+                        100
+                    ) / 100;
+
+                drawCanvas();
+            }
+        );
+
+        titleInput.addEventListener(
+            "input",
+            drawCanvas
+        );
+
+        topicInput.addEventListener(
+            "input",
+            () => {
+                if (
+                    !planResult.classList.contains(
+                        "visible"
+                    )
+                ) {
+                    drawCanvas();
+                }
+            }
+        );
+
+        previewButton.addEventListener(
+            "click",
+            () => {
+                drawCanvas();
+
+                setStatus(
+                    "미리보기에 반영했습니다.",
+                    "success"
+                );
+            }
+        );
+
+        planButton.addEventListener(
+            "click",
+            async () => {
+                const message =
+                    topicInput.value.trim();
+
+                if (!message) {
+                    setStatus(
+                        "먼저 만들고 싶은 주제를 입력해 주세요.",
+                        "error"
+                    );
+
+                    topicInput.focus();
+                    return;
+                }
+
+                setButtonLoading(
+                    planButton,
+                    true,
+                    "AI가 주제를 정리하고 있습니다",
+                    "AI로 주제 정리"
+                );
+
+                setStatus(
+                    "AI가 주제와 제목 후보를 정리하고 있습니다."
+                );
+
+                try {
+                    const response =
+                        await fetch(
+                            "/api/plan-content",
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            message
+                                        }
+                                    )
+                            }
+                        );
+
+                    const data =
+                        await readJsonResponse(
+                            response
+                        );
+
+                    if (
+                        !response.ok
+                    ) {
+                        throw new Error(
+                            data.error ||
+                            "AI 기획 요청에 실패했습니다."
+                        );
+                    }
+
+                    displayPlanningResult(
+                        data
+                    );
+
+                    setStatus(
+                        "AI 기획이 완료되었습니다.",
+                        "success"
+                    );
+                } catch (
+                    error
+                ) {
+                    console.error(
+                        error
+                    );
+
+                    setStatus(
+                        error.message ||
+                        "AI 기획 중 오류가 발생했습니다.",
+                        "error"
+                    );
+                } finally {
+                    setButtonLoading(
+                        planButton,
+                        false,
+                        "",
+                        "AI로 주제 정리"
+                    );
+                }
+            }
+        );
+
+        generateButton.addEventListener(
+            "click",
+            async () => {
+                if (
+                    !state
+                        .generatedImagePrompt
+                ) {
+                    setStatus(
+                        "먼저 AI로 주제를 정리해서 이미지 생성 프롬프트를 만들어 주세요.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                const providers = {
+                    fal:
+                        Number(
+                            falCount.value
+                        ),
+
+                    replicate:
+                        Number(
+                            replicateCount.value
+                        ),
+
+                    civitai:
+                        Number(
+                            civitaiCount.value
+                        )
+                };
+
+                const total =
+                    providers.fal +
+                    providers.replicate +
+                    providers.civitai;
+
+                if (
+                    total <= 0
+                ) {
+                    setStatus(
+                        "최소 1장 이상 선택해 주세요.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                setButtonLoading(
+                    generateButton,
+                    true,
+                    "선택한 API로 이미지를 생성하고 있습니다",
+                    "선택한 API로 이미지 생성"
+                );
+
+                setStatus(
+                    "선택한 API들로 이미지를 생성하고 있습니다."
+                );
+
+                try {
+                    const response =
+                        await fetch(
+                            "/api/generate-images",
+                            {
+                                method:
+                                    "POST",
+
+                                headers: {
+                                    "Content-Type":
+                                        "application/json"
+                                },
+
+                                body:
+                                    JSON.stringify(
+                                        {
+                                            prompt:
+                                                state.generatedImagePrompt,
+
+                                            concept:
+                                                state.selectedConcept,
+
+                                            providers
+                                        }
+                                    )
+                            }
+                        );
+
+                    const data =
+                        await readJsonResponse(
+                            response
+                        );
+
+                    if (
+                        !response.ok
+                    ) {
+                        const providerErrorText =
+                            Array.isArray(
+                                data.providerErrors
+                            )
+                                ? data
+                                      .providerErrors
+                                      .map(
+                                          (
+                                              item
+                                          ) =>
+                                              `${getProviderName(
+                                                  item.provider
+                                              )}: ${
+                                                  item.message
+                                              }`
+                                      )
+                                      .join(
+                                          " / "
+                                      )
+                                : "";
+
+                        throw new Error(
+                            providerErrorText
+                                ? `${data.error || "이미지 생성 실패"} (${providerErrorText})`
+                                : data.error ||
+                                  "이미지 생성 요청에 실패했습니다."
+                        );
+                    }
+
+                    state.generatedImages =
+                        Array.isArray(
+                            data.images
+                        )
+                            ? data.images
+                            : [];
+
+                    renderGallery(
+                        state.generatedImages
+                    );
+
+                    const warnings =
+                        Array.isArray(
+                            data.providerErrors
+                        )
+                            ? data.providerErrors
+                            : [];
+
+                    if (
+                        warnings.length >
+                        0
+                    ) {
+                        const warningText =
+                            warnings
+                                .map(
+                                    (
+                                        item
+                                    ) =>
+                                        `${getProviderName(
+                                            item.provider
+                                        )}: ${
+                                            item.message
+                                        }`
+                                )
+                                .join(
+                                    " / "
+                                );
+
+                        setStatus(
+                            `이미지 생성 완료. 일부 API 안내: ${warningText}`,
+                            "success"
+                        );
+                    } else {
+                        setStatus(
+                            "이미지가 생성되었습니다. 마음에 드는 이미지를 선택하세요.",
+                            "success"
+                        );
+                    }
+                } catch (
+                    error
+                ) {
+                    console.error(
+                        error
+                    );
+
+                    setStatus(
+                        error.message ||
+                        "이미지 생성 중 오류가 발생했습니다.",
+                        "error"
+                    );
+                } finally {
+                    setButtonLoading(
+                        generateButton,
+                        false,
+                        "",
+                        "선택한 API로 이미지 생성"
+                    );
+                }
+            }
+        );
+
+        autoLayoutButton.addEventListener(
+            "click",
+            autoPlaceText
+        );
+
+        downloadButton.addEventListener(
+            "click",
+            async () => {
+                if (
+                    !state.selectedImageUrl
+                ) {
+                    setStatus(
+                        "먼저 생성된 이미지 중 한 장을 선택해 주세요.",
+                        "error"
+                    );
+
+                    return;
+                }
+
+                setButtonLoading(
+                    downloadButton,
+                    true,
+                    "PNG 파일을 만들고 있습니다",
+                    "인스타 이미지 PNG 저장"
+                );
+
+                setStatus(
+                    "인스타그램용 1080×1350 PNG 파일을 만들고 있습니다."
+                );
+
+                try {
+                    await downloadCanvasImage();
+
+                    setStatus(
+                        "PNG 파일 다운로드가 완료되었습니다.",
+                        "success"
+                    );
+                } catch (
+                    error
+                ) {
+                    console.error(
+                        error
+                    );
+
+                    setStatus(
+                        error.message ||
+                        "이미지 다운로드 중 오류가 발생했습니다.",
+                        "error"
+                    );
+                } finally {
+                    setButtonLoading(
+                        downloadButton,
+                        false,
+                        "",
+                        "인스타 이미지 PNG 저장"
+                    );
+                }
+            }
+        );
+
+        canvas.addEventListener(
+            "pointerdown",
+            (event) => {
+                const point =
+                    getCanvasPoint(
+                        event
+                    );
+
+                if (
+                    !isInsideTextBox(
+                        point.x,
+                        point.y
+                    )
+                ) {
+                    return;
+                }
+
+                state.drag.active =
+                    true;
+
+                state.drag.startPointerX =
+                    point.x;
+
+                state.drag.startPointerY =
+                    point.y;
+
+                state.drag.startX =
+                    state.textLayout.x;
+
+                state.drag.startY =
+                    state.textLayout.y;
+
+                canvas.setPointerCapture(
+                    event.pointerId
+                );
+
+                canvas.style.cursor =
+                    "grabbing";
+            }
+        );
+
+        canvas.addEventListener(
+            "pointermove",
+            (event) => {
+                const point =
+                    getCanvasPoint(
+                        event
+                    );
+
+                if (
+                    state.drag.active
+                ) {
+                    const deltaX =
+                        point.x -
+                        state.drag
+                            .startPointerX;
+
+                    const deltaY =
+                        point.y -
+                        state.drag
+                            .startPointerY;
+
+                    const percentX =
+                        (
+                            deltaX /
+                            canvas.width
+                        ) *
+                        100;
+
+                    const percentY =
+                        (
+                            deltaY /
+                            canvas.height
+                        ) *
+                        100;
+
+                    state.textLayout.x =
+                        Math.max(
+                            0,
+                            Math.min(
+                                100 -
+                                    state
+                                        .textLayout
+                                        .width,
+                                state.drag
+                                    .startX +
+                                    percentX
+                            )
+                        );
+
+                    state.textLayout.y =
+                        Math.max(
+                            0,
+                            Math.min(
+                                92,
+                                state.drag
+                                    .startY +
+                                    percentY
+                            )
+                        );
+
+                    drawCanvas();
+                    return;
+                }
+
+                if (
+                    isInsideTextBox(
+                        point.x,
+                        point.y
+                    )
+                ) {
+                    canvas.style.cursor =
+                        "grab";
+                } else {
+                    canvas.style.cursor =
+                        "default";
+                }
+            }
+        );
+
+        canvas.addEventListener(
+            "pointerup",
+            stopCanvasDrag
+        );
+
+        canvas.addEventListener(
+            "pointercancel",
+            stopCanvasDrag
+        );
+
+        updateCountSummary();
+        initializeDefaultImage();
+    </script>
+</body>
+</html>
