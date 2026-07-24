@@ -11,6 +11,8 @@
     <title>INWAVE 콘텐츠 스튜디오</title>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
+
         * {
             box-sizing: border-box;
         }
@@ -704,14 +706,6 @@
             </div>
 
             <button
-                class="primary-button"
-                id="previewButton"
-                type="button"
-            >
-                미리보기 반영
-            </button>
-
-            <button
                 class="secondary-button"
                 id="generateButton"
                 type="button"
@@ -814,6 +808,20 @@
 
             <div class="editor-controls">
                 <div class="editor-controls-grid">
+
+                    <div>
+                        <label for="fontFamilyInput">폰트 선택</label>
+
+                        <select id="fontFamilyInput">
+                            <option value='"Noto Sans KR", sans-serif'>Noto Sans KR</option>
+                            <option value='"Nanum Gothic", sans-serif'>나눔고딕</option>
+                            <option value='"Nanum Myeongjo", serif'>나눔명조</option>
+                            <option value='"Black Han Sans", sans-serif'>검은고딕</option>
+                            <option value='"Do Hyeon", sans-serif'>도현체</option>
+                            <option value='"Gowun Dodum", sans-serif'>고운돋움</option>
+                        </select>
+                    </div>
+
                     <div>
                         <label for="titleSizeInput">제목 크기</label>
 
@@ -924,9 +932,6 @@
                 "recommendedConceptText"
             );
 
-        const previewButton =
-            document.getElementById("previewButton");
-
         const generateButton =
             document.getElementById("generateButton");
 
@@ -956,6 +961,9 @@
 
         const countSummary =
             document.getElementById("countSummary");
+
+        const fontFamilyInput =
+            document.getElementById("fontFamilyInput");
 
         const titleSizeInput =
             document.getElementById("titleSizeInput");
@@ -1017,6 +1025,7 @@
                 align: "left",
                 titleSize: 74,
                 subtitleSize: 34,
+                fontFamily: '"Noto Sans KR", sans-serif',
                 textColor: "#ffffff",
                 overlayOpacity: 1
             },
@@ -1175,6 +1184,9 @@
         }
 
         function updateControlValues() {
+            fontFamilyInput.value =
+                state.textLayout.fontFamily;
+
             titleSizeInput.value =
                 String(
                     state.textLayout.titleSize
@@ -1561,7 +1573,7 @@
                 info.labelColor;
 
             ctx.font =
-                '800 38px Arial, "Noto Sans KR", sans-serif';
+                `800 38px ${layout.fontFamily}`;
 
             ctx.fillText(
                 info.label,
@@ -1576,7 +1588,7 @@
                 layout.textColor;
 
             ctx.font =
-                `800 ${layout.titleSize}px Arial, "Noto Sans KR", sans-serif`;
+                `800 ${layout.titleSize}px ${layout.fontFamily}`;
 
             const titleLines =
                 wrapKoreanText(
@@ -1607,7 +1619,7 @@
                 18;
 
             ctx.font =
-                `500 ${layout.subtitleSize}px Arial, "Noto Sans KR", sans-serif`;
+                `500 ${layout.subtitleSize}px ${layout.fontFamily}`;
 
             const subtitleLines =
                 wrapKoreanText(
@@ -2157,6 +2169,9 @@
                             34
                         ),
 
+                    fontFamily:
+                        state.textLayout.fontFamily,
+
                     textColor:
                         data.textColor ===
                             "#000000"
@@ -2441,6 +2456,26 @@
             }
         );
 
+
+        fontFamilyInput.addEventListener(
+            "change",
+            async () => {
+                state.textLayout.fontFamily =
+                    fontFamilyInput.value;
+
+                if (document.fonts?.ready) {
+                    await document.fonts.ready;
+                }
+
+                drawCanvas();
+
+                setStatus(
+                    "선택한 무료 폰트를 적용했습니다.",
+                    "success"
+                );
+            }
+        );
+
         titleSizeInput.addEventListener(
             "input",
             () => {
@@ -2523,18 +2558,6 @@
                 ) {
                     drawCanvas();
                 }
-            }
-        );
-
-        previewButton.addEventListener(
-            "click",
-            () => {
-                drawCanvas();
-
-                setStatus(
-                    "미리보기에 반영했습니다.",
-                    "success"
-                );
             }
         );
 
@@ -3018,7 +3041,14 @@
         );
 
         updateCountSummary();
-        initializeDefaultImage();
+
+        if (document.fonts?.ready) {
+            document.fonts.ready.then(
+                initializeDefaultImage
+            );
+        } else {
+            initializeDefaultImage();
+        }
     </script>
 </body>
 </html>
