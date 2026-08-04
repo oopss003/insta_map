@@ -51,8 +51,20 @@ canvas{width:100%;height:auto;aspect-ratio:4/5;background:#ddd;border-radius:10p
 .help{font-size:12px;color:var(--muted);line-height:1.55;margin-top:8px}
 .color-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
 .color-row input[type=color]{height:42px;padding:4px}
+.provider-box{margin-top:12px;padding:12px;border:1px solid #e8e3da;border-radius:12px;background:#fff}
+.provider-select-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.provider-select-grid small{display:block;color:var(--muted);font-weight:700;margin-bottom:5px}
+.image-gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px}
+.image-candidate{border:2px solid transparent;border-radius:10px;overflow:hidden;background:#f2f2f2;cursor:pointer}
+.image-candidate.active{border-color:var(--orange);box-shadow:0 0 0 2px rgba(245,130,32,.18)}
+.image-candidate img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block}
+.image-candidate span{display:block;padding:6px;font-size:11px;font-weight:800;text-align:center}
+.page-style-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.page-color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.page-color-grid input[type=color]{height:40px;padding:4px}
+.hidden{display:none!important}
 @media(max-width:1080px){main{grid-template-columns:1fr}.sticky{position:static}}
-@media(max-width:720px){.grid2,.field-row,.field-row.three,.preview-grid,.color-row{grid-template-columns:1fr}}
+@media(max-width:720px){.grid2,.field-row,.field-row.three,.preview-grid,.color-row,.provider-select-grid,.image-gallery,.page-style-grid,.page-color-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -152,7 +164,8 @@ canvas{width:100%;height:auto;aspect-ratio:4/5;background:#ddd;border-radius:10p
 const $=id=>document.getElementById(id);
 const LAYOUTS=["cover","explain","number","compare","table","bar-chart","line-chart","process","checklist","quote-insight","solution","cta"];
 const ROLE_LABELS={cover:"표지",explain:"설명",number:"숫자",compare:"비교",table:"표", "bar-chart":"막대그래프","line-chart":"추이그래프",process:"과정",checklist:"체크리스트","quote-insight":"핵심문장",solution:"해결",cta:"마무리"};
-const state={plan:null,images:{},canvases:{},rendered:false};
+const DEFAULT_PAGE_STYLE={titleColor:"#17243d",bodyColor:"#4a5568",labelColor:"#f58220",strokeColor:"#000000",strokeWidth:0,titleSize:68,bodySize:31,textX:82,textY:88,textWidth:916,align:"left"};
+const state={plan:null,images:{},imageCandidates:{},canvases:{},rendered:false,drag:{active:false,page:-1,startX:0,startY:0,textX:0,textY:0}};
 
 function setStatus(msg,type=""){const el=$("status");el.textContent=msg;el.className="status"+(type?" "+type:"")}
 function safeJson(text,fallback={}){try{return JSON.parse(text||"{}")}catch{return fallback}}
@@ -160,6 +173,24 @@ function escapeHtml(s=""){return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;
 function clone(v){return JSON.parse(JSON.stringify(v))}
 function colors(){return{navy:$("navyColor").value,orange:$("orangeColor").value,ivory:$("ivoryColor").value,white:$("whiteColor").value}}
 function font(){return $("fontFamily").value}
+function normalizePage(p,i){
+ return {
+  pageNumber:i+1,
+  role:p.role||"",
+  layoutType:LAYOUTS.includes(p.layoutType)?p.layoutType:"explain",
+  label:p.label||"",
+  showLabel:p.showLabel!==false,
+  title:p.title||"",
+  body:p.body||"",
+  visualType:p.visualType||"",
+  imageNeeded:!!p.imageNeeded,
+  imagePrompt:p.imagePrompt||"",
+  dataJson:typeof p.dataJson==="string"?p.dataJson:JSON.stringify(p.dataJson||{},null,2),
+  reason:p.reason||"",
+  providers:p.providers||{fal:2,replicate:0,civitai:0},
+  style:{...DEFAULT_PAGE_STYLE,...(p.style||{})}
+ };
+}
 
 $("labelMode").addEventListener("change",()=>{$("fixedLabelWrap").style.display=$("labelMode").value==="fixed"?"block":"none"});
 
@@ -176,7 +207,7 @@ function fallbackPlan(topic,facts,count,labelMode,fixedLabel){
   {pageNumber:4,role:"solution",layoutType:"solution",label:label(3),showLabel:labelMode!=="hidden",title:"광고도 시청 데이터로 운영해야 합니다",body:"실제 시청 데이터를 확인하면 위치와 소재를 근거 있게 비교할 수 있습니다.",visualType:"metric-cards",imageNeeded:false,imagePrompt:"",dataJson:JSON.stringify({metrics:["실제 시청자 수","평균 시청시간","시간대별 관심도","소재별 성과"]},null,2),reason:"후반부에서 INWAVE의 측정 가치를 광고주의 의사결정과 연결했습니다."},
   {pageNumber:5,role:"cta",layoutType:"cta",label:label(4),showLabel:labelMode!=="hidden",title:"송출된 광고보다 실제로 본 광고를 확인하세요",body:"운영 중인 광고 공간도 측정 가능한지 확인해보세요.",visualType:"text",imageNeeded:false,imagePrompt:"",dataJson:"{}",reason:"문의 유도가 필요한 경우에만 사용하는 마무리형입니다."}
  ];
- return {contentTitle:topic,pageCount:n,overallTone:"professional-insight",pages:pages.slice(0,n)};
+ return {contentTitle:topic,pageCount:n,overallTone:"professional-insight",pages:pages.slice(0,n).map(normalizePage)};
 }
 
 $("planBtn").addEventListener("click",async()=>{
@@ -187,7 +218,7 @@ $("planBtn").addEventListener("click",async()=>{
   const r=await fetch("/api/plan-carousel",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
   const data=await r.json();
   if(!r.ok)throw new Error(data.error||"AI 기획 실패");
-  state.plan=data;
+  data.pages=(data.pages||[]).map(normalizePage);state.plan=data;
   setStatus("AI 기획이 완료되었습니다. 내용을 검토한 뒤 전체 장 렌더링을 눌러주세요.","success");
  }catch(e){
   console.warn(e);
@@ -221,11 +252,38 @@ function renderPlanEditor(){
    <div class="section"><label>표·그래프·비교 데이터(JSON)</label><textarea class="data-editor">${escapeHtml(p.dataJson||"{}")}</textarea></div>
    <div class="field-row">
     <label class="inline-check"><input class="imageNeeded" type="checkbox" ${p.imageNeeded?"checked":""}> AI 이미지 필요</label>
-    <button class="btn-soft generate-image" ${p.imageNeeded?"":"disabled"}>이 장 이미지 1장 생성</button>
+    <button class="btn-soft generate-image" ${p.imageNeeded?"":"disabled"}>선택한 AI로 이미지 생성</button>
+   </div>
+   <div class="provider-box ${p.imageNeeded?"":"hidden"}">
+    <div class="provider-select-grid">
+     <div><small>FAL</small><select class="falCount"><option value="0">0장</option><option value="1">1장</option><option value="2">2장</option><option value="3">3장</option></select></div>
+     <div><small>Replicate</small><select class="replicateCount"><option value="0">0장</option><option value="1">1장</option><option value="2">2장</option><option value="3">3장</option></select></div>
+     <div><small>Civitai</small><select class="civitaiCount"><option value="0">0장</option><option value="1">1장</option><option value="2">2장</option><option value="3">3장</option></select></div>
+    </div>
+    <div class="help">이미지가 필요한 장만 후보를 생성합니다. 표·그래프·체크리스트형은 기본적으로 이미지가 필요하지 않습니다.</div>
+    <div class="image-gallery" data-gallery="${i}"></div>
    </div>
    <div class="section"><label>이미지 프롬프트</label><textarea class="imagePrompt">${escapeHtml(p.imagePrompt||"")}</textarea></div>
+   <div class="section">
+    <label>장별 글자 설정</label>
+    <div class="page-style-grid">
+     <div><small>제목 크기</small><input class="titleSize" type="range" min="42" max="100" value="${p.style.titleSize}"></div>
+     <div><small>본문 크기</small><input class="bodySize" type="range" min="20" max="48" value="${p.style.bodySize}"></div>
+     <div><small>외곽선</small><input class="strokeWidth" type="range" min="0" max="12" value="${p.style.strokeWidth}"></div>
+    </div>
+    <div class="page-color-grid">
+     <div><small>제목</small><input class="titleColor" type="color" value="${p.style.titleColor}"></div>
+     <div><small>본문</small><input class="bodyColor" type="color" value="${p.style.bodyColor}"></div>
+     <div><small>라벨</small><input class="labelColor" type="color" value="${p.style.labelColor}"></div>
+     <div><small>외곽선</small><input class="strokeColor" type="color" value="${p.style.strokeColor}"></div>
+    </div>
+   </div>
    <div class="reason">${escapeHtml(p.reason||"")}</div>`;
   bindCard(card,i);wrap.appendChild(card);
+  card.querySelector(".falCount").value=String(p.providers?.fal||0);
+  card.querySelector(".replicateCount").value=String(p.providers?.replicate||0);
+  card.querySelector(".civitaiCount").value=String(p.providers?.civitai||0);
+  renderImageGallery(i);
  });
 }
 
@@ -241,40 +299,79 @@ function syncCard(card,i){
  p.dataJson=card.querySelector(".data-editor").value;
  p.imageNeeded=card.querySelector(".imageNeeded").checked;
  p.imagePrompt=card.querySelector(".imagePrompt").value;
+ p.providers={
+  fal:Number(card.querySelector(".falCount").value),
+  replicate:Number(card.querySelector(".replicateCount").value),
+  civitai:Number(card.querySelector(".civitaiCount").value)
+ };
+ p.style.titleSize=Number(card.querySelector(".titleSize").value);
+ p.style.bodySize=Number(card.querySelector(".bodySize").value);
+ p.style.strokeWidth=Number(card.querySelector(".strokeWidth").value);
+ p.style.titleColor=card.querySelector(".titleColor").value;
+ p.style.bodyColor=card.querySelector(".bodyColor").value;
+ p.style.labelColor=card.querySelector(".labelColor").value;
+ p.style.strokeColor=card.querySelector(".strokeColor").value;
 }
 
 function bindCard(card,i){
  card.querySelectorAll("input,textarea,select").forEach(el=>el.addEventListener("input",()=>{syncCard(card,i);renderPage(i)}));
- card.querySelector(".imageNeeded").addEventListener("change",e=>card.querySelector(".generate-image").disabled=!e.target.checked);
+ card.querySelector(".imageNeeded").addEventListener("change",e=>{card.querySelector(".generate-image").disabled=!e.target.checked;card.querySelector(".provider-box").classList.toggle("hidden",!e.target.checked)});
  card.querySelector(".remove").onclick=()=>{state.plan.pages.splice(i,1);renumber();renderPlanEditor();renderAll()};
  card.querySelector(".move-up").onclick=()=>{if(i>0){[state.plan.pages[i-1],state.plan.pages[i]]=[state.plan.pages[i],state.plan.pages[i-1]];renumber();renderPlanEditor();renderAll()}};
  card.querySelector(".move-down").onclick=()=>{if(i<state.plan.pages.length-1){[state.plan.pages[i+1],state.plan.pages[i]]=[state.plan.pages[i],state.plan.pages[i+1]];renumber();renderPlanEditor();renderAll()}};
- card.querySelector(".generate-image").onclick=()=>generatePageImage(i,card.querySelector(".generate-image"));
+ card.querySelector(".generate-image").onclick=()=>generatePageImages(i,card.querySelector(".generate-image"));
 }
-function renumber(){state.plan.pages.forEach((p,i)=>p.pageNumber=i+1);state.plan.pageCount=state.plan.pages.length}
+function renumber(){state.plan.pages=state.plan.pages.map(normalizePage);state.plan.pageCount=state.plan.pages.length}
 
 $("addPageBtn").onclick=()=>{if(!state.plan)return;if(state.plan.pages.length>=5){setStatus("최대 5장까지 추가할 수 있습니다.","error");return}
- state.plan.pages.push({pageNumber:state.plan.pages.length+1,role:"cta",layoutType:"cta",label:"한 줄 정리",showLabel:true,title:"핵심 내용을 한 문장으로 정리하세요",body:"운영 중인 광고 공간도 측정 가능한지 확인해보세요.",visualType:"text",imageNeeded:false,imagePrompt:"",dataJson:"{}",reason:"사용자가 추가한 장입니다."});renumber();renderPlanEditor();renderAll()};
+ state.plan.pages.push(normalizePage({role:"cta",layoutType:"cta",label:"한 줄 정리",showLabel:true,title:"핵심 내용을 한 문장으로 정리하세요",body:"운영 중인 광고 공간도 측정 가능한지 확인해보세요.",visualType:"text",imageNeeded:false,imagePrompt:"",dataJson:"{}",reason:"사용자가 추가한 장입니다."},state.plan.pages.length));renumber();renderPlanEditor();renderAll()};
 
-async function generatePageImage(i,btn){
- const p=state.plan.pages[i]; if(!p.imagePrompt.trim()){setStatus(`${i+1}장 이미지 프롬프트를 입력해 주세요.`,"error");return}
- btn.disabled=true;btn.textContent="생성 중...";
+async function generatePageImages(i,btn){
+ const card=document.querySelector(`.plan-card[data-index="${i}"]`);
+ syncCard(card,i);
+ const p=state.plan.pages[i];
+ const total=p.providers.fal+p.providers.replicate+p.providers.civitai;
+ if(total<=0){setStatus("최소 한 장 이상 선택해 주세요.","error");return}
+ if(!p.imagePrompt.trim()){setStatus(`${i+1}장 이미지 프롬프트를 입력해 주세요.`,"error");return}
+ btn.disabled=true;btn.textContent="이미지 생성 중...";
  try{
-  const r=await fetch("/api/generate-images",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:p.imagePrompt,concept:"insight",providers:{fal:1,replicate:0,civitai:0}})});
-  const data=await r.json();if(!r.ok)throw new Error(data.error||"이미지 생성 실패");
-  const url=data.images?.[0]?.imageUrl;if(!url)throw new Error("생성된 이미지 URL이 없습니다.");
-  state.images[i]=await loadImage(url);renderPage(i);setStatus(`${i+1}장 이미지가 생성되었습니다.`,"success");
- }catch(e){setStatus(e.message,"error")}
- btn.disabled=false;btn.textContent="이 장 이미지 1장 생성";
+  const r=await fetch("/api/generate-images",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({prompt:p.imagePrompt,concept:"insight",providers:p.providers})});
+  const data=await r.json();
+  if(!r.ok)throw new Error(data.error||"이미지 생성 실패");
+  const items=Array.isArray(data.images)?data.images:[];
+  if(!items.length)throw new Error("생성된 이미지가 없습니다.");
+  state.imageCandidates[i]=[];
+  for(const item of items){
+   try{state.imageCandidates[i].push({...item,image:await loadImage(item.imageUrl)})}
+   catch(e){console.warn(e)}
+  }
+  if(!state.imageCandidates[i].length)throw new Error("이미지를 불러오지 못했습니다. CORS 설정을 확인하세요.");
+  state.images[i]=state.imageCandidates[i][0].image;
+  renderImageGallery(i);renderPage(i);
+  setStatus(`${i+1}장 이미지 후보 ${state.imageCandidates[i].length}개를 생성했습니다.`,"success");
+ }catch(e){setStatus(e.message||"이미지 생성 실패","error")}
+ btn.disabled=false;btn.textContent="선택한 AI로 이미지 생성";
 }
-function loadImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>resolve(im);im.onerror=()=>reject(new Error("이미지를 불러오지 못했습니다. CORS 설정을 확인하세요."));im.src=url})}
+function loadImage(url){return new Promise((resolve,reject)=>{const im=new Image();im.crossOrigin="anonymous";im.onload=()=>resolve(im);im.onerror=()=>reject(new Error("이미지를 불러오지 못했습니다."));im.src=url})}
+function renderImageGallery(i){
+ const el=document.querySelector(`[data-gallery="${i}"]`);
+ if(!el)return;
+ el.innerHTML="";
+ (state.imageCandidates[i]||[]).forEach((item,j)=>{
+  const box=document.createElement("div");
+  box.className="image-candidate"+(state.images[i]===item.image?" active":"");
+  box.innerHTML=`<img src="${item.imageUrl}" alt=""><span>${item.provider||"AI"} ${j+1}</span>`;
+  box.onclick=()=>{state.images[i]=item.image;renderImageGallery(i);renderPage(i)};
+  el.appendChild(box);
+ });
+}
 
 $("renderAllBtn").onclick=renderAll;
 ["fontFamily","coverOverlay","navyColor","orangeColor","ivoryColor","whiteColor"].forEach(id=>$(id).addEventListener("input",renderAll));
 
 function renderAll(){
  if(!state.plan)return;
- const grid=$("previewGrid");grid.innerHTML="";
+ const grid=$("previewGrid");grid.innerHTML="";state.canvases={};
  state.plan.pages.forEach((p,i)=>{
   const box=document.createElement("div");box.className="preview-card";
   box.innerHTML=`<h4><span>${i+1}장 · ${ROLE_LABELS[p.layoutType]||p.layoutType}</span><span>${p.imageNeeded?"이미지형":"정보형"}</span></h4>
@@ -284,7 +381,7 @@ function renderAll(){
   const cv=box.querySelector("canvas");state.canvases[i]=cv;
   box.querySelector(".download-one").onclick=()=>downloadCanvas(cv,`inwave-card-${i+1}.png`);
   box.querySelector(".edit-scroll").onclick=()=>document.querySelector(`.plan-card[data-index="${i}"]`)?.scrollIntoView({behavior:"smooth",block:"center"});
-  drawPage(cv,p,i);
+  bindCanvasDrag(cv,i);drawPage(cv,p,i);
  });
  state.rendered=true;$("downloadZipBtn").disabled=false;
 }
@@ -294,11 +391,28 @@ function rounded(ctx,x,y,w,h,r,fill,stroke){ctx.beginPath();ctx.roundRect(x,y,w,
 function wrap(ctx,text,maxWidth,maxLines=10){const chars=(text||"").replace(/\s+/g," ").trim();const lines=[];let line="";for(const ch of chars){const test=line+ch;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line.trim());line=ch;if(lines.length===maxLines-1)break}else line=test}if(line&&lines.length<maxLines)lines.push(line.trim());return lines}
 function textLines(ctx,lines,x,y,lineHeight,align="left"){ctx.textAlign=align;for(const line of lines){ctx.fillText(line,x,y);y+=lineHeight}return y}
 function titleBlock(ctx,p,c,dark=false){
- const x=82,y=88,w=916;
- if(p.showLabel&&p.label){ctx.font=`800 34px ${font()}`;ctx.fillStyle=c.orange;ctx.textAlign="left";ctx.fillText(p.label,x,y)}
- ctx.font=`900 68px ${font()}`;ctx.fillStyle=dark?c.white:c.navy;const title=wrap(ctx,p.title,w,4);let cy=y+(p.showLabel&&p.label?72:10);cy=textLines(ctx,title,x,cy,82);
- if(p.body){ctx.font=`500 31px ${font()}`;ctx.fillStyle=dark?"#f3eee4":"#4a5568";cy+=26;textLines(ctx,wrap(ctx,p.body,w,5),x,cy,46)}
+ const s=p.style||DEFAULT_PAGE_STYLE,x=s.textX,y=s.textY,w=s.textWidth;
+ ctx.textBaseline="top";
+ if(p.showLabel&&p.label){ctx.font=`800 34px ${font()}`;ctx.fillStyle=s.labelColor||c.orange;ctx.textAlign="left";ctx.fillText(p.label,x,y)}
+ ctx.font=`900 ${s.titleSize}px ${font()}`;
+ ctx.fillStyle=dark?c.white:s.titleColor;
+ let cy=y+(p.showLabel&&p.label?72:10);
+ cy=textLinesStyled(ctx,wrap(ctx,p.title,w,4),x,cy,s.titleSize*1.2,s.align,s.strokeWidth,s.strokeColor);
+ if(p.body){
+  ctx.font=`500 ${s.bodySize}px ${font()}`;
+  ctx.fillStyle=dark?"#f3eee4":s.bodyColor;
+  cy+=24;
+  textLinesStyled(ctx,wrap(ctx,p.body,w,5),x,cy,s.bodySize*1.48,s.align,Math.max(0,s.strokeWidth*.55),s.strokeColor);
+ }
  return cy;
+}
+function textLinesStyled(ctx,lines,x,y,lineHeight,align="left",stroke=0,strokeColor="#000"){
+ ctx.textAlign=align;
+ for(const line of lines){
+  if(stroke>0){ctx.lineWidth=stroke;ctx.strokeStyle=strokeColor;ctx.strokeText(line,x,y)}
+  ctx.fillText(line,x,y);y+=lineHeight;
+ }
+ return y;
 }
 function footer(ctx,c,page){ctx.font=`700 20px ${font()}`;ctx.fillStyle=c.navy;ctx.textAlign="left";ctx.fillText("INWAVE",70,1290);ctx.textAlign="right";ctx.fillText(String(page).padStart(2,"0"),1010,1290)}
 
@@ -338,6 +452,28 @@ function drawChecklist(ctx,p,d,c){titleBlock(ctx,p,c);const items=d.items||[];it
 function drawQuote(ctx,p,c){ctx.fillStyle=c.navy;ctx.fillRect(0,0,1080,1350);ctx.font=`900 170px Georgia`;ctx.fillStyle=c.orange;ctx.fillText("“",80,180);ctx.font=`900 73px ${font()}`;ctx.fillStyle=c.white;textLines(ctx,wrap(ctx,p.title,850,7),115,370,96);ctx.font=`500 31px ${font()}`;ctx.fillStyle="#e8e2d7";textLines(ctx,wrap(ctx,p.body,850,5),115,940,48)}
 function drawSolution(ctx,p,d,c){titleBlock(ctx,p,c);const items=d.metrics||d.items||["실제 시청자 수","평균 시청시간","시간대별 관심도","소재별 성과"];items.slice(0,4).forEach((it,i)=>{const col=i%2,row=Math.floor(i/2),x=82+col*470,y=625+row*225;rounded(ctx,x,y,430,185,28,col===0?c.navy:c.white);ctx.font=`900 33px ${font()}`;ctx.fillStyle=col===0?c.white:c.navy;textLines(ctx,wrap(ctx,typeof it==="string"?it:it.title||"",340,3),x+42,y+50,45);ctx.fillStyle=c.orange;ctx.fillRect(x+42,y+135,85,8)})}
 function drawCta(ctx,p,c){ctx.fillStyle=c.navy;ctx.fillRect(0,0,1080,1350);ctx.fillStyle=c.orange;ctx.fillRect(82,120,115,12);ctx.font=`900 72px ${font()}`;ctx.fillStyle=c.white;textLines(ctx,wrap(ctx,p.title,850,6),82,250,92);ctx.font=`500 34px ${font()}`;ctx.fillStyle="#e8e2d7";textLines(ctx,wrap(ctx,p.body,850,6),82,850,52);ctx.font=`800 25px ${font()}`;ctx.fillStyle=c.orange;ctx.fillText("INWAVE · AD MEASUREMENT",82,1240)}
+
+function bindCanvasDrag(canvas,i){
+ canvas.onpointerdown=e=>{
+  const p=state.plan.pages[i];if(!p)return;
+  const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height,s=p.style;
+  if(x<s.textX||x>s.textX+s.textWidth||y<s.textY||y>s.textY+430)return;
+  state.drag={active:true,page:i,startX:x,startY:y,textX:s.textX,textY:s.textY};
+  canvas.setPointerCapture(e.pointerId);canvas.style.cursor="grabbing";
+ };
+ canvas.onpointermove=e=>{
+  const r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*canvas.width/r.width,y=(e.clientY-r.top)*canvas.height/r.height;
+  if(state.drag.active&&state.drag.page===i){
+   const s=state.plan.pages[i].style;
+   s.textX=Math.max(20,Math.min(1080-s.textWidth-20,state.drag.textX+x-state.drag.startX));
+   s.textY=Math.max(20,Math.min(900,state.drag.textY+y-state.drag.startY));
+   renderPage(i);return;
+  }
+  canvas.style.cursor="grab";
+ };
+ canvas.onpointerup=()=>{state.drag.active=false;canvas.style.cursor="grab"};
+ canvas.onpointercancel=()=>{state.drag.active=false;canvas.style.cursor="default"};
+}
 
 function downloadCanvas(canvas,name){const a=document.createElement("a");a.href=canvas.toDataURL("image/png");a.download=name;a.click()}
 $("downloadZipBtn").onclick=async()=>{if(!state.rendered)return;const zip=new JSZip();for(const [i,cv] of Object.entries(state.canvases)){const blob=await new Promise(r=>cv.toBlob(r,"image/png"));zip.file(`inwave-card-${Number(i)+1}.png`,blob)}const file=await zip.generateAsync({type:"blob"});const a=document.createElement("a");a.href=URL.createObjectURL(file);a.download="inwave-cardnews.zip";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)};
