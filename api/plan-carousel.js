@@ -3,6 +3,8 @@
  * INWAVE 카드뉴스 기획 + 필요 시 웹 검색 + 캡션/해시태그 생성
  */
 
+export const maxDuration = 60;
+
 const SEARCH_KEYWORDS = [
   "검색해줘",
   "인터넷에서",
@@ -27,21 +29,22 @@ const SEARCH_KEYWORDS = [
 ];
 
 function needsWebSearch(messages) {
-  const latestUserText =
-    [...messages]
-      .reverse()
-      .find(
-        (message) =>
-          message.role === "user"
-      )?.content || "";
+  const recentUserText = messages
+    .filter(
+      (message) =>
+        message?.role === "user" &&
+        typeof message.content === "string"
+    )
+    .slice(-6)
+    .map((message) => message.content)
+    .join("\n")
+    .toLowerCase();
 
   return SEARCH_KEYWORDS.some(
     (keyword) =>
-      latestUserText
-        .toLowerCase()
-        .includes(
-          keyword.toLowerCase()
-        )
+      recentUserText.includes(
+        keyword.toLowerCase()
+      )
   );
 }
 
@@ -708,44 +711,131 @@ projectTitle은
 
 function extractResponseText(data) {
   if (
-    typeof data?.output_text ===
-    "string"
+    typeof data?.output_text === "string" &&
+    data.output_text.trim()
   ) {
-    return data.output_text;
+    return data.output_text.trim();
   }
 
   const parts = [];
 
-  for (
-    const item of data?.output || []
-  ) {
-    if (
-      item?.type !== "message"
-    ) {
+  for (const item of data?.output || []) {
+    if (item?.type !== "message") {
       continue;
     }
 
-    for (
-      const content of
-        item.content || []
-    ) {
+    for (const content of item.content || []) {
       if (
-        content?.type ===
-          "output_text" &&
-        typeof content.text ===
-          "string"
+        content?.type === "output_text" &&
+        typeof content.text === "string" &&
+        content.text.trim()
       ) {
-        parts.push(
-          content.text
-        );
+        parts.push(content.text.trim());
       }
     }
   }
 
-  return parts.join("\n");
+  return parts.join("\n\n").trim();
 }
 
-async function callResponsesAPI(
+function extractWebSources(data) {
+  const sources = [];
+  const seen = new Set();
+
+  function addSource(source = {}) {
+    const url = String(
+      source.url ||
+      source.link ||
+      source.source_url ||
+      ""
+    ).trim();
+
+    if (
+      !url ||
+      !/^https?:\/\//i.test(url) ||
+      seen.has(url)
+    ) {
+      return;
+    }
+
+    seen.add(url);
+
+    sources.push({
+      title: String(
+        source.title ||
+        source.name ||
+        source.source_title ||
+        "웹 자료"
+      ).trim(),
+      url
+    });
+  }
+
+  for (const item of data?.output || []) {
+    if (item?.type === "web_search_call") {
+      const actionSources =
+        item?.action?.sources ||
+        item?.sources ||
+        [];
+
+      if (Array.isArray(actionSources)) {
+        actionSources.forEach(addSource);
+      }
+    }
+
+    if (item?.type === "message") {
+      for (const content of item.content || []) {
+        for (
+          const annotation of
+            content?.annotations || []
+        ) {
+          if (
+            annotation?.type ===
+            "url_citation"
+          ) {
+            addSource({
+              title: annotation.title,
+              url: annotation.url
+            });
+          }
+        }
+      }
+    }
+  }
+
+  return sources.slice(0, 20);
+}
+
+function buildResearchQuery(messages) {
+  const conversation = messages
+    .map((message) => {
+      const speaker =
+        message.role === "assistant"
+          ? "AI"
+          : "사용자";
+
+      return `${speaker}: ${message.content}`;
+    })
+    .join("\n\n");
+
+  return `
+다음 대화를 바탕으로 INWAVE 인스타그램 카드뉴스 기획에 필요한 자료를 조사하세요.
+
+조사 원칙:
+- 광고주, 광고대행사, 오프라인 광고 매체 운영자가 실무에 활용할 수 있는 근거를 찾습니다.
+- 최신 통계, 연구, 브랜드 사례, 시장 동향, 소비자 행동 변화를 우선 확인합니다.
+- 확인되지 않은 숫자나 사실은 만들지 않습니다.
+- 공식 기관, 연구기관, 기업 공식 자료, 신뢰할 수 있는 업계 자료를 우선합니다.
+- 카드뉴스에 활용할 핵심 사실을 짧게 정리합니다.
+- 각 사실에 출처명, 연도, 실제 URL을 함께 적습니다.
+- 최종 카드뉴스 JSON은 만들지 말고 조사 메모만 작성합니다.
+
+대화:
+${conversation}
+`.trim();
+}
+
+async function researchWithWeb(
   model,
   messages
 ) {
@@ -765,48 +855,22 @@ async function callResponsesAPI(
       body: JSON.stringify({
         model,
 
-        instructions:
-          SYSTEM_PROMPT,
-
-        input: messages.map(
-          (message) => ({
-            role: message.role,
-
-            content: [
-              {
-                type:
-                  message.role ===
-                  "assistant"
-                    ? "output_text"
-                    : "input_text",
-
-                text:
-                  message.content
-              }
-            ]
-          })
-        ),
-
         tools: [
           {
             type: "web_search"
           }
         ],
 
-        text: {
-          format: {
-            type:
-              "json_schema",
+        tool_choice: "auto",
 
-            name:
-              "inwave_carousel_plan",
+        include: [
+          "web_search_call.action.sources"
+        ],
 
-            strict: true,
-
-            schema:
-              RESPONSE_SCHEMA
-          }
-        }
+        input:
+          buildResearchQuery(
+            messages
+          )
       })
     }
   );
@@ -820,51 +884,182 @@ async function callResponsesAPI(
     data = JSON.parse(raw);
   } catch {
     console.error(
-      "Responses API 원본 응답:",
+      "웹 검색 API 원본 응답:",
       raw
     );
 
     throw new Error(
-      "Responses API 응답을 JSON으로 읽지 못했습니다."
+      "웹 검색 응답을 JSON으로 읽지 못했습니다."
     );
   }
 
   if (!response.ok) {
     console.error(
-      "Responses API 오류:",
+      "웹 검색 API 오류:",
       data
     );
 
     throw new Error(
       data?.error?.message ||
-        `Responses API 오류: HTTP ${response.status}`
+        `웹 검색 API 오류: HTTP ${response.status}`
     );
   }
 
-  const resultText =
+  const researchText =
     extractResponseText(data);
 
-  if (
-    !resultText ||
-    typeof resultText !== "string"
-  ) {
+  const sources =
+    extractWebSources(data);
+
+  if (!researchText) {
     console.error(
-      "Responses API 결과 텍스트 없음:",
+      "웹 검색 결과 텍스트 없음:",
       data
     );
 
     throw new Error(
-      "Responses API 응답에 결과 텍스트가 없습니다."
+      "웹 검색 결과 내용을 받지 못했습니다."
     );
   }
 
-  return resultText;
+  return {
+    researchText,
+    sources
+  };
+}
+
+function cleanJsonString(value) {
+  const source =
+    String(value || "").trim();
+
+  if (!source) {
+    return "";
+  }
+
+  let cleaned = source
+    .replace(
+      /^```(?:json)?\s*/i,
+      ""
+    )
+    .replace(
+      /\s*```$/i,
+      ""
+    )
+    .trim();
+
+  try {
+    JSON.parse(cleaned);
+    return cleaned;
+  } catch {
+    // 아래에서 안전하게 JSON 객체 범위를 탐색합니다.
+  }
+
+  let startIndex = -1;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+
+  for (
+    let index = 0;
+    index < cleaned.length;
+    index += 1
+  ) {
+    const char = cleaned[index];
+
+    if (startIndex === -1) {
+      if (char === "{") {
+        startIndex = index;
+        depth = 1;
+      }
+
+      continue;
+    }
+
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === '"') {
+        inString = false;
+      }
+
+      continue;
+    }
+
+    if (char === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (char === "{") {
+      depth += 1;
+      continue;
+    }
+
+    if (char === "}") {
+      depth -= 1;
+
+      if (depth === 0) {
+        return cleaned
+          .slice(
+            startIndex,
+            index + 1
+          )
+          .trim();
+      }
+    }
+  }
+
+  return cleaned;
 }
 
 async function callChatCompletions(
   model,
-  messages
+  messages,
+  researchContext = null
 ) {
+  const researchMessage =
+    researchContext
+      ? {
+          role: "system",
+          content: `
+아래는 웹 검색으로 수집한 조사 메모입니다.
+
+반드시 다음 원칙을 지키세요.
+- 조사 메모에 없는 숫자나 사실을 새로 만들지 마세요.
+- 장표의 sources에는 아래 URL 목록에 있는 실제 URL만 사용하세요.
+- 출처가 충분하지 않은 주장은 조건형 문장으로 바꾸세요.
+- 검색 결과 문장을 그대로 복사하지 말고 카드뉴스 문장으로 재구성하세요.
+- 출처를 사용하지 않은 장표의 sources는 빈 배열로 반환하세요.
+
+[조사 메모]
+${researchContext.researchText}
+
+[검색에서 수집한 URL 목록]
+${JSON.stringify(
+  researchContext.sources,
+  null,
+  2
+)}
+`.trim()
+        }
+      : null;
+
+  const requestMessages = [
+    {
+      role: "system",
+      content:
+        SYSTEM_PROMPT
+    },
+
+    ...(researchMessage
+      ? [researchMessage]
+      : []),
+
+    ...messages
+  ];
+
   const response = await fetch(
     "https://api.openai.com/v1/chat/completions",
     {
@@ -881,18 +1076,12 @@ async function callChatCompletions(
       body: JSON.stringify({
         model,
 
-        messages: [
-          {
-            role: "system",
-            content:
-              SYSTEM_PROMPT
-          },
-
-          ...messages
-        ],
+        messages:
+          requestMessages,
 
         response_format: {
-          type: "json_schema",
+          type:
+            "json_schema",
 
           json_schema: {
             name:
@@ -905,7 +1094,7 @@ async function callChatCompletions(
           }
         },
 
-        temperature: 0.55
+        temperature: 0.45
       })
     }
   );
@@ -1121,16 +1310,23 @@ export default async function handler(
     model;
 
   try {
+    let researchContext =
+      null;
+
+    if (searchUsed) {
+      researchContext =
+        await researchWithWeb(
+          searchModel,
+          messages
+        );
+    }
+
     const text =
-      searchUsed
-        ? await callResponsesAPI(
-            searchModel,
-            messages
-          )
-        : await callChatCompletions(
-            model,
-            messages
-          );
+      await callChatCompletions(
+        model,
+        messages,
+        researchContext
+      );
 
     if (
       !text ||
@@ -1145,7 +1341,9 @@ export default async function handler(
 
     try {
       result =
-        JSON.parse(text);
+        JSON.parse(
+          cleanJsonString(text)
+        );
     } catch {
       console.error(
         "기획 결과 원문:",
