@@ -417,6 +417,22 @@
             color: var(--muted);
         }
 
+        .editor-controls input[type="color"] {
+            width: 100%; height: 46px; padding: 4px;
+            border: 1px solid #d6d6d6; border-radius: 10px;
+            background: white; cursor: pointer;
+        }
+
+        .color-preset-row {
+            display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px; margin-top: 10px;
+        }
+
+        .auto-contrast-button {
+            width: 100%; margin-top: 10px; padding: 11px 10px;
+            background: var(--navy); color: white; font-size: 13px;
+        }
+
         .small-button-row {
             display: grid;
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -846,6 +862,12 @@
                         >
                     </div>
 
+                    <div><label for="titleColorInput">제목 색상</label><input id="titleColorInput" type="color" value="#ffffff"></div>
+                    <div><label for="subtitleColorInput">설명 색상</label><input id="subtitleColorInput" type="color" value="#f5f1e8"></div>
+                    <div><label for="labelColorInput">라벨 색상</label><input id="labelColorInput" type="color" value="#ff8a1f"></div>
+                    <div><label for="strokeColorInput">외곽선 색상</label><input id="strokeColorInput" type="color" value="#000000"></div>
+                    <div><label for="strokeWidthInput">외곽선 두께</label><input id="strokeWidthInput" type="range" min="0" max="12" value="4"></div>
+
                     <div>
                         <label for="textWidthInput">글씨 영역 폭</label>
 
@@ -864,9 +886,9 @@
                         <input
                             id="overlayOpacityInput"
                             type="range"
-                            min="0"
+                            min="35"
                             max="100"
-                            value="100"
+                            value="80"
                         >
                     </div>
                 </div>
@@ -896,6 +918,13 @@
                         오른쪽 정렬
                     </button>
                 </div>
+                <div class="color-preset-row">
+                    <button class="small-button" data-color-preset="light" type="button">흰색 + 검정 외곽선</button>
+                    <button class="small-button" data-color-preset="dark" type="button">검정 + 흰색 외곽선</button>
+                    <button class="small-button" data-color-preset="brand" type="button">INWAVE 브랜드색</button>
+                    <button class="small-button" data-color-preset="orange" type="button">오렌지 강조</button>
+                </div>
+                <button class="auto-contrast-button" id="autoContrastButton" type="button">현재 글씨 위치 기준 자동 대비</button>
             </div>
 
             <div class="tip-box">
@@ -970,6 +999,13 @@
 
         const subtitleSizeInput =
             document.getElementById("subtitleSizeInput");
+        const titleColorInput = document.getElementById("titleColorInput");
+        const subtitleColorInput = document.getElementById("subtitleColorInput");
+        const labelColorInput = document.getElementById("labelColorInput");
+        const strokeColorInput = document.getElementById("strokeColorInput");
+        const strokeWidthInput = document.getElementById("strokeWidthInput");
+        const autoContrastButton = document.getElementById("autoContrastButton");
+        const colorPresetButtons = document.querySelectorAll("[data-color-preset]");
 
         const textWidthInput =
             document.getElementById("textWidthInput");
@@ -1026,8 +1062,12 @@
                 titleSize: 74,
                 subtitleSize: 34,
                 fontFamily: '"Noto Sans KR", sans-serif',
-                textColor: "#ffffff",
-                overlayOpacity: 1
+                titleColor: "#ffffff",
+                subtitleColor: "#f5f1e8",
+                labelColor: "#ff8a1f",
+                strokeColor: "#000000",
+                strokeWidth: 4,
+                overlayOpacity: 0.8
             },
 
             drag: {
@@ -1196,6 +1236,11 @@
                 String(
                     state.textLayout.subtitleSize
                 );
+            titleColorInput.value = state.textLayout.titleColor;
+            subtitleColorInput.value = state.textLayout.subtitleColor;
+            labelColorInput.value = state.textLayout.labelColor;
+            strokeColorInput.value = state.textLayout.strokeColor;
+            strokeWidthInput.value = String(state.textLayout.strokeWidth);
 
             textWidthInput.value =
                 String(
@@ -1561,16 +1606,25 @@
                 layout.align;
 
             ctx.shadowColor =
-                "rgba(0,0,0,0.55)";
+                "rgba(0,0,0,0.88)";
 
             ctx.shadowBlur =
-                14;
+                18;
+
+            ctx.shadowOffsetX =
+                0;
 
             ctx.shadowOffsetY =
-                4;
+                5;
 
-            ctx.fillStyle =
-                info.labelColor;
+            // 밝은 배경에서도 글자가 사라지지 않도록 외곽선을 추가합니다.
+            ctx.lineJoin =
+                "round";
+
+            ctx.miterLimit =
+                2;
+
+            ctx.fillStyle = layout.labelColor || info.labelColor;
 
             ctx.font =
                 `800 38px ${layout.fontFamily}`;
@@ -1584,8 +1638,9 @@
             let currentY =
                 y + 64;
 
-            ctx.fillStyle =
-                layout.textColor;
+            ctx.fillStyle = layout.titleColor;
+            ctx.strokeStyle = layout.strokeColor;
+            ctx.lineJoin = "round";
 
             ctx.font =
                 `800 ${layout.titleSize}px ${layout.fontFamily}`;
@@ -1604,6 +1659,11 @@
 
             titleLines.forEach(
                 (line) => {
+                    ctx.lineWidth = layout.strokeWidth;
+                    if (layout.strokeWidth > 0) {
+                        ctx.strokeText(line, alignX, currentY);
+                    }
+
                     ctx.fillText(
                         line,
                         alignX,
@@ -1618,6 +1678,8 @@
             currentY +=
                 18;
 
+            ctx.fillStyle = layout.subtitleColor;
+            ctx.strokeStyle = layout.strokeColor;
             ctx.font =
                 `500 ${layout.subtitleSize}px ${layout.fontFamily}`;
 
@@ -1635,6 +1697,11 @@
 
             subtitleLines.forEach(
                 (line) => {
+                    ctx.lineWidth = Math.max(0, layout.strokeWidth * 0.75);
+                    if (layout.strokeWidth > 0) {
+                        ctx.strokeText(line, alignX, currentY);
+                    }
+
                     ctx.fillText(
                         line,
                         alignX,
@@ -2171,12 +2238,11 @@
 
                     fontFamily:
                         state.textLayout.fontFamily,
-
-                    textColor:
-                        data.textColor ===
-                            "#000000"
-                            ? "#000000"
-                            : "#ffffff",
+                    titleColor: state.textLayout.titleColor,
+                    subtitleColor: state.textLayout.subtitleColor,
+                    labelColor: state.textLayout.labelColor,
+                    strokeColor: state.textLayout.strokeColor,
+                    strokeWidth: state.textLayout.strokeWidth,
 
                     overlayOpacity:
                         state.textLayout
@@ -2211,6 +2277,41 @@
                     "선택 이미지 글씨 자동 배치"
                 );
             }
+        }
+
+        function applyColorPreset(preset) {
+            const presets = {
+                light: { titleColor: "#ffffff", subtitleColor: "#f5f1e8", labelColor: "#ff8a1f", strokeColor: "#000000", strokeWidth: 4 },
+                dark: { titleColor: "#111827", subtitleColor: "#17243d", labelColor: "#e97312", strokeColor: "#ffffff", strokeWidth: 5 },
+                brand: { titleColor: "#f5f1e8", subtitleColor: "#ffffff", labelColor: "#f58220", strokeColor: "#17243d", strokeWidth: 5 },
+                orange: { titleColor: "#f58220", subtitleColor: "#ffffff", labelColor: "#f6d86b", strokeColor: "#17243d", strokeWidth: 5 }
+            };
+            Object.assign(state.textLayout, presets[preset] || presets.light);
+            updateControlValues();
+            drawCanvas();
+        }
+
+        function getTextAreaAverageBrightness() {
+            if (!state.backgroundImage) return 0;
+            drawCanvas();
+            const rect = state.textBoxRect;
+            const x = Math.max(0, Math.floor(rect.x));
+            const y = Math.max(0, Math.floor(rect.y));
+            const width = Math.max(1, Math.min(canvas.width - x, Math.floor(rect.width)));
+            const height = Math.max(1, Math.min(canvas.height - y, Math.floor(rect.height)));
+            const data = ctx.getImageData(x, y, width, height).data;
+            let total = 0, count = 0;
+            for (let index = 0; index < data.length; index += 160) {
+                total += 0.2126 * data[index] + 0.7152 * data[index + 1] + 0.0722 * data[index + 2];
+                count += 1;
+            }
+            return count ? total / count : 0;
+        }
+
+        function applyAutomaticContrast() {
+            const brightness = getTextAreaAverageBrightness();
+            applyColorPreset(brightness >= 145 ? "dark" : "light");
+            setStatus(brightness >= 145 ? "밝은 배경에 맞춰 어두운 글씨를 적용했습니다." : "어두운 배경에 맞춰 밝은 글씨를 적용했습니다.", "success");
         }
 
         function getCanvasPoint(
@@ -2505,6 +2606,14 @@
                 drawCanvas();
             }
         );
+
+        titleColorInput.addEventListener("input", () => { state.textLayout.titleColor = titleColorInput.value; drawCanvas(); });
+        subtitleColorInput.addEventListener("input", () => { state.textLayout.subtitleColor = subtitleColorInput.value; drawCanvas(); });
+        labelColorInput.addEventListener("input", () => { state.textLayout.labelColor = labelColorInput.value; drawCanvas(); });
+        strokeColorInput.addEventListener("input", () => { state.textLayout.strokeColor = strokeColorInput.value; drawCanvas(); });
+        strokeWidthInput.addEventListener("input", () => { state.textLayout.strokeWidth = clampNumber(strokeWidthInput.value, 0, 12, 4); drawCanvas(); });
+        colorPresetButtons.forEach((button) => button.addEventListener("click", () => { applyColorPreset(button.dataset.colorPreset); setStatus("글씨 색상 프리셋을 적용했습니다.", "success"); }));
+        autoContrastButton.addEventListener("click", applyAutomaticContrast);
 
         textWidthInput.addEventListener(
             "input",
