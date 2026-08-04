@@ -3,6 +3,8 @@
  * OpenAI 비전 기반 카드뉴스 텍스트 레이아웃 추천
  */
 
+export const maxDuration = 60;
+
 function clamp(value, min, max, fallback) {
   const number = Number(value);
   return Number.isFinite(number) ? Math.max(min, Math.min(max, number)) : fallback;
