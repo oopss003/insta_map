@@ -1,301 +1,817 @@
+/**
+ * api/generate-images.js
+ *
+ * INWAVE 카드뉴스 이미지 생성 API
+ * FAL + Replicate 지원
+ * Vercel Serverless Function
+ */
+
 import { fal } from "@fal-ai/client";
 
+/*
+ * FAL 인증 설정
+ * Vercel 환경변수 FAL_KEY 사용
+ */
 fal.config({
-    credentials: process.env.FAL_KEY
+  credentials: process.env.FAL_KEY
 });
 
-const VALID_CONCEPTS = ["hook", "insight", "magazine"];
+const VALID_CONCEPTS = [
+  "hook",
+  "insight",
+  "magazine"
+];
 
 const CONCEPT_PROMPTS = {
-    hook: `
-High-impact social media advertising photography.
-Strong contrast, dramatic lighting, attention-grabbing composition.
-Make the scene visually striking at thumbnail size.
-Leave clean space for a Korean headline.
+  hook: `
+Visual direction:
+High-impact editorial advertising photography.
+Strong visual hierarchy and immediate thumbnail impact.
+Bold but realistic lighting.
+A clearly identifiable main subject.
+The scene should create curiosity without looking sensational or artificial.
 `,
-    insight: `
-Professional editorial advertising photography.
-Sophisticated navy, ivory and warm orange atmosphere.
-Corporate and credible marketing insight mood.
-Leave balanced negative space for a Korean headline.
+
+  insight: `
+Visual direction:
+Professional editorial and documentary advertising photography.
+Credible, sophisticated and analytical atmosphere.
+Natural navy, ivory and warm orange accents when appropriate.
+Clear visual storytelling suitable for a marketing insight publication.
 `,
-    magazine: `
-Premium modern magazine editorial photography.
-Stylish, refined, cinematic and trendy visual direction.
-Leave generous clean space for headline typography.
+
+  magazine: `
+Visual direction:
+Premium contemporary magazine photography.
+Refined, stylish and cinematic but still realistic.
+Thoughtful composition, natural texture and subtle visual tension.
+Modern editorial sensibility without looking like generic stock photography.
 `
 };
 
+/**
+ * 생성 장수 정규화
+ * 공급자별 최대 2장
+ */
 function normalizeProviderCount(value) {
-    const num = Number(value) || 0;
-    return Math.max(0, Math.min(num, 2));
+  const number = Number(value);
+
+  if (!Number.isFinite(number)) {
+    return 0;
+  }
+
+  return Math.max(
+    0,
+    Math.min(Math.floor(number), 2)
+  );
 }
 
-function buildFinalPrompt(prompt, concept) {
-    const normalizedConcept = VALID_CONCEPTS.includes(concept)
-        ? concept
-        : "hook";
+/**
+ * 프롬프트 정리
+ */
+function normalizePrompt(prompt) {
+  return String(prompt || "")
+    .replace(/\u0000/g, "")
+    .trim()
+    .slice(0, 12000);
+}
 
-    return `
-${prompt.trim()}
+/**
+ * 장표 프롬프트와 선택 콘셉트 결합
+ *
+ * 지나치게 구체적인 공통 장소나 피사체를 강제로 넣지 않고,
+ * 사용자가 받은 장표별 프롬프트를 가장 우선합니다.
+ */
+function buildFinalPrompt(prompt, concept) {
+  const safePrompt = normalizePrompt(prompt);
+
+  const normalizedConcept =
+    VALID_CONCEPTS.includes(concept)
+      ? concept
+      : "hook";
+
+  return `
+PRIMARY SCENE INSTRUCTION:
+
+${safePrompt}
 
 ${CONCEPT_PROMPTS[normalizedConcept]}
 
-Required output:
+Final image requirements:
+
 - vertical 4:5 Instagram composition
-- photorealistic high-quality advertising image
-- one strong clear main visual subject
-- visually compelling and clickable
-- clean space for Korean headline
-- no text
-- no letters
+- photorealistic
+- realistic editorial or documentary advertising photography
+- preserve the specific subject, action, location and composition described in the primary scene instruction
+- do not replace the requested scene with a generic office, generic city street or generic digital signage scene
+- one coherent photographic scene
+- natural human anatomy when people are present
+- realistic hands and faces when visible
+- sufficient visual clarity at social-media thumbnail size
+- preserve intentional negative space only when requested in the primary scene instruction
+- no visible text
+- no Korean characters
+- no English letters
 - no typography
 - no captions
-- no logo
+- no logos
 - no watermark
-- no borders
-`;
+- no UI overlay
+- no charts
+- no infographic
+- no split screen
+- no collage
+- no poster frame
+- no decorative border
+`.trim();
 }
 
+/**
+ * 결과 URL을 공통 형식으로 변환
+ */
+function createImageResult(provider, url, index) {
+  return {
+    id: `${provider}-${Date.now()}-${index}`,
+    provider,
+    imageUrl: url
+  };
+}
+
+/**
+ * FAL 이미지 생성
+ */
 async function generateFalImages(finalPrompt, count) {
-    if (!process.env.FAL_KEY) {
-        throw new Error("FAL_KEY가 설정되지 않았습니다.");
-    }
+  if (count <= 0) {
+    return [];
+  }
 
-    const result = await fal.subscribe("fal-ai/flux/dev", {
-        input: {
-            prompt: finalPrompt,
-            image_size: {
-                width: 1080,
-                height: 1350
-            },
-            num_inference_steps: 28,
-            guidance_scale: 3.5,
-            num_images: count,
-            enable_safety_checker: true,
-            output_format: "jpeg",
-            acceleration: "none"
-        },
-        logs: true
-    });
+  if (!process.env.FAL_KEY) {
+    throw new Error(
+      "Vercel에 FAL_KEY가 설정되지 않았습니다."
+    );
+  }
 
-    const images = Array.isArray(result?.data?.images)
-        ? result.data.images
-              .filter((item) => item?.url)
-              .map((item, index) => ({
-                  id: `fal-${Date.now()}-${index}`,
-                  provider: "fal",
-                  imageUrl: item.url
-              }))
-        : [];
+  /*
+   * Vercel에 설정된 FAL_MODEL을 우선 사용합니다.
+   * 값이 없을 때만 기본 모델을 사용합니다.
+   */
+  const falModel =
+    process.env.FAL_MODEL?.trim() ||
+    "fal-ai/flux/dev";
 
-    return images;
-}
+  console.log("FAL 모델:", falModel);
+  console.log("FAL 생성 장수:", count);
 
-function parseReplicateModel(modelString) {
-    const fallback = "black-forest-labs/flux-schnell";
-    const model = (modelString || fallback).trim();
+  const result = await fal.subscribe(falModel, {
+    input: {
+      prompt: finalPrompt,
 
-    const [owner, name] = model.split("/");
+      image_size: {
+        width: 1080,
+        height: 1350
+      },
 
-    if (!owner || !name) {
-        return {
-            owner: "black-forest-labs",
-            name: "flux-schnell"
-        };
-    }
+      num_images: count,
 
-    return { owner, name };
-}
+      /*
+       * flux/dev 계열에서 일반적으로 사용할 수 있는 값입니다.
+       * FAL_MODEL을 완전히 다른 모델로 바꾸면 해당 모델의
+       * 입력 스키마도 함께 확인해야 합니다.
+       */
+      num_inference_steps: 28,
+      guidance_scale: 3.5,
+      enable_safety_checker: true,
+      output_format: "jpeg"
+    },
 
-async function generateReplicateImages(finalPrompt, count) {
-    if (!process.env.REPLICATE_API_TOKEN) {
-        throw new Error("REPLICATE_API_TOKEN이 설정되지 않았습니다.");
-    }
+    logs: true,
 
-    const { owner, name } = parseReplicateModel(process.env.REPLICATE_MODEL);
+    onQueueUpdate(update) {
+      if (update?.status === "IN_PROGRESS") {
+        const messages = Array.isArray(update.logs)
+          ? update.logs
+              .map((log) => log?.message)
+              .filter(Boolean)
+          : [];
 
-    const results = [];
-
-    for (let i = 0; i < count; i += 1) {
-        const response = await fetch(
-            `https://api.replicate.com/v1/models/${owner}/${name}/predictions`,
-            {
-                method: "POST",
-                headers: {
-                    Authorization: `Bearer ${process.env.REPLICATE_API_TOKEN}`,
-                    "Content-Type": "application/json",
-                    Prefer: "wait=90"
-                },
-                body: JSON.stringify({
-                    input: {
-                        prompt: finalPrompt,
-                        aspect_ratio: "4:5",
-                        output_format: "jpg",
-                        output_quality: 90
-                    }
-                })
-            }
-        );
-
-        const data = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                data?.detail ||
-                    data?.error ||
-                    "Replicate 이미지 생성 요청에 실패했습니다."
-            );
+        if (messages.length > 0) {
+          console.log(
+            "FAL 진행 상태:",
+            messages[messages.length - 1]
+          );
         }
-
-        const output = data?.output;
-
-        if (Array.isArray(output)) {
-            output.forEach((url, index) => {
-                if (typeof url === "string" && url) {
-                    results.push({
-                        id: `replicate-${Date.now()}-${i}-${index}`,
-                        provider: "replicate",
-                        imageUrl: url
-                    });
-                }
-            });
-        } else if (typeof output === "string" && output) {
-            results.push({
-                id: `replicate-${Date.now()}-${i}`,
-                provider: "replicate",
-                imageUrl: output
-            });
-        }
+      }
     }
+  });
 
-    return results;
-}
+  const rawImages = result?.data?.images;
 
-async function generateCivitaiImages(finalPrompt, count) {
-    if (!process.env.CIVITAI_API_TOKEN) {
-        throw new Error("CIVITAI_API_TOKEN이 설정되지 않았습니다.");
-    }
-
-    if (!process.env.CIVITAI_MODEL_VERSION_ID) {
-        throw new Error(
-            "Civitai는 토큰 외에 CIVITAI_MODEL_VERSION_ID가 추가로 필요합니다."
-        );
-    }
+  if (!Array.isArray(rawImages)) {
+    console.error("FAL 전체 응답:", result);
 
     throw new Error(
-        "Civitai 생성 코드는 모델 버전 ID까지 준비되면 연결할 수 있도록 구조만 넣어두었습니다."
+      "FAL 응답에 images 배열이 없습니다."
     );
+  }
+
+  const images = rawImages
+    .map((item, index) => {
+      const url =
+        typeof item === "string"
+          ? item
+          : item?.url;
+
+      if (
+        typeof url !== "string" ||
+        !url.startsWith("http")
+      ) {
+        return null;
+      }
+
+      return createImageResult(
+        "fal",
+        url,
+        index
+      );
+    })
+    .filter(Boolean);
+
+  if (images.length === 0) {
+    console.error("FAL 이미지 결과 없음:", result);
+
+    throw new Error(
+      "FAL에서 생성된 이미지 URL을 받지 못했습니다."
+    );
+  }
+
+  return images;
 }
 
-export default async function handler(req, res) {
-    if (req.method !== "POST") {
-        return res.status(405).json({
-            error: "POST 요청만 사용할 수 있습니다."
-        });
-    }
+/**
+ * Replicate 모델 문자열 분석
+ *
+ * 지원:
+ * owner/model
+ * owner/model:versionId
+ * versionId
+ */
+function parseReplicateModel(modelValue) {
+  const fallback =
+    "black-forest-labs/flux-schnell";
 
-    const {
-        prompt,
-        concept = "hook",
-        providers = {}
-    } = req.body || {};
+  const model = String(
+    modelValue || fallback
+  ).trim();
 
-    if (!prompt || typeof prompt !== "string" || !prompt.trim()) {
-        return res.status(400).json({
-            error: "이미지 생성 프롬프트가 없습니다."
-        });
-    }
-
-    const normalizedProviders = {
-        fal: normalizeProviderCount(providers.fal),
-        replicate: normalizeProviderCount(providers.replicate),
-        civitai: normalizeProviderCount(providers.civitai)
+  /*
+   * 64자리 버전 ID만 입력한 경우
+   */
+  if (/^[a-f0-9]{64}$/i.test(model)) {
+    return {
+      type: "version",
+      version: model
     };
+  }
 
-    const totalSelected =
-        normalizedProviders.fal +
-        normalizedProviders.replicate +
-        normalizedProviders.civitai;
+  /*
+   * owner/model:version 형식
+   */
+  if (model.includes(":")) {
+    const separatorIndex = model.indexOf(":");
 
-    if (totalSelected <= 0) {
-        return res.status(400).json({
-            error: "최소 1장 이상 선택해 주세요."
-        });
+    const modelPath = model
+      .slice(0, separatorIndex)
+      .trim();
+
+    const version = model
+      .slice(separatorIndex + 1)
+      .trim();
+
+    const [owner, name] =
+      modelPath.split("/");
+
+    if (
+      owner &&
+      name &&
+      /^[a-f0-9]{64}$/i.test(version)
+    ) {
+      return {
+        type: "version",
+        owner,
+        name,
+        version
+      };
+    }
+  }
+
+  /*
+   * 공식 모델 owner/model 형식
+   */
+  const [owner, name] = model.split("/");
+
+  if (owner && name) {
+    return {
+      type: "official",
+      owner,
+      name
+    };
+  }
+
+  return {
+    type: "official",
+    owner: "black-forest-labs",
+    name: "flux-schnell"
+  };
+}
+
+/**
+ * Replicate Prediction 생성
+ */
+async function createReplicatePrediction(
+  modelInfo,
+  finalPrompt
+) {
+  let endpoint;
+  let requestBody;
+
+  if (modelInfo.type === "version") {
+    endpoint =
+      "https://api.replicate.com/v1/predictions";
+
+    requestBody = {
+      version: modelInfo.version,
+
+      input: {
+        prompt: finalPrompt,
+        aspect_ratio: "4:5",
+        output_format: "jpg",
+        output_quality: 90
+      }
+    };
+  } else {
+    endpoint =
+      `https://api.replicate.com/v1/models/` +
+      `${encodeURIComponent(modelInfo.owner)}/` +
+      `${encodeURIComponent(modelInfo.name)}/predictions`;
+
+    requestBody = {
+      input: {
+        prompt: finalPrompt,
+        aspect_ratio: "4:5",
+        output_format: "jpg",
+        output_quality: 90
+      }
+    };
+  }
+
+  const response = await fetch(endpoint, {
+    method: "POST",
+
+    headers: {
+      Authorization:
+        `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+
+      "Content-Type": "application/json",
+
+      /*
+       * Replicate 동기 대기는 최대 60초
+       */
+      Prefer: "wait=60"
+    },
+
+    body: JSON.stringify(requestBody)
+  });
+
+  const rawResponse = await response.text();
+
+  let data;
+
+  try {
+    data = JSON.parse(rawResponse);
+  } catch {
+    console.error(
+      "Replicate 비정상 응답:",
+      rawResponse
+    );
+
+    throw new Error(
+      "Replicate 응답을 JSON으로 읽지 못했습니다."
+    );
+  }
+
+  if (!response.ok) {
+    console.error("Replicate API 오류:", data);
+
+    throw new Error(
+      data?.detail ||
+      data?.error ||
+      `Replicate 요청 실패: HTTP ${response.status}`
+    );
+  }
+
+  return data;
+}
+
+/**
+ * 지정 시간 대기
+ */
+function sleep(milliseconds) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
+}
+
+/**
+ * Replicate가 starting 또는 processing 상태인 경우
+ * 완료될 때까지 상태 조회
+ */
+async function waitForReplicatePrediction(
+  prediction
+) {
+  let current = prediction;
+
+  /*
+   * 최대 약 100초 추가 대기
+   * 5초 × 20회
+   */
+  for (
+    let attempt = 0;
+    attempt < 20;
+    attempt += 1
+  ) {
+    if (current?.status === "succeeded") {
+      return current;
     }
 
-    const finalPrompt = buildFinalPrompt(prompt, concept);
-
-    const tasks = [];
-    const providerErrors = [];
-    const images = [];
-
-    if (normalizedProviders.fal > 0) {
-        tasks.push(
-            generateFalImages(finalPrompt, normalizedProviders.fal)
-                .then((result) => {
-                    images.push(...result);
-                })
-                .catch((error) => {
-                    providerErrors.push({
-                        provider: "fal",
-                        message: error.message || "FAL 오류"
-                    });
-                })
-        );
+    if (
+      current?.status === "failed" ||
+      current?.status === "canceled"
+    ) {
+      throw new Error(
+        current?.error ||
+        `Replicate 작업이 ${current.status} 상태로 종료됐습니다.`
+      );
     }
 
-    if (normalizedProviders.replicate > 0) {
-        tasks.push(
-            generateReplicateImages(finalPrompt, normalizedProviders.replicate)
-                .then((result) => {
-                    images.push(...result);
-                })
-                .catch((error) => {
-                    providerErrors.push({
-                        provider: "replicate",
-                        message: error.message || "Replicate 오류"
-                    });
-                })
-        );
+    const statusUrl = current?.urls?.get;
+
+    if (!statusUrl) {
+      throw new Error(
+        "Replicate 결과 조회 주소가 없습니다."
+      );
     }
 
-    if (normalizedProviders.civitai > 0) {
-        tasks.push(
-            generateCivitaiImages(finalPrompt, normalizedProviders.civitai)
-                .then((result) => {
-                    images.push(...result);
-                })
-                .catch((error) => {
-                    providerErrors.push({
-                        provider: "civitai",
-                        message: error.message || "Civitai 오류"
-                    });
-                })
-        );
-    }
+    await sleep(5000);
+
+    const response = await fetch(statusUrl, {
+      method: "GET",
+
+      headers: {
+        Authorization:
+          `Bearer ${process.env.REPLICATE_API_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    });
+
+    const rawResponse = await response.text();
+
+    let data;
 
     try {
-        await Promise.all(tasks);
+      data = JSON.parse(rawResponse);
+    } catch {
+      console.error(
+        "Replicate 상태 응답:",
+        rawResponse
+      );
 
-        if (images.length === 0) {
-            return res.status(500).json({
-                error: "생성된 이미지가 없습니다.",
-                providerErrors
-            });
-        }
-
-        return res.status(200).json({
-            success: true,
-            images,
-            providerErrors,
-            finalPrompt
-        });
-    } catch (error) {
-        console.error(error);
-
-        return res.status(500).json({
-            error: "이미지 생성 중 오류가 발생했습니다."
-        });
+      throw new Error(
+        "Replicate 진행 상태를 JSON으로 읽지 못했습니다."
+      );
     }
+
+    if (!response.ok) {
+      console.error(
+        "Replicate 상태 조회 오류:",
+        data
+      );
+
+      throw new Error(
+        data?.detail ||
+        data?.error ||
+        "Replicate 진행 상태 조회에 실패했습니다."
+      );
+    }
+
+    current = data;
+
+    console.log(
+      "Replicate 상태:",
+      current?.status
+    );
+  }
+
+  throw new Error(
+    "Replicate 이미지 생성 대기 시간이 초과됐습니다."
+  );
+}
+
+/**
+ * Replicate output에서 이미지 URL 추출
+ */
+function extractReplicateUrls(output) {
+  if (typeof output === "string") {
+    return output.startsWith("http")
+      ? [output]
+      : [];
+  }
+
+  if (Array.isArray(output)) {
+    return output.filter(
+      (item) =>
+        typeof item === "string" &&
+        item.startsWith("http")
+    );
+  }
+
+  /*
+   * 일부 모델에서 객체 형태를 반환할 가능성 처리
+   */
+  if (output && typeof output === "object") {
+    const possibleUrls = [
+      output.url,
+      output.image,
+      output.imageUrl,
+      output.output
+    ];
+
+    return possibleUrls.filter(
+      (item) =>
+        typeof item === "string" &&
+        item.startsWith("http")
+    );
+  }
+
+  return [];
+}
+
+/**
+ * Replicate 이미지 생성
+ */
+async function generateReplicateImages(
+  finalPrompt,
+  count
+) {
+  if (count <= 0) {
+    return [];
+  }
+
+  if (!process.env.REPLICATE_API_TOKEN) {
+    throw new Error(
+      "Vercel에 REPLICATE_API_TOKEN이 설정되지 않았습니다."
+    );
+  }
+
+  const modelInfo = parseReplicateModel(
+    process.env.REPLICATE_MODEL
+  );
+
+  console.log(
+    "Replicate 모델:",
+    process.env.REPLICATE_MODEL ||
+      "black-forest-labs/flux-schnell"
+  );
+
+  console.log(
+    "Replicate 생성 장수:",
+    count
+  );
+
+  const images = [];
+
+  /*
+   * UI에서 2장을 선택하면 2회 요청합니다.
+   * 모델별 num_outputs 입력 차이를 피하기 위한 방식입니다.
+   */
+  for (
+    let index = 0;
+    index < count;
+    index += 1
+  ) {
+    let prediction =
+      await createReplicatePrediction(
+        modelInfo,
+        finalPrompt
+      );
+
+    if (
+      prediction?.status === "starting" ||
+      prediction?.status === "processing"
+    ) {
+      prediction =
+        await waitForReplicatePrediction(
+          prediction
+        );
+    }
+
+    if (prediction?.status === "failed") {
+      throw new Error(
+        prediction?.error ||
+        "Replicate 이미지 생성에 실패했습니다."
+      );
+    }
+
+    const urls = extractReplicateUrls(
+      prediction?.output
+    );
+
+    if (urls.length === 0) {
+      console.error(
+        "Replicate 결과 URL 없음:",
+        prediction
+      );
+
+      throw new Error(
+        `Replicate 이미지 결과가 없습니다. 현재 상태: ${
+          prediction?.status || "알 수 없음"
+        }`
+      );
+    }
+
+    urls.forEach((url, outputIndex) => {
+      images.push(
+        createImageResult(
+          "replicate",
+          url,
+          `${index}-${outputIndex}`
+        )
+      );
+    });
+  }
+
+  return images;
+}
+
+/**
+ * API 메인 핸들러
+ */
+export default async function handler(req, res) {
+  res.setHeader(
+    "Cache-Control",
+    "no-store, max-age=0"
+  );
+
+  if (req.method !== "POST") {
+    return res.status(405).json({
+      error: "POST 요청만 사용할 수 있습니다."
+    });
+  }
+
+  const {
+    prompt,
+    concept = "hook",
+    providers = {}
+  } = req.body || {};
+
+  const finalSourcePrompt =
+    normalizePrompt(prompt);
+
+  if (!finalSourcePrompt) {
+    return res.status(400).json({
+      error: "이미지 생성 프롬프트가 없습니다."
+    });
+  }
+
+  const normalizedProviders = {
+    fal: normalizeProviderCount(
+      providers?.fal
+    ),
+
+    replicate: normalizeProviderCount(
+      providers?.replicate
+    )
+  };
+
+  const totalSelected =
+    normalizedProviders.fal +
+    normalizedProviders.replicate;
+
+  if (totalSelected <= 0) {
+    return res.status(400).json({
+      error:
+        "FAL 또는 Replicate에서 최소 1장 이상 선택해 주세요."
+    });
+  }
+
+  /*
+   * 요청 가능한 최대 이미지 수 제한
+   */
+  if (totalSelected > 4) {
+    return res.status(400).json({
+      error:
+        "한 번에 생성할 수 있는 이미지는 최대 4장입니다."
+    });
+  }
+
+  const finalPrompt = buildFinalPrompt(
+    finalSourcePrompt,
+    concept
+  );
+
+  const tasks = [];
+  const images = [];
+  const providerErrors = [];
+
+  if (normalizedProviders.fal > 0) {
+    tasks.push(
+      generateFalImages(
+        finalPrompt,
+        normalizedProviders.fal
+      )
+        .then((result) => {
+          images.push(...result);
+        })
+        .catch((error) => {
+          console.error(
+            "FAL 생성 오류:",
+            error
+          );
+
+          providerErrors.push({
+            provider: "fal",
+            message:
+              error instanceof Error
+                ? error.message
+                : "FAL 이미지 생성 오류"
+          });
+        })
+    );
+  }
+
+  if (
+    normalizedProviders.replicate > 0
+  ) {
+    tasks.push(
+      generateReplicateImages(
+        finalPrompt,
+        normalizedProviders.replicate
+      )
+        .then((result) => {
+          images.push(...result);
+        })
+        .catch((error) => {
+          console.error(
+            "Replicate 생성 오류:",
+            error
+          );
+
+          providerErrors.push({
+            provider: "replicate",
+            message:
+              error instanceof Error
+                ? error.message
+                : "Replicate 이미지 생성 오류"
+          });
+        })
+    );
+  }
+
+  try {
+    await Promise.all(tasks);
+
+    if (images.length === 0) {
+      return res.status(500).json({
+        error:
+          "선택한 이미지 API에서 생성된 이미지가 없습니다.",
+        providerErrors
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      images,
+      providerErrors,
+
+      /*
+       * 디버깅 중에는 유용합니다.
+       * 프롬프트를 외부에 보여주고 싶지 않다면
+       * 추후 finalPrompt 항목을 삭제할 수 있습니다.
+       */
+      finalPrompt
+    });
+  } catch (error) {
+    console.error(
+      "generate-images 서버 오류:",
+      error
+    );
+
+    return res.status(500).json({
+      error:
+        error instanceof Error
+          ? error.message
+          : "이미지 생성 중 서버 오류가 발생했습니다.",
+
+      providerErrors
+    });
+  }
 }
