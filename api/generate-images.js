@@ -321,7 +321,36 @@ Do not create fake Asian characters anywhere in the scene.
  * 따옴표 안에 짧은 영어가 있으면 영어 텍스트 모드,
  * 그렇지 않으면 완전한 텍스트 제거 모드로 동작합니다.
  */
-function buildFinalPrompt(prompt, concept) {
+function buildCompositionInstruction(imageComposition = {}, role = "insight") {
+  const reservedTextArea = String(imageComposition?.reservedTextArea || "lower-left");
+  const subjectPosition = String(imageComposition?.subjectPosition || "right-center");
+  const cameraShot = String(imageComposition?.cameraShot || "medium-wide");
+  const backgroundDensity = String(imageComposition?.backgroundDensity || "low");
+
+  const areaMap = {
+    "upper-left": "upper-left 40 percent",
+    "upper-center": "upper-center 45 percent",
+    "upper-right": "upper-right 40 percent",
+    "middle-left": "middle-left 40 percent",
+    "middle-right": "middle-right 40 percent",
+    "lower-left": "lower-left 40 percent",
+    "lower-center": "lower-center 45 percent",
+    "lower-right": "lower-right 40 percent"
+  };
+
+  return `
+PLANNED CARD LAYOUT:
+- page role: ${role}
+- camera shot: ${cameraShot}
+- place the main subject around the ${subjectPosition}
+- reserve a clean, low-detail, visually calm area occupying approximately the ${areaMap[reservedTextArea] || areaMap["lower-left"]} for a Korean headline that will be added later
+- keep faces, hands, phones, products and important actions completely outside the reserved text area
+- background density in the reserved text area must be ${backgroundDensity}
+- do not place bright highlights, high-contrast edges or important objects in the reserved text area
+`;
+}
+
+function buildFinalPrompt(prompt, concept, imageComposition = {}, role = "insight") {
   const safePrompt = normalizePrompt(prompt);
 
   const normalizedConcept =
@@ -360,6 +389,8 @@ IMPORTANT PRIORITY:
 - do not automatically add storefront signs
 
 ${CONCEPT_PROMPTS[normalizedConcept]}
+
+${buildCompositionInstruction(imageComposition, role)}
 
 GENERAL IMAGE REQUIREMENTS:
 
@@ -1006,7 +1037,9 @@ export default async function handler(
   const {
     prompt,
     concept = "hook",
-    providers = {}
+    providers = {},
+    imageComposition = {},
+    role = "insight"
   } = req.body || {};
 
   const sourcePrompt =
@@ -1057,7 +1090,9 @@ export default async function handler(
     textMode
   } = buildFinalPrompt(
     sourcePrompt,
-    concept
+    concept,
+    imageComposition,
+    role
   );
 
   console.log(
