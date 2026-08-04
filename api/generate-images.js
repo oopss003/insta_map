@@ -13,6 +13,8 @@
  * 위와 같이 입력하면 INWAVE만 이미지 내부 텍스트로 허용합니다.
  */
 
+export const maxDuration = 300;
+
 import { fal } from "@fal-ai/client";
 
 /**
@@ -30,6 +32,15 @@ const VALID_CONCEPTS = [
   "insight",
   "magazine"
 ];
+
+const CONCEPT_ALIASES = {
+  hook: "hook",
+  insight: "insight",
+  magazine: "magazine",
+  "강한 후킹형": "hook",
+  "전문 인사이트형": "insight",
+  "트렌드 매거진형": "magazine"
+};
 
 /**
  * 콘셉트별 공통 사진 방향
@@ -353,10 +364,18 @@ PLANNED CARD LAYOUT:
 function buildFinalPrompt(prompt, concept, imageComposition = {}, role = "insight") {
   const safePrompt = normalizePrompt(prompt);
 
+  const requestedConcept =
+    String(concept || "").trim();
+
   const normalizedConcept =
-    VALID_CONCEPTS.includes(concept)
-      ? concept
-      : "hook";
+    CONCEPT_ALIASES[requestedConcept] ||
+    (
+      VALID_CONCEPTS.includes(
+        requestedConcept
+      )
+        ? requestedConcept
+        : "hook"
+    );
 
   const requestedEnglishText =
     extractRequestedEnglishText(safePrompt);
