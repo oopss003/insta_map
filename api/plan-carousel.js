@@ -6,7 +6,6 @@
  */
 
 export default async function handler(req, res) {
-  // 브라우저 캐시 방지
   res.setHeader("Cache-Control", "no-store, max-age=0");
 
   if (req.method !== "POST") {
@@ -15,7 +14,6 @@ export default async function handler(req, res) {
     });
   }
 
-  // 환경변수 확인
   if (!process.env.OPENAI_API_KEY) {
     console.error("OPENAI_API_KEY 환경변수가 없습니다.");
 
@@ -33,7 +31,6 @@ export default async function handler(req, res) {
     });
   }
 
-  // 브라우저에서 임의로 너무 많은 메시지를 보내는 것을 방지
   const safeMessages = messages
     .filter(
       (message) =>
@@ -110,12 +107,11 @@ export default async function handler(req, res) {
 
 카드뉴스는 주제에 따라 3~5장으로 구성하세요.
 
-중요:
 모든 주제를 무조건
 "표지 → 문제 → 비교 → 체크리스트 → 해결책"
 형태로 만들지 마세요.
 
-각 주제를 먼저 분석한 다음 가장 적절한 흐름을 선택하세요.
+각 주제를 분석한 다음 가장 적절한 흐름을 선택하세요.
 
 가능한 장표 역할 예시:
 
@@ -222,28 +218,26 @@ INWAVE는 오프라인 광고에서 다음 데이터를 측정합니다.
 제목과 본문을 끼워 맞추지 마세요.
 
 ────────────────────────
-[이미지 프롬프트 핵심 규칙]
+[이미지 프롬프트 기본 원칙]
 ────────────────────────
 
 englishImagePrompt는 장표마다 개별적으로 작성해야 합니다.
 
-모든 장표에 다음과 같은 고정 프롬프트를 반복하지 마세요.
+모든 장표에 다음과 같은 고정 장면을 반복하지 마세요.
 
 - modern commercial interior
 - large digital advertising screen
 - several people walking past
-- wide composition
-- people looking at screen
-- data dashboard
 - generic office
 - generic city street
+- generic data dashboard
+- generic billboard scene
 
 장표의 제목과 본문이 달라지면
 피사체, 공간, 행동, 구도, 카메라 거리, 시간대도 달라져야 합니다.
 
 이미지는 설명용 아이콘이나 인포그래픽보다
-실제 광고 현장 또는 실제 상황을 촬영한 듯한
-photorealistic editorial photography를 우선 사용하세요.
+실제 상황을 촬영한 듯한 photorealistic editorial photography를 우선하세요.
 
 각 프롬프트에는 필요한 경우 다음 내용을 구체적으로 포함하세요.
 
@@ -263,6 +257,7 @@ photorealistic editorial photography를 우선 사용하세요.
 장표마다 구도를 다양하게 선택하세요.
 
 예:
+
 - close-up
 - medium shot
 - wide environmental shot
@@ -277,14 +272,166 @@ photorealistic editorial photography를 우선 사용하세요.
 
 단, 장표의 의미와 맞지 않는 구도를 억지로 사용하지 마세요.
 
-모든 영문 이미지 프롬프트에는 다음 조건이 포함되어야 합니다.
+────────────────────────
+[문자 생성 위험 장면 금지]
+────────────────────────
+
+이미지에 글자가 필요하지 않은 장표에서는
+문자가 발생할 가능성이 높은 장면과 표현을 피하세요.
+
+다음 요소를 정면 또는 선명하게 보여주지 마세요.
+
+- 상점 간판
+- 식당 간판
+- 병원 간판
+- 학교 간판
+- 은행 간판
+- 매장 이름
+- 옥외 광고판
+- 디지털 광고판
+- 메뉴판
+- 포스터
+- 전단지
+- 도로 표지판
+- 안내판
+- 상품 포장지
+- 글자가 있는 의류
+- 차량 번호판
+- 브랜드 로고
+- 이름표
+- 명함
+- 휴대전화 화면의 글자
+- 컴퓨터 화면의 글자
+- 데이터 화면의 숫자와 문구
+
+단순히 프롬프트 마지막에 "no text"만 추가하지 마세요.
+
+장면 자체에서 문자가 생길 장소를 제거해야 합니다.
+
+문자가 생길 수 있는 공간이 필요한 경우 반드시 다음 중 하나로 표현하세요.
+
+- signboards completely outside the frame
+- plain unmarked building facades
+- blank architectural panels
+- unmarked glass storefront windows
+- signs viewed only from the back
+- sign-shaped objects heavily blurred
+- signage fully obscured by architecture
+- all display surfaces completely blank
+- people and behavior shown in medium or close framing
+- text-bearing objects cropped outside the composition
+
+다음 표현은 가급적 사용하지 마세요.
+
+- outdoor advertisements
+- outdoor advertising signs
+- billboards
+- signage
+- storefront signs
+- restaurant sign
+- hospital sign
+- shop signs
+- advertising posters
+- commercial signs
+- branded products
+- visible menus
+- readable displays
+
+이런 표현이 장표 의미상 꼭 필요하다면 다음처럼 바꾸세요.
+
+잘못된 예:
+"a restaurant and a hospital visible"
+
+수정 예:
+"modern commercial buildings with plain unmarked facades"
+
+잘못된 예:
+"people engaging with outdoor advertisements"
+
+수정 예:
+"people pausing near a blank architectural display surface,
+with attention conveyed through posture and gaze"
+
+잘못된 예:
+"busy street filled with shop signs"
+
+수정 예:
+"pedestrians moving through a modern commercial district,
+with unmarked glass storefronts and plain building facades"
+
+잘못된 예:
+"a large digital billboard showing an advertisement"
+
+수정 예:
+"a large blank illuminated display surface,
+with no graphics, no letters and no symbols"
+
+────────────────────────
+[인물 행동으로 광고 관심 표현]
+────────────────────────
+
+광고나 매장에 대한 관심을 표현할 때
+글자가 있는 광고판을 직접 보여주는 대신 인물의 행동으로 표현하세요.
+
+활용 가능한 장면:
+
+- 한 사람이 걷다가 잠시 멈추는 모습
+- 유리창 안쪽을 바라보는 사람의 뒷모습
+- 고개를 돌려 특정 방향을 보는 행인
+- 여러 사람 중 한 사람만 관심을 보이는 장면
+- 매장 입구 앞에서 고민하는 사람
+- 시선 방향이 분명한 옆모습
+- 화면 밖 대상에 반응하는 인물
+- 전경과 배경의 행동 차이
+- 지나치는 사람과 멈춘 사람의 대비
+
+광고 내용을 직접 보여주기보다,
+사람이 얼마나 관심을 보이는지를 행동과 구도로 표현하세요.
+
+────────────────────────
+[영문 텍스트 허용 조건]
+────────────────────────
+
+이미지 안에 영어 텍스트가 반드시 필요한 경우에만
+짧은 영문 1개를 따옴표로 명확하게 지정할 수 있습니다.
+
+예:
+
+A single clean sign displaying exactly "INWAVE"
+
+영어 텍스트 사용 규칙:
+
+- 최대 1~3단어
+- 짧고 쉬운 영어만 사용
+- 정확한 문구를 큰따옴표로 표시
+- displaying exactly "TEXT" 형식 권장
+- 한 장면에 영어 문구 1개만 허용
+- 나머지 간판과 글자는 모두 제거
+- 긴 문장 금지
+- 여러 간판에 서로 다른 문구 금지
+- 한글을 이미지 안에 생성하도록 요청하지 않기
+
+영문 텍스트가 필요하지 않다면
+따옴표로 된 영어 문구를 프롬프트에 넣지 마세요.
+
+────────────────────────
+[englishImagePrompt 필수 조건]
+────────────────────────
+
+모든 영문 이미지 프롬프트에는 다음 조건을 포함하세요.
 
 - vertical 4:5 Instagram composition
 - photorealistic
 - editorial or documentary advertising photography
+- one coherent photographic scene
 - no visible text
-- no letters
-- no captions
+- no readable text
+- no pseudo-text
+- no fake letters
+- no invented writing
+- no Korean characters
+- no Chinese characters
+- no Japanese characters
 - no logos
 - no watermark
 - no UI overlay
@@ -292,8 +439,25 @@ photorealistic editorial photography를 우선 사용하세요.
 - no split screen
 - no collage
 
-이미지 자체에 한국어 문구나 제목을 생성하지 마세요.
-텍스트는 이후 웹 편집기가 별도로 올립니다.
+단, 짧은 영어 문구 1개를 의도적으로 요청한 경우에는
+그 문구만 예외로 허용하고 나머지 글자는 모두 금지하세요.
+
+────────────────────────
+[이미지 프롬프트 최종 점검]
+────────────────────────
+
+englishImagePrompt를 작성한 후 반드시 스스로 점검하세요.
+
+1. 이 프롬프트에 식당, 병원, 상점, 광고판, 메뉴판, 포스터가 들어가 있는가?
+2. 정면으로 보이는 간판이나 표지판이 있는가?
+3. AI가 가짜 글자를 만들 만한 면적이 있는가?
+4. outdoor advertisements, signage, billboard 같은 위험 표현이 있는가?
+5. 글자를 직접 보여주지 않고 인물 행동으로 의미를 전달할 수 있는가?
+6. 모든 간판과 글자 영역을 blank, unmarked, blurred, obscured, outside the frame 중 하나로 통제했는가?
+7. 장표 제목과 본문을 실제로 표현하는 장면인가?
+8. 앞 장표와 거의 같은 거리 장면을 반복하고 있지는 않은가?
+
+문자 위험 요소가 발견되면 프롬프트를 다시 작성한 뒤 반환하세요.
 
 ────────────────────────
 [응답 규칙]
@@ -303,14 +467,15 @@ photorealistic editorial photography를 우선 사용하세요.
 마크다운, 코드블록, 추가 설명은 반환하지 마세요.
 `;
 
-  /*
-   * incomplete 상태에서도 storyboard를 null로 만들지 않고
-   * pages: []로 반환하게 만들어 스키마 오류를 줄였습니다.
-   */
   const responseSchema = {
     type: "object",
     additionalProperties: false,
-    required: ["isComplete", "chatReply", "storyboard"],
+    required: [
+      "isComplete",
+      "chatReply",
+      "storyboard"
+    ],
+
     properties: {
       isComplete: {
         type: "boolean",
@@ -326,6 +491,7 @@ photorealistic editorial photography를 우선 사용하세요.
         type: "object",
         additionalProperties: false,
         required: ["pages"],
+
         properties: {
           pages: {
             type: "array",
@@ -386,7 +552,7 @@ photorealistic editorial photography를 우선 사용하세요.
                 englishImagePrompt: {
                   type: "string",
                   description:
-                    "해당 장표 전용의 구체적인 영문 이미지 생성 프롬프트"
+                    "문자 위험 장면을 제거한 장표 전용 영문 이미지 생성 프롬프트"
                 }
               }
             }
@@ -397,12 +563,9 @@ photorealistic editorial photography를 우선 사용하세요.
   };
 
   try {
-    /*
-     * Vercel 환경변수명과 일치하도록
-     * OPENAI_TEXT_MODEL을 사용합니다.
-     */
     const model =
-      process.env.OPENAI_TEXT_MODEL?.trim() || "gpt-4.1-mini";
+      process.env.OPENAI_TEXT_MODEL?.trim() ||
+      "gpt-4.1-mini";
 
     console.log("OpenAI 텍스트 모델:", model);
     console.log("전달된 대화 수:", safeMessages.length);
@@ -413,7 +576,8 @@ photorealistic editorial photography를 우선 사용하세요.
         method: "POST",
 
         headers: {
-          Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+          Authorization:
+            `Bearer ${process.env.OPENAI_API_KEY}`,
           "Content-Type": "application/json"
         },
 
@@ -438,27 +602,32 @@ photorealistic editorial photography를 우선 사용하세요.
             }
           },
 
-          temperature: 0.7
+          temperature: 0.6
         })
       }
     );
 
-    /*
-     * response.json()에서 바로 실패하지 않도록
-     * 먼저 text로 받은 후 JSON 변환
-     */
-    const rawResponse = await openAIResponse.text();
+    const rawResponse =
+      await openAIResponse.text();
 
     let openAIData;
 
     try {
       openAIData = JSON.parse(rawResponse);
     } catch (parseError) {
-      console.error("OpenAI 원본 응답:", rawResponse);
-      console.error("OpenAI 응답 JSON 변환 오류:", parseError);
+      console.error(
+        "OpenAI 원본 응답:",
+        rawResponse
+      );
+
+      console.error(
+        "OpenAI 응답 JSON 변환 오류:",
+        parseError
+      );
 
       return res.status(502).json({
-        error: "OpenAI 응답을 JSON으로 읽지 못했습니다.",
+        error:
+          "OpenAI 응답을 JSON으로 읽지 못했습니다.",
         detail: rawResponse.slice(0, 1000)
       });
     }
@@ -468,32 +637,50 @@ photorealistic editorial photography를 우선 사용하세요.
         openAIData?.error?.message ||
         `OpenAI API 요청 실패: HTTP ${openAIResponse.status}`;
 
-      console.error("OpenAI API 오류:", openAIData);
+      console.error(
+        "OpenAI API 오류:",
+        openAIData
+      );
 
-      return res.status(openAIResponse.status).json({
-        error: apiError,
-        detail: openAIData
-      });
+      return res
+        .status(openAIResponse.status)
+        .json({
+          error: apiError,
+          detail: openAIData
+        });
     }
 
-    const message = openAIData?.choices?.[0]?.message;
+    const message =
+      openAIData?.choices?.[0]?.message;
 
     if (message?.refusal) {
-      console.error("OpenAI 응답 거절:", message.refusal);
+      console.error(
+        "OpenAI 응답 거절:",
+        message.refusal
+      );
 
       return res.status(422).json({
-        error: "OpenAI가 해당 요청의 처리를 거절했습니다.",
+        error:
+          "OpenAI가 해당 요청의 처리를 거절했습니다.",
         detail: message.refusal
       });
     }
 
-    const resultText = message?.content;
+    const resultText =
+      message?.content;
 
-    if (!resultText || typeof resultText !== "string") {
-      console.error("OpenAI content 없음:", openAIData);
+    if (
+      !resultText ||
+      typeof resultText !== "string"
+    ) {
+      console.error(
+        "OpenAI content 없음:",
+        openAIData
+      );
 
       return res.status(502).json({
-        error: "OpenAI 응답에 content가 없습니다.",
+        error:
+          "OpenAI 응답에 content가 없습니다.",
         detail: openAIData
       });
     }
@@ -503,40 +690,49 @@ photorealistic editorial photography를 우선 사용하세요.
     try {
       result = JSON.parse(resultText);
     } catch (parseError) {
-      console.error("OpenAI content 원본:", resultText);
-      console.error("스토리보드 JSON 변환 오류:", parseError);
+      console.error(
+        "OpenAI content 원본:",
+        resultText
+      );
+
+      console.error(
+        "스토리보드 JSON 변환 오류:",
+        parseError
+      );
 
       return res.status(502).json({
-        error: "OpenAI 기획 결과를 JSON으로 변환하지 못했습니다.",
+        error:
+          "OpenAI 기획 결과를 JSON으로 변환하지 못했습니다.",
         detail: resultText.slice(0, 1000)
       });
     }
 
-    /*
-     * 응답 기본 검증
-     */
     if (
       typeof result.isComplete !== "boolean" ||
       typeof result.chatReply !== "string" ||
       !result.storyboard ||
       !Array.isArray(result.storyboard.pages)
     ) {
-      console.error("OpenAI 응답 구조 오류:", result);
+      console.error(
+        "OpenAI 응답 구조 오류:",
+        result
+      );
 
       return res.status(502).json({
-        error: "OpenAI 응답 구조가 올바르지 않습니다.",
+        error:
+          "OpenAI 응답 구조가 올바르지 않습니다.",
         detail: result
       });
     }
 
-    /*
-     * 완료 상태인데 장표가 없으면 오류로 처리
-     */
     if (
       result.isComplete &&
       result.storyboard.pages.length === 0
     ) {
-      console.error("완료 상태지만 장표가 없음:", result);
+      console.error(
+        "완료 상태지만 장표가 없음:",
+        result
+      );
 
       return res.status(502).json({
         error:
@@ -544,20 +740,24 @@ photorealistic editorial photography를 우선 사용하세요.
       });
     }
 
-    /*
-     * 장표 번호 정리
-     */
     if (result.isComplete) {
       result.storyboard.pages =
-        result.storyboard.pages.map((page, index) => ({
-          ...page,
-          pageNumber: index + 1
-        }));
+        result.storyboard.pages.map(
+          (page, index) => ({
+            ...page,
+            pageNumber: index + 1
+          })
+        );
     }
 
-    return res.status(200).json(result);
+    return res
+      .status(200)
+      .json(result);
   } catch (error) {
-    console.error("plan-carousel 서버 오류:", error);
+    console.error(
+      "plan-carousel 서버 오류:",
+      error
+    );
 
     return res.status(500).json({
       error:
