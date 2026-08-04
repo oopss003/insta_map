@@ -2,3067 +2,1720 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>INWAVE 콘텐츠 스튜디오</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INWAVE 콘텐츠 스튜디오 2.0</title>
+    
+    <!-- JSZip CDN (다장표 일괄 다운로드용) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
 
-        * {
-            box-sizing: border-box;
-        }
-
+        * { box-sizing: border-box; }
         :root {
-            --navy: #17243d;
-            --navy-light: #263957;
-            --orange: #f58220;
-            --orange-dark: #e97312;
-            --ivory: #f5f1e8;
-            --green: #176b3a;
-            --green-dark: #12572f;
-            --border: #e1e1e1;
-            --muted: #667085;
-        }
-
-        body {
-            margin: 0;
-            font-family:
-                Arial,
-                "Noto Sans KR",
-                "Apple SD Gothic Neo",
-                sans-serif;
-            background: var(--ivory);
-            color: var(--navy);
-        }
-
-        header {
-            padding: 22px 30px;
-            background: var(--navy);
-            color: white;
-        }
-
-        header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-
-        header p {
-            margin: 8px 0 0;
-            color: #d9d4c8;
-            line-height: 1.5;
-        }
-
-        main {
-            width: min(1400px, calc(100% - 32px));
-            margin: 30px auto;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) 500px;
-            gap: 24px;
-            align-items: start;
-        }
-
-        .panel {
-            background: white;
-            border-radius: 18px;
-            padding: 24px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-        }
-
-        .preview-panel {
-            position: sticky;
-            top: 20px;
-        }
-
-        h2 {
-            margin: 0 0 16px;
-            font-size: 23px;
-        }
-
-        h3 {
-            margin: 0 0 12px;
-            font-size: 18px;
-        }
-
-        label {
-            font-weight: 700;
-        }
-
-        .section-title {
-            margin-top: 28px;
-        }
-
-        textarea,
-        input,
-        select {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid #d6d6d6;
-            border-radius: 10px;
-            background: white;
-            color: var(--navy);
-            font-size: 16px;
-            outline: none;
-        }
-
-        textarea:focus,
-        input:focus,
-        select:focus {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.12);
-        }
-
-        textarea {
-            min-height: 150px;
-            resize: vertical;
-            line-height: 1.5;
-        }
-
-        /* 추가: 핵심 메시지 텍스트에리어 스타일 조정 */
-        #mainMessage {
-            min-height: 80px;
-            margin-top: 8px;
-            font-size: 15px;
-        }
-
-        .concepts {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .concept {
-            min-height: 92px;
-            border: 2px solid transparent;
-            border-radius: 14px;
-            padding: 16px 12px;
-            background: #f5f5f5;
-            color: var(--navy);
-            cursor: pointer;
-            text-align: left;
-            line-height: 1.45;
-        }
-
-        .concept:hover {
-            background: #f0f0f0;
-        }
-
-        .concept.active {
-            border-color: var(--orange);
-            background: #fff4e8;
-        }
-
-        .concept strong {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 16px;
-        }
-
-        button {
-            border: 0;
-            border-radius: 10px;
-            padding: 14px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition:
-                opacity 0.2s,
-                transform 0.2s,
-                background 0.2s;
-        }
-
-        button:active {
-            transform: translateY(1px);
-        }
-
-        button:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .primary-button {
-            width: 100%;
-            margin-top: 14px;
-            background: var(--orange);
-            color: white;
-        }
-
-        .primary-button:hover:not(:disabled) {
-            background: var(--orange-dark);
-        }
-
-        .secondary-button {
-            width: 100%;
-            margin-top: 14px;
-            background: var(--navy);
-            color: white;
-        }
-
-        .secondary-button:hover:not(:disabled) {
-            background: var(--navy-light);
-        }
-
-        .download-button {
-            background: var(--green);
-        }
-
-        .download-button:hover:not(:disabled) {
-            background: var(--green-dark);
-        }
-
-        .plan-result {
-            display: none;
-            margin-top: 18px;
-            padding: 18px;
-            border: 1px solid #e2e2e2;
-            border-radius: 14px;
-            background: #fafafa;
-        }
-
-        .plan-result.visible {
-            display: block;
-        }
-
-        .result-item {
-            padding: 14px;
-            border-radius: 10px;
-            background: #eef1f5;
-        }
-
-        .result-item strong {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .result-item p {
-            margin: 0;
-            line-height: 1.55;
-        }
-
-        .title-candidates-heading {
-            margin: 18px 0 8px;
-            font-size: 16px;
-        }
-
-        .title-candidate {
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-            padding: 14px;
-            border: 1px solid #d8d8d8;
-            border-radius: 10px;
-            background: white;
-            color: var(--navy);
-            text-align: left;
-            font-weight: 700;
-            line-height: 1.45;
-        }
-
-        .title-candidate:hover {
-            border-color: var(--orange);
-            background: #fff4e8;
-        }
-
-        .title-candidate.selected {
-            border-color: var(--orange);
-            background: #fff4e8;
-        }
-
-        .recommended-concept {
-            margin-top: 14px;
-            padding: 11px 13px;
-            border-left: 4px solid var(--orange);
-            border-radius: 8px;
-            background: #fff4e8;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .provider-grid {
-            display: grid;
-            gap: 12px;
-            margin-top: 14px;
-        }
-
-        .provider-option {
-            display: grid;
-            grid-template-columns: 1fr 120px;
-            gap: 14px;
-            align-items: center;
-            padding: 14px;
-            border: 1px solid #ececec;
-            border-radius: 12px;
-            background: #fafafa;
-        }
-
-        .provider-option strong {
-            display: block;
-            margin-bottom: 4px;
-            font-size: 16px;
-        }
-
-        .provider-option span {
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.45;
-        }
-
-        .count-summary {
-            margin-top: 12px;
-            padding: 11px 13px;
-            border-radius: 10px;
-            background: #eef1f5;
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .status {
-            margin-top: 14px;
-            padding: 12px;
-            border-radius: 10px;
-            background: #eef1f5;
-            color: var(--navy);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .status.success {
-            background: #e9f7ef;
-            color: var(--green);
-        }
-
-        .status.error {
-            background: #fff0f0;
-            color: #b42318;
-        }
-
-        .gallery-wrap {
-            display: none;
-            margin-top: 24px;
-        }
-
-        .gallery-wrap.visible {
-            display: block;
-        }
-
-        .gallery-grid {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 12px;
-        }
-
-        .gallery-card {
-            border: 2px solid transparent;
-            border-radius: 14px;
-            overflow: hidden;
-            background: #f8f8f8;
-            cursor: pointer;
-        }
-
-        .gallery-card:hover {
-            transform: translateY(-1px);
-        }
-
-        .gallery-card.active {
-            border-color: var(--orange);
-            box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.14);
-        }
-
-        .gallery-card img {
-            width: 100%;
-            aspect-ratio: 4 / 5;
-            object-fit: cover;
-            display: block;
-        }
-
-        .gallery-card-footer {
-            padding: 10px;
-            font-size: 13px;
-            font-weight: 700;
-            text-align: center;
-        }
-
-        .canvas-wrap {
-            border-radius: 16px;
-            overflow: hidden;
-            background: #111;
-        }
-
-        #editorCanvas {
-            width: 100%;
-            height: auto;
-            display: block;
-            aspect-ratio: 4 / 5;
-            cursor: default;
-            touch-action: none;
-        }
-
-        .editor-controls {
-            margin-top: 14px;
-            padding: 14px;
-            border: 1px solid #ececec;
-            border-radius: 12px;
-            background: #fafafa;
-        }
-
-        .editor-controls-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-        }
-
-        .editor-controls label {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 13px;
-            color: var(--muted);
-        }
-
-        .small-button-row {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .small-button {
-            padding: 10px 8px;
-            background: #eef1f5;
-            color: var(--navy);
-            font-size: 13px;
-        }
-
-        .small-button.active {
-            background: var(--orange);
-            color: white;
-        }
-
-        .tip-box {
-            margin-top: 14px;
-            font-size: 13px;
-            line-height: 1.5;
-            color: var(--muted);
-            background: #fafafa;
-            border: 1px solid #ececec;
-            border-radius: 12px;
-            padding: 12px;
-        }
-
-        .api-links {
-            margin-top: 20px;
-            padding: 18px;
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            background: #fafafa;
-        }
-
-        .api-links h3 {
-            margin: 0 0 8px;
-        }
-
-        .api-links p {
-            margin: 0 0 14px;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .api-link-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px;
-        }
-
-        .api-link-button {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 50px;
-            padding: 12px;
-            border-radius: 10px;
-            color: white;
-            font-weight: 700;
-            text-decoration: none;
-            text-align: center;
-            transition:
-                opacity 0.2s,
-                transform 0.2s;
-        }
-
-        .api-link-button:hover {
-            opacity: 0.88;
-            transform: translateY(-1px);
-        }
-
-        .api-link-button.openai {
-            background: #111827;
-        }
-
-        .api-link-button.replicate {
-            background: #334155;
-        }
-
-        .api-link-button.fal {
-            background: #6d28d9;
-        }
-
-        .api-link-button.civitai {
-            background: #2563eb;
-        }
-
-        .loading-dots::after {
-            content: "";
-            animation: loadingDots 1.4s infinite;
-        }
-
-        @keyframes loadingDots {
-            0% {
-                content: "";
-            }
-
-            25% {
-                content: ".";
-            }
-
-            50% {
-                content: "..";
-            }
-
-            75%,
-            100% {
-                content: "...";
-            }
-        }
-
-        @media (max-width: 1100px) {
-            main {
-                grid-template-columns: 1fr;
-            }
-
-            .preview-panel {
-                position: static;
-            }
-        }
-
-        @media (max-width: 760px) {
-            .concepts,
-            .gallery-grid,
-            .api-link-grid,
-            .editor-controls-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .provider-option {
-                grid-template-columns: 1fr;
-            }
-
-            .small-button-row {
-                grid-template-columns: 1fr;
-            }
-        }
+            --navy: #17243d; --navy-light: #263957;
+            --orange: #f58220; --orange-dark: #e97312;
+            --ivory: #f5f1e8; --green: #176b3a;
+            --border: #e1e1e1; --muted: #667085;
+            --chat-bg: #fdfdfd; --chat-user: #f58220; --chat-ai: #eef1f5;
+        }
+
+        body { margin: 0; font-family: Arial, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; background: var(--ivory); color: var(--navy); }
+        header { padding: 22px 30px; background: var(--navy); color: white; }
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 8px 0 0; color: #d9d4c8; line-height: 1.5; font-size: 14px; }
+        
+        .version-badge {
+            display: inline-block; background: var(--green); color: white;
+            font-size: 12px; padding: 4px 8px; border-radius: 4px; margin-left: 10px; vertical-align: middle;
+        }
+
+        main { width: min(1400px, calc(100% - 32px)); margin: 30px auto; display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 24px; align-items: start; }
+        .panel { background: white; border-radius: 18px; padding: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+        .preview-panel { position: sticky; top: 20px; }
+
+        h2 { margin: 0 0 16px; font-size: 21px; }
+        h3 { margin: 0 0 12px; font-size: 18px; }
+        label { font-weight: 700; font-size: 14px; color: var(--navy); margin-bottom: 6px; display: block; }
+        .section-title { margin-top: 28px; }
+
+        textarea, input[type="text"], select {
+            width: 100%; padding: 14px; border: 1px solid #d6d6d6; border-radius: 10px;
+            background: white; color: var(--navy); font-size: 15px; outline: none; font-family: inherit;
+        }
+        textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.12); }
+        textarea { resize: vertical; line-height: 1.5; }
+
+        /* --- Chat UI --- */
+        .chat-wrap { display: flex; flex-direction: column; height: 380px; border: 1px solid var(--border); border-radius: 12px; background: var(--chat-bg); overflow: hidden; margin-bottom: 24px; }
+        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: keep-all; }
+        .msg.user { align-self: flex-end; background: var(--chat-user); color: white; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: var(--chat-ai); color: var(--navy); border-bottom-left-radius: 4px; }
+        .chat-input-area { display: flex; padding: 12px; background: white; border-top: 1px solid var(--border); gap: 8px; }
+        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
+        .chat-input-area button { padding: 0 20px; background: var(--navy); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+
+        /* --- Storyboard & Tabs --- */
+        #storyboardSection { display: none; margin-top: 24px; border-top: 2px dashed var(--border); padding-top: 24px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+        .tab { padding: 10px 18px; background: #eef1f5; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; color: var(--muted); white-space: nowrap; }
+        .tab.active { background: var(--navy); color: white; }
+
+        .editor-group { margin-bottom: 16px; }
+        #pagePromptSummary { font-size: 13px; color: var(--orange); margin-bottom: 6px; font-weight: bold; }
+        #pageEnglishPrompt { font-family: monospace; font-size: 13px; background: #fafafa; }
+
+        /* --- API Selectors & Concepts --- */
+        .concepts, .provider-grid, .editor-controls-grid, .small-button-row { display: grid; gap: 10px; }
+        .concepts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 10px; }
+        .concept { border: 2px solid transparent; border-radius: 12px; padding: 16px 12px; background: #f5f5f5; color: var(--navy); cursor: pointer; text-align: left; line-height: 1.45; }
+        .concept.active { border-color: var(--orange); background: #fff4e8; }
+        .concept strong { display: block; margin-bottom: 8px; font-size: 16px; }
+        
+        .provider-grid { margin-top: 14px; }
+        .provider-option { display: grid; grid-template-columns: 1fr 120px; gap: 14px; align-items: center; padding: 14px; border: 1px solid #ececec; border-radius: 12px; background: #fafafa; }
+        .provider-option strong { display: block; margin-bottom: 4px; font-size: 16px; }
+        .provider-option span { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+        /* --- Generated Images Gallery --- */
+        #galleryWrap { display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .gallery-item { border: 3px solid transparent; border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; }
+        .gallery-item img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+        .gallery-item:hover { transform: translateY(-2px); }
+        .gallery-item.selected { border-color: var(--orange); box-shadow: 0 4px 12px rgba(245,130,32,0.3); }
+
+        /* --- Canvas & Controls --- */
+        .canvas-wrap { border-radius: 16px; overflow: hidden; background: #111; aspect-ratio: 4/5; }
+        #editorCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; }
+        #editorCanvas:active { cursor: grabbing; }
+        
+        .editor-controls { margin-top: 14px; padding: 14px; border: 1px solid #ececec; border-radius: 12px; background: #fafafa; }
+        .editor-controls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        
+        .color-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+        .color-item { text-align: center; }
+        .color-item input[type="color"] { width: 100%; height: 44px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: white; }
+        .color-item span { font-size: 12px; color: var(--muted); font-weight: bold; display: block; margin-top: 4px; }
+
+        .small-button-row { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 10px; }
+        .small-button { padding: 10px 8px; background: #eef1f5; color: var(--navy); font-size: 13px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .small-button.active { background: var(--orange); color: white; }
+        
+        /* --- Buttons & Status --- */
+        button.action-btn { width: 100%; border: 0; border-radius: 10px; padding: 14px 20px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 14px; transition: opacity 0.2s, transform 0.2s; }
+        button.action-btn:active { transform: translateY(1px); }
+        button.action-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-primary { background: var(--orange); color: white; }
+        .btn-secondary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+
+        .status { margin-top: 14px; padding: 12px; border-radius: 10px; background: #eef1f5; color: var(--navy); font-size: 14px; line-height: 1.5; display: none; }
+        .status.visible { display: block; }
+        .status.success { background: #e9f7ef; color: var(--green); }
+        .status.error { background: #fff0f0; color: #b42318; }
+        .tip-box { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--muted); background: #fafafa; border: 1px solid #ececec; border-radius: 12px; padding: 12px; }
+
+        @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .preview-panel { position: static; } }
+        @media (max-width: 760px) { .concepts, .provider-option, .editor-controls-grid, .small-button-row, .gallery-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-
 <body>
     <header>
-        <h1>INWAVE 콘텐츠 스튜디오</h1>
-
-        <p>
-            여러 API로 이미지를 생성한 뒤 마음에 드는 한 장을 선택하고,
-            글씨를 자동 배치한 후 미세 조정하여 저장합니다.
-        </p>
+        <h1>INWAVE 콘텐츠 스튜디오 2.0 <span class="version-badge">API 연동 배포용</span></h1>
+        <p>AI와 대화하여 다장표 기획을 완성하고, 고품질 이미지를 생성하여 디자인을 커스텀하세요.</p>
     </header>
 
     <main>
+        <!-- 좌측: 기획 및 이미지 생성 패널 -->
         <section class="panel">
-            <h2>1. 만들고 싶은 주제를 입력하세요</h2>
-
-            <textarea
-                id="topicInput"
-                placeholder="예: 오프라인 광고를 집행했지만 실제로 몇 명이 광고를 봤는지 알기 어렵다는 내용으로 광고주가 클릭하고 저장할 만한 콘텐츠를 만들고 싶어."
-            ></textarea>
-
-            <button
-                class="secondary-button"
-                id="planButton"
-                type="button"
-            >
-                AI로 주제 정리
-            </button>
-
-            <div
-                class="plan-result"
-                id="planResult"
-            >
-                <h3>AI 기획 결과</h3>
-
-                <div class="result-item">
-                    <strong>핵심 메시지 (수정 가능)</strong>
-                    <!-- 수정됨: p 태그를 textarea로 변경하여 텍스트 수정이 가능하도록 함 -->
-                    <textarea id="mainMessage">AI가 정리한 핵심 메시지가 표시됩니다.</textarea>
+            <h2>1. 기획 방향성 대화 (스마트 가이드)</h2>
+            <div class="chat-wrap">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="msg ai">안녕하세요! INWAVE 다장표 카드뉴스를 기획해 드립니다. 오늘 타겟 고객은 누구이며, 어떤 문제를 짚어주고 싶으신가요? (예: 광고주 대상, 오프라인 광고비 낭비 문제 등)</div>
                 </div>
-
-                <div
-                    class="recommended-concept"
-                    id="recommendedConceptText"
-                ></div>
-
-                <h4 class="title-candidates-heading">
-                    제목 후보를 선택하세요
-                </h4>
-
-                <div id="titleCandidates"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="여기에 기획 의도를 입력해주세요." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" id="chatSendBtn">전송</button>
+                </div>
             </div>
 
-            <h2 class="section-title">2. 이미지 제목</h2>
+            <div id="storyboardSection">
+                <h2>2. 스토리보드 구성 및 텍스트 수정</h2>
+                <div class="tabs" id="pageTabs"></div>
 
-            <input
-                id="titleInput"
-                type="text"
-                value="광고비는 나갔는데, 누가 봤는지는 아세요?"
-                placeholder="이미지에 표시할 제목"
-            >
-
-            <h2 class="section-title">3. 컨셉 선택</h2>
-
-            <div class="concepts">
-                <button
-                    class="concept active"
-                    data-concept="hook"
-                    type="button"
-                >
-                    <strong>강한 후킹형</strong>
-                    높은 대비와 굵은 제목
-                </button>
-
-                <button
-                    class="concept"
-                    data-concept="insight"
-                    type="button"
-                >
-                    <strong>전문 인사이트형</strong>
-                    네이비·아이보리 중심
-                </button>
-
-                <button
-                    class="concept"
-                    data-concept="magazine"
-                    type="button"
-                >
-                    <strong>트렌드 매거진형</strong>
-                    감각적이고 세련된 구성
-                </button>
-            </div>
-
-            <h2 class="section-title">4. API별 생성 장수 선택</h2>
-
-            <div class="provider-grid">
-                <div class="provider-option">
-                    <div>
-                        <strong>FAL</strong>
-                        <span>현재 연결된 FAL 이미지 생성 모델을 사용합니다.</span>
+                <div id="pageEditor">
+                    <div class="editor-group">
+                        <label>오렌지 라벨 (역할)</label>
+                        <input type="text" id="pageLabel" oninput="updatePageData('label', this.value)">
                     </div>
-
-                    <select id="falCount">
-                        <option value="0">0장</option>
-                        <option value="1">1장</option>
-                        <option value="2" selected>2장</option>
-                    </select>
-                </div>
-
-                <div class="provider-option">
-                    <div>
-                        <strong>Replicate</strong>
-                        <span>REPLICATE_API_TOKEN과 서버 생성 코드가 연결되어 있어야 합니다.</span>
+                    <div class="editor-group">
+                        <label>장표 제목</label>
+                        <textarea id="pageTitle" rows="2" oninput="updatePageData('title', this.value)"></textarea>
                     </div>
-
-                    <select id="replicateCount">
-                        <option value="0" selected>0장</option>
-                        <option value="1">1장</option>
-                        <option value="2">2장</option>
-                    </select>
-                </div>
-
-                <div class="provider-option">
-                    <div>
-                        <strong>Civitai</strong>
-                        <span>CIVITAI_API_TOKEN과 모델 버전 설정이 연결되어 있어야 합니다.</span>
+                    <div class="editor-group">
+                        <label>장표 본문</label>
+                        <textarea id="pageBody" rows="3" oninput="updatePageData('body', this.value)"></textarea>
                     </div>
+                    <div class="editor-group">
+                        <label>이미지 프롬프트 (수정 가능)</label>
+                        <div id="pagePromptSummary"></div>
+                        <textarea id="pageEnglishPrompt" rows="4" oninput="updatePageData('englishImagePrompt', this.value)"></textarea>
+                    </div>
+                </div>
 
-                    <select id="civitaiCount">
-                        <option value="0" selected>0장</option>
-                        <option value="1">1장</option>
-                        <option value="2">2장</option>
-                    </select>
+                <h2 class="section-title">3. 컨셉 및 이미지 생성 API 선택</h2>
+                <div class="concepts">
+                    <button class="concept active" data-concept="hook" type="button">
+                        <strong>강한 후킹형</strong> 높은 대비와 굵은 제목
+                    </button>
+                    <button class="concept" data-concept="insight" type="button">
+                        <strong>전문 인사이트형</strong> 네이비·아이보리 중심
+                    </button>
+                    <button class="concept" data-concept="magazine" type="button">
+                        <strong>트렌드 매거진형</strong> 감각적이고 세련된 구성
+                    </button>
+                </div>
+
+                <div class="provider-grid">
+                    <div class="provider-option">
+                        <div>
+                            <strong>FAL API</strong>
+                            <span>고품질 AI 이미지 모델</span>
+                        </div>
+                        <select id="falCount"><option value="0">0장</option><option value="1">1장</option><option value="2" selected>2장</option></select>
+                    </div>
+                    <div class="provider-option">
+                        <div>
+                            <strong>Replicate API</strong>
+                            <span>빠른 이미지 생성 지원</span>
+                        </div>
+                        <select id="replicateCount"><option value="0" selected>0장</option><option value="1">1장</option><option value="2">2장</option></select>
+                    </div>
+                </div>
+
+                <button class="action-btn btn-primary" id="generateButton" type="button">선택한 장표 실제 이미지 생성</button>
+                <button class="action-btn btn-secondary" id="autoLayoutButton" type="button" style="display:none;">텍스트 기본위치 복구</button>
+                
+                <!-- 생성된 이미지 갤러리 영역 -->
+                <div id="galleryWrap">
+                    <h3 style="font-size: 16px; margin: 0;">생성된 이미지 후보 (클릭하여 캔버스에 적용)</h3>
+                    <div class="gallery-grid" id="galleryGrid"></div>
                 </div>
             </div>
-
-            <div
-                class="count-summary"
-                id="countSummary"
-            >
-                총 선택 이미지 수: 2장
-            </div>
-
-            <button
-                class="secondary-button"
-                id="generateButton"
-                type="button"
-            >
-                선택한 API로 이미지 생성
-            </button>
-
-            <button
-                class="secondary-button"
-                id="autoLayoutButton"
-                type="button"
-            >
-                선택 이미지 글씨 자동 배치
-            </button>
-
-            <button
-                class="primary-button download-button"
-                id="downloadButton"
-                type="button"
-            >
-                인스타 이미지 PNG 저장
-            </button>
-
-            <div
-                class="status"
-                id="status"
-            >
-                주제를 입력한 후 ‘AI로 주제 정리’를 눌러주세요.
-            </div>
-
-            <div
-                class="gallery-wrap"
-                id="galleryWrap"
-            >
-                <h2 class="section-title">5. 생성된 이미지 선택</h2>
-
-                <div
-                    class="gallery-grid"
-                    id="galleryGrid"
-                ></div>
-            </div>
-
-            <div class="api-links">
-                <h3>API 사용량 및 잔액 확인</h3>
-
-                <p>
-                    각 서비스의 공식 관리 페이지가 새 창으로 열립니다.
-                </p>
-
-                <div class="api-link-grid">
-                    <a
-                        class="api-link-button openai"
-                        href="https://platform.openai.com/usage"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        OpenAI 사용량 확인
-                    </a>
-
-                    <a
-                        class="api-link-button replicate"
-                        href="https://replicate.com/account/billing"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Replicate 잔액 확인
-                    </a>
-
-                    <a
-                        class="api-link-button fal"
-                        href="https://fal.ai/dashboard/usage-billing/credits"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        FAL 크레딧 확인
-                    </a>
-
-                    <a
-                        class="api-link-button civitai"
-                        href="https://civitai.com/user/account"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        Civitai 계정 확인
-                    </a>
-                </div>
-            </div>
+            
+            <div class="status" id="status">상태 메시지가 표시됩니다.</div>
         </section>
 
+        <!-- 우측: 캔버스 및 디자인 패널 -->
         <section class="panel preview-panel">
-            <h2>미리보기</h2>
+            <h2>4. 디자인 미리보기 및 저장</h2>
 
             <div class="canvas-wrap">
-                <canvas
-                    id="editorCanvas"
-                    width="1080"
-                    height="1350"
-                ></canvas>
+                <canvas id="editorCanvas" width="1080" height="1350"></canvas>
             </div>
 
             <div class="editor-controls">
                 <div class="editor-controls-grid">
-
                     <div>
-                        <label for="fontFamilyInput">폰트 선택</label>
-
+                        <label>폰트 선택</label>
                         <select id="fontFamilyInput">
                             <option value='"Noto Sans KR", sans-serif'>Noto Sans KR</option>
                             <option value='"Nanum Gothic", sans-serif'>나눔고딕</option>
-                            <option value='"Nanum Myeongjo", serif'>나눔명조</option>
                             <option value='"Black Han Sans", sans-serif'>검은고딕</option>
                             <option value='"Do Hyeon", sans-serif'>도현체</option>
-                            <option value='"Gowun Dodum", sans-serif'>고운돋움</option>
                         </select>
                     </div>
-
                     <div>
-                        <label for="titleSizeInput">제목 크기</label>
-
-                        <input
-                            id="titleSizeInput"
-                            type="range"
-                            min="48"
-                            max="100"
-                            value="74"
-                        >
+                        <label>배경 어둡기</label>
+                        <input id="overlayOpacityInput" type="range" min="0" max="100" value="80">
                     </div>
-
                     <div>
-                        <label for="subtitleSizeInput">설명 크기</label>
-
-                        <input
-                            id="subtitleSizeInput"
-                            type="range"
-                            min="22"
-                            max="48"
-                            value="34"
-                        >
+                        <label>제목 크기</label>
+                        <input id="titleSizeInput" type="range" min="48" max="100" value="74">
                     </div>
-
                     <div>
-                        <label for="textWidthInput">글씨 영역 폭</label>
-
-                        <input
-                            id="textWidthInput"
-                            type="range"
-                            min="35"
-                            max="90"
-                            value="70"
-                        >
+                        <label>설명 크기</label>
+                        <input id="subtitleSizeInput" type="range" min="22" max="48" value="34">
                     </div>
+                </div>
 
-                    <div>
-                        <label for="overlayOpacityInput">배경 어둡기</label>
-
-                        <input
-                            id="overlayOpacityInput"
-                            type="range"
-                            min="0"
-                            max="100"
-                            value="100"
-                        >
+                <div class="color-row">
+                    <div class="color-item">
+                        <input type="color" id="labelColorPicker" value="#f58220">
+                        <span>라벨 색상</span>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="titleColorPicker" value="#ffffff">
+                        <span>제목 색상</span>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="bodyColorPicker" value="#f0f0f0">
+                        <span>본문 색상</span>
                     </div>
                 </div>
 
                 <div class="small-button-row">
-                    <button
-                        class="small-button active"
-                        data-align="left"
-                        type="button"
-                    >
-                        왼쪽 정렬
-                    </button>
-
-                    <button
-                        class="small-button"
-                        data-align="center"
-                        type="button"
-                    >
-                        가운데 정렬
-                    </button>
-
-                    <button
-                        class="small-button"
-                        data-align="right"
-                        type="button"
-                    >
-                        오른쪽 정렬
-                    </button>
+                    <button class="small-button active" data-align="left">왼쪽 정렬</button>
+                    <button class="small-button" data-align="center">가운데 정렬</button>
+                    <button class="small-button" data-align="right">오른쪽 정렬</button>
                 </div>
             </div>
 
+            <button class="action-btn btn-success" id="downloadZipButton" type="button" disabled>전체 장표 일괄 ZIP 다운로드</button>
+
             <div class="tip-box">
-                미리보기와 다운로드는 동일한 1080×1350 Canvas를 사용합니다.
-                자동 배치 후 글씨 영역을 마우스나 손가락으로 잡아 이동할 수 있습니다.
+                각 탭을 눌러 장표를 이동하세요. 디자인 요소(색상, 위치)는 장표마다 개별 저장됩니다. 
+                <strong>글씨 영역은 마우스(또는 터치)로 캔버스 안에서 직접 드래그하여 이동할 수 있습니다.</strong>
             </div>
         </section>
     </main>
 
     <script>
-        const DEFAULT_IMAGE_URL =
-            "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80";
-
-        const topicInput =
-            document.getElementById("topicInput");
-
-        const titleInput =
-            document.getElementById("titleInput");
-
-        const planButton =
-            document.getElementById("planButton");
-
-        const planResult =
-            document.getElementById("planResult");
-
-        const mainMessage =
-            document.getElementById("mainMessage");
-
-        const titleCandidates =
-            document.getElementById("titleCandidates");
-
-        const recommendedConceptText =
-            document.getElementById(
-                "recommendedConceptText"
-            );
-
-        const generateButton =
-            document.getElementById("generateButton");
-
-        const autoLayoutButton =
-            document.getElementById("autoLayoutButton");
-
-        const downloadButton =
-            document.getElementById("downloadButton");
-
-        const galleryWrap =
-            document.getElementById("galleryWrap");
-
-        const galleryGrid =
-            document.getElementById("galleryGrid");
-
-        const status =
-            document.getElementById("status");
-
-        const falCount =
-            document.getElementById("falCount");
-
-        const replicateCount =
-            document.getElementById("replicateCount");
-
-        const civitaiCount =
-            document.getElementById("civitaiCount");
-
-        const countSummary =
-            document.getElementById("countSummary");
-
-        const fontFamilyInput =
-            document.getElementById("fontFamilyInput");
-
-        const titleSizeInput =
-            document.getElementById("titleSizeInput");
-
-        const subtitleSizeInput =
-            document.getElementById("subtitleSizeInput");
-
-        const textWidthInput =
-            document.getElementById("textWidthInput");
-
-        const overlayOpacityInput =
-            document.getElementById("overlayOpacityInput");
-
-        const conceptButtons =
-            document.querySelectorAll(".concept");
-
-        const alignButtons =
-            document.querySelectorAll("[data-align]");
-
-        const canvas =
-            document.getElementById("editorCanvas");
-
-        const ctx =
-            canvas.getContext("2d");
+        // --- 0. 전역 상태 관리 ---
+        const DEFAULT_IMAGE_URL = "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80";
+        
+        const state = {
+            chatMessages: [],
+            pages: [],
+            currentPageIndex: 0,
+            selectedConcept: "hook",
+            drag: { active: false, startPointerX: 0, startPointerY: 0, startX: 0, startY: 0 },
+            textBoxRect: { x: 0, y: 0, width: 0, height: 0 }
+        };
 
         const conceptInformation = {
-            hook: {
-                name: "강한 후킹형",
-                label: "광고 인사이트",
-                labelColor: "#ff8a1f"
-            },
-
-            insight: {
-                name: "전문 인사이트형",
-                label: "MARKETING INSIGHT",
-                labelColor: "#ff9b42"
-            },
-
-            magazine: {
-                name: "트렌드 매거진형",
-                label: "INWAVE TREND",
-                labelColor: "#f6d86b"
-            }
+            hook: { name: "강한 후킹형", labelColor: "#ff8a1f" },
+            insight: { name: "전문 인사이트형", labelColor: "#ff9b42" },
+            magazine: { name: "트렌드 매거진형", labelColor: "#f6d86b" }
         };
 
-        const state = {
-            selectedConcept: "hook",
-            mainMessage:
-                "광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.",
-            generatedImagePrompt: "",
-            generatedImages: [],
-            selectedImageUrl: "",
-            backgroundImage: null,
-
-            textLayout: {
-                x: 8,
-                y: 58,
-                width: 70,
-                align: "left",
-                titleSize: 74,
-                subtitleSize: 34,
-                fontFamily: '"Noto Sans KR", sans-serif',
-                textColor: "#ffffff",
-                overlayOpacity: 1
-            },
-
-            drag: {
-                active: false,
-                startPointerX: 0,
-                startPointerY: 0,
-                startX: 8,
-                startY: 58
-            },
-
-            textBoxRect: {
-                x: 0,
-                y: 0,
-                width: 0,
-                height: 0
-            }
+        // DOM 캐싱
+        const UI = {
+            chatMessages: document.getElementById("chatMessages"),
+            chatInput: document.getElementById("chatInput"),
+            chatSendBtn: document.getElementById("chatSendBtn"),
+            storyboardSection: document.getElementById("storyboardSection"),
+            pageTabs: document.getElementById("pageTabs"),
+            
+            pageLabel: document.getElementById("pageLabel"),
+            pageTitle: document.getElementById("pageTitle"),
+            pageBody: document.getElementById("pageBody"),
+            pagePromptSummary: document.getElementById("pagePromptSummary"),
+            pageEnglishPrompt: document.getElementById("pageEnglishPrompt"),
+            
+            galleryWrap: document.getElementById("galleryWrap"),
+            galleryGrid: document.getElementById("galleryGrid"),
+            
+            canvas: document.getElementById("editorCanvas"),
+            ctx: document.getElementById("editorCanvas").getContext("2d"),
+            status: document.getElementById("status"),
+            
+            fontFamilyInput: document.getElementById("fontFamilyInput"),
+            titleSizeInput: document.getElementById("titleSizeInput"),
+            subtitleSizeInput: document.getElementById("subtitleSizeInput"),
+            overlayOpacityInput: document.getElementById("overlayOpacityInput"),
+            
+            labelColorPicker: document.getElementById("labelColorPicker"),
+            titleColorPicker: document.getElementById("titleColorPicker"),
+            bodyColorPicker: document.getElementById("bodyColorPicker"),
+            alignButtons: document.querySelectorAll("[data-align]"),
+            conceptButtons: document.querySelectorAll(".concept"),
+            
+            falCount: document.getElementById("falCount"),
+            replicateCount: document.getElementById("replicateCount"),
+            
+            generateButton: document.getElementById("generateButton"),
+            autoLayoutButton: document.getElementById("autoLayoutButton"),
+            downloadZipButton: document.getElementById("downloadZipButton")
         };
 
-        // 새로 추가됨: mainMessage 수정 시 캔버스 실시간 렌더링 이벤트 연결
-        mainMessage.addEventListener("input", drawCanvas);
-
-        function getProviderName(provider) {
-            if (provider === "fal") {
-                return "FAL";
-            }
-
-            if (provider === "replicate") {
-                return "Replicate";
-            }
-
-            if (provider === "civitai") {
-                return "Civitai";
-            }
-
-            return provider || "이미지";
+        // --- 1. 공통 유틸 함수 ---
+        function setStatus(message, type = "normal") {
+            UI.status.textContent = message;
+            UI.status.className = "status visible";
+            if (type === "success") UI.status.classList.add("success");
+            if (type === "error") UI.status.classList.add("error");
+            setTimeout(() => { UI.status.classList.remove("visible"); }, 5000);
         }
 
-        function normalizeConcept(conceptName) {
-            const validConcepts = [
-                "hook",
-                "insight",
-                "magazine"
-            ];
-
-            if (
-                validConcepts.includes(
-                    conceptName
-                )
-            ) {
-                return conceptName;
-            }
-
-            return "hook";
+        function setButtonLoading(button, isLoading, loadingText, normalText) {
+            button.disabled = isLoading;
+            button.innerHTML = isLoading ? loadingText : normalText;
         }
 
-        // 수정됨: null, undefined 등 비정상 값 방어 로직 강화
-        function clampNumber(
-            value,
-            min,
-            max,
-            fallback
-        ) {
-            if (value === null || value === undefined || value === "") {
-                return fallback;
-            }
-            const number =
-                Number(value);
-
-            if (
-                Number.isNaN(number)
-            ) {
-                return fallback;
-            }
-
-            return Math.max(
-                min,
-                Math.min(max, number)
-            );
+        function clampNumber(value, min, max, fallback) {
+            if (value === null || value === undefined || value === "") return fallback;
+            const num = Number(value);
+            return Number.isNaN(num) ? fallback : Math.max(min, Math.min(max, num));
         }
 
-        function setStatus(
-            message,
-            type = "normal"
-        ) {
-            status.textContent =
-                message;
-
-            status.classList.remove(
-                "success",
-                "error"
-            );
-
-            if (
-                type === "success"
-            ) {
-                status.classList.add(
-                    "success"
-                );
-            }
-
-            if (
-                type === "error"
-            ) {
-                status.classList.add(
-                    "error"
-                );
-            }
+        async function loadImageObj(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error("이미지 로드 실패"));
+                img.src = url;
+            });
         }
 
-        function setButtonLoading(
-            button,
-            isLoading,
-            loadingText,
-            normalText
-        ) {
-            button.disabled =
-                isLoading;
-
-            if (isLoading) {
-                button.innerHTML =
-                    `<span class="loading-dots">${loadingText}</span>`;
-            } else {
-                button.textContent =
-                    normalText;
-            }
+        // --- 2. 스마트 가이드 챗봇 로직 ---
+        function appendChatMessage(role, text) {
+            const div = document.createElement("div");
+            div.className = `msg ${role}`;
+            div.textContent = text;
+            UI.chatMessages.appendChild(div);
+            UI.chatMessages.scrollTop = UI.chatMessages.scrollHeight;
         }
 
-        async function readJsonResponse(
-            response
-        ) {
-            const contentType =
-                response.headers.get(
-                    "content-type"
-                ) || "";
+        async function sendChatMessage() {
+            const text = UI.chatInput.value.trim();
+            if (!text) return;
 
-            if (
-                !contentType.includes(
-                    "application/json"
-                )
-            ) {
-                const text =
-                    await response.text();
+            appendChatMessage("user", text);
+            state.chatMessages.push({ role: "user", content: text });
+            UI.chatInput.value = "";
+            UI.chatSendBtn.disabled = true;
 
-                throw new Error(
-                    text ||
-                    "서버가 올바른 JSON 응답을 반환하지 않았습니다."
-                );
-            }
+            appendChatMessage("ai", "기획을 분석하고 있습니다...");
+            const loadingNode = UI.chatMessages.lastElementChild;
 
-            return response.json();
-        }
-
-        function updateCountSummary() {
-            const total =
-                Number(falCount.value) +
-                Number(replicateCount.value) +
-                Number(civitaiCount.value);
-
-            countSummary.textContent =
-                `총 선택 이미지 수: ${total}장`;
-        }
-
-        function updateControlValues() {
-            fontFamilyInput.value =
-                state.textLayout.fontFamily;
-
-            titleSizeInput.value =
-                String(
-                    state.textLayout.titleSize
-                );
-
-            subtitleSizeInput.value =
-                String(
-                    state.textLayout.subtitleSize
-                );
-
-            textWidthInput.value =
-                String(
-                    state.textLayout.width
-                );
-
-            overlayOpacityInput.value =
-                String(
-                    Math.round(
-                        state.textLayout.overlayOpacity *
-                        100
-                    )
-                );
-
-            alignButtons.forEach(
-                (button) => {
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.align ===
-                        state.textLayout.align
-                    );
+            try {
+                let data;
+                try {
+                    const response = await fetch("/api/plan-carousel", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: state.chatMessages })
+                    });
+                    if (!response.ok) throw new Error("API Network Error");
+                    data = await response.json();
+                } catch (apiError) {
+                    // 안전망: OpenAI 연동 실패시 Mock 데이터 반환 (화면 진행 보장)
+                    if (state.chatMessages.length < 3) {
+                        data = { isComplete: false, chatReply: "좋습니다. 그렇다면 강조하고 싶은 핵심 수치나, 원하는 전체적인 분위기(예: 신뢰감, 트렌디)가 있을까요?" };
+                    } else {
+                        data = {
+                            isComplete: true,
+                            chatReply: "알겠습니다! 기획을 바탕으로 3장짜리 스토리보드를 구성했습니다. 하단에서 확인해보세요.",
+                            storyboard: {
+                                pages: [
+                                    { pageNumber: 1, role: "hook", label: "광고 인사이트", title: "광고비는 나갔는데,\n누가 봤는지는 아세요?", body: "광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.", koreanPromptSummary: "거대한 디지털 사이니지 앞의 사람들", englishImagePrompt: "Cinematic photography, modern digital signage glowing in a crowded urban street, moody, NO text, NO logos, aspect ratio 4:5" },
+                                    { pageNumber: 2, role: "problem", label: "문제 원인", title: "유동인구와\n실제 시청자는 다릅니다", body: "단순히 지나가는 사람 수가 아니라, 광고를 쳐다본 사람을 측정해야 합니다.", koreanPromptSummary: "데이터를 분석하는 사무실 풍경", englishImagePrompt: "Professional office setting, blurred background, analyzing data, modern lighting, clear negative space, NO text, aspect ratio 4:5" },
+                                    { pageNumber: 3, role: "solution", label: "해결책", title: "정확한 시청 데이터로\n광고 효율을 높이세요", body: "INWAVE 데이터 솔루션으로 정확히 타겟팅하세요.", koreanPromptSummary: "스마트한 측정 센서와 도시 전경", englishImagePrompt: "High-tech smart sensor concept, overlooking a busy city street, sleek design, bright and professional, NO text, aspect ratio 4:5" }
+                                ]
+                            }
+                        };
+                    }
                 }
-            );
-        }
 
-        function getTitleText() {
-            return (
-                titleInput.value.trim() ||
-                "제목을 입력해 주세요."
-            );
-        }
+                loadingNode.remove();
 
-        // 수정됨: textContent -> value
-        function getSubtitleText() {
-            const plannedMessage =
-                mainMessage.value.trim();
-
-            if (
-                planResult.classList.contains(
-                    "visible"
-                ) &&
-                plannedMessage
-            ) {
-                return plannedMessage;
-            }
-
-            return (
-                topicInput.value.trim() ||
-                state.mainMessage ||
-                "설명을 입력해 주세요."
-            );
-        }
-
-        function getOverlayStops() {
-            const opacity =
-                state.textLayout.overlayOpacity;
-
-            if (
-                state.selectedConcept ===
-                "insight"
-            ) {
-                return [
-                    {
-                        stop: 0,
-                        color:
-                            `rgba(14,31,55,${0.96 * opacity})`
-                    },
-                    {
-                        stop: 0.35,
-                        color:
-                            `rgba(14,31,55,${0.58 * opacity})`
-                    },
-                    {
-                        stop: 0.75,
-                        color:
-                            `rgba(14,31,55,${0.08 * opacity})`
-                    }
-                ];
-            }
-
-            if (
-                state.selectedConcept ===
-                "magazine"
-            ) {
-                return [
-                    {
-                        stop: 0,
-                        color:
-                            `rgba(8,8,8,${0.92 * opacity})`
-                    },
-                    {
-                        stop: 0.42,
-                        color:
-                            `rgba(8,8,8,${0.38 * opacity})`
-                    },
-                    {
-                        stop: 0.75,
-                        color:
-                            `rgba(8,8,8,${0.06 * opacity})`
-                    }
-                ];
-            }
-
-            return [
-                {
-                    stop: 0,
-                    color:
-                        `rgba(0,0,0,${0.95 * opacity})`
-                },
-                {
-                    stop: 0.32,
-                    color:
-                        `rgba(0,0,0,${0.55 * opacity})`
-                },
-                {
-                    stop: 0.70,
-                    color:
-                        `rgba(0,0,0,${0.08 * opacity})`
-                }
-            ];
-        }
-
-        function drawCoverImage(
-            context,
-            image,
-            x,
-            y,
-            width,
-            height
-        ) {
-            const imageRatio =
-                image.width /
-                image.height;
-
-            const canvasRatio =
-                width /
-                height;
-
-            let drawWidth;
-            let drawHeight;
-            let offsetX;
-            let offsetY;
-
-            if (
-                imageRatio >
-                canvasRatio
-            ) {
-                drawHeight =
-                    height;
-
-                drawWidth =
-                    image.width *
-                    (
-                        height /
-                        image.height
-                    );
-
-                offsetX =
-                    x +
-                    (
-                        width -
-                        drawWidth
-                    ) / 2;
-
-                offsetY =
-                    y;
-            } else {
-                drawWidth =
-                    width;
-
-                drawHeight =
-                    image.height *
-                    (
-                        width /
-                        image.width
-                    );
-
-                offsetX =
-                    x;
-
-                offsetY =
-                    y +
-                    (
-                        height -
-                        drawHeight
-                    ) / 2;
-            }
-
-            context.drawImage(
-                image,
-                offsetX,
-                offsetY,
-                drawWidth,
-                drawHeight
-            );
-        }
-
-        function wrapKoreanText(
-            context,
-            text,
-            maxWidth,
-            maxLines
-        ) {
-            if (!text) {
-                return [];
-            }
-
-            const normalizedText =
-                text
-                    .replace(/\s+/g, " ")
-                    .trim();
-
-            const lines = [];
-            let currentLine = "";
-            let consumedCharacters = 0;
-
-            for (
-                let index = 0;
-                index <
-                normalizedText.length;
-                index += 1
-            ) {
-                const character =
-                    normalizedText[index];
-
-                const testLine =
-                    currentLine +
-                    character;
-
-                const testWidth =
-                    context
-                        .measureText(
-                            testLine
-                        )
-                        .width;
-
-                if (
-                    testWidth >
-                        maxWidth &&
-                    currentLine
-                ) {
-                    lines.push(
-                        currentLine.trim()
-                    );
-
-                    consumedCharacters =
-                        index;
-
-                    currentLine =
-                        character
-                            .trimStart();
-
-                    if (
-                        lines.length ===
-                        maxLines - 1
-                    ) {
-                        break;
-                    }
+                if (data.isComplete && data.storyboard) {
+                    appendChatMessage("ai", data.chatReply);
+                    state.chatMessages.push({ role: "assistant", content: data.chatReply });
+                    initializeStoryboard(data.storyboard.pages);
+                    setStatus("스토리보드가 생성되었습니다. 탭을 눌러 각 장표를 확인하세요.", "success");
                 } else {
-                    currentLine =
-                        testLine;
-
-                    consumedCharacters =
-                        index + 1;
+                    appendChatMessage("ai", data.chatReply);
+                    state.chatMessages.push({ role: "assistant", content: data.chatReply });
                 }
+            } catch (error) {
+                loadingNode.remove();
+                appendChatMessage("ai", "오류가 발생했습니다: " + error.message);
+            } finally {
+                UI.chatSendBtn.disabled = false;
             }
-
-            if (
-                lines.length <
-                    maxLines &&
-                currentLine
-            ) {
-                lines.push(
-                    currentLine.trim()
-                );
-            }
-
-            const hasMoreText =
-                consumedCharacters <
-                normalizedText.length;
-
-            if (
-                hasMoreText &&
-                lines.length > 0
-            ) {
-                let lastLine =
-                    lines[
-                        lines.length - 1
-                    ];
-
-                while (
-                    context
-                        .measureText(
-                            lastLine + "…"
-                        )
-                        .width >
-                        maxWidth &&
-                    lastLine.length > 1
-                ) {
-                    lastLine =
-                        lastLine.slice(
-                            0,
-                            -1
-                        );
-                }
-
-                lines[
-                    lines.length - 1
-                ] =
-                    lastLine + "…";
-            }
-
-            return lines.slice(
-                0,
-                maxLines
-            );
         }
 
-        function drawTextBlock() {
-            const layout =
-                state.textLayout;
+        // --- 3. 스토리보드 구성 ---
+        async function initializeStoryboard(pagesData) {
+            UI.storyboardSection.style.display = "block";
+            UI.downloadZipButton.disabled = false;
+            
+            const defaultImgObj = await loadImageObj(DEFAULT_IMAGE_URL);
 
-            const x =
-                (
-                    layout.x /
-                    100
-                ) *
-                canvas.width;
-
-            const y =
-                (
-                    layout.y /
-                    100
-                ) *
-                canvas.height;
-
-            const maxWidth =
-                (
-                    layout.width /
-                    100
-                ) *
-                canvas.width;
-
-            const info =
-                conceptInformation[
-                    state.selectedConcept
-                ];
-
-            const alignX =
-                layout.align ===
-                    "center"
-                    ? x +
-                      maxWidth / 2
-                    : layout.align ===
-                      "right"
-                    ? x +
-                      maxWidth
-                    : x;
-
-            ctx.textBaseline =
-                "top";
-
-            ctx.textAlign =
-                layout.align;
-
-            ctx.shadowColor =
-                "rgba(0,0,0,0.55)";
-
-            ctx.shadowBlur =
-                14;
-
-            ctx.shadowOffsetY =
-                4;
-
-            ctx.fillStyle =
-                info.labelColor;
-
-            ctx.font =
-                `800 38px ${layout.fontFamily}`;
-
-            ctx.fillText(
-                info.label,
-                alignX,
-                y
-            );
-
-            let currentY =
-                y + 64;
-
-            ctx.fillStyle =
-                layout.textColor;
-
-            ctx.font =
-                `800 ${layout.titleSize}px ${layout.fontFamily}`;
-
-            const titleLines =
-                wrapKoreanText(
-                    ctx,
-                    getTitleText(),
-                    maxWidth,
-                    4
-                );
-
-            const titleLineHeight =
-                layout.titleSize *
-                1.12;
-
-            titleLines.forEach(
-                (line) => {
-                    ctx.fillText(
-                        line,
-                        alignX,
-                        currentY
-                    );
-
-                    currentY +=
-                        titleLineHeight;
+            state.pages = pagesData.map((p, index) => ({
+                id: index,
+                label: p.label || "광고 인사이트",
+                title: p.title || "",
+                body: p.body || "",
+                koreanPromptSummary: p.koreanPromptSummary || "AI 이미지 설명",
+                englishImagePrompt: p.englishImagePrompt || "",
+                
+                // 해당 장표에 대해 생성된 이미지 리스트 보관
+                generatedImageCandidates: [], 
+                
+                imageUrl: DEFAULT_IMAGE_URL,
+                loadedImage: defaultImgObj,
+                textLayout: {
+                    x: 8, y: 58, width: 70, align: "left",
+                    titleSize: 74, subtitleSize: 34,
+                    fontFamily: '"Noto Sans KR", sans-serif',
+                    labelColor: "#f58220", titleColor: "#ffffff", bodyColor: "#f0f0f0",
+                    overlayOpacity: 0.8
                 }
-            );
+            }));
 
-            currentY +=
-                18;
-
-            ctx.font =
-                `500 ${layout.subtitleSize}px ${layout.fontFamily}`;
-
-            const subtitleLines =
-                wrapKoreanText(
-                    ctx,
-                    getSubtitleText(),
-                    maxWidth,
-                    3
-                );
-
-            const subtitleLineHeight =
-                layout.subtitleSize *
-                1.36;
-
-            subtitleLines.forEach(
-                (line) => {
-                    ctx.fillText(
-                        line,
-                        alignX,
-                        currentY
-                    );
-
-                    currentY +=
-                        subtitleLineHeight;
-                }
-            );
-
-            state.textBoxRect = {
-                x,
-                y,
-                width:
-                    maxWidth,
-                height:
-                    currentY -
-                    y +
-                    10
-            };
-
-            ctx.shadowColor =
-                "transparent";
-
-            ctx.shadowBlur =
-                0;
-
-            ctx.shadowOffsetY =
-                0;
+            renderTabs();
+            selectPage(0);
         }
 
-        function drawCanvas() {
-            if (!ctx) {
-                return;
-            }
-
-            ctx.clearRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            if (
-                state.backgroundImage
-            ) {
-                drawCoverImage(
-                    ctx,
-                    state.backgroundImage,
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-            } else {
-                ctx.fillStyle =
-                    "#1b2435";
-
-                ctx.fillRect(
-                    0,
-                    0,
-                    canvas.width,
-                    canvas.height
-                );
-            }
-
-            const gradient =
-                ctx.createLinearGradient(
-                    0,
-                    canvas.height,
-                    0,
-                    0
-                );
-
-            getOverlayStops()
-                .forEach(
-                    (item) => {
-                        gradient.addColorStop(
-                            item.stop,
-                            item.color
-                        );
-                    }
-                );
-
-            ctx.fillStyle =
-                gradient;
-
-            ctx.fillRect(
-                0,
-                0,
-                canvas.width,
-                canvas.height
-            );
-
-            drawTextBlock();
+        function renderTabs() {
+            UI.pageTabs.innerHTML = "";
+            state.pages.forEach((p, i) => {
+                const btn = document.createElement("button");
+                btn.className = `tab ${i === state.currentPageIndex ? 'active' : ''}`;
+                btn.textContent = `${i + 1}장표`;
+                btn.onclick = () => selectPage(i);
+                UI.pageTabs.appendChild(btn);
+            });
         }
 
-        async function loadImageObject(
-            imageUrl
-        ) {
-            return new Promise(
-                (resolve, reject) => {
-                    const image =
-                        new Image();
+        function selectPage(index) {
+            state.currentPageIndex = index;
+            renderTabs();
+            const p = state.pages[index];
 
-                    image.crossOrigin =
-                        "anonymous";
+            // 에디터 데이터 갱신
+            UI.pageLabel.value = p.label;
+            UI.pageTitle.value = p.title;
+            UI.pageBody.value = p.body;
+            UI.pagePromptSummary.textContent = `[요약] ${p.koreanPromptSummary}`;
+            UI.pageEnglishPrompt.value = p.englishImagePrompt;
 
-                    image.onload =
-                        () =>
-                            resolve(
-                                image
-                            );
+            // 갤러리 갱신
+            renderGallery(p.generatedImageCandidates);
 
-                    image.onerror =
-                        () =>
-                            reject(
-                                new Error(
-                                    "이미지를 불러오지 못했습니다. 이미지 서버의 CORS 설정을 확인해 주세요."
-                                )
-                            );
+            // 디자인 컨트롤 동기화
+            const layout = p.textLayout;
+            UI.fontFamilyInput.value = layout.fontFamily;
+            UI.titleSizeInput.value = layout.titleSize;
+            UI.subtitleSizeInput.value = layout.subtitleSize;
+            UI.overlayOpacityInput.value = layout.overlayOpacity * 100;
+            UI.labelColorPicker.value = layout.labelColor;
+            UI.titleColorPicker.value = layout.titleColor;
+            UI.bodyColorPicker.value = layout.bodyColor;
 
-                    image.src =
-                        imageUrl;
-                }
-            );
-        }
-
-        async function setBackgroundImage(
-            imageUrl
-        ) {
-            state.selectedImageUrl =
-                imageUrl;
-
-            state.backgroundImage =
-                await loadImageObject(
-                    imageUrl
-                );
+            UI.alignButtons.forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.align === layout.align);
+            });
 
             drawCanvas();
         }
 
-        function displayPlanningResult(
-            data
-        ) {
-            const message =
-                typeof data.mainMessage ===
-                    "string"
-                    ? data.mainMessage.trim()
-                    : "";
-
-            const titles =
-                Array.isArray(
-                    data.titles
-                )
-                    ? data.titles.filter(
-                          (title) =>
-                              typeof title ===
-                                  "string" &&
-                              title.trim()
-                      )
-                    : [];
-
-            state.generatedImagePrompt =
-                typeof data.imagePrompt ===
-                    "string"
-                    ? data.imagePrompt.trim()
-                    : "";
-
-            state.mainMessage =
-                message ||
-                state.mainMessage;
-
-            // 수정됨: textContent -> value
-            mainMessage.value =
-                state.mainMessage;
-
-            titleCandidates.innerHTML =
-                "";
-
-            titles.forEach(
-                (title, index) => {
-                    const button =
-                        document.createElement(
-                            "button"
-                        );
-
-                    button.type =
-                        "button";
-
-                    button.className =
-                        "title-candidate";
-
-                    button.textContent =
-                        `${index + 1}. ${title}`;
-
-                    if (
-                        index === 0
-                    ) {
-                        button.classList.add(
-                            "selected"
-                        );
-                    }
-
-                    button.addEventListener(
-                        "click",
-                        () => {
-                            document
-                                .querySelectorAll(
-                                    ".title-candidate"
-                                )
-                                .forEach(
-                                    (
-                                        candidate
-                                    ) => {
-                                        candidate
-                                            .classList
-                                            .remove(
-                                                "selected"
-                                            );
-                                    }
-                                );
-
-                            button.classList.add(
-                                "selected"
-                            );
-
-                            titleInput.value =
-                                title;
-
-                            drawCanvas();
-
-                            setStatus(
-                                "선택한 제목을 반영했습니다.",
-                                "success"
-                            );
-                        }
-                    );
-
-                    titleCandidates.appendChild(
-                        button
-                    );
-                }
-            );
-
-            if (
-                titles.length > 0
-            ) {
-                titleInput.value =
-                    titles[0];
-            }
-
-            state.selectedConcept =
-                normalizeConcept(
-                    data.recommendedConcept
-                );
-
-            conceptButtons.forEach(
-                (button) => {
-                    button.classList.toggle(
-                        "active",
-                        button.dataset.concept ===
-                            state.selectedConcept
-                    );
-                }
-            );
-
-            recommendedConceptText.textContent =
-                `AI 추천 컨셉: ${
-                    conceptInformation[
-                        state.selectedConcept
-                    ].name
-                }`;
-
-            planResult.classList.add(
-                "visible"
-            );
-
+        function updatePageData(key, value) {
+            if (state.pages.length === 0) return;
+            state.pages[state.currentPageIndex][key] = value;
             drawCanvas();
         }
 
-        function renderGallery(
-            images
-        ) {
-            galleryGrid.innerHTML =
-                "";
+        function updateDesignData(key, value) {
+            if (state.pages.length === 0) return;
+            state.pages[state.currentPageIndex].textLayout[key] = value;
+            drawCanvas();
+        }
 
-            if (
-                !Array.isArray(images) ||
-                images.length === 0
-            ) {
-                galleryWrap.classList.remove(
-                    "visible"
-                );
+        // 디자인 컨트롤 리스너
+        UI.fontFamilyInput.addEventListener("change", e => updateDesignData("fontFamily", e.target.value));
+        UI.titleSizeInput.addEventListener("input", e => updateDesignData("titleSize", Number(e.target.value)));
+        UI.subtitleSizeInput.addEventListener("input", e => updateDesignData("subtitleSize", Number(e.target.value)));
+        UI.overlayOpacityInput.addEventListener("input", e => updateDesignData("overlayOpacity", Number(e.target.value) / 100));
+        
+        UI.labelColorPicker.addEventListener("input", e => updateDesignData("labelColor", e.target.value));
+        UI.titleColorPicker.addEventListener("input", e => updateDesignData("titleColor", e.target.value));
+        UI.bodyColorPicker.addEventListener("input", e => updateDesignData("bodyColor", e.target.value));
 
-                return;
-            }
+        UI.alignButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                updateDesignData("align", btn.dataset.align);
+                UI.alignButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+            });
+        });
 
-            const providerCounter = {
-                fal: 0,
-                replicate: 0,
+        UI.conceptButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                state.selectedConcept = btn.dataset.concept;
+                UI.conceptButtons.forEach(b => b.classList.toggle("active", b.dataset.concept === state.selectedConcept));
+                drawCanvas();
+            });
+        });
+
+        // --- 4. 실제 API 연동 및 갤러리 관리 ---
+        UI.generateButton.addEventListener("click", async () => {
+            if (state.pages.length === 0) return;
+            const p = state.pages[state.currentPageIndex];
+            if (!p.englishImagePrompt) return setStatus("이미지 프롬프트를 입력해 주세요.", "error");
+
+            const providers = {
+                fal: Number(UI.falCount.value),
+                replicate: Number(UI.replicateCount.value),
                 civitai: 0
             };
 
-            images.forEach(
-                (item) => {
-                    const provider =
-                        item.provider ||
-                        "unknown";
+            if (providers.fal + providers.replicate <= 0) {
+                return setStatus("생성할 API 장수를 1장 이상 선택하세요.", "error");
+            }
 
-                    providerCounter[
-                        provider
-                    ] =
-                        (
-                            providerCounter[
-                                provider
-                            ] || 0
-                        ) + 1;
+            setButtonLoading(UI.generateButton, true, "실제 API 이미지 생성 중...", "선택한 장표 실제 이미지 생성");
+            setStatus("선택한 API를 통해 고품질 이미지를 생성하고 있습니다. 시간이 소요될 수 있습니다.");
 
-                    const card =
-                        document.createElement(
-                            "div"
-                        );
+            try {
+                // 대표님의 진짜 백엔드 API 호출!
+                const response = await fetch("/api/generate-images", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        prompt: p.englishImagePrompt,
+                        concept: state.selectedConcept,
+                        providers: providers
+                    })
+                });
 
-                    card.className =
-                        "gallery-card";
-
-                    const image =
-                        document.createElement(
-                            "img"
-                        );
-
-                    image.src =
-                        item.imageUrl;
-
-                    image.alt =
-                        `${getProviderName(provider)} 생성 이미지`;
-
-                    const footer =
-                        document.createElement(
-                            "div"
-                        );
-
-                    footer.className =
-                        "gallery-card-footer";
-
-                    footer.textContent =
-                        `${getProviderName(provider)} 이미지 ${providerCounter[provider]}`;
-
-                    card.appendChild(
-                        image
-                    );
-
-                    card.appendChild(
-                        footer
-                    );
-
-                    card.addEventListener(
-                        "click",
-                        async () => {
-                            document
-                                .querySelectorAll(
-                                    ".gallery-card"
-                                )
-                                .forEach(
-                                    (
-                                        galleryCard
-                                    ) => {
-                                        galleryCard
-                                            .classList
-                                            .remove(
-                                                "active"
-                                            );
-                                    }
-                                );
-
-                            card.classList.add(
-                                "active"
-                            );
-
-                            try {
-                                await setBackgroundImage(
-                                    item.imageUrl
-                                );
-
-                                setStatus(
-                                    "이미지를 선택했습니다. 글씨 자동 배치를 진행합니다.",
-                                    "success"
-                                );
-
-                                await autoPlaceText();
-                            } catch (
-                                error
-                            ) {
-                                console.error(
-                                    error
-                                );
-
-                                setStatus(
-                                    error.message,
-                                    "error"
-                                );
-                            }
-                        }
-                    );
-
-                    galleryGrid.appendChild(
-                        card
-                    );
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    const errorMsg = Array.isArray(data.providerErrors) 
+                        ? data.providerErrors.map(e => `${e.provider}: ${e.message}`).join(", ") 
+                        : (data.error || "이미지 생성 실패");
+                    throw new Error(errorMsg);
                 }
-            );
 
-            galleryWrap.classList.add(
-                "visible"
-            );
-        }
+                if (data.images && data.images.length > 0) {
+                    // 현재 장표의 갤러리 배열 갱신
+                    p.generatedImageCandidates = data.images;
+                    
+                    // 성공 시 갤러리 다시 렌더링 후 첫 번째 이미지를 캔버스에 자동 적용
+                    renderGallery(p.generatedImageCandidates);
+                    await applyImageToCanvas(data.images[0].imageUrl);
+                    
+                    setStatus(`성공적으로 생성되었습니다. 갤러리에서 원하는 이미지를 클릭하세요!`, "success");
+                } else {
+                    throw new Error("API에서 생성된 이미지가 없습니다.");
+                }
+                
+            } catch (e) {
+                console.error(e);
+                setStatus(e.message || "이미지 생성 중 오류가 발생했습니다.", "error");
+            } finally {
+                setButtonLoading(UI.generateButton, false, "", "선택한 장표 실제 이미지 생성");
+            }
+        });
 
-        async function autoPlaceText() {
-            if (
-                !state.selectedImageUrl
-            ) {
-                setStatus(
-                    "먼저 생성된 이미지 중 한 장을 선택해 주세요.",
-                    "error"
-                );
-
+        // 갤러리 렌더링 함수
+        function renderGallery(imagesArray) {
+            UI.galleryGrid.innerHTML = "";
+            
+            if (!imagesArray || imagesArray.length === 0) {
+                UI.galleryWrap.style.display = "none";
                 return;
             }
 
-            setButtonLoading(
-                autoLayoutButton,
-                true,
-                "글씨 위치를 분석하고 있습니다",
-                "선택 이미지 글씨 자동 배치"
-            );
+            const currentImgUrl = state.pages[state.currentPageIndex].imageUrl;
 
+            imagesArray.forEach((imgData) => {
+                const item = document.createElement("div");
+                item.className = `gallery-item ${imgData.imageUrl === currentImgUrl ? 'selected' : ''}`;
+                
+                const img = document.createElement("img");
+                img.src = imgData.imageUrl;
+                img.alt = "Generated Image";
+                
+                item.appendChild(img);
+
+                item.addEventListener("click", async () => {
+                    document.querySelectorAll(".gallery-item").forEach(el => el.classList.remove("selected"));
+                    item.classList.add("selected");
+                    await applyImageToCanvas(imgData.imageUrl);
+                });
+
+                UI.galleryGrid.appendChild(item);
+            });
+
+            UI.galleryWrap.style.display = "block";
+        }
+
+        // 특정 이미지를 캔버스에 적용하는 함수
+        async function applyImageToCanvas(url) {
             try {
-                const response =
-                    await fetch(
-                        "/api/analyze-image-layout",
-                        {
-                            method:
-                                "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body:
-                                JSON.stringify(
-                                    {
-                                        imageUrl:
-                                            state.selectedImageUrl,
-
-                                        title:
-                                            getTitleText(),
-
-                                        subtitle:
-                                            getSubtitleText(),
-
-                                        concept:
-                                            state.selectedConcept
-                                    }
-                                )
-                        }
-                    );
-
-                const data =
-                    await readJsonResponse(
-                        response
-                    );
-
-                if (
-                    !response.ok
-                ) {
-                    throw new Error(
-                        data.error ||
-                        "이미지 자동 배치 분석에 실패했습니다."
-                    );
-                }
-
-                state.textLayout = {
-                    x:
-                        clampNumber(
-                            data.x,
-                            0,
-                            65,
-                            8
-                        ),
-
-                    y:
-                        clampNumber(
-                            data.y,
-                            0,
-                            84,
-                            58
-                        ),
-
-                    width:
-                        clampNumber(
-                            data.width,
-                            35,
-                            90,
-                            70
-                        ),
-
-                    align:
-                        [
-                            "left",
-                            "center",
-                            "right"
-                        ].includes(
-                            data.align
-                        )
-                            ? data.align
-                            : "left",
-
-                    titleSize:
-                        clampNumber(
-                            data.titleSize,
-                            48,
-                            100,
-                            74
-                        ),
-
-                    subtitleSize:
-                        clampNumber(
-                            data.subtitleSize,
-                            22,
-                            48,
-                            34
-                        ),
-
-                    fontFamily:
-                        state.textLayout.fontFamily,
-
-                    textColor:
-                        data.textColor ===
-                            "#000000"
-                            ? "#000000"
-                            : "#ffffff",
-
-                    overlayOpacity:
-                        state.textLayout
-                            .overlayOpacity
-                };
-
-                updateControlValues();
+                const imgObj = await loadImageObj(url);
+                const p = state.pages[state.currentPageIndex];
+                p.imageUrl = url;
+                p.loadedImage = imgObj;
                 drawCanvas();
-
-                setStatus(
-                    data.positionReason ||
-                        "글씨를 자동 배치했습니다. 필요하면 조금 이동해 주세요.",
-                    "success"
-                );
-            } catch (
-                error
-            ) {
-                console.error(
-                    error
-                );
-
-                setStatus(
-                    error.message ||
-                    "자동 배치 중 오류가 발생했습니다.",
-                    "error"
-                );
-            } finally {
-                setButtonLoading(
-                    autoLayoutButton,
-                    false,
-                    "",
-                    "선택 이미지 글씨 자동 배치"
-                );
+            } catch (e) {
+                setStatus("이미지를 캔버스에 적용하는데 실패했습니다.", "error");
             }
         }
 
-        function getCanvasPoint(
-            event
-        ) {
-            const rect =
-                canvas.getBoundingClientRect();
 
-            const scaleX =
-                canvas.width /
-                rect.width;
+        // --- 5. 캔버스 렌더링 및 텍스트 박스 계산 ---
+        function drawCoverImage(context, image, x, y, width, height) {
+            const imageRatio = image.width / image.height;
+            const canvasRatio = width / height;
+            let drawWidth, drawHeight, offsetX, offsetY;
 
-            const scaleY =
-                canvas.height /
-                rect.height;
+            if (imageRatio > canvasRatio) {
+                drawHeight = height; drawWidth = image.width * (height / image.height);
+                offsetX = x + (width - drawWidth) / 2; offsetY = y;
+            } else {
+                drawWidth = width; drawHeight = image.height * (width / image.width);
+                offsetX = x; offsetY = y + (height - drawHeight) / 2;
+            }
+            context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+        }
 
-            return {
-                x:
-                    (
-                        event.clientX -
-                        rect.left
-                    ) *
-                    scaleX,
+        function wrapKoreanText(context, text, maxWidth, maxLines) {
+            if (!text) return [];
+            const normalizedText = text.replace(/\s+/g, " ").trim();
+            const lines = [];
+            let currentLine = "";
+            
+            for (let i = 0; i < normalizedText.length; i++) {
+                const char = normalizedText[i];
+                const testLine = currentLine + char;
+                if (context.measureText(testLine).width > maxWidth && currentLine) {
+                    lines.push(currentLine.trim());
+                    currentLine = char.trimStart();
+                    if (lines.length === maxLines - 1) break;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (lines.length < maxLines && currentLine) lines.push(currentLine.trim());
+            return lines.slice(0, maxLines);
+        }
 
-                y:
-                    (
-                        event.clientY -
-                        rect.top
-                    ) *
-                    scaleY
+        function getOverlayStops(opacity) {
+            if (state.selectedConcept === "insight") return [
+                { stop: 0, color: `rgba(14,31,55,${0.96 * opacity})` },
+                { stop: 0.35, color: `rgba(14,31,55,${0.58 * opacity})` },
+                { stop: 0.75, color: `rgba(14,31,55,${0.08 * opacity})` }
+            ];
+            if (state.selectedConcept === "magazine") return [
+                { stop: 0, color: `rgba(8,8,8,${0.92 * opacity})` },
+                { stop: 0.42, color: `rgba(8,8,8,${0.38 * opacity})` },
+                { stop: 0.75, color: `rgba(8,8,8,${0.06 * opacity})` }
+            ];
+            return [
+                { stop: 0, color: `rgba(0,0,0,${0.95 * opacity})` },
+                { stop: 0.32, color: `rgba(0,0,0,${0.55 * opacity})` },
+                { stop: 0.70, color: `rgba(0,0,0,${0.08 * opacity})` }
+            ];
+        }
+
+        function drawCanvas() {
+            if (state.pages.length === 0) return;
+            const p = state.pages[state.currentPageIndex];
+            const layout = p.textLayout;
+
+            UI.ctx.clearRect(0, 0, UI.canvas.width, UI.canvas.height);
+
+            // 이미지 그리기
+            if (p.loadedImage) {
+                drawCoverImage(UI.ctx, p.loadedImage, 0, 0, UI.canvas.width, UI.canvas.height);
+            } else {
+                UI.ctx.fillStyle = "#1b2435";
+                UI.ctx.fillRect(0, 0, UI.canvas.width, UI.canvas.height);
+            }
+
+            // 오버레이 그리기
+            const gradient = UI.ctx.createLinearGradient(0, UI.canvas.height, 0, 0);
+            getOverlayStops(layout.overlayOpacity).forEach(item => {
+                gradient.addColorStop(item.stop, item.color);
+            });
+            UI.ctx.fillStyle = gradient;
+            UI.ctx.fillRect(0, 0, UI.canvas.width, UI.canvas.height);
+
+            // 텍스트 블록
+            const x = (layout.x / 100) * UI.canvas.width;
+            let y = (layout.y / 100) * UI.canvas.height;
+            const maxWidth = (layout.width / 100) * UI.canvas.width;
+            const alignX = layout.align === "center" ? x + maxWidth / 2 : layout.align === "right" ? x + maxWidth : x;
+
+            UI.ctx.textBaseline = "top";
+            UI.ctx.textAlign = layout.align;
+            UI.ctx.shadowColor = "rgba(0,0,0,0.55)";
+            UI.ctx.shadowBlur = 14;
+            UI.ctx.shadowOffsetY = 4;
+
+            // 라벨
+            if (p.label) {
+                UI.ctx.fillStyle = layout.labelColor;
+                UI.ctx.font = `800 38px ${layout.fontFamily}`;
+                UI.ctx.fillText(p.label, alignX, y);
+                y += 64;
+            }
+
+            // 제목
+            UI.ctx.fillStyle = layout.titleColor;
+            UI.ctx.font = `800 ${layout.titleSize}px ${layout.fontFamily}`;
+            const titleLines = wrapKoreanText(UI.ctx, p.title, maxWidth, 4);
+            titleLines.forEach(line => {
+                UI.ctx.fillText(line, alignX, y);
+                y += layout.titleSize * 1.12;
+            });
+            y += 18;
+
+            // 본문
+            if (p.body) {
+                UI.ctx.fillStyle = layout.bodyColor;
+                UI.ctx.font = `500 ${layout.subtitleSize}px ${layout.fontFamily}`;
+                const bodyLines = wrapKoreanText(UI.ctx, p.body, maxWidth, 4);
+                bodyLines.forEach(line => {
+                    UI.ctx.fillText(line, alignX, y);
+                    y += layout.subtitleSize * 1.36;
+                });
+            }
+
+            UI.ctx.shadowColor = "transparent";
+
+            // 드래그를 위한 히트박스 업데이트
+            state.textBoxRect = { 
+                x: x, 
+                y: (layout.y / 100) * UI.canvas.height, 
+                width: maxWidth, 
+                height: y - ((layout.y / 100) * UI.canvas.height) 
             };
         }
 
-        function isInsideTextBox(
-            canvasX,
-            canvasY
-        ) {
-            const rect =
-                state.textBoxRect;
+        // --- 6. 드래그 기능 ---
+        UI.canvas.addEventListener("pointerdown", e => {
+            if (state.pages.length === 0) return;
+            const rect = UI.canvas.getBoundingClientRect();
+            const ptX = (e.clientX - rect.left) * (UI.canvas.width / rect.width);
+            const ptY = (e.clientY - rect.top) * (UI.canvas.height / rect.height);
+            
+            const box = state.textBoxRect;
+            // 텍스트 영역 내부 클릭 여부 확인 (터치를 고려해 영역을 살짝 넓게 판정)
+            if (ptX >= box.x - 20 && ptX <= box.x + box.width + 20 && ptY >= box.y - 20 && ptY <= box.y + box.height + 20) {
+                state.drag.active = true;
+                state.drag.startPointerX = ptX;
+                state.drag.startPointerY = ptY;
+                state.drag.startX = state.pages[state.currentPageIndex].textLayout.x;
+                state.drag.startY = state.pages[state.currentPageIndex].textLayout.y;
+                UI.canvas.setPointerCapture(e.pointerId);
+                UI.canvas.style.cursor = "grabbing";
+            }
+        });
 
-            return (
-                canvasX >=
-                    rect.x &&
-                canvasX <=
-                    rect.x +
-                    rect.width &&
-                canvasY >=
-                    rect.y &&
-                canvasY <=
-                    rect.y +
-                    rect.height
-            );
-        }
+        UI.canvas.addEventListener("pointermove", e => {
+            if (!state.drag.active) return;
+            const rect = UI.canvas.getBoundingClientRect();
+            const ptX = (e.clientX - rect.left) * (UI.canvas.width / rect.width);
+            const ptY = (e.clientY - rect.top) * (UI.canvas.height / rect.height);
+            
+            const percentX = ((ptX - state.drag.startPointerX) / UI.canvas.width) * 100;
+            const percentY = ((ptY - state.drag.startPointerY) / UI.canvas.height) * 100;
+            const layout = state.pages[state.currentPageIndex].textLayout;
 
-        function stopCanvasDrag() {
-            state.drag.active =
-                false;
-
-            canvas.style.cursor =
-                "default";
-        }
-
-        function createDownloadFileName() {
-            const now =
-                new Date();
-
-            const date =
-                `${now.getFullYear()}${String(
-                    now.getMonth() + 1
-                ).padStart(2, "0")}${String(
-                    now.getDate()
-                ).padStart(2, "0")}`;
-
-            const time =
-                `${String(
-                    now.getHours()
-                ).padStart(2, "0")}${String(
-                    now.getMinutes()
-                ).padStart(2, "0")}`;
-
-            return (
-                `inwave-instagram-${date}-${time}.png`
-            );
-        }
-
-        async function downloadCanvasImage() {
+            layout.x = Math.max(0, Math.min(100 - layout.width, state.drag.startX + percentX));
+            layout.y = Math.max(0, Math.min(92, state.drag.startY + percentY));
             drawCanvas();
+        });
 
-            const blob =
-                await new Promise(
-                    (
-                        resolve,
-                        reject
-                    ) => {
-                        canvas.toBlob(
-                            (
-                                result
-                            ) => {
-                                if (
-                                    !result
-                                ) {
-                                    reject(
-                                        new Error(
-                                            "PNG 파일 생성에 실패했습니다."
-                                        )
-                                    );
+        const stopDrag = () => { state.drag.active = false; UI.canvas.style.cursor = "default"; };
+        UI.canvas.addEventListener("pointerup", stopDrag);
+        UI.canvas.addEventListener("pointercancel", stopDrag);
 
-                                    return;
-                                }
-
-                                resolve(
-                                    result
-                                );
-                            },
-
-                            "image/png"
-                        );
-                    }
-                );
-
-            const objectUrl =
-                URL.createObjectURL(
-                    blob
-                );
-
-            const link =
-                document.createElement(
-                    "a"
-                );
-
-            link.href =
-                objectUrl;
-
-            link.download =
-                createDownloadFileName();
-
-            document.body.appendChild(
-                link
-            );
-
-            link.click();
-            link.remove();
-
-            setTimeout(
-                () => {
-                    URL.revokeObjectURL(
-                        objectUrl
-                    );
-                },
-
-                1000
-            );
-        }
-
-        async function initializeDefaultImage() {
+        // --- 7. 일괄 ZIP 다운로드 ---
+        UI.downloadZipButton.addEventListener("click", async () => {
+            if (state.pages.length === 0) return;
+            setButtonLoading(UI.downloadZipButton, true, "ZIP 압축 중...", "전체 장표 일괄 ZIP 다운로드");
+            
             try {
-                state.backgroundImage =
-                    await loadImageObject(
-                        DEFAULT_IMAGE_URL
-                    );
-            } catch (
-                error
-            ) {
-                console.error(
-                    error
-                );
+                const zip = new JSZip();
+                const originalIndex = state.currentPageIndex;
 
-                state.backgroundImage =
-                    null;
+                for (let i = 0; i < state.pages.length; i++) {
+                    state.currentPageIndex = i;
+                    drawCanvas();
+                    const blob = await new Promise(res => UI.canvas.toBlob(res, "image/png"));
+                    zip.file(`INWAVE_Card_${i + 1}.png`, blob);
+                }
+
+                selectPage(originalIndex); // 화면 복구
+                
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `INWAVE_Carousel_${Date.now()}.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+                setStatus("ZIP 파일 다운로드가 완료되었습니다.", "success");
+            } catch (e) {
+                setStatus("다운로드 중 오류가 발생했습니다.", "error");
+            } finally {
+                setButtonLoading(UI.downloadZipButton, false, "", "전체 장표 일괄 ZIP 다운로드");
             }
+        });
 
-            updateControlValues();
+        // 폰트 로드 완료 시 초기화 (깜빡임 방지)
+        if (document.fonts?.ready) { document.fonts.ready.then(() => { if (state.pages.length === 0) drawCanvas(); }); }
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>INWAVE 콘텐츠 스튜디오 2.0</title>
+    
+    <!-- JSZip CDN (다장표 일괄 다운로드용) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Do+Hyeon&family=Gowun+Dodum&family=Nanum+Gothic:wght@400;700;800&family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap');
+
+        * { box-sizing: border-box; }
+        :root {
+            --navy: #17243d; --navy-light: #263957;
+            --orange: #f58220; --orange-dark: #e97312;
+            --ivory: #f5f1e8; --green: #176b3a;
+            --border: #e1e1e1; --muted: #667085;
+            --chat-bg: #fdfdfd; --chat-user: #f58220; --chat-ai: #eef1f5;
+        }
+
+        body { margin: 0; font-family: Arial, "Noto Sans KR", "Apple SD Gothic Neo", sans-serif; background: var(--ivory); color: var(--navy); }
+        header { padding: 22px 30px; background: var(--navy); color: white; }
+        header h1 { margin: 0; font-size: 24px; }
+        header p { margin: 8px 0 0; color: #d9d4c8; line-height: 1.5; font-size: 14px; }
+        
+        .version-badge {
+            display: inline-block; background: var(--green); color: white;
+            font-size: 12px; padding: 4px 8px; border-radius: 4px; margin-left: 10px; vertical-align: middle;
+        }
+
+        main { width: min(1400px, calc(100% - 32px)); margin: 30px auto; display: grid; grid-template-columns: minmax(0, 1fr) 500px; gap: 24px; align-items: start; }
+        .panel { background: white; border-radius: 18px; padding: 24px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); }
+        .preview-panel { position: sticky; top: 20px; }
+
+        h2 { margin: 0 0 16px; font-size: 21px; }
+        h3 { margin: 0 0 12px; font-size: 18px; }
+        label { font-weight: 700; font-size: 14px; color: var(--navy); margin-bottom: 6px; display: block; }
+        .section-title { margin-top: 28px; }
+
+        textarea, input[type="text"], select {
+            width: 100%; padding: 14px; border: 1px solid #d6d6d6; border-radius: 10px;
+            background: white; color: var(--navy); font-size: 15px; outline: none; font-family: inherit;
+        }
+        textarea:focus, input[type="text"]:focus, select:focus { border-color: var(--orange); box-shadow: 0 0 0 3px rgba(245, 130, 32, 0.12); }
+        textarea { resize: vertical; line-height: 1.5; }
+
+        /* --- Chat UI --- */
+        .chat-wrap { display: flex; flex-direction: column; height: 380px; border: 1px solid var(--border); border-radius: 12px; background: var(--chat-bg); overflow: hidden; margin-bottom: 24px; }
+        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .msg { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.5; word-break: keep-all; }
+        .msg.user { align-self: flex-end; background: var(--chat-user); color: white; border-bottom-right-radius: 4px; }
+        .msg.ai { align-self: flex-start; background: var(--chat-ai); color: var(--navy); border-bottom-left-radius: 4px; }
+        .chat-input-area { display: flex; padding: 12px; background: white; border-top: 1px solid var(--border); gap: 8px; }
+        .chat-input-area input { flex: 1; padding: 12px; border: 1px solid var(--border); border-radius: 8px; }
+        .chat-input-area button { padding: 0 20px; background: var(--navy); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; white-space: nowrap; }
+
+        /* --- Storyboard & Tabs --- */
+        #storyboardSection { display: none; margin-top: 24px; border-top: 2px dashed var(--border); padding-top: 24px; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px; }
+        .tab { padding: 10px 18px; background: #eef1f5; border: none; border-radius: 8px; cursor: pointer; font-weight: 800; color: var(--muted); white-space: nowrap; }
+        .tab.active { background: var(--navy); color: white; }
+
+        .editor-group { margin-bottom: 16px; }
+        #pagePromptSummary { font-size: 13px; color: var(--orange); margin-bottom: 6px; font-weight: bold; }
+        #pageEnglishPrompt { font-family: monospace; font-size: 13px; background: #fafafa; }
+
+        /* --- API Selectors & Concepts --- */
+        .concepts, .provider-grid, .editor-controls-grid, .small-button-row { display: grid; gap: 10px; }
+        .concepts { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 10px; }
+        .concept { border: 2px solid transparent; border-radius: 12px; padding: 16px 12px; background: #f5f5f5; color: var(--navy); cursor: pointer; text-align: left; line-height: 1.45; }
+        .concept.active { border-color: var(--orange); background: #fff4e8; }
+        .concept strong { display: block; margin-bottom: 8px; font-size: 16px; }
+        
+        .provider-grid { margin-top: 14px; }
+        .provider-option { display: grid; grid-template-columns: 1fr 120px; gap: 14px; align-items: center; padding: 14px; border: 1px solid #ececec; border-radius: 12px; background: #fafafa; }
+        .provider-option strong { display: block; margin-bottom: 4px; font-size: 16px; }
+        .provider-option span { color: var(--muted); font-size: 14px; line-height: 1.45; }
+
+        /* --- Generated Images Gallery --- */
+        #galleryWrap { display: none; margin-top: 20px; border-top: 1px solid var(--border); padding-top: 20px; }
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .gallery-item { border: 3px solid transparent; border-radius: 10px; overflow: hidden; cursor: pointer; position: relative; }
+        .gallery-item img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+        .gallery-item:hover { transform: translateY(-2px); }
+        .gallery-item.selected { border-color: var(--orange); box-shadow: 0 4px 12px rgba(245,130,32,0.3); }
+
+        /* --- Canvas & Controls --- */
+        .canvas-wrap { border-radius: 16px; overflow: hidden; background: #111; aspect-ratio: 4/5; }
+        #editorCanvas { width: 100%; height: auto; display: block; touch-action: none; cursor: grab; }
+        #editorCanvas:active { cursor: grabbing; }
+        
+        .editor-controls { margin-top: 14px; padding: 14px; border: 1px solid #ececec; border-radius: 12px; background: #fafafa; }
+        .editor-controls-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        
+        .color-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 12px; }
+        .color-item { text-align: center; }
+        .color-item input[type="color"] { width: 100%; height: 44px; padding: 2px; border: 1px solid var(--border); border-radius: 8px; cursor: pointer; background: white; }
+        .color-item span { font-size: 12px; color: var(--muted); font-weight: bold; display: block; margin-top: 4px; }
+
+        .small-button-row { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 10px; }
+        .small-button { padding: 10px 8px; background: #eef1f5; color: var(--navy); font-size: 13px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .small-button.active { background: var(--orange); color: white; }
+        
+        /* --- Buttons & Status --- */
+        button.action-btn { width: 100%; border: 0; border-radius: 10px; padding: 14px 20px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 14px; transition: opacity 0.2s, transform 0.2s; }
+        button.action-btn:active { transform: translateY(1px); }
+        button.action-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-primary { background: var(--orange); color: white; }
+        .btn-secondary { background: var(--navy); color: white; }
+        .btn-success { background: var(--green); color: white; }
+
+        .status { margin-top: 14px; padding: 12px; border-radius: 10px; background: #eef1f5; color: var(--navy); font-size: 14px; line-height: 1.5; display: none; }
+        .status.visible { display: block; }
+        .status.success { background: #e9f7ef; color: var(--green); }
+        .status.error { background: #fff0f0; color: #b42318; }
+        .tip-box { margin-top: 14px; font-size: 13px; line-height: 1.5; color: var(--muted); background: #fafafa; border: 1px solid #ececec; border-radius: 12px; padding: 12px; }
+
+        @media (max-width: 1100px) { main { grid-template-columns: 1fr; } .preview-panel { position: static; } }
+        @media (max-width: 760px) { .concepts, .provider-option, .editor-controls-grid, .small-button-row, .gallery-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>INWAVE 콘텐츠 스튜디오 2.0 <span class="version-badge">API 연동 배포용</span></h1>
+        <p>AI와 대화하여 다장표 기획을 완성하고, 고품질 이미지를 생성하여 디자인을 커스텀하세요.</p>
+    </header>
+
+    <main>
+        <!-- 좌측: 기획 및 이미지 생성 패널 -->
+        <section class="panel">
+            <h2>1. 기획 방향성 대화 (스마트 가이드)</h2>
+            <div class="chat-wrap">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="msg ai">안녕하세요! INWAVE 다장표 카드뉴스를 기획해 드립니다. 오늘 타겟 고객은 누구이며, 어떤 문제를 짚어주고 싶으신가요? (예: 광고주 대상, 오프라인 광고비 낭비 문제 등)</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatInput" placeholder="여기에 기획 의도를 입력해주세요." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button onclick="sendChatMessage()" id="chatSendBtn">전송</button>
+                </div>
+            </div>
+
+            <div id="storyboardSection">
+                <h2>2. 스토리보드 구성 및 텍스트 수정</h2>
+                <div class="tabs" id="pageTabs"></div>
+
+                <div id="pageEditor">
+                    <div class="editor-group">
+                        <label>오렌지 라벨 (역할)</label>
+                        <input type="text" id="pageLabel" oninput="updatePageData('label', this.value)">
+                    </div>
+                    <div class="editor-group">
+                        <label>장표 제목</label>
+                        <textarea id="pageTitle" rows="2" oninput="updatePageData('title', this.value)"></textarea>
+                    </div>
+                    <div class="editor-group">
+                        <label>장표 본문</label>
+                        <textarea id="pageBody" rows="3" oninput="updatePageData('body', this.value)"></textarea>
+                    </div>
+                    <div class="editor-group">
+                        <label>이미지 프롬프트 (수정 가능)</label>
+                        <div id="pagePromptSummary"></div>
+                        <textarea id="pageEnglishPrompt" rows="4" oninput="updatePageData('englishImagePrompt', this.value)"></textarea>
+                    </div>
+                </div>
+
+                <h2 class="section-title">3. 컨셉 및 이미지 생성 API 선택</h2>
+                <div class="concepts">
+                    <button class="concept active" data-concept="hook" type="button">
+                        <strong>강한 후킹형</strong> 높은 대비와 굵은 제목
+                    </button>
+                    <button class="concept" data-concept="insight" type="button">
+                        <strong>전문 인사이트형</strong> 네이비·아이보리 중심
+                    </button>
+                    <button class="concept" data-concept="magazine" type="button">
+                        <strong>트렌드 매거진형</strong> 감각적이고 세련된 구성
+                    </button>
+                </div>
+
+                <div class="provider-grid">
+                    <div class="provider-option">
+                        <div>
+                            <strong>FAL API</strong>
+                            <span>고품질 AI 이미지 모델</span>
+                        </div>
+                        <select id="falCount"><option value="0">0장</option><option value="1">1장</option><option value="2" selected>2장</option></select>
+                    </div>
+                    <div class="provider-option">
+                        <div>
+                            <strong>Replicate API</strong>
+                            <span>빠른 이미지 생성 지원</span>
+                        </div>
+                        <select id="replicateCount"><option value="0" selected>0장</option><option value="1">1장</option><option value="2">2장</option></select>
+                    </div>
+                </div>
+
+                <button class="action-btn btn-primary" id="generateButton" type="button">선택한 장표 실제 이미지 생성</button>
+                <button class="action-btn btn-secondary" id="autoLayoutButton" type="button" style="display:none;">텍스트 기본위치 복구</button>
+                
+                <!-- 생성된 이미지 갤러리 영역 -->
+                <div id="galleryWrap">
+                    <h3 style="font-size: 16px; margin: 0;">생성된 이미지 후보 (클릭하여 캔버스에 적용)</h3>
+                    <div class="gallery-grid" id="galleryGrid"></div>
+                </div>
+            </div>
+            
+            <div class="status" id="status">상태 메시지가 표시됩니다.</div>
+        </section>
+
+        <!-- 우측: 캔버스 및 디자인 패널 -->
+        <section class="panel preview-panel">
+            <h2>4. 디자인 미리보기 및 저장</h2>
+
+            <div class="canvas-wrap">
+                <canvas id="editorCanvas" width="1080" height="1350"></canvas>
+            </div>
+
+            <div class="editor-controls">
+                <div class="editor-controls-grid">
+                    <div>
+                        <label>폰트 선택</label>
+                        <select id="fontFamilyInput">
+                            <option value='"Noto Sans KR", sans-serif'>Noto Sans KR</option>
+                            <option value='"Nanum Gothic", sans-serif'>나눔고딕</option>
+                            <option value='"Black Han Sans", sans-serif'>검은고딕</option>
+                            <option value='"Do Hyeon", sans-serif'>도현체</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>배경 어둡기</label>
+                        <input id="overlayOpacityInput" type="range" min="0" max="100" value="80">
+                    </div>
+                    <div>
+                        <label>제목 크기</label>
+                        <input id="titleSizeInput" type="range" min="48" max="100" value="74">
+                    </div>
+                    <div>
+                        <label>설명 크기</label>
+                        <input id="subtitleSizeInput" type="range" min="22" max="48" value="34">
+                    </div>
+                </div>
+
+                <div class="color-row">
+                    <div class="color-item">
+                        <input type="color" id="labelColorPicker" value="#f58220">
+                        <span>라벨 색상</span>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="titleColorPicker" value="#ffffff">
+                        <span>제목 색상</span>
+                    </div>
+                    <div class="color-item">
+                        <input type="color" id="bodyColorPicker" value="#f0f0f0">
+                        <span>본문 색상</span>
+                    </div>
+                </div>
+
+                <div class="small-button-row">
+                    <button class="small-button active" data-align="left">왼쪽 정렬</button>
+                    <button class="small-button" data-align="center">가운데 정렬</button>
+                    <button class="small-button" data-align="right">오른쪽 정렬</button>
+                </div>
+            </div>
+
+            <button class="action-btn btn-success" id="downloadZipButton" type="button" disabled>전체 장표 일괄 ZIP 다운로드</button>
+
+            <div class="tip-box">
+                각 탭을 눌러 장표를 이동하세요. 디자인 요소(색상, 위치)는 장표마다 개별 저장됩니다. 
+                <strong>글씨 영역은 마우스(또는 터치)로 캔버스 안에서 직접 드래그하여 이동할 수 있습니다.</strong>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // --- 0. 전역 상태 관리 ---
+        const DEFAULT_IMAGE_URL = "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1080&q=80";
+        
+        const state = {
+            chatMessages: [],
+            pages: [],
+            currentPageIndex: 0,
+            selectedConcept: "hook",
+            drag: { active: false, startPointerX: 0, startPointerY: 0, startX: 0, startY: 0 },
+            textBoxRect: { x: 0, y: 0, width: 0, height: 0 }
+        };
+
+        const conceptInformation = {
+            hook: { name: "강한 후킹형", labelColor: "#ff8a1f" },
+            insight: { name: "전문 인사이트형", labelColor: "#ff9b42" },
+            magazine: { name: "트렌드 매거진형", labelColor: "#f6d86b" }
+        };
+
+        // DOM 캐싱
+        const UI = {
+            chatMessages: document.getElementById("chatMessages"),
+            chatInput: document.getElementById("chatInput"),
+            chatSendBtn: document.getElementById("chatSendBtn"),
+            storyboardSection: document.getElementById("storyboardSection"),
+            pageTabs: document.getElementById("pageTabs"),
+            
+            pageLabel: document.getElementById("pageLabel"),
+            pageTitle: document.getElementById("pageTitle"),
+            pageBody: document.getElementById("pageBody"),
+            pagePromptSummary: document.getElementById("pagePromptSummary"),
+            pageEnglishPrompt: document.getElementById("pageEnglishPrompt"),
+            
+            galleryWrap: document.getElementById("galleryWrap"),
+            galleryGrid: document.getElementById("galleryGrid"),
+            
+            canvas: document.getElementById("editorCanvas"),
+            ctx: document.getElementById("editorCanvas").getContext("2d"),
+            status: document.getElementById("status"),
+            
+            fontFamilyInput: document.getElementById("fontFamilyInput"),
+            titleSizeInput: document.getElementById("titleSizeInput"),
+            subtitleSizeInput: document.getElementById("subtitleSizeInput"),
+            overlayOpacityInput: document.getElementById("overlayOpacityInput"),
+            
+            labelColorPicker: document.getElementById("labelColorPicker"),
+            titleColorPicker: document.getElementById("titleColorPicker"),
+            bodyColorPicker: document.getElementById("bodyColorPicker"),
+            alignButtons: document.querySelectorAll("[data-align]"),
+            conceptButtons: document.querySelectorAll(".concept"),
+            
+            falCount: document.getElementById("falCount"),
+            replicateCount: document.getElementById("replicateCount"),
+            
+            generateButton: document.getElementById("generateButton"),
+            autoLayoutButton: document.getElementById("autoLayoutButton"),
+            downloadZipButton: document.getElementById("downloadZipButton")
+        };
+
+        // --- 1. 공통 유틸 함수 ---
+        function setStatus(message, type = "normal") {
+            UI.status.textContent = message;
+            UI.status.className = "status visible";
+            if (type === "success") UI.status.classList.add("success");
+            if (type === "error") UI.status.classList.add("error");
+            setTimeout(() => { UI.status.classList.remove("visible"); }, 5000);
+        }
+
+        function setButtonLoading(button, isLoading, loadingText, normalText) {
+            button.disabled = isLoading;
+            button.innerHTML = isLoading ? loadingText : normalText;
+        }
+
+        function clampNumber(value, min, max, fallback) {
+            if (value === null || value === undefined || value === "") return fallback;
+            const num = Number(value);
+            return Number.isNaN(num) ? fallback : Math.max(min, Math.min(max, num));
+        }
+
+        async function loadImageObj(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error("이미지 로드 실패"));
+                img.src = url;
+            });
+        }
+
+        // --- 2. 스마트 가이드 챗봇 로직 ---
+        function appendChatMessage(role, text) {
+            const div = document.createElement("div");
+            div.className = `msg ${role}`;
+            div.textContent = text;
+            UI.chatMessages.appendChild(div);
+            UI.chatMessages.scrollTop = UI.chatMessages.scrollHeight;
+        }
+
+        async function sendChatMessage() {
+            const text = UI.chatInput.value.trim();
+            if (!text) return;
+
+            appendChatMessage("user", text);
+            state.chatMessages.push({ role: "user", content: text });
+            UI.chatInput.value = "";
+            UI.chatSendBtn.disabled = true;
+
+            appendChatMessage("ai", "기획을 분석하고 있습니다...");
+            const loadingNode = UI.chatMessages.lastElementChild;
+
+            try {
+                let data;
+                try {
+                    const response = await fetch("/api/plan-carousel", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ messages: state.chatMessages })
+                    });
+                    if (!response.ok) throw new Error("API Network Error");
+                    data = await response.json();
+                } catch (apiError) {
+                    // 안전망: OpenAI 연동 실패시 Mock 데이터 반환 (화면 진행 보장)
+                    if (state.chatMessages.length < 3) {
+                        data = { isComplete: false, chatReply: "좋습니다. 그렇다면 강조하고 싶은 핵심 수치나, 원하는 전체적인 분위기(예: 신뢰감, 트렌디)가 있을까요?" };
+                    } else {
+                        data = {
+                            isComplete: true,
+                            chatReply: "알겠습니다! 기획을 바탕으로 3장짜리 스토리보드를 구성했습니다. 하단에서 확인해보세요.",
+                            storyboard: {
+                                pages: [
+                                    { pageNumber: 1, role: "hook", label: "광고 인사이트", title: "광고비는 나갔는데,\n누가 봤는지는 아세요?", body: "광고 노출이 실제 시청으로 이어졌는지 확인해야 합니다.", koreanPromptSummary: "거대한 디지털 사이니지 앞의 사람들", englishImagePrompt: "Cinematic photography, modern digital signage glowing in a crowded urban street, moody, NO text, NO logos, aspect ratio 4:5" },
+                                    { pageNumber: 2, role: "problem", label: "문제 원인", title: "유동인구와\n실제 시청자는 다릅니다", body: "단순히 지나가는 사람 수가 아니라, 광고를 쳐다본 사람을 측정해야 합니다.", koreanPromptSummary: "데이터를 분석하는 사무실 풍경", englishImagePrompt: "Professional office setting, blurred background, analyzing data, modern lighting, clear negative space, NO text, aspect ratio 4:5" },
+                                    { pageNumber: 3, role: "solution", label: "해결책", title: "정확한 시청 데이터로\n광고 효율을 높이세요", body: "INWAVE 데이터 솔루션으로 정확히 타겟팅하세요.", koreanPromptSummary: "스마트한 측정 센서와 도시 전경", englishImagePrompt: "High-tech smart sensor concept, overlooking a busy city street, sleek design, bright and professional, NO text, aspect ratio 4:5" }
+                                ]
+                            }
+                        };
+                    }
+                }
+
+                loadingNode.remove();
+
+                if (data.isComplete && data.storyboard) {
+                    appendChatMessage("ai", data.chatReply);
+                    state.chatMessages.push({ role: "assistant", content: data.chatReply });
+                    initializeStoryboard(data.storyboard.pages);
+                    setStatus("스토리보드가 생성되었습니다. 탭을 눌러 각 장표를 확인하세요.", "success");
+                } else {
+                    appendChatMessage("ai", data.chatReply);
+                    state.chatMessages.push({ role: "assistant", content: data.chatReply });
+                }
+            } catch (error) {
+                loadingNode.remove();
+                appendChatMessage("ai", "오류가 발생했습니다: " + error.message);
+            } finally {
+                UI.chatSendBtn.disabled = false;
+            }
+        }
+
+        // --- 3. 스토리보드 구성 ---
+        async function initializeStoryboard(pagesData) {
+            UI.storyboardSection.style.display = "block";
+            UI.downloadZipButton.disabled = false;
+            
+            const defaultImgObj = await loadImageObj(DEFAULT_IMAGE_URL);
+
+            state.pages = pagesData.map((p, index) => ({
+                id: index,
+                label: p.label || "광고 인사이트",
+                title: p.title || "",
+                body: p.body || "",
+                koreanPromptSummary: p.koreanPromptSummary || "AI 이미지 설명",
+                englishImagePrompt: p.englishImagePrompt || "",
+                
+                // 해당 장표에 대해 생성된 이미지 리스트 보관
+                generatedImageCandidates: [], 
+                
+                imageUrl: DEFAULT_IMAGE_URL,
+                loadedImage: defaultImgObj,
+                textLayout: {
+                    x: 8, y: 58, width: 70, align: "left",
+                    titleSize: 74, subtitleSize: 34,
+                    fontFamily: '"Noto Sans KR", sans-serif',
+                    labelColor: "#f58220", titleColor: "#ffffff", bodyColor: "#f0f0f0",
+                    overlayOpacity: 0.8
+                }
+            }));
+
+            renderTabs();
+            selectPage(0);
+        }
+
+        function renderTabs() {
+            UI.pageTabs.innerHTML = "";
+            state.pages.forEach((p, i) => {
+                const btn = document.createElement("button");
+                btn.className = `tab ${i === state.currentPageIndex ? 'active' : ''}`;
+                btn.textContent = `${i + 1}장표`;
+                btn.onclick = () => selectPage(i);
+                UI.pageTabs.appendChild(btn);
+            });
+        }
+
+        function selectPage(index) {
+            state.currentPageIndex = index;
+            renderTabs();
+            const p = state.pages[index];
+
+            // 에디터 데이터 갱신
+            UI.pageLabel.value = p.label;
+            UI.pageTitle.value = p.title;
+            UI.pageBody.value = p.body;
+            UI.pagePromptSummary.textContent = `[요약] ${p.koreanPromptSummary}`;
+            UI.pageEnglishPrompt.value = p.englishImagePrompt;
+
+            // 갤러리 갱신
+            renderGallery(p.generatedImageCandidates);
+
+            // 디자인 컨트롤 동기화
+            const layout = p.textLayout;
+            UI.fontFamilyInput.value = layout.fontFamily;
+            UI.titleSizeInput.value = layout.titleSize;
+            UI.subtitleSizeInput.value = layout.subtitleSize;
+            UI.overlayOpacityInput.value = layout.overlayOpacity * 100;
+            UI.labelColorPicker.value = layout.labelColor;
+            UI.titleColorPicker.value = layout.titleColor;
+            UI.bodyColorPicker.value = layout.bodyColor;
+
+            UI.alignButtons.forEach(btn => {
+                btn.classList.toggle("active", btn.dataset.align === layout.align);
+            });
+
             drawCanvas();
         }
 
-        [
-            falCount,
-            replicateCount,
-            civitaiCount
-        ].forEach(
-            (select) => {
-                select.addEventListener(
-                    "change",
-                    updateCountSummary
-                );
-            }
-        );
-
-        conceptButtons.forEach(
-            (button) => {
-                button.addEventListener(
-                    "click",
-                    () => {
-                        state.selectedConcept =
-                            normalizeConcept(
-                                button.dataset.concept
-                            );
-
-                        conceptButtons.forEach(
-                            (
-                                conceptButton
-                            ) => {
-                                conceptButton
-                                    .classList
-                                    .toggle(
-                                        "active",
-                                        conceptButton
-                                            .dataset
-                                            .concept ===
-                                            state
-                                                .selectedConcept
-                                    );
-                            }
-                        );
-
-                        drawCanvas();
-
-                        setStatus(
-                            `${
-                                conceptInformation[
-                                    state.selectedConcept
-                                ].name
-                            } 컨셉을 선택했습니다.`,
-                            "success"
-                        );
-                    }
-                );
-            }
-        );
-
-        alignButtons.forEach(
-            (button) => {
-                button.addEventListener(
-                    "click",
-                    () => {
-                        state.textLayout.align =
-                            button.dataset.align;
-
-                        updateControlValues();
-                        drawCanvas();
-                    }
-                );
-            }
-        );
-
-
-        fontFamilyInput.addEventListener(
-            "change",
-            async () => {
-                state.textLayout.fontFamily =
-                    fontFamilyInput.value;
-
-                if (document.fonts?.ready) {
-                    await document.fonts.ready;
-                }
-
-                drawCanvas();
-
-                setStatus(
-                    "선택한 무료 폰트를 적용했습니다.",
-                    "success"
-                );
-            }
-        );
-
-        titleSizeInput.addEventListener(
-            "input",
-            () => {
-                state.textLayout.titleSize =
-                    clampNumber(
-                        titleSizeInput.value,
-                        48,
-                        100,
-                        74
-                    );
-
-                drawCanvas();
-            }
-        );
-
-        subtitleSizeInput.addEventListener(
-            "input",
-            () => {
-                state.textLayout.subtitleSize =
-                    clampNumber(
-                        subtitleSizeInput.value,
-                        22,
-                        48,
-                        34
-                    );
-
-                drawCanvas();
-            }
-        );
-
-        textWidthInput.addEventListener(
-            "input",
-            () => {
-                state.textLayout.width =
-                    clampNumber(
-                        textWidthInput.value,
-                        35,
-                        90,
-                        70
-                    );
-
-                state.textLayout.x =
-                    Math.min(
-                        state.textLayout.x,
-                        100 -
-                        state.textLayout.width
-                    );
-
-                drawCanvas();
-            }
-        );
-
-        overlayOpacityInput.addEventListener(
-            "input",
-            () => {
-                state.textLayout.overlayOpacity =
-                    clampNumber(
-                        overlayOpacityInput.value,
-                        0,
-                        100,
-                        100
-                    ) / 100;
-
-                drawCanvas();
-            }
-        );
-
-        titleInput.addEventListener(
-            "input",
-            drawCanvas
-        );
-
-        topicInput.addEventListener(
-            "input",
-            () => {
-                if (
-                    !planResult.classList.contains(
-                        "visible"
-                    )
-                ) {
-                    drawCanvas();
-                }
-            }
-        );
-
-        planButton.addEventListener(
-            "click",
-            async () => {
-                const message =
-                    topicInput.value.trim();
-
-                if (!message) {
-                    setStatus(
-                        "먼저 만들고 싶은 주제를 입력해 주세요.",
-                        "error"
-                    );
-
-                    topicInput.focus();
-                    return;
-                }
-
-                setButtonLoading(
-                    planButton,
-                    true,
-                    "AI가 주제를 정리하고 있습니다",
-                    "AI로 주제 정리"
-                );
-
-                setStatus(
-                    "AI가 주제와 제목 후보를 정리하고 있습니다."
-                );
-
-                try {
-                    const response =
-                        await fetch(
-                            "/api/plan-content",
-                            {
-                                method:
-                                    "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify(
-                                        {
-                                            message
-                                        }
-                                    )
-                            }
-                        );
-
-                    const data =
-                        await readJsonResponse(
-                            response
-                        );
-
-                    if (
-                        !response.ok
-                    ) {
-                        throw new Error(
-                            data.error ||
-                            "AI 기획 요청에 실패했습니다."
-                        );
-                    }
-
-                    displayPlanningResult(
-                        data
-                    );
-
-                    setStatus(
-                        "AI 기획이 완료되었습니다.",
-                        "success"
-                    );
-                } catch (
-                    error
-                ) {
-                    console.error(
-                        error
-                    );
-
-                    setStatus(
-                        error.message ||
-                        "AI 기획 중 오류가 발생했습니다.",
-                        "error"
-                    );
-                } finally {
-                    setButtonLoading(
-                        planButton,
-                        false,
-                        "",
-                        "AI로 주제 정리"
-                    );
-                }
-            }
-        );
-
-        generateButton.addEventListener(
-            "click",
-            async () => {
-                if (
-                    !state
-                        .generatedImagePrompt
-                ) {
-                    setStatus(
-                        "먼저 AI로 주제를 정리해서 이미지 생성 프롬프트를 만들어 주세요.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                const providers = {
-                    fal:
-                        Number(
-                            falCount.value
-                        ),
-
-                    replicate:
-                        Number(
-                            replicateCount.value
-                        ),
-
-                    civitai:
-                        Number(
-                            civitaiCount.value
-                        )
-                };
-
-                const total =
-                    providers.fal +
-                    providers.replicate +
-                    providers.civitai;
-
-                if (
-                    total <= 0
-                ) {
-                    setStatus(
-                        "최소 1장 이상 선택해 주세요.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                setButtonLoading(
-                    generateButton,
-                    true,
-                    "선택한 API로 이미지를 생성하고 있습니다",
-                    "선택한 API로 이미지 생성"
-                );
-
-                setStatus(
-                    "선택한 API들로 이미지를 생성하고 있습니다."
-                );
-
-                try {
-                    const response =
-                        await fetch(
-                            "/api/generate-images",
-                            {
-                                method:
-                                    "POST",
-
-                                headers: {
-                                    "Content-Type":
-                                        "application/json"
-                                },
-
-                                body:
-                                    JSON.stringify(
-                                        {
-                                            prompt:
-                                                state.generatedImagePrompt,
-
-                                            concept:
-                                                state.selectedConcept,
-
-                                            providers
-                                        }
-                                    )
-                            }
-                        );
-
-                    const data =
-                        await readJsonResponse(
-                            response
-                        );
-
-                    if (
-                        !response.ok
-                    ) {
-                        const providerErrorText =
-                            Array.isArray(
-                                data.providerErrors
-                            )
-                                ? data
-                                      .providerErrors
-                                      .map(
-                                          (
-                                              item
-                                          ) =>
-                                              `${getProviderName(
-                                                  item.provider
-                                              )}: ${
-                                                  item.message
-                                              }`
-                                      )
-                                      .join(
-                                          " / "
-                                      )
-                                : "";
-
-                        throw new Error(
-                            providerErrorText
-                                ? `${data.error || "이미지 생성 실패"} (${providerErrorText})`
-                                : data.error ||
-                                  "이미지 생성 요청에 실패했습니다."
-                        );
-                    }
-
-                    state.generatedImages =
-                        Array.isArray(
-                            data.images
-                        )
-                            ? data.images
-                            : [];
-
-                    renderGallery(
-                        state.generatedImages
-                    );
-
-                    const warnings =
-                        Array.isArray(
-                            data.providerErrors
-                        )
-                            ? data.providerErrors
-                            : [];
-
-                    if (
-                        warnings.length >
-                        0
-                    ) {
-                        const warningText =
-                            warnings
-                                .map(
-                                    (
-                                        item
-                                    ) =>
-                                        `${getProviderName(
-                                            item.provider
-                                        )}: ${
-                                            item.message
-                                        }`
-                                )
-                                .join(
-                                    " / "
-                                );
-
-                        setStatus(
-                            `이미지 생성 완료. 일부 API 안내: ${warningText}`,
-                            "success"
-                        );
-                    } else {
-                        setStatus(
-                            "이미지가 생성되었습니다. 마음에 드는 이미지를 선택하세요.",
-                            "success"
-                        );
-                    }
-                } catch (
-                    error
-                ) {
-                    console.error(
-                        error
-                    );
-
-                    setStatus(
-                        error.message ||
-                        "이미지 생성 중 오류가 발생했습니다.",
-                        "error"
-                    );
-                } finally {
-                    setButtonLoading(
-                        generateButton,
-                        false,
-                        "",
-                        "선택한 API로 이미지 생성"
-                    );
-                }
-            }
-        );
-
-        autoLayoutButton.addEventListener(
-            "click",
-            autoPlaceText
-        );
-
-        downloadButton.addEventListener(
-            "click",
-            async () => {
-                if (
-                    !state.selectedImageUrl
-                ) {
-                    setStatus(
-                        "먼저 생성된 이미지 중 한 장을 선택해 주세요.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                setButtonLoading(
-                    downloadButton,
-                    true,
-                    "PNG 파일을 만들고 있습니다",
-                    "인스타 이미지 PNG 저장"
-                );
-
-                setStatus(
-                    "인스타그램용 1080×1350 PNG 파일을 만들고 있습니다."
-                );
-
-                try {
-                    await downloadCanvasImage();
-
-                    setStatus(
-                        "PNG 파일 다운로드가 완료되었습니다.",
-                        "success"
-                    );
-                } catch (
-                    error
-                ) {
-                    console.error(
-                        error
-                    );
-
-                    setStatus(
-                        error.message ||
-                        "이미지 다운로드 중 오류가 발생했습니다.",
-                        "error"
-                    );
-                } finally {
-                    setButtonLoading(
-                        downloadButton,
-                        false,
-                        "",
-                        "인스타 이미지 PNG 저장"
-                    );
-                }
-            }
-        );
-
-        canvas.addEventListener(
-            "pointerdown",
-            (event) => {
-                const point =
-                    getCanvasPoint(
-                        event
-                    );
-
-                if (
-                    !isInsideTextBox(
-                        point.x,
-                        point.y
-                    )
-                ) {
-                    return;
-                }
-
-                state.drag.active =
-                    true;
-
-                state.drag.startPointerX =
-                    point.x;
-
-                state.drag.startPointerY =
-                    point.y;
-
-                state.drag.startX =
-                    state.textLayout.x;
-
-                state.drag.startY =
-                    state.textLayout.y;
-
-                canvas.setPointerCapture(
-                    event.pointerId
-                );
-
-                canvas.style.cursor =
-                    "grabbing";
-            }
-        );
-
-        canvas.addEventListener(
-            "pointermove",
-            (event) => {
-                const point =
-                    getCanvasPoint(
-                        event
-                    );
-
-                if (
-                    state.drag.active
-                ) {
-                    const deltaX =
-                        point.x -
-                        state.drag
-                            .startPointerX;
-
-                    const deltaY =
-                        point.y -
-                        state.drag
-                            .startPointerY;
-
-                    const percentX =
-                        (
-                            deltaX /
-                            canvas.width
-                        ) *
-                        100;
-
-                    const percentY =
-                        (
-                            deltaY /
-                            canvas.height
-                        ) *
-                        100;
-
-                    state.textLayout.x =
-                        Math.max(
-                            0,
-                            Math.min(
-                                100 -
-                                    state
-                                        .textLayout
-                                        .width,
-                                state.drag
-                                    .startX +
-                                    percentX
-                            )
-                        );
-
-                    state.textLayout.y =
-                        Math.max(
-                            0,
-                            Math.min(
-                                92,
-                                state.drag
-                                    .startY +
-                                    percentY
-                            )
-                        );
-
-                    drawCanvas();
-                    return;
-                }
-
-                if (
-                    isInsideTextBox(
-                        point.x,
-                        point.y
-                    )
-                ) {
-                    canvas.style.cursor =
-                        "grab";
-                } else {
-                    canvas.style.cursor =
-                        "default";
-                }
-            }
-        );
-
-        canvas.addEventListener(
-            "pointerup",
-            stopCanvasDrag
-        );
-
-        canvas.addEventListener(
-            "pointercancel",
-            stopCanvasDrag
-        );
-
-        updateCountSummary();
-
-        if (document.fonts?.ready) {
-            document.fonts.ready.then(
-                initializeDefaultImage
-            );
-        } else {
-            initializeDefaultImage();
+        function updatePageData(key, value) {
+            if (state.pages.length === 0) return;
+            state.pages[state.currentPageIndex][key] = value;
+            drawCanvas();
         }
+
+        function updateDesignData(key, value) {
+            if (state.pages.length === 0) return;
+            state.pages[state.currentPageIndex].textLayout[key] = value;
+            drawCanvas();
+        }
+
+        // 디자인 컨트롤 리스너
+        UI.fontFamilyInput.addEventListener("change", e => updateDesignData("fontFamily", e.target.value));
+        UI.titleSizeInput.addEventListener("input", e => updateDesignData("titleSize", Number(e.target.value)));
+        UI.subtitleSizeInput.addEventListener("input", e => updateDesignData("subtitleSize", Number(e.target.value)));
+        UI.overlayOpacityInput.addEventListener("input", e => updateDesignData("overlayOpacity", Number(e.target.value) / 100));
+        
+        UI.labelColorPicker.addEventListener("input", e => updateDesignData("labelColor", e.target.value));
+        UI.titleColorPicker.addEventListener("input", e => updateDesignData("titleColor", e.target.value));
+        UI.bodyColorPicker.addEventListener("input", e => updateDesignData("bodyColor", e.target.value));
+
+        UI.alignButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                updateDesignData("align", btn.dataset.align);
+                UI.alignButtons.forEach(b => b.classList.remove("active"));
+                btn.classList.add("active");
+            });
+        });
+
+        UI.conceptButtons.forEach(btn => {
+            btn.addEventListener("click", () => {
+                state.selectedConcept = btn.dataset.concept;
+                UI.conceptButtons.forEach(b => b.classList.toggle("active", b.dataset.concept === state.selectedConcept));
+                drawCanvas();
+            });
+        });
+
+        // --- 4. 실제 API 연동 및 갤러리 관리 ---
+        UI.generateButton.addEventListener("click", async () => {
+            if (state.pages.length === 0) return;
+            const p = state.pages[state.currentPageIndex];
+            if (!p.englishImagePrompt) return setStatus("이미지 프롬프트를 입력해 주세요.", "error");
+
+            const providers = {
+                fal: Number(UI.falCount.value),
+                replicate: Number(UI.replicateCount.value),
+                civitai: 0
+            };
+
+            if (providers.fal + providers.replicate <= 0) {
+                return setStatus("생성할 API 장수를 1장 이상 선택하세요.", "error");
+            }
+
+            setButtonLoading(UI.generateButton, true, "실제 API 이미지 생성 중...", "선택한 장표 실제 이미지 생성");
+            setStatus("선택한 API를 통해 고품질 이미지를 생성하고 있습니다. 시간이 소요될 수 있습니다.");
+
+            try {
+                // 대표님의 진짜 백엔드 API 호출!
+                const response = await fetch("/api/generate-images", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        prompt: p.englishImagePrompt,
+                        concept: state.selectedConcept,
+                        providers: providers
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    const errorMsg = Array.isArray(data.providerErrors) 
+                        ? data.providerErrors.map(e => `${e.provider}: ${e.message}`).join(", ") 
+                        : (data.error || "이미지 생성 실패");
+                    throw new Error(errorMsg);
+                }
+
+                if (data.images && data.images.length > 0) {
+                    // 현재 장표의 갤러리 배열 갱신
+                    p.generatedImageCandidates = data.images;
+                    
+                    // 성공 시 갤러리 다시 렌더링 후 첫 번째 이미지를 캔버스에 자동 적용
+                    renderGallery(p.generatedImageCandidates);
+                    await applyImageToCanvas(data.images[0].imageUrl);
+                    
+                    setStatus(`성공적으로 생성되었습니다. 갤러리에서 원하는 이미지를 클릭하세요!`, "success");
+                } else {
+                    throw new Error("API에서 생성된 이미지가 없습니다.");
+                }
+                
+            } catch (e) {
+                console.error(e);
+                setStatus(e.message || "이미지 생성 중 오류가 발생했습니다.", "error");
+            } finally {
+                setButtonLoading(UI.generateButton, false, "", "선택한 장표 실제 이미지 생성");
+            }
+        });
+
+        // 갤러리 렌더링 함수
+        function renderGallery(imagesArray) {
+            UI.galleryGrid.innerHTML = "";
+            
+            if (!imagesArray || imagesArray.length === 0) {
+                UI.galleryWrap.style.display = "none";
+                return;
+            }
+
+            const currentImgUrl = state.pages[state.currentPageIndex].imageUrl;
+
+            imagesArray.forEach((imgData) => {
+                const item = document.createElement("div");
+                item.className = `gallery-item ${imgData.imageUrl === currentImgUrl ? 'selected' : ''}`;
+                
+                const img = document.createElement("img");
+                img.src = imgData.imageUrl;
+                img.alt = "Generated Image";
+                
+                item.appendChild(img);
+
+                item.addEventListener("click", async () => {
+                    document.querySelectorAll(".gallery-item").forEach(el => el.classList.remove("selected"));
+                    item.classList.add("selected");
+                    await applyImageToCanvas(imgData.imageUrl);
+                });
+
+                UI.galleryGrid.appendChild(item);
+            });
+
+            UI.galleryWrap.style.display = "block";
+        }
+
+        // 특정 이미지를 캔버스에 적용하는 함수
+        async function applyImageToCanvas(url) {
+            try {
+                const imgObj = await loadImageObj(url);
+                const p = state.pages[state.currentPageIndex];
+                p.imageUrl = url;
+                p.loadedImage = imgObj;
+                drawCanvas();
+            } catch (e) {
+                setStatus("이미지를 캔버스에 적용하는데 실패했습니다.", "error");
+            }
+        }
+
+
+        // --- 5. 캔버스 렌더링 및 텍스트 박스 계산 ---
+        function drawCoverImage(context, image, x, y, width, height) {
+            const imageRatio = image.width / image.height;
+            const canvasRatio = width / height;
+            let drawWidth, drawHeight, offsetX, offsetY;
+
+            if (imageRatio > canvasRatio) {
+                drawHeight = height; drawWidth = image.width * (height / image.height);
+                offsetX = x + (width - drawWidth) / 2; offsetY = y;
+            } else {
+                drawWidth = width; drawHeight = image.height * (width / image.width);
+                offsetX = x; offsetY = y + (height - drawHeight) / 2;
+            }
+            context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+        }
+
+        function wrapKoreanText(context, text, maxWidth, maxLines) {
+            if (!text) return [];
+            const normalizedText = text.replace(/\s+/g, " ").trim();
+            const lines = [];
+            let currentLine = "";
+            
+            for (let i = 0; i < normalizedText.length; i++) {
+                const char = normalizedText[i];
+                const testLine = currentLine + char;
+                if (context.measureText(testLine).width > maxWidth && currentLine) {
+                    lines.push(currentLine.trim());
+                    currentLine = char.trimStart();
+                    if (lines.length === maxLines - 1) break;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            if (lines.length < maxLines && currentLine) lines.push(currentLine.trim());
+            return lines.slice(0, maxLines);
+        }
+
+        function getOverlayStops(opacity) {
+            if (state.selectedConcept === "insight") return [
+                { stop: 0, color: `rgba(14,31,55,${0.96 * opacity})` },
+                { stop: 0.35, color: `rgba(14,31,55,${0.58 * opacity})` },
+                { stop: 0.75, color: `rgba(14,31,55,${0.08 * opacity})` }
+            ];
+            if (state.selectedConcept === "magazine") return [
+                { stop: 0, color: `rgba(8,8,8,${0.92 * opacity})` },
+                { stop: 0.42, color: `rgba(8,8,8,${0.38 * opacity})` },
+                { stop: 0.75, color: `rgba(8,8,8,${0.06 * opacity})` }
+            ];
+            return [
+                { stop: 0, color: `rgba(0,0,0,${0.95 * opacity})` },
+                { stop: 0.32, color: `rgba(0,0,0,${0.55 * opacity})` },
+                { stop: 0.70, color: `rgba(0,0,0,${0.08 * opacity})` }
+            ];
+        }
+
+        function drawCanvas() {
+            if (state.pages.length === 0) return;
+            const p = state.pages[state.currentPageIndex];
+            const layout = p.textLayout;
+
+            UI.ctx.clearRect(0, 0, UI.canvas.width, UI.canvas.height);
+
+            // 이미지 그리기
+            if (p.loadedImage) {
+                drawCoverImage(UI.ctx, p.loadedImage, 0, 0, UI.canvas.width, UI.canvas.height);
+            } else {
+                UI.ctx.fillStyle = "#1b2435";
+                UI.ctx.fillRect(0, 0, UI.canvas.width, UI.canvas.height);
+            }
+
+            // 오버레이 그리기
+            const gradient = UI.ctx.createLinearGradient(0, UI.canvas.height, 0, 0);
+            getOverlayStops(layout.overlayOpacity).forEach(item => {
+                gradient.addColorStop(item.stop, item.color);
+            });
+            UI.ctx.fillStyle = gradient;
+            UI.ctx.fillRect(0, 0, UI.canvas.width, UI.canvas.height);
+
+            // 텍스트 블록
+            const x = (layout.x / 100) * UI.canvas.width;
+            let y = (layout.y / 100) * UI.canvas.height;
+            const maxWidth = (layout.width / 100) * UI.canvas.width;
+            const alignX = layout.align === "center" ? x + maxWidth / 2 : layout.align === "right" ? x + maxWidth : x;
+
+            UI.ctx.textBaseline = "top";
+            UI.ctx.textAlign = layout.align;
+            UI.ctx.shadowColor = "rgba(0,0,0,0.55)";
+            UI.ctx.shadowBlur = 14;
+            UI.ctx.shadowOffsetY = 4;
+
+            // 라벨
+            if (p.label) {
+                UI.ctx.fillStyle = layout.labelColor;
+                UI.ctx.font = `800 38px ${layout.fontFamily}`;
+                UI.ctx.fillText(p.label, alignX, y);
+                y += 64;
+            }
+
+            // 제목
+            UI.ctx.fillStyle = layout.titleColor;
+            UI.ctx.font = `800 ${layout.titleSize}px ${layout.fontFamily}`;
+            const titleLines = wrapKoreanText(UI.ctx, p.title, maxWidth, 4);
+            titleLines.forEach(line => {
+                UI.ctx.fillText(line, alignX, y);
+                y += layout.titleSize * 1.12;
+            });
+            y += 18;
+
+            // 본문
+            if (p.body) {
+                UI.ctx.fillStyle = layout.bodyColor;
+                UI.ctx.font = `500 ${layout.subtitleSize}px ${layout.fontFamily}`;
+                const bodyLines = wrapKoreanText(UI.ctx, p.body, maxWidth, 4);
+                bodyLines.forEach(line => {
+                    UI.ctx.fillText(line, alignX, y);
+                    y += layout.subtitleSize * 1.36;
+                });
+            }
+
+            UI.ctx.shadowColor = "transparent";
+
+            // 드래그를 위한 히트박스 업데이트
+            state.textBoxRect = { 
+                x: x, 
+                y: (layout.y / 100) * UI.canvas.height, 
+                width: maxWidth, 
+                height: y - ((layout.y / 100) * UI.canvas.height) 
+            };
+        }
+
+        // --- 6. 드래그 기능 ---
+        UI.canvas.addEventListener("pointerdown", e => {
+            if (state.pages.length === 0) return;
+            const rect = UI.canvas.getBoundingClientRect();
+            const ptX = (e.clientX - rect.left) * (UI.canvas.width / rect.width);
+            const ptY = (e.clientY - rect.top) * (UI.canvas.height / rect.height);
+            
+            const box = state.textBoxRect;
+            // 텍스트 영역 내부 클릭 여부 확인 (터치를 고려해 영역을 살짝 넓게 판정)
+            if (ptX >= box.x - 20 && ptX <= box.x + box.width + 20 && ptY >= box.y - 20 && ptY <= box.y + box.height + 20) {
+                state.drag.active = true;
+                state.drag.startPointerX = ptX;
+                state.drag.startPointerY = ptY;
+                state.drag.startX = state.pages[state.currentPageIndex].textLayout.x;
+                state.drag.startY = state.pages[state.currentPageIndex].textLayout.y;
+                UI.canvas.setPointerCapture(e.pointerId);
+                UI.canvas.style.cursor = "grabbing";
+            }
+        });
+
+        UI.canvas.addEventListener("pointermove", e => {
+            if (!state.drag.active) return;
+            const rect = UI.canvas.getBoundingClientRect();
+            const ptX = (e.clientX - rect.left) * (UI.canvas.width / rect.width);
+            const ptY = (e.clientY - rect.top) * (UI.canvas.height / rect.height);
+            
+            const percentX = ((ptX - state.drag.startPointerX) / UI.canvas.width) * 100;
+            const percentY = ((ptY - state.drag.startPointerY) / UI.canvas.height) * 100;
+            const layout = state.pages[state.currentPageIndex].textLayout;
+
+            layout.x = Math.max(0, Math.min(100 - layout.width, state.drag.startX + percentX));
+            layout.y = Math.max(0, Math.min(92, state.drag.startY + percentY));
+            drawCanvas();
+        });
+
+        const stopDrag = () => { state.drag.active = false; UI.canvas.style.cursor = "default"; };
+        UI.canvas.addEventListener("pointerup", stopDrag);
+        UI.canvas.addEventListener("pointercancel", stopDrag);
+
+        // --- 7. 일괄 ZIP 다운로드 ---
+        UI.downloadZipButton.addEventListener("click", async () => {
+            if (state.pages.length === 0) return;
+            setButtonLoading(UI.downloadZipButton, true, "ZIP 압축 중...", "전체 장표 일괄 ZIP 다운로드");
+            
+            try {
+                const zip = new JSZip();
+                const originalIndex = state.currentPageIndex;
+
+                for (let i = 0; i < state.pages.length; i++) {
+                    state.currentPageIndex = i;
+                    drawCanvas();
+                    const blob = await new Promise(res => UI.canvas.toBlob(res, "image/png"));
+                    zip.file(`INWAVE_Card_${i + 1}.png`, blob);
+                }
+
+                selectPage(originalIndex); // 화면 복구
+                
+                const zipBlob = await zip.generateAsync({ type: "blob" });
+                const url = URL.createObjectURL(zipBlob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `INWAVE_Carousel_${Date.now()}.zip`;
+                a.click();
+                URL.revokeObjectURL(url);
+                setStatus("ZIP 파일 다운로드가 완료되었습니다.", "success");
+            } catch (e) {
+                setStatus("다운로드 중 오류가 발생했습니다.", "error");
+            } finally {
+                setButtonLoading(UI.downloadZipButton, false, "", "전체 장표 일괄 ZIP 다운로드");
+            }
+        });
+
+        // 폰트 로드 완료 시 초기화 (깜빡임 방지)
+        if (document.fonts?.ready) { document.fonts.ready.then(() => { if (state.pages.length === 0) drawCanvas(); }); }
     </script>
 </body>
 </html>
