@@ -101,7 +101,7 @@ const RESPONSE_SCHEMA = {
   required: ["isComplete", "chatReply", "searchUsed", "projectTitle", "storyboard", "instagramPost"],
   properties: {
     isComplete: { type: "boolean" },
-    chatReply: { type: "string" },
+    chatReply: { type: "string", minLength: 1 },
     searchUsed: { type: "boolean" },
     projectTitle: { type: "string" },
     storyboard: {
@@ -279,6 +279,18 @@ async function callChatCompletions(model, messages) {
 
 function normalizeResult(result, searchUsed) {
   result.searchUsed = Boolean(searchUsed);
+
+  const rawReply =
+    typeof result.chatReply === "string"
+      ? result.chatReply.trim()
+      : "";
+
+  result.chatReply = rawReply || (
+    result.isComplete
+      ? "카드뉴스 기획이 완료되었습니다. 아래에서 장표별 내용을 확인해 주세요."
+      : "주제와 타깃은 확인했습니다. 카드뉴스에서 가장 강조하고 싶은 핵심 문제나 결론을 한 가지 알려주세요."
+  );
+
   result.projectTitle = String(result.projectTitle || "광고인사이트")
     .replace(/[\\/:*?"<>|\s]+/g, "")
     .slice(0, 20) || "광고인사이트";
@@ -330,7 +342,7 @@ export default async function handler(req, res) {
       throw new Error("기획 결과를 JSON으로 변환하지 못했습니다.");
     }
 
-    if (typeof result.isComplete !== "boolean" || typeof result.chatReply !== "string") {
+    if (typeof result.isComplete !== "boolean") {
       throw new Error("OpenAI 응답 구조가 올바르지 않습니다.");
     }
 
