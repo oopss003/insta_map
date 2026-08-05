@@ -54,10 +54,13 @@ export default async function handler(req, res) {
   if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: "OPENAI_API_KEY가 설정되지 않았습니다." });
 
   const { imageDataUrl, page = {}, currentLayout = {}, canvas = {} } = req.body || {};
+  const templateType = String(page.templateType || "photo-hook");
+  if (!["photo-hook", "editorial-photo"].includes(templateType)) return res.status(400).json({ error: "AI 자동 위치는 전체 사진형 템플릿에서만 사용합니다." });
   if (!imageDataUrl || typeof imageDataUrl !== "string") return res.status(400).json({ error: "imageDataUrl이 필요합니다." });
 
   const safePage = {
     role: String(page.role || "insight").slice(0, 30),
+    templateType,
     label: String(page.label || "").slice(0, 100),
     title: String(page.title || "").slice(0, 500),
     body: String(page.body || "").slice(0, 1000),
@@ -72,7 +75,7 @@ export default async function handler(req, res) {
     align: ["left", "center", "right"].includes(currentLayout.align) ? currentLayout.align : "left",
     titleSize: clamp(currentLayout.titleSize, 48, 100, 68),
     bodySize: clamp(currentLayout.bodySize ?? currentLayout.subtitleSize, 22, 48, 30),
-    overlayOpacity: clamp(currentLayout.overlayOpacity, 0, 1, 0.8)
+    overlayOpacity: clamp(currentLayout.overlayOpacity ?? currentLayout.overlay, 0.2, 0.7, 0.42)
   };
 
   const safeCanvas = {
@@ -92,13 +95,14 @@ export default async function handler(req, res) {
 - hook은 68~82px, 일반 장표는 56~68px, cta는 62~74px 범위가 우선입니다.
 - 제목/본문 전체가 94% 높이 안에 들어가야 합니다.
 - 인물, 손, 제품, 화면과 최소한의 안전 여백을 둡니다.
-- 배경이 복잡하면 width를 줄이기보다 더 평온한 영역을 선택하고 오버레이를 높입니다.
+- 배경이 복잡하면 더 평온한 영역을 선택합니다. 오버레이는 기본 0.28~0.55 범위에서 필요한 만큼만 사용하고 사진 전체를 지나치게 어둡게 만들지 않습니다.
 - 텍스트가 이미지 의미를 가리지 않도록 합니다.
 - JSON만 반환합니다.
 `;
 
   const userText = `
 장표 역할: ${safePage.role}
+템플릿: ${safePage.templateType}
 라벨: ${safePage.label}
 제목: ${safePage.title}
 현재 제목 줄: ${JSON.stringify(safePage.titleLines)}
@@ -155,7 +159,7 @@ export default async function handler(req, res) {
       align: ["left", "center", "right"].includes(recommended.align) ? recommended.align : safeLayout.align,
       titleSize: clamp(recommended.titleSize, 48, 100, safeLayout.titleSize),
       bodySize: clamp(recommended.bodySize, 22, 48, safeLayout.bodySize),
-      overlayOpacity: clamp(recommended.overlayOpacity, 0, 1, safeLayout.overlayOpacity),
+      overlayOpacity: clamp(recommended.overlayOpacity, 0.2, 0.7, safeLayout.overlayOpacity),
       titleLines: Array.isArray(recommended.titleLines) && recommended.titleLines.length ? recommended.titleLines.slice(0, 3) : safePage.titleLines,
       bodyLines: Array.isArray(recommended.bodyLines) ? recommended.bodyLines.slice(0, 4) : safePage.bodyLines
     };
