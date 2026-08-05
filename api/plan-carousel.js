@@ -60,8 +60,17 @@ async function researchWithOpenAI(model,messages){
   return {researchText:extractResponseText(data),sources:extractWebSources(data)};
 }
 
-const CLAUDE_SYSTEM=`당신은 INWAVE 인스타그램의 수석 크리에이티브 디렉터입니다. 회사소개가 아니라 광고주·대행사·매체 운영자가 멈추고 저장할 광고 인사이트 카드뉴스를 만듭니다.
-규칙:
+const CLAUDE_SYSTEM=`당신은 INWAVE 인스타그램의 수석 크리에이티브 디렉터입니다. 회사소개가 아니라 광고주·대행사·매체 운영자가 멈추고 저장할 광고 인사이트 카드뉴스를 기획합니다.
+
+[대화 및 완성 판단 엄격 규칙]
+1. generateConfirmed가 false이면 어떤 경우에도 isComplete:true를 반환하지 않습니다.
+2. 사용자가 "만들고 싶다", "제안해줘", "아이디어 줘", "어떻게 하면 좋을까"처럼 방향만 말한 것은 제작 승인으로 보지 않습니다.
+3. 승인 전에는 3가지 주제 후보 또는 2~3가지 구성 방향을 제안하고, 가장 중요한 확인 질문 1~2개만 합니다.
+4. 사용자가 후보를 골랐더라도 승인 전에는 선택한 방향을 짧게 요약하고 "이 내용으로 카드뉴스 제작을 시작할까요?"라고 확인합니다.
+5. 기획 완성을 결정하는 주체는 사용자입니다. generateConfirmed가 true일 때만 storyboard와 게시글을 완성합니다.
+6. generateConfirmed가 false일 때는 반드시 storyboard.pages=[]이며 instagramPost는 빈 값으로 반환합니다.
+
+[완성 카드뉴스 규칙]
 - 3~5장, 장표마다 반드시 새로운 정보.
 - 1장은 photo-hook을 우선 사용. 2장 이후 모든 장표를 사진 배경으로 만들지 말고 big-number, metric-comparison, insight-cards, process-flow, photo-data-hybrid를 주제에 맞게 섞습니다.
 - 최소 3종의 templateType을 사용합니다.
@@ -74,16 +83,16 @@ const CLAUDE_SYSTEM=`당신은 INWAVE 인스타그램의 수석 크리에이티�
 - 사진 프롬프트는 장표의 구체적 장소·행동·인물 수·구도·여백을 명시하고, 광고 맥락과 무관한 일반 사무실로 바꾸지 않습니다.
 - 이미지 안의 글자, 로고, 워터마크는 요청하지 않습니다.`;
 
-async function callClaudePlan(messages,researchContext,revision=null){
+async function callClaudePlan(messages,researchContext,revision=null,generateConfirmed=false){
   if(!process.env.ANTHROPIC_API_KEY) throw new Error("ANTHROPIC_API_KEY가 없습니다.");
   const model=revision?(process.env.ANTHROPIC_REVISION_MODEL||process.env.ANTHROPIC_CREATIVE_MODEL):(process.env.ANTHROPIC_CREATIVE_MODEL);
   if(!model) throw new Error("ANTHROPIC_CREATIVE_MODEL이 없습니다.");
   const userContent=[
     `대화:\n${messages.map(m=>`${m.role}: ${m.content}`).join("\n\n")}`,
     researchContext?`OpenAI 조사 메모:\n${researchContext.researchText}\n\n사용 가능한 출처 URL:\n${JSON.stringify(researchContext.sources,null,2)}`:"최신 조사 없이 사용자의 요청과 일반적 광고 실무 원칙만 사용하세요.",
-    revision?`아래 기존 기획을 검수 지시대로 수정하세요. 지적되지 않은 좋은 부분은 유지하세요.\n기존 기획:\n${JSON.stringify(revision.plan,null,2)}\n검수 결과:\n${JSON.stringify(revision.review,null,2)}`:"완성 가능한 정보가 부족하면 isComplete=false로 핵심 질문 1~2개만 반환하세요. 충분하면 즉시 완성하세요."
+    revision?`아래 기존 기획을 검수 지시대로 수정하세요. 지적되지 않은 좋은 부분은 유지하세요.\n기존 기획:\n${JSON.stringify(revision.plan,null,2)}\n검수 결과:\n${JSON.stringify(revision.review,null,2)}`:`제작 승인 상태: ${generateConfirmed ? "승인됨" : "승인되지 않음"}\n${generateConfirmed ? "사용자가 명확히 제작을 승인했습니다. 완성된 카드뉴스 JSON을 작성하세요." : "아직 제작하지 마세요. 주제 후보 또는 구성 방향을 제안하고 질문 1~2개만 하세요. isComplete=false, storyboard.pages=[]로 반환하세요."}`
   ].join("\n\n---\n\n");
-  const response=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":process.env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01","content-type":"application/json"},body:JSON.stringify({model,max_tokens:12000,system:CLAUDE_SYSTEM,messages:[{role:"user",content:userContent}],tools:[{name:"submit_carousel_plan",description:"완성된 INWAVE 카드뉴스 기획을 지정 JSON 구조로 제출합니다.",input_schema:RESPONSE_SCHEMA}],tool_choice:{type:"tool",name:"submit_carousel_plan"}})});
+  const response=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"x-api-key":process.env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01","content-type":"application/json"},body:JSON.stringify({model,max_tokens:12000,temperature:0.45,system:CLAUDE_SYSTEM,messages:[{role:"user",content:userContent}],tools:[{name:"submit_carousel_plan",description:"완성된 INWAVE 카드뉴스 기획을 지정 JSON 구조로 제출합니다.",input_schema:RESPONSE_SCHEMA}],tool_choice:{type:"tool",name:"submit_carousel_plan"}})});
   const raw=await response.text(); let data; try{data=JSON.parse(raw)}catch{throw new Error("Claude 응답을 읽지 못했습니다.")}
   if(!response.ok) throw new Error(data?.error?.message||`Claude API 오류 HTTP ${response.status}`);
   const tool=data?.content?.find(c=>c?.type==="tool_use"&&c?.name==="submit_carousel_plan");
@@ -120,16 +129,24 @@ export default async function handler(req,res){
   if(req.method!=="POST") return res.status(405).json({error:"POST 요청만 지원합니다."});
   if(!process.env.OPENAI_API_KEY) return res.status(500).json({error:"OPENAI_API_KEY가 없습니다."});
   const messages=safeMessages(req.body?.messages||[]); if(!messages.length)return res.status(400).json({error:"messages 배열이 필요합니다."});
+  const generateConfirmed=req.body?.generateConfirmed===true;
   const searchUsed=needsWebSearch(messages);
   try{
     let researchContext=null;
     if(searchUsed){const model=process.env.OPENAI_SEARCH_MODEL||process.env.OPENAI_TEXT_MODEL;if(!model)throw new Error("OPENAI_SEARCH_MODEL 또는 OPENAI_TEXT_MODEL이 없습니다.");researchContext=await researchWithOpenAI(model,messages);}
-    let plan=await callClaudePlan(messages,researchContext);
+    let plan=await callClaudePlan(messages,researchContext,null,generateConfirmed);
     plan=normalizeResult(plan,searchUsed);
+    if(!generateConfirmed){
+      plan.isComplete=false;
+      plan.projectTitle="";
+      plan.storyboard={pages:[]};
+      plan.instagramPost={captions:{short:"",informative:"",conversational:""},cta:"",hashtags:[]};
+      return res.status(200).json({...plan,requiresConfirmation:true});
+    }
     if(plan.isComplete){
       const review=await reviewWithOpenAI(plan,researchContext);
       if(!review.pass && review.issues?.some(i=>i.severity==="high"||i.severity==="medium")){
-        plan=normalizeResult(await callClaudePlan(messages,researchContext,{plan,review}),searchUsed);
+        plan=normalizeResult(await callClaudePlan(messages,researchContext,{plan,review},true),searchUsed);
         plan.qualityReview={pass:false,overallScore:review.overallScore,summary:`1차 검수 후 Claude가 수정했습니다. ${review.summary}`};
       }else plan.qualityReview=review;
     }
