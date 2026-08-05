@@ -60,7 +60,7 @@ OpenAI 편집장의 검수 지시를 반영해 카드뉴스를 수정합니다.
       method:"POST",
       headers:{"x-api-key":process.env.ANTHROPIC_API_KEY,"anthropic-version":"2023-06-01","content-type":"application/json"},
       body:JSON.stringify({
-        model,max_tokens:12000,temperature:0.25,system,
+        model,max_tokens:12000,system,
         messages:[{role:"user",content:`조사 메모:\n${researchContext?.researchText||"없음"}\n\n사용 가능한 출처:\n${JSON.stringify(researchContext?.sources||[],null,2)}\n\n기존 기획:\n${JSON.stringify(plan,null,2)}\n\nOpenAI 검수 결과:\n${JSON.stringify(review,null,2)}\n\n검수 지시를 반영한 전체 최종 기획을 제출하세요.`}],
         tools:[{name:"submit_revised_carousel",description:"검수를 반영한 전체 최종 카드뉴스 기획을 제출합니다.",input_schema:RESPONSE_SCHEMA}],
         tool_choice:{type:"tool",name:"submit_revised_carousel"}
