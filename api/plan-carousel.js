@@ -135,9 +135,31 @@ async function reviewWithOpenAI(plan, researchContext, contentMode, profile, sta
 }
 
 function defaultPost() { return { captions:{short:"",informative:"",conversational:""}, cta:"", hashtags:[] }; }
+
+function parseJsonObject(value, fallback = {}) {
+  if (value && typeof value === "object" && !Array.isArray(value)) return value;
+  if (typeof value !== "string") return fallback;
+  const text = stripCodeFence(value).trim();
+  if (!text) return fallback;
+  try {
+    const parsed = JSON.parse(text);
+    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function normalizeResult(result, options) {
   const { searchUsed, contentMode, requestedProfile, generateConfirmed } = options;
-  result = result && typeof result === "object" ? result : {};
+  result = parseJsonObject(result, {});
+  result.contentProfile = parseJsonObject(result.contentProfile, {});
+  result.storyboard = parseJsonObject(result.storyboard, { pages: [] });
+  result.instagramPost = parseJsonObject(result.instagramPost, defaultPost());
+  if (typeof result.storyboard.pages === "string") {
+    try { result.storyboard.pages = JSON.parse(stripCodeFence(result.storyboard.pages)); }
+    catch { result.storyboard.pages = []; }
+  }
+  if (!Array.isArray(result.storyboard.pages)) result.storyboard.pages = [];
   const mergedProfile = safeProfile({ ...requestedProfile, ...(contentMode === "custom" ? result.contentProfile : {}) });
   if (contentMode === "inwave") mergedProfile.isProfileComplete = true, mergedProfile.missingFields = [];
   result.contentProfile = mergedProfile;
@@ -216,3 +238,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error:error instanceof Error ? error.message : "기획 중 오류가 발생했습니다." });
   }
 }
+
