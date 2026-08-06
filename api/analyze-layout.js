@@ -2,7 +2,6 @@
  * api/analyze-layout.js
  * OpenAI 비전 기반 카드뉴스 텍스트 레이아웃 추천
  */
-
 export const maxDuration = 60;
 
 function clamp(value, min, max, fallback) {
@@ -40,40 +39,89 @@ const SCHEMA = {
         additionalProperties: false,
         required: ["x", "y", "width", "height", "reason"],
         properties: {
-          x: { type: "number" }, y: { type: "number" }, width: { type: "number" }, height: { type: "number" }, reason: { type: "string" }
+          x: { type: "number" },
+          y: { type: "number" },
+          width: { type: "number" },
+          height: { type: "number" },
+          reason: { type: "string" }
         }
       }
     }
   }
 };
 
-
 function normalizeAvoidAreas(areas = []) {
-  return (Array.isArray(areas) ? areas : []).map(a => {
-    const x = clamp(a?.x, 0, 100, 0);
-    const y = clamp(a?.y, 0, 100, 0);
-    const width = clamp(a?.width, 0, 100 - x, 0);
-    const height = clamp(a?.height, 0, 100 - y, 0);
-    return { x, y, width, height, reason: String(a?.reason || "주 피사체") };
-  }).filter(a => a.width >= 2 && a.height >= 2).slice(0, 8);
+  return (Array.isArray(areas) ? areas : []).map(area => {
+    const x = clamp(area?.x, 0, 100, 0);
+    const y = clamp(area?.y, 0, 100, 0);
+    const width = clamp(area?.width, 0, 100 - x, 0);
+    const height = clamp(area?.height, 0, 100 - y, 0);
+    return { x, y, width, height, reason: String(area?.reason || "주 피사체") };
+  }).filter(area => area.width >= 2 && area.height >= 2).slice(0, 8);
 }
-function overlapRatio(layout, area) {
-  const ax1=layout.x, ay1=layout.y, ax2=layout.x+layout.width, ay2=layout.y+30;
-  const bx1=area.x, by1=area.y, bx2=area.x+area.width, by2=area.y+area.height;
-  const w=Math.max(0,Math.min(ax2,bx2)-Math.max(ax1,bx1)),h=Math.max(0,Math.min(ay2,by2)-Math.max(ay1,by1));
-  return (w*h)/Math.max(1,layout.width*30);
+
+function estimatedTextHeightPercent(layout, canvas) {
+  const titleLines = Math.max(1, Array.isArray(layout.titleLines) ? layout.titleLines.length : 1);
+  const bodyLines = Array.isArray(layout.bodyLines) ? layout.bodyLines.length : 0;
+  const labelHeight = 42;
+  const titleHeight = titleLines * layout.titleSize * 1.16;
+  const bodyHeight = bodyLines ? 18 + bodyLines * layout.bodySize * 1.42 : 0;
+  const totalPixels = labelHeight + titleHeight + bodyHeight;
+  return clamp(totalPixels / canvas.height * 100, 12, 48, 30);
+}
+
+function overlapRatio(layout, area, canvas) {
+  const height = estimatedTextHeightPercent(layout, canvas);
+  const ax1 = layout.x;
+  const ay1 = layout.y;
+  const ax2 = layout.x + layout.width;
+  const ay2 = layout.y + height;
+  const bx1 = area.x;
+  const by1 = area.y;
+  const bx2 = area.x + area.width;
+  const by2 = area.y + area.height;
+  const width = Math.max(0, Math.min(ax2, bx2) - Math.max(ax1, bx1));
+  const overlapHeight = Math.max(0, Math.min(ay2, by2) - Math.max(ay1, by1));
+  return (width * overlapHeight) / Math.max(1, layout.width * height);
+}
+
+function candidateLayouts(layout) {
+  const widths = [layout.width, Math.max(48, layout.width - 8)];
+  const candidates = [];
+  for (const width of widths) {
+    candidates.push(
+      { ...layout, x: 6, y: 7, width, align: "left" },
+      { ...layout, x: 6, y: 58, width, align: "left" },
+      { ...layout, x: 94 - width, y: 7, width, align: "right" },
+      { ...layout, x: 94 - width, y: 58, width, align: "right" },
+      { ...layout, x: (100 - width) / 2, y: 62, width, align: "center" }
+    );
+  }
+  return candidates;
+}
+
+function layoutConflict(layout, avoidAreas, canvas) {
+  return avoidAreas.reduce((maximum, area) => Math.max(maximum, overlapRatio(layout, area, canvas)), 0);
 }
 
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
-
   if (req.method !== "POST") return res.status(405).json({ error: "POST 요청만 지원합니다." });
   if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: "OPENAI_API_KEY가 설정되지 않았습니다." });
 
-  const { imageDataUrl, page = {}, currentLayout = {}, canvas = {}, designMode = page.designMode || "photo-heavy" } = req.body || {};
+  const {
+    imageDataUrl,
+    page = {},
+    currentLayout = {},
+    canvas = {},
+    designMode = page.designMode || "photo-heavy"
+  } = req.body || {};
+
   const templateType = String(page.templateType || "photo-hook");
   const safeDesignMode = ["photo-heavy", "hybrid"].includes(designMode) ? designMode : "photo-heavy";
-  if (!["photo-hook", "editorial-photo"].includes(templateType)) return res.status(400).json({ error: "AI 자동 위치는 전체 사진형 템플릿에서만 사용합니다." });
+  if (!["photo-hook", "editorial-photo"].includes(templateType)) {
+    return res.status(400).json({ error: "AI 자동 위치는 전체 사진형 템플릿에서만 사용합니다." });
+  }
   if (!imageDataUrl || typeof imageDataUrl !== "string") return res.status(400).json({ error: "imageDataUrl이 필요합니다." });
 
   const safePage = {
@@ -93,7 +141,9 @@ export default async function handler(req, res) {
     align: ["left", "center", "right"].includes(currentLayout.align) ? currentLayout.align : "left",
     titleSize: clamp(currentLayout.titleSize, 48, 100, 68),
     bodySize: clamp(currentLayout.bodySize ?? currentLayout.subtitleSize, 22, 48, 30),
-    overlayOpacity: clamp(currentLayout.overlayOpacity ?? currentLayout.overlay, 0.2, 0.7, 0.42)
+    overlayOpacity: clamp(currentLayout.overlayOpacity ?? currentLayout.overlay, 0.2, 0.7, 0.42),
+    titleLines: safePage.titleLines,
+    bodyLines: safePage.bodyLines
   };
 
   const safeCanvas = {
@@ -108,8 +158,8 @@ export default async function handler(req, res) {
 좌표와 width는 캔버스 대비 퍼센트입니다.
 
 규칙:
-- 제목은 의미 단위 2줄 권장, 최대 3줄. 한 글자만 남는 줄 금지.
-- 본문은 최대 4줄. 마침표가 줄 첫 글자로 넘어가지 않게 합니다.
+- 제목은 의미 단위 2줄 권장, 최대 3줄. 한 글자·조사·단위·기호만 남는 줄을 금지합니다.
+- 본문은 최대 4줄. 마침표·쉼표·화살표·퍼센트·숫자 단위가 다음 줄 첫 글자나 단독 줄이 되지 않게 합니다.
 - hook은 68~82px, 일반 장표는 56~68px, cta는 62~74px 범위가 우선입니다.
 - 제목/본문 전체가 94% 높이 안에 들어가야 합니다.
 - 인물, 손, 제품, 화면과 최소한의 안전 여백을 둡니다.
@@ -180,16 +230,23 @@ export default async function handler(req, res) {
       align: ["left", "center", "right"].includes(recommended.align) ? recommended.align : safeLayout.align,
       titleSize: clamp(recommended.titleSize, 48, 100, safeLayout.titleSize),
       bodySize: clamp(recommended.bodySize, 22, 48, safeLayout.bodySize),
-      overlayOpacity: safeDesignMode === "hybrid" ? clamp(recommended.overlayOpacity, 0.2, 0.42, 0.3) : clamp(recommended.overlayOpacity, 0.28, 0.55, safeLayout.overlayOpacity),
+      overlayOpacity: safeDesignMode === "hybrid"
+        ? clamp(recommended.overlayOpacity, 0.2, 0.42, 0.3)
+        : clamp(recommended.overlayOpacity, 0.28, 0.55, safeLayout.overlayOpacity),
       titleLines: Array.isArray(recommended.titleLines) && recommended.titleLines.length ? recommended.titleLines.slice(0, 3) : safePage.titleLines,
       bodyLines: Array.isArray(recommended.bodyLines) ? recommended.bodyLines.slice(0, 4) : safePage.bodyLines
     };
-    if (result.avoidAreas.some(a => overlapRatio(layout, a) > 0.35)) {
-      const candidates = [6, 36, 62].map(y => ({...layout, y})).filter(c => !result.avoidAreas.some(a => overlapRatio(c,a)>0.35));
-      if (candidates.length) Object.assign(layout, candidates[0]);
-    }
-    result.recommendedLayout = layout;
 
+    if (layoutConflict(layout, result.avoidAreas, safeCanvas) > 0.35) {
+      const candidates = candidateLayouts(layout)
+        .map(candidate => ({ candidate, score: layoutConflict(candidate, result.avoidAreas, safeCanvas) }))
+        .sort((a, b) => a.score - b.score);
+      if (candidates.length && candidates[0].score < layoutConflict(layout, result.avoidAreas, safeCanvas)) {
+        Object.assign(layout, candidates[0].candidate);
+      }
+    }
+
+    result.recommendedLayout = layout;
     return res.status(200).json(result);
   } catch (error) {
     console.error("analyze-layout 오류:", error);
