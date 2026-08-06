@@ -154,8 +154,7 @@ export default async function handler(req, res) {
         response_format: {
           type: "json_schema",
           json_schema: { name: "layout_recommendation", strict: true, schema: SCHEMA }
-        },
-        temperature: 0.15
+        }
       })
     });
 
