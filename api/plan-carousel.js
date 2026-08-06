@@ -87,7 +87,8 @@ const BASE_SYSTEM = `당신은 한국어 인스타그램 카드뉴스의 수석 
 const INWAVE_SYSTEM = `[INWAVE 전용 모드]\n화자는 INWAVE 광고 인사이트 담당자이고 독자는 광고주·대행사·매체 운영자입니다. 회사 소개가 아니라 오프라인 광고 의사결정에 도움 되는 인사이트가 중심입니다. 후반부에는 주제와 직접 관련 있을 때만 실제 시청자 수, 시청시간, 시간대별 관심도, 소재별·위치별 성과를 자연스럽게 연결합니다. 억지 홍보나 서비스 소개로 끝내지 않습니다.`;
 const CUSTOM_SYSTEM = `[맞춤형 콘텐츠 모드]\n특정 회사, INWAVE, 광고 측정 서비스를 자동으로 언급하지 않습니다. 사용자의 요청에서 화자 전문성, 화자 캐릭터, 독자, 말투, 목적을 추출합니다. 이미 확인되는 정보는 다시 묻지 않고, 부족한 핵심 정보만 한 번에 최대 1~2개 질문합니다. 필수 프로필이 완성되기 전에는 storyboard를 만들지 않습니다. 말투만 바꾸지 말고 정보 깊이, 사례, 용어, 행동 제안을 독자 수준에 맞춥니다.`;
 const CONTENT_QUALITY_RULES = `[정보 품질 규칙]\n- 최종 제작 시 제공된 claim 카드에 근거해 사실과 수치를 작성합니다. 출처 없는 수치를 만들지 않습니다.\n- 조사 조건이 다른 통계를 직접 비교하지 않습니다. 한계와 조건을 필요한 만큼 표시합니다.\n- 모든 수치·사실 장표는 claimIds를 하나 이상 연결합니다. 같은 claimId를 여러 정보 장표에서 반복 사용하지 않습니다.\n- 누구나 아는 일반론 대신 구체적 판단 기준, 오해 교정, 사례, 실무 행동을 우선합니다.\n- 기본 흐름은 통념/질문 → 근거 → 해석 → 바꿀 행동이며, 주제에 맞지 않으면 다른 흐름을 사용합니다.`;
-const DESIGN_SELECTION_RULES = `[콘텐츠 기반 디자인 판단]\n- 각 장표를 쓰기 전에 informationType, sceneValue, numericValue, comparisonValue, processValue, emotionValue를 판단합니다.\n- 사진은 장면·행동·감정·공간 맥락이 정보 이해를 실제로 도울 때만 사용합니다. 장식용 사무실, 회의, 노트북 보는 사람 이미지를 금지합니다.\n- sceneValue/emotionValue가 높고 숫자 밀도가 낮으면 photo-hook 또는 editorial-photo를 고려합니다.\n- 장면과 숫자/근거가 모두 중요하면 photo-data-hybrid를 사용합니다.\n- 숫자가 중심이면 big-number, 비교가 중심이면 metric-comparison, 독립 요점은 insight-cards, 순서는 process-flow를 사용합니다.\n- 첫 장을 사진형으로 고정하지 않습니다. 가장 강한 후킹 형식을 선택합니다.\n- 최소 템플릿 종류를 억지로 채우지 말고 적합성을 우선합니다. 반복성은 검수합니다.\n- photoRequirement=none이면 englishImagePrompt와 koreanPromptSummary를 빈 문자열로 둡니다.\n- templateReason에 선택 이유를 구체적으로 씁니다.`;
+const DESIGN_SELECTION_RULES = `[콘텐츠 기반 디자인 판단]\n- 각 장표를 쓰기 전에 informationType, sceneValue, numericValue, comparisonValue, processValue, emotionValue를 판단합니다.\n- 사진은 장면·행동·감정·공간 맥락이 정보 이해를 실제로 도울 때만 사용합니다. 장식용 사무실, 회의, 노트북 보는 사람 이미지를 금지합니다.\n- sceneValue/emotionValue가 높고 숫자 밀도가 낮으면 photo-hook 또는 editorial-photo를 고려합니다.\n- 장면과 숫자/근거가 모두 중요하면 photo-data-hybrid를 사용합니다.\n- 숫자가 중심이면 big-number, 비교가 중심이면 metric-comparison, 독립 요점은 insight-cards, 순서는 process-flow를 사용합니다.\n- 첫 장은 반드시 사진형으로 제작합니다. designMode는 photo-heavy 또는 hybrid만 허용하고, templateType은 photo-hook, editorial-photo, photo-data-hybrid 중에서 선택하며 photoRequirement=required로 설정합니다.
+- 2장 이후는 장표 번호나 미리 정한 사진 개수에 맞추지 말고 정보 성격과 점수에 따라 사진형·혼합형·정보형을 자유롭게 선택합니다.\n- 최소 템플릿 종류를 억지로 채우지 말고 적합성을 우선합니다. 반복성은 검수합니다.\n- photoRequirement=none이면 englishImagePrompt와 koreanPromptSummary를 빈 문자열로 둡니다.\n- templateReason에 선택 이유를 구체적으로 씁니다.`;
 function buildClaudeSystem(contentMode, profile) {
   return [BASE_SYSTEM, contentMode === "inwave" ? INWAVE_SYSTEM : CUSTOM_SYSTEM, contentMode === "custom" ? profilePrompt(profile) : "", CONTENT_QUALITY_RULES, DESIGN_SELECTION_RULES,
 `[대화/완성 강제]\n1. generateConfirmed=false이면 isComplete=false, storyboard.pages=[]로 반환합니다.\n2. 방향 제안 요청은 제작 승인으로 보지 않습니다.\n3. 승인 전에는 후보 2~3개 또는 구성 방향을 제시하고 질문은 최대 2개만 합니다.\n4. custom 모드에서 프로필 미완성이면 승인 요청 버튼 단계로 넘어가지 않습니다.\n5. generateConfirmed=true이며 프로필 조건을 충족할 때만 완성합니다.`].join("\n\n");
@@ -127,8 +128,8 @@ async function callClaudePlan(messages, researchContext, options) {
 async function reviewWithOpenAI(plan, researchContext, contentMode, profile, stage = "1차") {
   const model = process.env.OPENAI_REVIEW_MODEL || process.env.OPENAI_TEXT_MODEL;
   if (!model) throw new Error("OPENAI_REVIEW_MODEL 또는 OPENAI_TEXT_MODEL이 없습니다.");
-  const system = `당신은 카드뉴스 편집장입니다. ${stage} 검수를 합니다. 사실성, 출처 품질, 새로움, 실무성, 흐름, 목표 독자 가치, 템플릿 적합성, 사진 필요성, 반복성, 저장·공유 가치를 각각 0~100점으로 평가하세요. high 이슈가 없고 overallScore 85 이상이며 noveltyScore, practicalityScore, templateFitScore가 모두 75 이상일 때만 pass=true입니다. 사진형 개수나 템플릿 종류를 기계적으로 강제하지 말고 정보 적합성을 평가하세요. custom 모드에서는 INWAVE가 불필요하게 등장하면 high, 프로필과 말투·정보 깊이가 불일치하면 지적하세요.`;
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {method:"POST",headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({model,temperature:1,messages:[{role:"system",content:system},{role:"user",content:`모드: ${contentMode}\n프로필: ${JSON.stringify(profile)}\n구조화 조사: ${JSON.stringify(researchContext)}\n기획: ${JSON.stringify(plan)}`}],response_format:{type:"json_schema",json_schema:{name:"carousel_review",strict:true,schema:REVIEW_SCHEMA}}})});
+  const system = `당신은 카드뉴스 편집장입니다. ${stage} 검수를 합니다. 사실성, 출처 품질, 새로움, 실무성, 흐름, 목표 독자 가치, 템플릿 적합성, 사진 필요성, 반복성, 저장·공유 가치를 각각 0~100점으로 평가하세요. high 이슈가 없고 overallScore 85 이상이며 noveltyScore, practicalityScore, templateFitScore가 모두 75 이상일 때만 pass=true입니다. 첫 장은 반드시 photo-hook, editorial-photo, photo-data-hybrid 중 하나이고 designMode는 photo-heavy 또는 hybrid이며 photoRequirement=required여야 합니다. 위반하면 high 이슈입니다. 2장 이후 사진형 개수나 템플릿 종류를 기계적으로 강제하거나 사진이 있다는 이유만으로 감점하지 마세요. 동일한 구도·동일한 의미·동일한 스톡 장면 반복만 감점하고, 같은 템플릿도 정보 전달에 가장 적합하면 허용하세요. 마지막 장을 내용과 무관하게 CTA로 만들었는지, footerNote가 큰 행동 버튼이나 어색한 경고문으로 오용됐는지, 출처가 중복 표시되는지, photoRequirement=none인데 이미지 프롬프트가 남아 있는지 검사하세요. custom 모드에서는 INWAVE가 불필요하게 등장하면 high, 프로필과 말투·정보 깊이가 불일치하면 지적하세요.`;
+  const response = await fetch("https://api.openai.com/v1/chat/completions", {method:"POST",headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({model,messages:[{role:"system",content:system},{role:"user",content:`모드: ${contentMode}\n프로필: ${JSON.stringify(profile)}\n구조화 조사: ${JSON.stringify(researchContext)}\n기획: ${JSON.stringify(plan)}`}],response_format:{type:"json_schema",json_schema:{name:"carousel_review",strict:true,schema:REVIEW_SCHEMA}}})});
   const raw = await response.text(); let data; try { data = JSON.parse(raw); } catch { throw new Error("OpenAI 검수 응답을 읽지 못했습니다."); }
   if (!response.ok) throw new Error(data?.error?.message || `OpenAI 검수 오류 HTTP ${response.status}`);
   return JSON.parse(stripCodeFence(data?.choices?.[0]?.message?.content || "{}"));
@@ -178,10 +179,18 @@ function normalizeResult(result, options) {
   result.storyboard = result.storyboard || { pages:[] };
   result.storyboard.pages = (result.storyboard.pages || []).slice(0, 5).map((p, i) => {
     const informationType = INFORMATION_TYPES.includes(p.informationType) ? p.informationType : (i === 0 ? "emotional-hook" : "explanation");
-    const designMode = DESIGN_MODES.includes(p.designMode) ? p.designMode : "info-heavy";
+    let designMode = DESIGN_MODES.includes(p.designMode) ? p.designMode : "info-heavy";
     let templateType = TEMPLATE_TYPES.includes(p.templateType) ? p.templateType : "insight-cards";
     let photoRequirement = ["required","optional","none"].includes(p.photoRequirement) ? p.photoRequirement : (["photo-hook","editorial-photo","photo-data-hybrid"].includes(templateType) ? "required" : "none");
-    if (designMode === "info-heavy" && !["photo-data-hybrid"].includes(templateType)) photoRequirement = "none";
+    if (i === 0) {
+      designMode = designMode === "hybrid" ? "hybrid" : "photo-heavy";
+      if (!["photo-hook","editorial-photo","photo-data-hybrid"].includes(templateType)) {
+        templateType = (Number(p.sceneValue)||0) >= 55 && (Number(p.numericValue)||0) >= 55 ? "photo-data-hybrid" : "photo-hook";
+      }
+      photoRequirement = "required";
+    } else if (designMode === "info-heavy" && templateType !== "photo-data-hybrid") {
+      photoRequirement = "none";
+    }
     const claimIds = Array.isArray(p.claimIds) ? p.claimIds.map(x => clean(x, 30)).filter(Boolean).filter(id => { if (usedClaims.has(id)) return false; usedClaims.add(id); return true; }).slice(0, 4) : [];
     const noPhoto = photoRequirement === "none";
     return {
