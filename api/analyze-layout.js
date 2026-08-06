@@ -47,14 +47,32 @@ const SCHEMA = {
   }
 };
 
+
+function normalizeAvoidAreas(areas = []) {
+  return (Array.isArray(areas) ? areas : []).map(a => {
+    const x = clamp(a?.x, 0, 100, 0);
+    const y = clamp(a?.y, 0, 100, 0);
+    const width = clamp(a?.width, 0, 100 - x, 0);
+    const height = clamp(a?.height, 0, 100 - y, 0);
+    return { x, y, width, height, reason: String(a?.reason || "주 피사체") };
+  }).filter(a => a.width >= 2 && a.height >= 2).slice(0, 8);
+}
+function overlapRatio(layout, area) {
+  const ax1=layout.x, ay1=layout.y, ax2=layout.x+layout.width, ay2=layout.y+30;
+  const bx1=area.x, by1=area.y, bx2=area.x+area.width, by2=area.y+area.height;
+  const w=Math.max(0,Math.min(ax2,bx2)-Math.max(ax1,bx1)),h=Math.max(0,Math.min(ay2,by2)-Math.max(ay1,by1));
+  return (w*h)/Math.max(1,layout.width*30);
+}
+
 export default async function handler(req, res) {
   res.setHeader("Cache-Control", "no-store, max-age=0");
 
   if (req.method !== "POST") return res.status(405).json({ error: "POST 요청만 지원합니다." });
   if (!process.env.OPENAI_API_KEY) return res.status(500).json({ error: "OPENAI_API_KEY가 설정되지 않았습니다." });
 
-  const { imageDataUrl, page = {}, currentLayout = {}, canvas = {} } = req.body || {};
+  const { imageDataUrl, page = {}, currentLayout = {}, canvas = {}, designMode = page.designMode || "photo-heavy" } = req.body || {};
   const templateType = String(page.templateType || "photo-hook");
+  const safeDesignMode = ["photo-heavy", "hybrid"].includes(designMode) ? designMode : "photo-heavy";
   if (!["photo-hook", "editorial-photo"].includes(templateType)) return res.status(400).json({ error: "AI 자동 위치는 전체 사진형 템플릿에서만 사용합니다." });
   if (!imageDataUrl || typeof imageDataUrl !== "string") return res.status(400).json({ error: "imageDataUrl이 필요합니다." });
 
@@ -95,7 +113,8 @@ export default async function handler(req, res) {
 - hook은 68~82px, 일반 장표는 56~68px, cta는 62~74px 범위가 우선입니다.
 - 제목/본문 전체가 94% 높이 안에 들어가야 합니다.
 - 인물, 손, 제품, 화면과 최소한의 안전 여백을 둡니다.
-- 배경이 복잡하면 더 평온한 영역을 선택합니다. 오버레이는 기본 0.28~0.55 범위에서 필요한 만큼만 사용하고 사진 전체를 지나치게 어둡게 만들지 않습니다.
+- 배경이 복잡하면 더 평온한 영역을 선택합니다. photo-heavy는 텍스트 폭 48~76%, 오버레이 0.28~0.55를 우선합니다. hybrid는 텍스트 폭 40~58%, 오버레이 0.20~0.42를 우선해 사진과 데이터 영역의 균형을 유지합니다.
+- 추천 텍스트 영역이 avoidAreas와 크게 겹치지 않도록 합니다.
 - 텍스트가 이미지 의미를 가리지 않도록 합니다.
 - JSON만 반환합니다.
 `;
@@ -103,6 +122,7 @@ export default async function handler(req, res) {
   const userText = `
 장표 역할: ${safePage.role}
 템플릿: ${safePage.templateType}
+디자인 모드: ${safeDesignMode}
 라벨: ${safePage.label}
 제목: ${safePage.title}
 현재 제목 줄: ${JSON.stringify(safePage.titleLines)}
@@ -152,17 +172,24 @@ export default async function handler(req, res) {
 
     const recommended = result.recommendedLayout || {};
     const width = clamp(recommended.width, 40, 88, safeLayout.width);
-    result.recommendedLayout = {
-      x: clamp(recommended.x, 0, 100 - width, safeLayout.x),
+    result.avoidAreas = normalizeAvoidAreas(result.avoidAreas);
+    const modeWidth = safeDesignMode === "hybrid" ? clamp(width, 40, 58, 50) : clamp(width, 48, 76, 68);
+    const layout = {
+      x: clamp(recommended.x, 0, 100 - modeWidth, safeLayout.x),
       y: clamp(recommended.y, 0, 90, safeLayout.y),
-      width,
+      width: modeWidth,
       align: ["left", "center", "right"].includes(recommended.align) ? recommended.align : safeLayout.align,
       titleSize: clamp(recommended.titleSize, 48, 100, safeLayout.titleSize),
       bodySize: clamp(recommended.bodySize, 22, 48, safeLayout.bodySize),
-      overlayOpacity: clamp(recommended.overlayOpacity, 0.2, 0.7, safeLayout.overlayOpacity),
+      overlayOpacity: safeDesignMode === "hybrid" ? clamp(recommended.overlayOpacity, 0.2, 0.42, 0.3) : clamp(recommended.overlayOpacity, 0.28, 0.55, safeLayout.overlayOpacity),
       titleLines: Array.isArray(recommended.titleLines) && recommended.titleLines.length ? recommended.titleLines.slice(0, 3) : safePage.titleLines,
       bodyLines: Array.isArray(recommended.bodyLines) ? recommended.bodyLines.slice(0, 4) : safePage.bodyLines
     };
+    if (result.avoidAreas.some(a => overlapRatio(layout, a) > 0.35)) {
+      const candidates = [6, 36, 62].map(y => ({...layout, y})).filter(c => !result.avoidAreas.some(a => overlapRatio(c,a)>0.35));
+      if (candidates.length) Object.assign(layout, candidates[0]);
+    }
+    result.recommendedLayout = layout;
 
     return res.status(200).json(result);
   } catch (error) {
@@ -170,3 +197,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: error instanceof Error ? error.message : "AI 레이아웃 분석 중 오류가 발생했습니다." });
   }
 }
+
