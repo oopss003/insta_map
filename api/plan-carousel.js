@@ -8,6 +8,9 @@ const TEMPLATE_TYPES = ["photo-hook","editorial-photo","big-number","metric-comp
 const ROLES = ["hook","context","fact","misconception","observation","behavior","evidence","comparison","case","implication","insight","strategy","opportunity","solution","action","conclusion","cta"];
 const INFORMATION_TYPES = ["emotional-hook","statistic","comparison","misconception","explanation","case","action-tip","cta"];
 const DESIGN_MODES = ["photo-heavy","hybrid","info-heavy"];
+const COMPARISON_VARIANTS = ["side-by-side","stacked","table"];
+const GENERATION_MODES = ["hero-photo","support-image","background-image"];
+const SUPPORT_IMAGE_PLACEMENTS = ["top-banner","side-thumbnail","card-top","full-background"];
 const PROFILE_FIELDS = ["speakerExpertise","speakerPersona","targetAudience","tone","contentGoal"];
 
 function clean(value, max = 2000) {
@@ -63,10 +66,10 @@ const PROFILE_SCHEMA = {type:"object",additionalProperties:false,required:["spea
 }};
 const ITEM_SCHEMA = {type:"object",additionalProperties:false,required:["label","value","note"],properties:{label:{type:"string"},value:{type:"string"},note:{type:"string"}}};
 const SOURCE_SCHEMA = {type:"object",additionalProperties:false,required:["claimType","sourceTitle","sourceOrganization","sourceYear","sourceUrl","sourceNote"],properties:{claimType:{type:"string",enum:["researched_fact","case_reference","background_reference","interpretation","recommendation"]},sourceTitle:{type:"string"},sourceOrganization:{type:"string"},sourceYear:{type:"string"},sourceUrl:{type:"string"},sourceNote:{type:"string"}}};
-const PAGE_SCHEMA = {type:"object",additionalProperties:false,required:["pageNumber","role","informationType","designMode","templateType","templateReason","sceneValue","numericValue","comparisonValue","processValue","emotionValue","messageDensity","claimIds","photoRequirement","label","title","titleLines","body","bodyLines","koreanPromptSummary","englishImagePrompt","imageComposition","visualData","sources"],properties:{
+const PAGE_SCHEMA = {type:"object",additionalProperties:false,required:["pageNumber","role","informationType","designMode","templateType","templateReason","sceneValue","numericValue","comparisonValue","processValue","emotionValue","messageDensity","claimIds","photoRequirement","generationMode","supportImagePlacement","comparisonVariant","label","title","titleLines","body","bodyLines","koreanPromptSummary","englishImagePrompt","imageComposition","visualData","sources"],properties:{
   pageNumber:{type:"integer"},role:{type:"string",enum:ROLES},informationType:{type:"string",enum:INFORMATION_TYPES},designMode:{type:"string",enum:DESIGN_MODES},templateType:{type:"string",enum:TEMPLATE_TYPES},templateReason:{type:"string"},
   sceneValue:{type:"integer",minimum:0,maximum:100},numericValue:{type:"integer",minimum:0,maximum:100},comparisonValue:{type:"integer",minimum:0,maximum:100},processValue:{type:"integer",minimum:0,maximum:100},emotionValue:{type:"integer",minimum:0,maximum:100},messageDensity:{type:"string",enum:["low","medium","high"]},claimIds:{type:"array",maxItems:4,items:{type:"string"}},
-  photoRequirement:{type:"string",enum:["required","optional","none"]},label:{type:"string"},title:{type:"string"},titleLines:{type:"array",minItems:1,maxItems:3,items:{type:"string"}},body:{type:"string"},bodyLines:{type:"array",maxItems:4,items:{type:"string"}},koreanPromptSummary:{type:"string"},englishImagePrompt:{type:"string"},
+  photoRequirement:{type:"string",enum:["required","optional","none"]},generationMode:{type:"string",enum:GENERATION_MODES},supportImagePlacement:{type:"string",enum:SUPPORT_IMAGE_PLACEMENTS},comparisonVariant:{type:"string",enum:COMPARISON_VARIANTS},label:{type:"string"},title:{type:"string"},titleLines:{type:"array",minItems:1,maxItems:3,items:{type:"string"}},body:{type:"string"},bodyLines:{type:"array",maxItems:4,items:{type:"string"}},koreanPromptSummary:{type:"string"},englishImagePrompt:{type:"string"},
   imageComposition:{type:"object",additionalProperties:false,required:["subjectPosition","reservedTextArea","cameraShot","backgroundDensity"],properties:{subjectPosition:{type:"string",enum:["left","left-center","center","right-center","right","upper","lower"]},reservedTextArea:{type:"string",enum:["upper-left","upper-center","upper-right","middle-left","middle-right","lower-left","lower-center","lower-right"]},cameraShot:{type:"string",enum:["close-up","medium","medium-wide","wide","over-the-shoulder","high-angle","low-angle"]},backgroundDensity:{type:"string",enum:["low","medium"]}}},
   visualData:{type:"object",additionalProperties:false,required:["eyebrow","primaryValue","primaryLabel","items","footerNote"],properties:{eyebrow:{type:"string"},primaryValue:{type:"string"},primaryLabel:{type:"string"},items:{type:"array",maxItems:4,items:ITEM_SCHEMA},footerNote:{type:"string"}}},sources:{type:"array",maxItems:4,items:SOURCE_SCHEMA}
 }};
@@ -88,7 +91,7 @@ const INWAVE_SYSTEM = `[INWAVE 전용 모드]\n화자는 INWAVE 광고 인사이
 const CUSTOM_SYSTEM = `[맞춤형 콘텐츠 모드]\n특정 회사, INWAVE, 광고 측정 서비스를 자동으로 언급하지 않습니다. 사용자의 요청에서 화자 전문성, 화자 캐릭터, 독자, 말투, 목적을 추출합니다. 이미 확인되는 정보는 다시 묻지 않고, 부족한 핵심 정보만 한 번에 최대 1~2개 질문합니다. 필수 프로필이 완성되기 전에는 storyboard를 만들지 않습니다. 말투만 바꾸지 말고 정보 깊이, 사례, 용어, 행동 제안을 독자 수준에 맞춥니다.`;
 const CONTENT_QUALITY_RULES = `[정보 품질 규칙]\n- 최종 제작 시 제공된 claim 카드에 근거해 사실과 수치를 작성합니다. 출처 없는 수치를 만들지 않습니다.\n- 조사 조건이 다른 통계를 직접 비교하지 않습니다. 한계와 조건을 필요한 만큼 표시합니다.\n- 모든 수치·사실 장표는 claimIds를 하나 이상 연결합니다. 같은 claimId를 여러 정보 장표에서 반복 사용하지 않습니다.\n- 누구나 아는 일반론 대신 구체적 판단 기준, 오해 교정, 사례, 실무 행동을 우선합니다.\n- 기본 흐름은 통념/질문 → 근거 → 해석 → 바꿀 행동이며, 주제에 맞지 않으면 다른 흐름을 사용합니다.`;
 const DESIGN_SELECTION_RULES = `[콘텐츠 기반 디자인 판단]\n- 각 장표를 쓰기 전에 informationType, sceneValue, numericValue, comparisonValue, processValue, emotionValue를 판단합니다.\n- 사진은 장면·행동·감정·공간 맥락이 정보 이해를 실제로 도울 때만 사용합니다. 장식용 사무실, 회의, 노트북 보는 사람 이미지를 금지합니다.\n- sceneValue/emotionValue가 높고 숫자 밀도가 낮으면 photo-hook 또는 editorial-photo를 고려합니다.\n- 장면과 숫자/근거가 모두 중요하면 photo-data-hybrid를 사용합니다.\n- 숫자가 중심이면 big-number, 비교가 중심이면 metric-comparison, 독립 요점은 insight-cards, 순서는 process-flow를 사용합니다.\n- 첫 장은 반드시 사진형으로 제작합니다. designMode는 photo-heavy 또는 hybrid만 허용하고, templateType은 photo-hook, editorial-photo, photo-data-hybrid 중에서 선택하며 photoRequirement=required로 설정합니다.
-- 2장 이후는 장표 번호나 미리 정한 사진 개수에 맞추지 말고 정보 성격과 점수에 따라 사진형·혼합형·정보형을 자유롭게 선택합니다.\n- 최소 템플릿 종류를 억지로 채우지 말고 적합성을 우선합니다. 반복성은 검수합니다.\n- photoRequirement=none이면 englishImagePrompt와 koreanPromptSummary를 빈 문자열로 둡니다.\n- templateReason에 선택 이유를 구체적으로 씁니다.`;
+- 2장 이후는 장표 번호나 미리 정한 사진 개수에 맞추지 말고 정보 성격과 점수에 따라 사진형·혼합형·정보형을 자유롭게 선택합니다.\n- 정보형 장표도 보조 이미지가 실제 이해를 돕는 경우 generationMode=support-image 또는 background-image를 사용할 수 있습니다. 이때 supportImagePlacement를 top-banner, side-thumbnail, card-top, full-background 중에서 고릅니다.\n- 비교 장표는 comparisonVariant를 side-by-side, stacked, table 중에서 선택하며 연속 장표가 같은 좌우형을 반복하지 않게 합니다.\n- 최소 템플릿 종류를 억지로 채우지 말고 적합성을 우선합니다. 반복성은 검수합니다.\n- generationMode=hero-photo이고 photoRequirement=none이면 englishImagePrompt와 koreanPromptSummary를 빈 문자열로 둡니다. support-image/background-image에서는 보조 이미지용 프롬프트를 작성합니다.\n- templateReason에 선택 이유를 구체적으로 씁니다.`;
 function buildClaudeSystem(contentMode, profile) {
   return [BASE_SYSTEM, contentMode === "inwave" ? INWAVE_SYSTEM : CUSTOM_SYSTEM, contentMode === "custom" ? profilePrompt(profile) : "", CONTENT_QUALITY_RULES, DESIGN_SELECTION_RULES,
 `[대화/완성 강제]\n1. generateConfirmed=false이면 isComplete=false, storyboard.pages=[]로 반환합니다.\n2. 방향 제안 요청은 제작 승인으로 보지 않습니다.\n3. 승인 전에는 후보 2~3개 또는 구성 방향을 제시하고 질문은 최대 2개만 합니다.\n4. custom 모드에서 프로필 미완성이면 승인 요청 버튼 단계로 넘어가지 않습니다.\n5. generateConfirmed=true이며 프로필 조건을 충족할 때만 완성합니다.`].join("\n\n");
@@ -128,7 +131,7 @@ async function callClaudePlan(messages, researchContext, options) {
 async function reviewWithOpenAI(plan, researchContext, contentMode, profile, stage = "1차") {
   const model = process.env.OPENAI_REVIEW_MODEL || process.env.OPENAI_TEXT_MODEL;
   if (!model) throw new Error("OPENAI_REVIEW_MODEL 또는 OPENAI_TEXT_MODEL이 없습니다.");
-  const system = `당신은 카드뉴스 편집장입니다. ${stage} 검수를 합니다. 사실성, 출처 품질, 새로움, 실무성, 흐름, 목표 독자 가치, 템플릿 적합성, 사진 필요성, 반복성, 저장·공유 가치를 각각 0~100점으로 평가하세요. high 이슈가 없고 overallScore 85 이상이며 noveltyScore, practicalityScore, templateFitScore가 모두 75 이상일 때만 pass=true입니다. 첫 장은 반드시 photo-hook, editorial-photo, photo-data-hybrid 중 하나이고 designMode는 photo-heavy 또는 hybrid이며 photoRequirement=required여야 합니다. 위반하면 high 이슈입니다. 2장 이후 사진형 개수나 템플릿 종류를 기계적으로 강제하거나 사진이 있다는 이유만으로 감점하지 마세요. 동일한 구도·동일한 의미·동일한 스톡 장면 반복만 감점하고, 같은 템플릿도 정보 전달에 가장 적합하면 허용하세요. 마지막 장을 내용과 무관하게 CTA로 만들었는지, footerNote가 큰 행동 버튼이나 어색한 경고문으로 오용됐는지, 출처가 중복 표시되는지, photoRequirement=none인데 이미지 프롬프트가 남아 있는지 검사하세요. custom 모드에서는 INWAVE가 불필요하게 등장하면 high, 프로필과 말투·정보 깊이가 불일치하면 지적하세요.`;
+  const system = `당신은 카드뉴스 편집장입니다. ${stage} 검수를 합니다. 사실성, 출처 품질, 새로움, 실무성, 흐름, 목표 독자 가치, 템플릿 적합성, 사진 필요성, 반복성, 저장·공유 가치를 각각 0~100점으로 평가하세요. high 이슈가 없고 overallScore 85 이상이며 noveltyScore, practicalityScore, templateFitScore가 모두 75 이상일 때만 pass=true입니다. 첫 장은 반드시 photo-hook, editorial-photo, photo-data-hybrid 중 하나이고 designMode는 photo-heavy 또는 hybrid이며 photoRequirement=required여야 합니다. 위반하면 high 이슈입니다. 2장 이후 사진형 개수나 템플릿 종류를 기계적으로 강제하거나 사진이 있다는 이유만으로 감점하지 마세요. 동일한 구도·동일한 의미·동일한 스톡 장면 반복만 감점하고, 같은 템플릿도 정보 전달에 가장 적합하면 허용하세요. 마지막 장을 내용과 무관하게 CTA로 만들었는지, footerNote가 큰 행동 버튼이나 어색한 경고문으로 오용됐는지, 출처가 중복 표시되는지, photoRequirement=none이고 generationMode=hero-photo인데 이미지 프롬프트가 남아 있는지 검사하세요. process-flow의 모든 value가 “확인”처럼 반복되거나 label/value/note 역할이 섞이는지 검사하세요. 제목·본문 줄바꿈에서 한 글자, 조사, 마침표, 화살표, 비교 기호, 퍼센트·숫자 단위가 단독 줄에 남으면 지적하세요. metric-comparison이 연속으로 같은 comparisonVariant를 반복하면 다른 변형을 제안하세요. custom 모드에서는 INWAVE가 불필요하게 등장하면 high, 프로필과 말투·정보 깊이가 불일치하면 지적하세요.`;
   const response = await fetch("https://api.openai.com/v1/chat/completions", {method:"POST",headers:{Authorization:`Bearer ${process.env.OPENAI_API_KEY}`,"Content-Type":"application/json"},body:JSON.stringify({model,messages:[{role:"system",content:system},{role:"user",content:`모드: ${contentMode}\n프로필: ${JSON.stringify(profile)}\n구조화 조사: ${JSON.stringify(researchContext)}\n기획: ${JSON.stringify(plan)}`}],response_format:{type:"json_schema",json_schema:{name:"carousel_review",strict:true,schema:REVIEW_SCHEMA}}})});
   const raw = await response.text(); let data; try { data = JSON.parse(raw); } catch { throw new Error("OpenAI 검수 응답을 읽지 못했습니다."); }
   if (!response.ok) throw new Error(data?.error?.message || `OpenAI 검수 오류 HTTP ${response.status}`);
@@ -148,6 +151,34 @@ function parseJsonObject(value, fallback = {}) {
   } catch {
     return fallback;
   }
+}
+
+function scoreTemplate(page, index) {
+  if (index === 0) {
+    return (Number(page.sceneValue)||0) >= 55 && (Number(page.numericValue)||0) >= 55 ? "photo-data-hybrid" : ((Number(page.emotionValue)||0) >= 60 ? "photo-hook" : "editorial-photo");
+  }
+  const scores = { scene:Number(page.sceneValue)||0, numeric:Number(page.numericValue)||0, comparison:Number(page.comparisonValue)||0, process:Number(page.processValue)||0, emotion:Number(page.emotionValue)||0 };
+  if (scores.comparison >= 65 && scores.comparison >= Math.max(scores.numeric, scores.process, scores.scene)) return "metric-comparison";
+  if (scores.process >= 65 && scores.process >= Math.max(scores.numeric, scores.comparison, scores.scene)) return "process-flow";
+  if (scores.numeric >= 65 && scores.numeric >= Math.max(scores.comparison, scores.process, scores.scene)) return "big-number";
+  if (scores.scene >= 58 && scores.numeric >= 50) return "photo-data-hybrid";
+  if (Math.max(scores.scene, scores.emotion) >= 65 && scores.numeric < 60) return "editorial-photo";
+  return "insight-cards";
+}
+
+function normalizeLineArray(value, fallback, max) {
+  const source = Array.isArray(value) && value.length ? value : [fallback];
+  return source.map(x => clean(x, 500)).filter(Boolean).slice(0, max);
+}
+
+function hasWeakLineBreak(lines) {
+  const weak = /^(은|는|이|가|을|를|의|에|와|과|도|로|으로|에서|부터|까지|만|보다|처럼|%|→|VS|≠|[.,!?]|\d+(?:%|명|개|초|분|시간|원|만원|배|mm|cm|m)?)$/i;
+  return (lines||[]).some(line => weak.test(String(line).trim()) || String(line).trim().length === 1);
+}
+
+function normalizeComparisonVariant(value, pageNumber) {
+  if (COMPARISON_VARIANTS.includes(value)) return value;
+  return pageNumber % 3 === 0 ? "table" : pageNumber % 2 === 0 ? "stacked" : "side-by-side";
 }
 
 function normalizeResult(result, options) {
@@ -182,6 +213,17 @@ function normalizeResult(result, options) {
     let designMode = DESIGN_MODES.includes(p.designMode) ? p.designMode : "info-heavy";
     let templateType = TEMPLATE_TYPES.includes(p.templateType) ? p.templateType : "insight-cards";
     let photoRequirement = ["required","optional","none"].includes(p.photoRequirement) ? p.photoRequirement : (["photo-hook","editorial-photo","photo-data-hybrid"].includes(templateType) ? "required" : "none");
+    const suggestedTemplate = scoreTemplate(p, i);
+    const templateScore = {
+      "metric-comparison": Number(p.comparisonValue)||0,
+      "process-flow": Number(p.processValue)||0,
+      "big-number": Number(p.numericValue)||0,
+      "photo-data-hybrid": Math.min(Number(p.sceneValue)||0, Number(p.numericValue)||0),
+      "photo-hook": Math.max(Number(p.sceneValue)||0, Number(p.emotionValue)||0),
+      "editorial-photo": Math.max(Number(p.sceneValue)||0, Number(p.emotionValue)||0),
+      "insight-cards": 55
+    };
+    if (i > 0 && suggestedTemplate !== templateType && (templateScore[suggestedTemplate]||0) >= 70 && (templateScore[templateType]||0) + 18 < (templateScore[suggestedTemplate]||0)) templateType = suggestedTemplate;
     if (i === 0) {
       designMode = designMode === "hybrid" ? "hybrid" : "photo-heavy";
       if (!["photo-hook","editorial-photo","photo-data-hybrid"].includes(templateType)) {
@@ -191,13 +233,21 @@ function normalizeResult(result, options) {
     } else if (designMode === "info-heavy" && templateType !== "photo-data-hybrid") {
       photoRequirement = "none";
     }
+    let generationMode = GENERATION_MODES.includes(p.generationMode) ? p.generationMode : (["photo-hook","editorial-photo","photo-data-hybrid"].includes(templateType) ? "hero-photo" : "support-image");
+    if (i === 0) generationMode = "hero-photo";
+    if (generationMode === "hero-photo" && photoRequirement === "none") generationMode = "support-image";
+    const supportImagePlacement = SUPPORT_IMAGE_PLACEMENTS.includes(p.supportImagePlacement) ? p.supportImagePlacement : (generationMode === "background-image" ? "full-background" : "top-banner");
+    const comparisonVariant = normalizeComparisonVariant(p.comparisonVariant, i + 1);
     const claimIds = Array.isArray(p.claimIds) ? p.claimIds.map(x => clean(x, 30)).filter(Boolean).filter(id => { if (usedClaims.has(id)) return false; usedClaims.add(id); return true; }).slice(0, 4) : [];
-    const noPhoto = photoRequirement === "none";
+    const noImagePrompt = generationMode === "hero-photo" && photoRequirement === "none";
+    const titleLines = normalizeLineArray(p.titleLines, clean(p.title,500), 3);
+    const bodyLines = Array.isArray(p.bodyLines) ? p.bodyLines.map(x=>clean(x,500)).filter(Boolean).slice(0,4) : [];
     return {
-      ...p, pageNumber:i+1, informationType, designMode, templateType, photoRequirement, claimIds,
+      ...p, pageNumber:i+1, informationType, designMode, templateType, photoRequirement, generationMode, supportImagePlacement, comparisonVariant, claimIds,
       templateReason:clean(p.templateReason, 500),sceneValue:Math.max(0,Math.min(100,Number(p.sceneValue)||0)),numericValue:Math.max(0,Math.min(100,Number(p.numericValue)||0)),comparisonValue:Math.max(0,Math.min(100,Number(p.comparisonValue)||0)),processValue:Math.max(0,Math.min(100,Number(p.processValue)||0)),emotionValue:Math.max(0,Math.min(100,Number(p.emotionValue)||0)),messageDensity:["low","medium","high"].includes(p.messageDensity)?p.messageDensity:"medium",
-      titleLines:Array.isArray(p.titleLines)&&p.titleLines.length?p.titleLines.slice(0,3):[clean(p.title,500)],bodyLines:Array.isArray(p.bodyLines)?p.bodyLines.slice(0,4):[],koreanPromptSummary:noPhoto?"":clean(p.koreanPromptSummary,1000),englishImagePrompt:noPhoto?"":clean(p.englishImagePrompt,5000),
-      visualData:{eyebrow:clean(p.visualData?.eyebrow,200),primaryValue:clean(p.visualData?.primaryValue,200),primaryLabel:clean(p.visualData?.primaryLabel,300),items:Array.isArray(p.visualData?.items)?p.visualData.items.slice(0,4):[],footerNote:clean(p.visualData?.footerNote,500)},sources:Array.isArray(p.sources)?p.sources.slice(0,4):[]
+      titleLines,bodyLines,koreanPromptSummary:noImagePrompt?"":clean(p.koreanPromptSummary,1000),englishImagePrompt:noImagePrompt?"":clean(p.englishImagePrompt,5000),
+      lineBreakWarning:hasWeakLineBreak(titleLines)||hasWeakLineBreak(bodyLines),
+      visualData:{eyebrow:clean(p.visualData?.eyebrow,200),primaryValue:clean(p.visualData?.primaryValue,200),primaryLabel:clean(p.visualData?.primaryLabel,300),items:Array.isArray(p.visualData?.items)?p.visualData.items.slice(0,4).map(item=>({label:clean(item?.label,200),value:clean(item?.value,500),note:clean(item?.note,700)})):[],footerNote:clean(p.visualData?.footerNote,500)},sources:Array.isArray(p.sources)?p.sources.slice(0,4):[]
     };
   });
   result.instagramPost = result.instagramPost || defaultPost();
