@@ -1,0 +1,696 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FFE033" />
+    <meta
+      name="description"
+      content="오프라인 광고의 시청시간, 정면 주시도와 시청자 데이터를 광고 인사이트로. INWAVE AI Advertising Intelligence."
+    />
+    <title>INWAVE — 광고를 본 순간, 데이터가 시작됩니다.</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./style.css" />
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header id="header">
+      <a class="wordmark" href="#main" aria-label="INWAVE 처음으로"
+        >INWAVE<span>®</span></a
+      ><button
+        id="menu-toggle"
+        class="menu-toggle"
+        aria-expanded="false"
+        aria-controls="navigation"
+        aria-label="메뉴 열기"
+      >
+        <span></span><span></span>
+      </button>
+      <nav id="navigation" aria-label="주 메뉴">
+        <a href="#your-data">Data</a><a href="#dashboard">Dashboard</a
+        ><a href="#technology">Technology</a><a href="#privacy">Privacy</a
+        ><a href="#locations">Locations</a
+        ><a
+          class="header-cta"
+          href="http://pf.kakao.com/_CVqxkn/chat"
+          target="_blank"
+          rel="noopener noreferrer"
+          >광고 문의 ↗</a
+        >
+      </nav>
+    </header>
+    <main id="main">
+      <section class="hero" id="hero">
+        <div class="hero-inner">
+          <div class="hero-copy">
+            <p class="eyebrow">AI ADVERTISING INTELLIGENCE</p>
+            <h1>
+              광고를 본 순간,<br />데이터가<br /><span class="outlined"
+                >시작됩니다.</span
+              >
+            </h1>
+            <p class="lead">
+              INWAVE는 오프라인 광고 앞에서 발생하는<br class="desktop-break" />
+              시청 시간, 정면 주시도, 추정 연령과 성별을 데이터로 바꿉니다.
+            </p>
+          </div>
+          <div
+            class="hero-stage"
+            id="hero-stage"
+            tabindex="0"
+            role="slider"
+            aria-label="광고 반응 체험. 방향키로 참여도를 조절하세요"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div class="orbit" aria-hidden="true"></div>
+            <div
+              class="placeholder hero-wavy"
+              aria-label="WAVY / HERO 이미지 준비 영역"
+            >
+              <span class="cross top">+</span
+              ><span class="placeholder-label">WAVY / HERO</span
+              ><span class="cross bottom">+</span>
+            </div>
+            <span class="focus-point" aria-hidden="true">+</span>
+            <p class="touch-hint">화면을 터치하고 움직여보세요.</p>
+            <p class="desktop-hint">
+              가운데로 움직여보세요. 반응이 달라집니다.
+            </p>
+          </div>
+          <div class="hero-data">
+            <div class="metric">
+              <span>VIEW TIME</span
+              ><strong><b id="hero-time">0.0</b><small>SEC</small></strong>
+              <div class="metric-track"><i id="hero-progress"></i></div>
+            </div>
+            <div class="metric">
+              <span>FRONTAL ATTENTION</span
+              ><strong id="hero-attention">42%</strong>
+            </div>
+            <div class="metric compact">
+              <span>ESTIMATED GENDER</span
+              ><strong id="hero-gender">Female 51%</strong
+              ><small id="hero-male">Male 49%</small>
+            </div>
+            <div class="metric compact">
+              <span>ESTIMATED AGE</span><strong id="hero-age">30–50</strong>
+            </div>
+            <p class="data-note">인터랙티브 예시 · 실제 AI 분석이 아닙니다.</p>
+          </div>
+          <div class="hero-actions">
+            <a class="button dark" href="#your-data"
+              >데이터 체험하기 <span>↓</span></a
+            ><a
+              class="text-link"
+              href="http://pf.kakao.com/_CVqxkn/chat"
+              target="_blank"
+              rel="noopener noreferrer"
+              >광고 문의하기 ↗</a
+            >
+          </div>
+        </div>
+        <div class="hero-bottom">
+          <span>EVERY SECOND TELLS A STORY.</span
+          ><a href="#your-data">SCROLL TO EXPLORE ↓</a>
+        </div>
+      </section>
+      <section class="your-data section" id="your-data">
+        <div class="eyebrow">
+          <span>YOUR DATA</span><span>02 / INWAVE</span>
+        </div>
+        <div class="split">
+          <h2>
+            방금 당신의<br /><span
+              class="huge inline"
+              data-count="3.8"
+              data-decimals="1"
+              >3.8</span
+            ><span class="seconds">초가</span><br />데이터가 되었습니다.
+          </h2>
+          <div class="your-aside">
+            <p class="lead">
+              단순히 사람이 지나갔다는 사실보다<br />얼마나 오래, 얼마나
+              집중해서<br />바라봤는지가 중요합니다.
+            </p>
+            <div class="receipt">
+              <span>YOUR MOMENT, IN NUMBERS</span>
+              <dl>
+                <div>
+                  <dt>시청 시간</dt>
+                  <dd>3.8 SEC</dd>
+                </div>
+                <div>
+                  <dt>정면 주시도</dt>
+                  <dd>92%</dd>
+                </div>
+                <div>
+                  <dt>추정 연령</dt>
+                  <dd>~32</dd>
+                </div>
+                <div>
+                  <dt>추정 성별</dt>
+                  <dd>Female</dd>
+                </div>
+              </dl>
+              <p>광고 반응 체험 예시</p>
+            </div>
+          </div>
+        </div>
+        <p class="section-statement">
+          INWAVE는 광고 앞에서 발생하는 반응을<br />개인 식별이 아닌 분석 가능한
+          데이터로 전환합니다.
+        </p>
+        <p class="bridge">
+          그렇다면, 광고를 보고 있는 사람들은 누구일까요? <span>↓</span>
+        </p>
+      </section>
+      <section class="audience section" id="audience">
+        <div class="eyebrow"><span>AUDIENCE</span><span>03 / INWAVE</span></div>
+        <div class="split">
+          <div>
+            <h2>누가 이 광고에<br />반응하고 있을까요?</h2>
+            <p class="lead">
+              추정 연령과 성별 데이터를 통해<br />광고를 보고 있는 주요
+              시청자층을 이해합니다.
+            </p>
+            <div class="age-number">
+              <strong class="huge" data-count="34.5" data-decimals="1"
+                >34.5</strong
+              ><span>Estimated Average Age</span>
+            </div>
+          </div>
+          <div class="audience-chart">
+            <p class="chart-label">ESTIMATED AGE / %</p>
+            <div class="bars">
+              <div class="bar-row">
+                <span>20s</span>
+                <div class="bar-track"><i style="--value: 31.7%"></i></div>
+                <strong>31.7%</strong>
+              </div>
+              <div class="bar-row">
+                <span>30s</span>
+                <div class="bar-track"><i style="--value: 48.2%"></i></div>
+                <strong>48.2%</strong>
+              </div>
+              <div class="bar-row">
+                <span>40s</span>
+                <div class="bar-track"><i style="--value: 14.6%"></i></div>
+                <strong>14.6%</strong>
+              </div>
+              <div class="bar-row">
+                <span>50s+</span>
+                <div class="bar-track"><i style="--value: 5.4%"></i></div>
+                <strong>5.4%</strong>
+              </div>
+            </div>
+            <div class="gender">
+              <div>
+                <strong>78.3<small>%</small></strong
+                ><span>Female</span>
+              </div>
+              <div>
+                <strong>21.7<small>%</small></strong
+                ><span>Male</span>
+              </div>
+            </div>
+            <div class="gender-band"><span></span></div>
+            <p class="data-note">
+              광고 분석 예시 · 연령 비율은 반올림 값입니다.
+            </p>
+          </div>
+        </div>
+        <p class="section-statement">
+          보이는 사람이 달라지면,<br />광고 전략도 달라질 수 있습니다.
+        </p>
+      </section>
+      <section class="view-time section" id="view-time">
+        <div class="eyebrow">
+          <span>VIEW TIME</span><span>04 / INWAVE</span>
+        </div>
+        <h2>스쳐간 1초와,<br />머문 5초는 다릅니다.</h2>
+        <div class="duration-layout">
+          <div>
+            <div class="duration-number">
+              <strong class="huge" data-count="2.54" data-decimals="2"
+                >2.54</strong
+              ><span>SEC</span>
+            </div>
+            <p class="chart-label">AVERAGE VIEW DURATION</p>
+            <p class="lead">
+              광고 앞에 머문 시간을 분석하면<br />단순 노출과 실제 시청의 차이가
+              보이기 시작합니다.
+            </p>
+          </div>
+          <div>
+            <div class="bars duration-bars">
+              <div class="bar-row">
+                <span>1 SEC+</span>
+                <div class="bar-track"><i style="--value: 75.3%"></i></div>
+                <strong>75.3%</strong>
+              </div>
+              <div class="bar-row">
+                <span>2 SEC+</span>
+                <div class="bar-track"><i style="--value: 40.9%"></i></div>
+                <strong>40.9%</strong>
+              </div>
+              <div class="bar-row">
+                <span>3 SEC+</span>
+                <div class="bar-track"><i style="--value: 24.5%"></i></div>
+                <strong>24.5%</strong>
+              </div>
+              <div class="bar-row">
+                <span>5 SEC+</span>
+                <div class="bar-track"><i style="--value: 11.1%"></i></div>
+                <strong>11.1%</strong>
+              </div>
+            </div>
+            <p class="data-note">광고 분석 예시</p>
+          </div>
+        </div>
+        <p class="section-statement">
+          광고는 몇 번 나갔는지가 아니라,<br />얼마나 보였는가가 중요합니다.
+        </p>
+      </section>
+      <section class="attention section" id="attention">
+        <div class="eyebrow">
+          <span>ATTENTION</span><span>05 / INWAVE</span>
+        </div>
+        <h2>사람이 지나간 것과,<br />광고를 본 것은 다릅니다.</h2>
+        <p class="lead">
+          INWAVE는 시청시간뿐 아니라<br />광고 화면을 얼마나 정면으로
+          바라봤는지도 함께 분석합니다.
+        </p>
+        <div class="attention-layout">
+          <figure class="attention-map">
+            <div class="axis-y">FRONTAL ATTENTION</div>
+            <div class="canvas-wrap">
+              <canvas
+                id="attention-canvas"
+                role="img"
+                aria-label="개념도: 시청시간과 정면 주시도가 높을수록 광고에 대한 관심이 높아집니다."
+              ></canvas
+              ><span class="low-attention">LOW ATTENTION</span
+              ><span class="high-attention">HIGH ATTENTION ↗</span>
+            </div>
+            <div class="axis-x">VIEW DURATION →</div>
+            <figcaption>
+              시청시간과 정면 주시도의 관계를 설명하는 개념도
+            </figcaption>
+          </figure>
+          <div class="attention-copy">
+            <h3>오래 보고,<br />정면으로 봤다면?</h3>
+            <p>그것이 우리가 찾는<br />실제 광고 반응입니다.</p>
+            <dl class="attention-stats">
+              <div>
+                <dt>Average Frontal Score</dt>
+                <dd data-count="0.542" data-decimals="3">0.542</dd>
+              </div>
+              <div>
+                <dt>Frontal Score 0.7+</dt>
+                <dd>29.8%</dd>
+              </div>
+            </dl>
+            <p class="data-note">광고 분석 예시</p>
+          </div>
+        </div>
+      </section>
+      <section class="dashboard section" id="dashboard">
+        <div class="eyebrow">
+          <span>INWAVE PLATFORM</span><span>06 / INWAVE</span>
+        </div>
+        <div class="split intro">
+          <h2>데이터를 모으는 데서<br />끝나지 않습니다.</h2>
+          <p class="lead">
+            시청자, 시간대, 시청시간, 정면 주시도를 한곳에서 비교하고<br />광고
+            운영에 필요한 판단으로 연결합니다.
+          </p>
+        </div>
+        <div class="platform">
+          <div class="platform-head">
+            <span class="wordmark">INWAVE<span> / INSIGHTS</span></span
+            ><label
+              >분석 시나리오<select id="scenario">
+                <option value="0">출근 시간대</option>
+                <option value="1">점심 시간대</option>
+                <option value="2">퇴근 시간대</option>
+                <option value="3">주말 시간대</option>
+              </select></label
+            >
+          </div>
+          <div class="tabs" role="tablist" aria-label="대시보드 분석 항목">
+            <button
+              role="tab"
+              id="tab-overview"
+              aria-controls="panel-overview"
+              aria-selected="true"
+              tabindex="0"
+              data-tab="overview"
+            >
+              OVERVIEW</button
+            ><button
+              role="tab"
+              id="tab-audience"
+              aria-controls="panel-audience"
+              aria-selected="false"
+              tabindex="-1"
+              data-tab="audience"
+            >
+              AUDIENCE</button
+            ><button
+              role="tab"
+              id="tab-attention"
+              aria-controls="panel-attention"
+              aria-selected="false"
+              tabindex="-1"
+              data-tab="attention"
+            >
+              ATTENTION</button
+            ><button
+              role="tab"
+              id="tab-time"
+              aria-controls="panel-time"
+              aria-selected="false"
+              tabindex="-1"
+              data-tab="time"
+            >
+              TIME
+            </button>
+          </div>
+          <div class="platform-status">
+            <p id="tab-description">
+              오늘 광고의 핵심 반응을 한눈에 확인합니다.
+            </p>
+            <span>시나리오 예시 · 실시간 데이터 아님</span>
+          </div>
+          <div id="kpis" class="kpis"></div>
+          <div
+            role="tabpanel"
+            id="panel-overview"
+            aria-labelledby="tab-overview"
+            tabindex="0"
+          >
+            <div class="panel-heading">
+              <h3>광고 반응의 흐름</h3>
+              <span id="scenario-label"></span>
+            </div>
+            <div
+              id="dwell-bars"
+              class="dwell-bars"
+              aria-label="시청 단계별 예시 분포"
+            ></div>
+          </div>
+          <div
+            role="tabpanel"
+            id="panel-audience"
+            aria-labelledby="tab-audience"
+            tabindex="0"
+            hidden
+          >
+            <div class="panel-heading">
+              <h3>시청자 구성</h3>
+              <span>ESTIMATED AUDIENCE</span>
+            </div>
+            <div class="dashboard-audience">
+              <div id="age-bars" class="bars"></div>
+              <div id="gender-summary"></div>
+            </div>
+          </div>
+          <div
+            role="tabpanel"
+            id="panel-attention"
+            aria-labelledby="tab-attention"
+            tabindex="0"
+            hidden
+          >
+            <div class="panel-heading">
+              <h3>시청시간 × 정면 주시도</h3>
+              <span>ATTENTION MAP</span>
+            </div>
+            <p>
+              시청시간 <b id="attention-dwell"></b> · 정면 주시도
+              <b id="attention-score"></b>
+            </p>
+            <div class="dashboard-canvas">
+              <canvas
+                id="dashboard-scatter"
+                role="img"
+                aria-label="광고 반응 관계 개념도. 실제 측정된 개별 관측값이 아닙니다."
+              ></canvas>
+            </div>
+            <p class="data-note">
+              개별 점은 시청시간과 정면 주시도의 관계를 보여주는 개념도입니다.
+            </p>
+          </div>
+          <div
+            role="tabpanel"
+            id="panel-time"
+            aria-labelledby="tab-time"
+            tabindex="0"
+            hidden
+          >
+            <div class="panel-heading">
+              <h3>반응이 모이는 시간</h3>
+              <span>TIME DISTRIBUTION</span>
+            </div>
+            <div class="time-layout">
+              <div>
+                <h4>시간대별 반응 강도</h4>
+                <div id="heatmap" class="heatmap"></div>
+                <div class="heatmap-key">낮음 <span></span> 높음</div>
+              </div>
+              <div>
+                <h4>시간대 × 추정 연령</h4>
+                <div class="dashboard-canvas">
+                  <canvas
+                    id="audience-scatter"
+                    role="img"
+                    aria-label="기존 플랫폼 시나리오의 시간대별 추정 연령과 성별 분포 예시"
+                  ></canvas>
+                </div>
+                <p class="data-note">
+                  가로: 08–20시 · 세로: 추정 연령 · 코랄: Female / 진한색: Male
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="section-statement">
+          숫자를 보여주는 대시보드가 아니라,<br />다음 광고를 결정하는 대시보드.
+        </p>
+      </section>
+      <section class="privacy section" id="privacy">
+        <div class="eyebrow">
+          <span>PRIVACY BY DESIGN</span><span>07 / INWAVE</span>
+        </div>
+        <h2>
+          우리는 사람을 식별하는 것이 아니라,<br />광고 반응을 이해합니다.
+        </h2>
+        <p class="lead">
+          INWAVE의 분석 목적은 특정 개인을 알아내는 것이 아닙니다.<br />광고
+          효과를 이해하는 데 필요한 데이터를 중심으로 분석합니다.
+        </p>
+        <div class="privacy-compare">
+          <div class="identity">
+            <h3>WHO ARE YOU?</h3>
+            <ul>
+              <li>이름 <span>×</span></li>
+              <li>연락처 <span>×</span></li>
+              <li>개인 신원 <span>×</span></li>
+            </ul>
+          </div>
+          <div
+            class="placeholder privacy-wavy"
+            aria-label="WAVY / PRIVACY 이미지 준비 영역"
+          >
+            <span class="cross top">+</span
+            ><span class="placeholder-label">WAVY / PRIVACY</span
+            ><span class="cross bottom">+</span>
+          </div>
+          <div class="performance">
+            <h3>HOW DID THE AD PERFORM?</h3>
+            <ul>
+              <li>View Time <span>✓</span></li>
+              <li>Frontal Attention <span>✓</span></li>
+              <li>Estimated Age <span>✓</span></li>
+              <li>Estimated Gender <span>✓</span></li>
+            </ul>
+          </div>
+        </div>
+        <p class="privacy-statement">
+          필요한 것은<br />당신이 누구인지가 아니라,<br /><span
+            >광고가 어떻게 보였는지입니다.</span
+          >
+        </p>
+        <div class="privacy-principles">
+          <article>
+            <span>01</span>
+            <h3>NO IDENTIFICATION</h3>
+            <p>개인 식별을 목적으로 분석하지 않습니다.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>ANONYMOUS METRICS</h3>
+            <p>광고 성과를 위한 통계 데이터 중심으로 활용합니다.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>MINIMUM DATA</h3>
+            <p>광고 분석에 필요한 정보 중심으로 처리합니다.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>PRIVACY BY DESIGN</h3>
+            <p>개인정보 보호를 분석 구조의 일부로 설계합니다.</p>
+          </article>
+        </div>
+        <a
+          class="text-link"
+          href="https://inwave.ai.kr/adv_privacy_policy.html"
+          target="_blank"
+          rel="noopener noreferrer"
+          >개인정보 보호 정책 자세히 보기 →</a
+        >
+      </section>
+      <section class="technology section" id="technology">
+        <div class="eyebrow">
+          <span>UNDER THE SURFACE</span><span>08 / INWAVE</span>
+        </div>
+        <div class="tech-intro">
+          <div>
+            <h2>보이지 않는 곳에서,<br />데이터는 이렇게<br />만들어집니다.</h2>
+            <p class="lead">
+              카메라 앞의 움직임이 광고 인사이트가 되기까지,<br />INWAVE AI
+              Vision이 실시간으로 분석합니다.
+            </p>
+          </div>
+          <div
+            class="placeholder technology-visual"
+            aria-label="AI VISION / TECHNOLOGY 이미지 준비 영역"
+          >
+            <span class="cross top">+</span
+            ><span class="placeholder-label">AI VISION / TECHNOLOGY</span
+            ><span class="cross bottom">+</span>
+          </div>
+        </div>
+        <ol class="tech-flow">
+          <li>
+            <span>01</span>
+            <h3>DETECT</h3>
+            <h4>Face Detection</h4>
+            <p>광고 화면 앞의 얼굴을 감지합니다.</p>
+          </li>
+          <li>
+            <span>02</span>
+            <h3>TRACK</h3>
+            <h4>Tracking</h4>
+            <p>감지된 대상의 시청 흐름과 지속시간을 추적합니다.</p>
+          </li>
+          <li>
+            <span>03</span>
+            <h3>ESTIMATE</h3>
+            <h4>Audience Estimation</h4>
+            <p>추정 연령, 추정 성별과 정면 주시도를 분석합니다.</p>
+          </li>
+          <li>
+            <span>04</span>
+            <h3>ANALYZE</h3>
+            <h4>Behavior Analysis</h4>
+            <p>시청시간과 시청 패턴을 데이터로 집계합니다.</p>
+          </li>
+          <li>
+            <span>05</span>
+            <h3>INSIGHT</h3>
+            <h4>Advertising Intelligence</h4>
+            <p>
+              수집된 데이터를 광고 운영에 활용할 수 있는 인사이트로 전환합니다.
+            </p>
+          </li>
+        </ol>
+        <p class="section-statement">
+          AI가 사람을 보는 것이 아니라,<br />광고의 반응을 읽습니다.
+        </p>
+      </section>
+      <section class="real-world section" id="locations">
+        <div class="eyebrow">
+          <span>IN THE REAL WORLD</span><span>09 / INWAVE</span>
+        </div>
+        <h2>데이터는 실험실이 아니라<br />실제 공간에서 만들어집니다.</h2>
+        <p class="lead">
+          INWAVE는 실제 생활 공간에 설치된 광고 디스플레이에서<br />광고 송출과
+          시청 반응을 함께 분석합니다.
+        </p>
+        <div class="showcase-heading">
+          <h3>PARTNERS</h3>
+          <p>INWAVE와 함께하는 브랜드와 파트너</p>
+        </div>
+        <div id="partners" class="partners" aria-label="파트너 로고"></div>
+        <div class="showcase-heading">
+          <h3>INSTALLED LOCATIONS</h3>
+          <p>광고가 송출되고 데이터가 만들어지는 실제 공간</p>
+        </div>
+        <div
+          id="location-list"
+          class="location-list"
+          tabindex="0"
+          aria-label="설치장소 사진. 가로로 스크롤할 수 있습니다."
+        ></div>
+      </section>
+      <section class="contact section" id="contact">
+        <div class="eyebrow">
+          <span>START WITH INWAVE</span><span>10 / INWAVE</span>
+        </div>
+        <div class="contact-layout">
+          <div>
+            <h2>이제 당신의 광고도<br />측정해보세요.</h2>
+            <p class="lead">
+              광고를 송출하는 것에서 끝내지 마세요.<br />누가 보고, 얼마나 보고,
+              언제 반응하는지 확인해보세요.
+            </p>
+            <div class="contact-actions">
+              <a
+                class="button dark"
+                href="http://pf.kakao.com/_CVqxkn/chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                >광고 시작하기 <span>↗</span></a
+              ><a
+                class="text-link"
+                href="http://pf.kakao.com/_CVqxkn/chat"
+                target="_blank"
+                rel="noopener noreferrer"
+                >제휴 · 광고대행 문의 →</a
+              >
+            </div>
+          </div>
+          <div
+            class="placeholder contact-wavy"
+            aria-label="WAVY / CONTACT 이미지 준비 영역"
+          >
+            <span class="cross top">+</span
+            ><span class="placeholder-label">WAVY / CONTACT</span
+            ><span class="cross bottom">+</span>
+          </div>
+        </div>
+        <div class="brand-end">
+          <p>보는 광고를 만들다.</p>
+          <span>INWAVE</span>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div>
+        <a href="#main" class="wordmark">INWAVE</a>
+        <p>AI Advertising Intelligence</p>
+      </div>
+      <nav aria-label="하단 메뉴">
+        <a href="#your-data">Data</a><a href="#dashboard">Dashboard</a
+        ><a href="#technology">Technology</a><a href="#privacy">Privacy</a
+        ><a href="#contact">Contact</a>
+      </nav>
+      <span>© INWAVE</span>
+    </footer>
+  </body>
+</html>
