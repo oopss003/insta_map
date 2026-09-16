@@ -37,7 +37,7 @@ export const translations = {
     receiptNote: "광고 반응 체험 예시",
     yourStatement:
       "INWAVE는 광고 앞에서 발생하는 반응을<br>개인 식별이 아닌 분석 가능한 데이터로 전환합니다.",
-    yourBridge: "그 반응이 시작되는 실제 공간으로. <span>↓</span>",
+    yourBridge: "그 반응을 더 깊이 이해해보세요. <span>↓</span>",
     audienceHeadline: "누가 이 광고에<br>반응하고 있을까요?",
     audienceDescription:
       "추정 연령과 성별 데이터를 통해<br>광고를 보고 있는 주요 시청자층을 이해합니다.",
@@ -140,6 +140,7 @@ export const translations = {
     spaceDescription:
       "INWAVE는 실제 유동 인구가 오가는 공간에서<br>광고 송출과 시청 반응을 함께 분석합니다.",
     spaceUnavailable: "현장 영상 준비 중",
+    spaceSourceRequired: "실제 설치영상 원본 연결 대기 중",
     spacePoint1: "실제 유동 인구 동선",
     spacePoint2: "실제 광고 운영 환경",
     spacePoint3: "실제 시청 반응 데이터",
@@ -220,7 +221,7 @@ export const translations = {
     receiptNote: "Your interactive demo response",
     yourStatement:
       "INWAVE turns responses to advertising<br>into measurable data, without identifying individuals.",
-    yourBridge: "See the real spaces where responses begin. <span>↓</span>",
+    yourBridge: "Explore the response in more detail. <span>↓</span>",
     audienceHeadline: "Who is responding<br>to this ad?",
     audienceDescription:
       "Understand the people watching your ads<br>through estimated age and gender data.",
@@ -323,6 +324,7 @@ export const translations = {
     spaceDescription:
       "INWAVE measures advertising delivery and audience response<br>in real-world traffic environments.",
     spaceUnavailable: "On-site footage coming soon",
+    spaceSourceRequired: "Waiting for the original installation video",
     spacePoint1: "Real pedestrian flow",
     spacePoint2: "Real advertising environments",
     spacePoint3: "Real audience response",

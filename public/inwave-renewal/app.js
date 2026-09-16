@@ -40,20 +40,37 @@ scrollHeader();
 // exclusively from pointer proximity (or an accessible keyboard equivalent).
 const stage = $("#hero-stage");
 const wavy = $(".hero-wavy");
-const wavyHead = $(".wavy-head");
+const wavyHead = $(".wavy-head-layer");
 const wavyBody = $(".wavy-body");
+const wavyEyes = $$(".wavy-pupil");
 const hero = $("#hero");
-let targetX = 0,
-  targetY = 0,
-  x = 0,
-  y = 0,
+const DEBUG_WAVY_TRACKING = false;
+let eyeTargetX = 0,
+  eyeTargetY = 0,
+  headTargetX = 0,
+  headTargetY = 0,
+  eyeX = 0,
+  eyeY = 0,
+  headX = 0,
+  headY = 0,
   engagement = 0,
   targetEngagement = 0;
 let interacted = false,
   heroVisible = true,
   frameId = 0,
-  previousTime = 0;
-// One shared state feeds Hero and Your Data; no user profiling occurs.
+  previousTime = 0,
+  returnTimer = 0;
+// The single source of truth for every Hero and Your Data result.
+// Values come only from this pointer-proximity demo; no visitor analysis occurs.
+const demoMetrics = {
+  viewTime: 0,
+  frontalAttention: 42,
+  femaleProbability: 51,
+  maleProbability: 49,
+  ageMin: 30,
+  ageMax: 50,
+  approximateAge: false,
+};
 const metricNodes = Object.fromEntries(
   [
     "hero-time",
@@ -70,16 +87,24 @@ const metricNodes = Object.fromEntries(
   ].map((id) => [id, document.getElementById(id)]),
 );
 let lastMetricsKey = "";
+function updateDemoMetrics(progress) {
+  demoMetrics.viewTime = Number((progress * 3.8).toFixed(1));
+  demoMetrics.frontalAttention = Math.round(42 + progress * 50);
+  demoMetrics.femaleProbability = Math.round(51 + progress * 40);
+  demoMetrics.maleProbability = 100 - demoMetrics.femaleProbability;
+  demoMetrics.ageMax = Math.round(50 - Math.min(progress / 0.7, 1) * 12);
+  demoMetrics.approximateAge = progress > 0.92;
+}
 function renderMetrics(progress) {
-  const seconds = (progress * 3.8).toFixed(1),
-    attention = Math.round(42 + progress * 50),
-    female = Math.round(51 + progress * 40),
-    male = 100 - female;
-  const age =
-    progress > 0.92
-      ? t("approxAge")
-      : "30–" + Math.round(50 - Math.min(progress / 0.7, 1) * 12) + t("years");
-  const key = [language, seconds, attention, female, age].join("|");
+  updateDemoMetrics(progress);
+  const seconds = demoMetrics.viewTime.toFixed(1);
+  const attention = demoMetrics.frontalAttention;
+  const female = demoMetrics.femaleProbability;
+  const male = demoMetrics.maleProbability;
+  const age = demoMetrics.approximateAge
+    ? t("approxAge")
+    : demoMetrics.ageMin + "–" + demoMetrics.ageMax + t("years");
+  const key = [language, seconds, attention, female, male, age].join("|");
   if (key === lastMetricsKey) return;
   lastMetricsKey = key;
   metricNodes["hero-time"].textContent = seconds;
@@ -112,11 +137,13 @@ function firstInteraction() {
   stage.classList.add("has-interacted");
 }
 let stageRect = stage.getBoundingClientRect();
+let wavyRect = wavy.getBoundingClientRect();
 let rectFrame = 0;
 function refreshStageRect() {
   if (rectFrame) return;
   rectFrame = requestAnimationFrame(() => {
     stageRect = stage.getBoundingClientRect();
+    wavyRect = wavy.getBoundingClientRect();
     rectFrame = 0;
   });
 }
@@ -125,22 +152,43 @@ addEventListener("resize", refreshStageRect, { passive: true });
 new ResizeObserver(refreshStageRect).observe(stage);
 function move(clientX, clientY) {
   firstInteraction();
-  const rect = stageRect;
-  targetX = clamp(
-    (clientX - rect.left - rect.width / 2) / (rect.width / 2),
+  clearTimeout(returnTimer);
+  const faceCenterX = wavyRect.left + wavyRect.width * 0.52;
+  const faceCenterY = wavyRect.top + wavyRect.height * 0.2;
+  eyeTargetX = clamp((clientX - faceCenterX) / (wavyRect.width * 0.62), -1, 1);
+  eyeTargetY = clamp((clientY - faceCenterY) / (wavyRect.height * 0.42), -1, 1);
+  headTargetX = eyeTargetX;
+  headTargetY = eyeTargetY;
+  const stageX = clamp(
+    (clientX - stageRect.left - stageRect.width / 2) / (stageRect.width / 2),
     -1,
     1,
   );
-  targetY = clamp(
-    (clientY - rect.top - rect.height * 0.46) / (rect.height / 2),
+  const stageY = clamp(
+    (clientY - stageRect.top - stageRect.height * 0.46) /
+      (stageRect.height / 2),
     -1,
     1,
   );
-  targetEngagement = clamp(1 - Math.hypot(targetX, targetY) / 1.1);
+  targetEngagement = clamp(1 - Math.hypot(stageX, stageY) / 1.1);
   if (targetEngagement > 0.97) targetEngagement = 1;
+  if (DEBUG_WAVY_TRACKING) {
+    stage.style.setProperty("--debug-x", clientX - stageRect.left + "px");
+    stage.style.setProperty("--debug-y", clientY - stageRect.top + "px");
+  }
   startHero();
 }
-hero.addEventListener(
+function returnToFront() {
+  clearTimeout(returnTimer);
+  returnTimer = setTimeout(() => {
+    eyeTargetX = 0;
+    eyeTargetY = 0;
+    headTargetX = 0;
+    headTargetY = 0;
+    startHero();
+  }, 650);
+}
+stage.addEventListener(
   "pointermove",
   (event) => move(event.clientX, event.clientY),
   { passive: true },
@@ -150,6 +198,9 @@ stage.addEventListener(
   (event) => move(event.clientX, event.clientY),
   { passive: true },
 );
+stage.addEventListener("pointerup", returnToFront, { passive: true });
+stage.addEventListener("pointercancel", returnToFront, { passive: true });
+hero.addEventListener("pointerleave", returnToFront, { passive: true });
 stage.addEventListener(
   "touchmove",
   (event) => {
@@ -181,8 +232,10 @@ stage.addEventListener("keydown", (event) => {
             targetEngagement +
               (["ArrowUp", "ArrowRight"].includes(event.key) ? 0.1 : -0.1),
           );
-  targetX = (1 - targetEngagement) * 0.5;
-  targetY = 0;
+  eyeTargetX = (1 - targetEngagement) * 0.5;
+  eyeTargetY = 0;
+  headTargetX = eyeTargetX;
+  headTargetY = 0;
   startHero();
 });
 function heroFrame(now) {
@@ -191,16 +244,21 @@ function heroFrame(now) {
   const dt = previousTime ? Math.min(now - previousTime, 50) : 16;
   previousTime = now;
   if (!interacted && !motion.matches) {
-    targetX = Math.sin(now / 1900) * 0.07;
-    targetY = Math.cos(now / 2400) * 0.04;
+    eyeTargetX = Math.sin(now / 2300) * 0.12;
+    eyeTargetY = Math.cos(now / 2800) * 0.06;
+    headTargetX = 0;
+    headTargetY = 0;
   }
-  const smoothing = motion.matches ? 1 : 1 - Math.exp(-dt / 110);
-  x += (targetX - x) * smoothing;
-  y += (targetY - y) * smoothing;
-  engagement += (targetEngagement - engagement) * smoothing;
+  const eyeSmoothing = motion.matches ? 1 : 1 - Math.exp(-dt / 72);
+  const headSmoothing = motion.matches ? 1 : 1 - Math.exp(-dt / 155);
+  eyeX += (eyeTargetX - eyeX) * eyeSmoothing;
+  eyeY += (eyeTargetY - eyeY) * eyeSmoothing;
+  headX += (headTargetX - headX) * headSmoothing;
+  headY += (headTargetY - headY) * headSmoothing;
+  engagement += (targetEngagement - engagement) * headSmoothing;
   if (Math.abs(targetEngagement - engagement) < 0.001)
     engagement = targetEngagement;
-  // The original official asset is masked into head/body layers; rotations stay subtle.
+  // Eyes respond first; the head follows more slowly while the body stays nearly fixed.
   const idleLift =
     !interacted && !motion.matches ? Math.sin(now / 1800) * 1.4 : 0;
   wavy.style.transform = motion.matches
@@ -209,23 +267,30 @@ function heroFrame(now) {
   wavyHead.style.transform = motion.matches
     ? "none"
     : "translate(" +
-      x * 4 +
+      headX * 5 +
       "px," +
-      y * 2 +
+      headY * 3 +
       "px) rotateX(" +
-      -y * 5 +
+      -headY * 7 +
       "deg) rotateY(" +
-      x * 9 +
+      headX * 12 +
       "deg) rotateZ(" +
-      x * 2.5 +
+      headX * 2.2 +
       "deg)";
+  wavyEyes.forEach((eye) => {
+    eye.style.transform = motion.matches
+      ? "none"
+      : "translate(" + eyeX * 5.5 + "px," + eyeY * 3.5 + "px)";
+  });
   wavyBody.style.transform = motion.matches
     ? "none"
-    : "rotate(" + x * 0.35 + "deg)";
+    : "translateX(" + headX * 0.8 + "px) rotate(" + headX * 0.25 + "deg)";
   renderMetrics(engagement);
   const moving =
-    Math.abs(targetX - x) +
-      Math.abs(targetY - y) +
+    Math.abs(eyeTargetX - eyeX) +
+      Math.abs(eyeTargetY - eyeY) +
+      Math.abs(headTargetX - headX) +
+      Math.abs(headTargetY - headY) +
       Math.abs(targetEngagement - engagement) >
     0.001;
   if ((!interacted && !motion.matches) || moving)

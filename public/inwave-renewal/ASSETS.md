@@ -1,26 +1,41 @@
-# PHASE 1.1 assets and media
+# PHASE 1.2 assets and media
 
 ## Official Wavy
-- Higgsfield registered element: `wavy`, `94078c75-6b8d-476b-87b0-41bb2a3e6271`.
-- Source media: `283cdd82-1a28-455b-ac7d-a1b710f3354d`.
-- A new pose generation was not completed by the service. The registered original was used, with background removal and WebP optimization. No replacement character was generated.
-- `assets/wavy.webp`: 768 x 1152, alpha, 60,020 bytes. Reused for masked head/body and Contact.
-- This is limited 2D head motion, not a 3D character or independent eyeball rig.
 
-## Real Space media still required
-The five MP4 files named in the brief were unavailable in the supplied attachments and workspace. No stock or generated site footage is substituted. The selector and player are implemented; null sources intentionally show an explicit pending state and make no MP4 requests.
+- Registered Higgsfield element: `wavy`, `94078c75-6b8d-476b-87b0-41bb2a3e6271`.
+- Original element media: `283cdd82-1a28-455b-ac7d-a1b710f3354d`.
+- Front-facing generation: `3fe7ff7b-5cfc-4c05-984d-f6358a6bea1d`.
+- Pupil-free rig generation: `9711ac37-e32e-411f-98b7-55d4c1a95551`.
+- `assets/wavy-front.webp`: static front-facing/contact image with natural connected tail.
+- `assets/wavy-front-eyeless.webp`: transparent base used by the Hero eye/head rig.
 
-Place the actual reviewed clips at these repository paths:
+Both web assets are 768 × 1152 WebP files. The Hero uses a masked body, a slower
+head layer and two faster CSS pupils contained within eye-socket masks. This is a
+2D web rig, not a 3D model.
 
-- `public/inwave-renewal/videos/KakaoTalk_20260913_012948856.mp4`
-- `public/inwave-renewal/videos/KakaoTalk_20260913_012918676.mp4`
-- `public/inwave-renewal/videos/KakaoTalk_20260916_125353144.mp4`
-- `public/inwave-renewal/videos/KakaoTalk_20260916_125435763.mp4`
-- `public/inwave-renewal/videos/KakaoTalk_20260913_012956084.mp4`
+## Single Real Space video
 
-Then set each matching `src` in `videos/manifest.json` to `./videos/<filename>` (relative to the page module directory). Optional `poster` uses the same base directory. Inspect actual content before assigning location labels; current labels are neutral scene numbers.
+Phase 1.2 removes the five-item selector and supports one verified installation
+video after Privacy and before Technology. The required source
+`KakaoTalk_20260913_012918676.mp4` was not present in the supplied attachments,
+workspace, or user files at implementation time. Existing `public/images/main.mp4`
+and `main_test.mp4` were visually inspected and are marketing/demo street scenes,
+not the requested shopping-mall installation footage, so they are not substituted.
 
-Playback: one active video, muted / loop / playsinline, lazy source attachment when the section enters the viewport, metadata preload, pause offscreen or while the document is hidden. Reduced-motion and data-saving preferences suppress automatic playback. The play button remains available. Actual MP4 playback, encoding compatibility and real iPhone playback require the supplied files and have not been verified.
+When the reviewed source is supplied:
 
-## Demo and language
-Hero and Your Data share pointer-proximity demo values; no camera or real visitor inference runs here. Korean is the default. `inwave-language` stores the selected Korean/English language locally. Existing scenarios, partner/location JSON and inquiry/privacy URLs remain in use.
+1. Add it as
+   `public/inwave-renewal/videos/KakaoTalk_20260913_012918676.mp4`.
+2. Set the Real Space video element's `data-src` to
+   `./videos/KakaoTalk_20260913_012918676.mp4`.
+3. Verify its real aspect ratio, crop, autoplay and iPhone playback.
+4. Remove the `#space-missing` fallback after playback verification.
+
+The single-video runtime attaches the source near the viewport, uses metadata
+preload, pauses offscreen/hidden playback, and respects reduced-motion and
+data-saving preferences.
+
+## Demo state
+
+One `demoMetrics` object feeds the Hero cards, Your Data headline and receipt.
+No camera, biometric input or live visitor analysis runs on this page.

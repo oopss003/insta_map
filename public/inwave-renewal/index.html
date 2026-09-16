@@ -34,8 +34,8 @@
       <nav id="navigation" data-i18n-label="navigation" aria-label="주 메뉴">
         <a href="#your-data" data-i18n="navData">데이터</a
         ><a href="#dashboard" data-i18n="navDashboard">대시보드</a
-        ><a href="#technology" data-i18n="navTech">기술</a
         ><a href="#privacy" data-i18n="navPrivacy">개인정보 보호</a
+        ><a href="#technology" data-i18n="navTech">기술</a
         ><a href="#locations" data-i18n="navLocations">설치 공간</a>
         <div class="language-switch" role="group" aria-label="Language">
           <button
@@ -98,19 +98,23 @@
               <span class="wavy-shadow"></span
               ><img
                 class="wavy-body"
-                src="./assets/wavy.webp"
+                src="./assets/wavy-front-eyeless.webp"
                 width="768"
                 height="1152"
                 alt=""
                 fetchpriority="high"
-              /><img
-                class="wavy-head"
-                src="./assets/wavy.webp"
-                width="768"
-                height="1152"
-                alt=""
-                decoding="async"
-              />
+              /><span class="wavy-head-layer"
+                ><img
+                  class="wavy-head"
+                  src="./assets/wavy-front-eyeless.webp"
+                  width="768"
+                  height="1152"
+                  alt=""
+                  decoding="async" /><i class="wavy-eye-socket wavy-eye-left"
+                  ><b class="wavy-pupil"></b></i
+                ><i class="wavy-eye-socket wavy-eye-right"
+                  ><b class="wavy-pupil"></b></i
+              ></span>
             </div>
 
             <p class="touch-hint" data-i18n="touchHint">
@@ -224,55 +228,6 @@
         <p class="bridge" data-i18n="yourBridge">
           그 반응이 시작되는 실제 공간으로. <span>↓</span>
         </p>
-      </section>
-      <section class="real-space section" id="real-space">
-        <div class="eyebrow">
-          <span data-i18n="spaceEyebrow">실제 설치 공간</span
-          ><span>INWAVE / ON SITE</span>
-        </div>
-        <div class="space-intro">
-          <h2 data-i18n="spaceHeadline">
-            실제 공간에서,<br />데이터는 시작됩니다.
-          </h2>
-          <p class="lead" data-i18n="spaceDescription">
-            INWAVE는 실제 유동 인구가 오가는 공간에서<br />광고 송출과 시청
-            반응을 함께 분석합니다.
-          </p>
-        </div>
-        <div class="space-stage">
-          <video
-            id="space-video"
-            muted=""
-            loop=""
-            playsinline=""
-            autoplay=""
-            preload="none"
-            hidden=""
-            aria-label="INWAVE 실제 설치 공간 영상"
-          ></video>
-          <div id="space-empty" class="space-empty">
-            <span class="space-index" aria-hidden="true">01</span>
-            <div class="space-frame" aria-hidden="true">
-              <span>INWAVE</span>
-            </div>
-            <p data-i18n="spaceUnavailable">현장 영상 준비 중</p>
-          </div>
-          <div class="space-caption">
-            <span id="space-current"></span
-            ><button id="space-play" type="button" hidden=""></button>
-          </div>
-        </div>
-        <div
-          class="space-selectors"
-          role="group"
-          data-i18n-label="videoSelection"
-          aria-label="영상 선택"
-        ></div>
-        <ul class="space-points">
-          <li data-i18n="spacePoint1">실제 유동 인구 동선</li>
-          <li data-i18n="spacePoint2">실제 광고 운영 환경</li>
-          <li data-i18n="spacePoint3">실제 시청 반응 데이터</li>
-        </ul>
       </section>
       <section class="audience section" id="audience">
         <div class="eyebrow"><span>AUDIENCE</span><span>03 / INWAVE</span></div>
@@ -721,9 +676,49 @@
           >개인정보 보호 정책 자세히 보기 →</a
         >
       </section>
+      <section class="real-space section" id="real-space">
+        <div class="eyebrow space-eyebrow">
+          <span data-i18n="spaceEyebrow">실제 설치 공간</span
+          ><span>08 / INWAVE</span>
+        </div>
+        <div class="space-stage single-space-stage">
+          <video
+            id="space-video"
+            autoplay
+            muted
+            loop
+            playsinline
+            preload="none"
+            data-src=""
+            data-i18n-label="videoLabel"
+            aria-label="INWAVE 실제 설치 공간 영상"
+          ></video>
+          <div class="space-missing" id="space-missing">
+            <span>INWAVE / ON SITE</span>
+            <p data-i18n="spaceSourceRequired">
+              실제 설치영상 원본 연결 대기 중
+            </p>
+          </div>
+          <div class="space-overlay">
+            <h2 data-i18n="spaceHeadline">
+              실제 공간에서,<br />데이터는 시작됩니다.
+            </h2>
+            <p data-i18n="spaceDescription">
+              INWAVE는 실제 유동 인구가 오가는 공간에서<br />광고 송출과 시청
+              반응을 함께 분석합니다.
+            </p>
+          </div>
+          <button
+            id="space-play"
+            class="space-play"
+            type="button"
+            hidden
+          ></button>
+        </div>
+      </section>
       <section class="technology section" id="technology">
         <div class="eyebrow">
-          <span>UNDER THE SURFACE</span><span>08 / INWAVE</span>
+          <span>UNDER THE SURFACE</span><span>09 / INWAVE</span>
         </div>
         <div class="tech-intro">
           <div>
@@ -791,7 +786,7 @@
       </section>
       <section class="real-world section" id="locations">
         <div class="eyebrow">
-          <span>IN THE REAL WORLD</span><span>09 / INWAVE</span>
+          <span>IN THE REAL WORLD</span><span>10 / INWAVE</span>
         </div>
         <h2 data-i18n="locationsHeadline">
           데이터는 실험실이 아니라<br />실제 공간에서 만들어집니다.
@@ -837,7 +832,7 @@
           <path d="M0 48C240 108 410 5 720 43S1170 110 1440 30V96H0Z"></path>
         </svg>
         <div class="eyebrow">
-          <span>START WITH INWAVE</span><span>10 / INWAVE</span>
+          <span>START WITH INWAVE</span><span>11 / INWAVE</span>
         </div>
         <div class="contact-layout">
           <div>
@@ -868,7 +863,7 @@
           </div>
           <div class="contact-wavy">
             <img
-              src="./assets/wavy.webp"
+              src="./assets/wavy-front.webp"
               width="768"
               height="1152"
               loading="lazy"
@@ -891,8 +886,8 @@
       <nav data-i18n-label="footer" aria-label="하단 메뉴">
         <a href="#your-data" data-i18n="navData">데이터</a
         ><a href="#dashboard" data-i18n="navDashboard">대시보드</a
-        ><a href="#technology" data-i18n="navTech">기술</a
         ><a href="#privacy" data-i18n="navPrivacy">개인정보 보호</a
+        ><a href="#technology" data-i18n="navTech">기술</a
         ><a href="#contact" data-i18n="navContact">문의</a>
       </nav>
       <span>© INWAVE</span>
