@@ -1,4 +1,6 @@
 import { platformScenarios } from "./scenarios.js";
+import { t, language, initLanguage } from "./i18n.js";
+import { initRealSpace } from "./real-space.js";
 
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => [...document.querySelectorAll(selector)];
@@ -10,12 +12,12 @@ const menuToggle = $("#menu-toggle");
 function closeMenu() {
   menu.classList.remove("open");
   menuToggle.setAttribute("aria-expanded", "false");
-  menuToggle.setAttribute("aria-label", "메뉴 열기");
+  menuToggle.setAttribute("aria-label", t("menuOpen"));
 }
 menuToggle.addEventListener("click", () => {
   const open = menu.classList.toggle("open");
   menuToggle.setAttribute("aria-expanded", String(open));
-  menuToggle.setAttribute("aria-label", open ? "메뉴 닫기" : "메뉴 열기");
+  menuToggle.setAttribute("aria-label", open ? t("menuClose") : t("menuOpen"));
 });
 menu.addEventListener("click", (event) => {
   if (event.target.closest("a")) closeMenu();
@@ -38,6 +40,8 @@ scrollHeader();
 // exclusively from pointer proximity (or an accessible keyboard equivalent).
 const stage = $("#hero-stage");
 const wavy = $(".hero-wavy");
+const wavyHead = $(".wavy-head");
+const wavyBody = $(".wavy-body");
 const hero = $("#hero");
 let targetX = 0,
   targetY = 0,
@@ -49,32 +53,79 @@ let interacted = false,
   heroVisible = true,
   frameId = 0,
   previousTime = 0;
+// One shared state feeds Hero and Your Data; no user profiling occurs.
+const metricNodes = Object.fromEntries(
+  [
+    "hero-time",
+    "hero-attention",
+    "hero-gender",
+    "hero-male",
+    "hero-age",
+    "hero-progress",
+    "your-time",
+    "your-attention",
+    "your-age",
+    "your-gender",
+    "your-seconds",
+  ].map((id) => [id, document.getElementById(id)]),
+);
+let lastMetricsKey = "";
 function renderMetrics(progress) {
-  $("#hero-time").textContent = (progress * 3.8).toFixed(1);
-  $("#hero-attention").textContent = `${Math.round(42 + progress * 50)}%`;
-  $("#hero-gender").textContent = `Female ${Math.round(51 + progress * 40)}%`;
-  $("#hero-male").textContent = `Male ${Math.round(49 - progress * 40)}%`;
-  $("#hero-age").textContent =
+  const seconds = (progress * 3.8).toFixed(1),
+    attention = Math.round(42 + progress * 50),
+    female = Math.round(51 + progress * 40),
+    male = 100 - female;
+  const age =
     progress > 0.92
-      ? "~32"
-      : `30–${Math.round(50 - Math.min(progress / 0.7, 1) * 12)}`;
-  $("#hero-progress").style.width = `${progress * 100}%`;
+      ? t("approxAge")
+      : "30–" + Math.round(50 - Math.min(progress / 0.7, 1) * 12) + t("years");
+  const key = [language, seconds, attention, female, age].join("|");
+  if (key === lastMetricsKey) return;
+  lastMetricsKey = key;
+  metricNodes["hero-time"].textContent = seconds;
+  metricNodes["hero-attention"].textContent = attention + "%";
+  metricNodes["hero-gender"].textContent = t("female") + " " + female + "%";
+  metricNodes["hero-male"].textContent = t("male") + " " + male + "%";
+  metricNodes["hero-age"].textContent = age;
+  metricNodes["hero-progress"].style.width = progress * 100 + "%";
+  metricNodes["your-seconds"].textContent = seconds;
+  metricNodes["your-time"].textContent =
+    seconds + (language === "ko" ? "초" : " SEC");
+  metricNodes["your-attention"].textContent = attention + "%";
+  metricNodes["your-age"].textContent = age;
+  metricNodes["your-gender"].textContent = t("female") + " " + female + "%";
   stage.setAttribute("aria-valuenow", String(Math.round(progress * 100)));
   stage.setAttribute(
     "aria-valuetext",
-    `참여도 ${Math.round(progress * 100)}%, 시청 시간 ${(progress * 3.8).toFixed(1)}초`,
+    t("engagement") +
+      " " +
+      Math.round(progress * 100) +
+      "%, " +
+      seconds +
+      " " +
+      t("seconds"),
   );
 }
 function firstInteraction() {
   if (interacted) return;
   interacted = true;
-  $$(".hero-stage p").forEach((el) => {
-    el.hidden = true;
+  stage.classList.add("has-interacted");
+}
+let stageRect = stage.getBoundingClientRect();
+let rectFrame = 0;
+function refreshStageRect() {
+  if (rectFrame) return;
+  rectFrame = requestAnimationFrame(() => {
+    stageRect = stage.getBoundingClientRect();
+    rectFrame = 0;
   });
 }
+addEventListener("scroll", refreshStageRect, { passive: true });
+addEventListener("resize", refreshStageRect, { passive: true });
+new ResizeObserver(refreshStageRect).observe(stage);
 function move(clientX, clientY) {
   firstInteraction();
-  const rect = stage.getBoundingClientRect();
+  const rect = stageRect;
   targetX = clamp(
     (clientX - rect.left - rect.width / 2) / (rect.width / 2),
     -1,
@@ -149,9 +200,28 @@ function heroFrame(now) {
   engagement += (targetEngagement - engagement) * smoothing;
   if (Math.abs(targetEngagement - engagement) < 0.001)
     engagement = targetEngagement;
+  // The original official asset is masked into head/body layers; rotations stay subtle.
+  const idleLift =
+    !interacted && !motion.matches ? Math.sin(now / 1800) * 1.4 : 0;
   wavy.style.transform = motion.matches
     ? "none"
-    : `rotateX(${-y * 7}deg) rotateY(${x * 10}deg) rotateZ(${x * 2}deg)`;
+    : "translateY(" + idleLift + "px)";
+  wavyHead.style.transform = motion.matches
+    ? "none"
+    : "translate(" +
+      x * 4 +
+      "px," +
+      y * 2 +
+      "px) rotateX(" +
+      -y * 5 +
+      "deg) rotateY(" +
+      x * 9 +
+      "deg) rotateZ(" +
+      x * 2.5 +
+      "deg)";
+  wavyBody.style.transform = motion.matches
+    ? "none"
+    : "rotate(" + x * 0.35 + "deg)";
   renderMetrics(engagement);
   const moving =
     Math.abs(targetX - x) +
@@ -336,12 +406,15 @@ const descriptions = {
 function renderScenario(index) {
   currentScenario = index;
   const scenario = platformScenarios[index];
-  $("#scenario-label").textContent = scenario.label;
+  $("#scenario-label").textContent = t("scenario" + index);
   const kpis = [
-    ["방문", scenario.kpis.visitors.toLocaleString()],
-    ["시청", scenario.kpis.viewers.toLocaleString()],
-    ["시청시간", scenario.kpis.dwell],
-    ["정면 주시도", scenario.kpis.attention],
+    [t("visitors"), scenario.kpis.visitors.toLocaleString()],
+    [t("viewers"), scenario.kpis.viewers.toLocaleString()],
+    [
+      t("duration"),
+      scenario.kpis.dwell.replace("s", language === "ko" ? "초" : "s"),
+    ],
+    [t("frontal"), scenario.kpis.attention],
   ];
   $("#kpis").innerHTML = kpis
     .map(
@@ -353,7 +426,7 @@ function renderScenario(index) {
   $("#dwell-bars").innerHTML = scenario.dwell
     .map(
       (d) =>
-        `<div class="dwell-group ${d.highlight ? "highlight" : ""}"><strong>${d.value}</strong><i style="height:0"></i><span>${d.label}</span></div>`,
+        `<div class="dwell-group ${d.highlight ? "highlight" : ""}"><strong>${d.value}</strong><i style="height:0"></i><span>${t(d.label)}</span></div>`,
     )
     .join("");
   requestAnimationFrame(() =>
@@ -367,20 +440,27 @@ function renderScenario(index) {
   $("#age-bars").innerHTML = scenario.bars
     .map(
       (b) =>
-        `<div class="bar-row"><span>${b.label}</span><div class="bar-track"><i style="--value:${(b.value / maxAge) * 100}%"></i></div><strong>${b.value}</strong></div>`,
+        `<div class="bar-row"><span>${language === "ko" ? b.label : b.label.replace("대", "s")}</span><div class="bar-track"><i style="--value:${(b.value / maxAge) * 100}%"></i></div><strong>${b.value}</strong></div>`,
     )
     .join("");
   const p = scenario.audiencePattern;
   $("#gender-summary").innerHTML =
-    `<div class="gender-total">${Math.round(p.femaleRatio * 100)}%<span>Female</span></div><div class="gender-total">${Math.round(p.maleRatio * 100)}%<span>Male</span></div><p class="data-note">기존 플랫폼 시나리오의 연령별 지표와 성별 비율</p>`;
+    `<div class="gender-total">${Math.round(p.femaleRatio * 100)}%<span>${t("female")}</span></div><div class="gender-total">${Math.round(p.maleRatio * 100)}%<span>${t("male")}</span></div><p class="data-note">${t("genderNote")}</p>`;
   const palette = ["#eee8d6", "#ffe993", "#ffd64a", "#ff6265", "#171717"];
   $("#heatmap").innerHTML = scenario.heatmap
     .map(
       (level, i) =>
-        `<span class="heat-cell" style="background:${palette[level]}" role="img" aria-label="예시 구간 ${i + 1}: 반응 강도 ${level}/4"></span>`,
+        `<span class="heat-cell" style="background:${palette[level]}" role="img" aria-label="${t(
+          "heatCell",
+        )
+          .replace("{n}", i + 1)
+          .replace("{level}", level)}"></span>`,
     )
     .join("");
-  $("#attention-dwell").textContent = scenario.kpis.dwell;
+  $("#attention-dwell").textContent = scenario.kpis.dwell.replace(
+    "s",
+    language === "ko" ? "초" : "s",
+  );
   $("#attention-score").textContent = scenario.kpis.attention;
   drawVisibleCharts();
 }
@@ -404,7 +484,9 @@ function selectTab(name, focus = false) {
   $$("[role=tabpanel]").forEach((panel) => {
     panel.hidden = panel.id !== `panel-${name}`;
   });
-  $("#tab-description").textContent = descriptions[name];
+  $("#tab-description").textContent = t(
+    name === "attention" ? "attentionTab" : name,
+  );
   requestAnimationFrame(drawVisibleCharts);
 }
 $$("[role=tab]").forEach((tab, index) => {
@@ -426,7 +508,28 @@ $$("[role=tab]").forEach((tab, index) => {
 $("#scenario").addEventListener("change", (event) =>
   renderScenario(Number(event.target.value)),
 );
-renderScenario(0);
+document.addEventListener("inwave:language", () => {
+  refreshStageRect();
+  lastMetricsKey = "";
+  renderMetrics(engagement);
+  renderScenario(currentScenario);
+  selectTab(currentTab);
+  menuToggle.setAttribute(
+    "aria-label",
+    t(menu.classList.contains("open") ? "menuClose" : "menuOpen"),
+  );
+  stage.setAttribute("aria-label", t("stageLabel"));
+  document
+    .querySelectorAll("#partners img,#location-list img")
+    .forEach((img, i) => {
+      img.alt =
+        t(img.closest("#partners") ? "partnerAlt" : "locationAlt") +
+        " " +
+        (Number(img.dataset.index) + 1);
+    });
+});
+initLanguage();
+initRealSpace();
 let resizeTimer;
 addEventListener(
   "resize",
@@ -457,10 +560,11 @@ async function loadShowcase(url, selector, type) {
     items.forEach((src, index) => {
       const image = document.createElement("img");
       image.src = new URL(src, `${location.origin}/`).href;
+      image.dataset.index = index;
       image.alt =
-        type === "partner"
-          ? `INWAVE 파트너 로고 ${index + 1}`
-          : `INWAVE 광고 디스플레이 설치장소 ${index + 1}`;
+        t(type === "partner" ? "partnerAlt" : "locationAlt") +
+        " " +
+        (index + 1);
       image.loading = "lazy";
       image.decoding = "async";
       image.width = type === "partner" ? 240 : 640;
@@ -469,8 +573,7 @@ async function loadShowcase(url, selector, type) {
     });
   } catch (error) {
     const message = document.createElement("p");
-    message.textContent =
-      "목록을 불러오지 못했습니다. 잠시 후 다시 확인해주세요.";
+    message.textContent = t("loadError");
     container.appendChild(message);
     console.error(error);
   }
