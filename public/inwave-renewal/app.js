@@ -243,18 +243,14 @@ function move(clientX, clientY) {
     dx / (faceWidth * 0.5),
     dy / (faceHeight * 0.5),
   );
-  const trackingDistance = Math.hypot(
-    dx / (wavyRect.width * 0.58),
-    dy / (wavyRect.height * 0.42),
-  );
-  const nextState =
-    eyeContactDistance <= 1
-      ? "eye-contact"
-      : trackingDistance <= 1
-        ? "tracking"
-        : "idle";
+  const heroRect = hero.getBoundingClientRect();
+  const insideHero = clientX >= heroRect.left && clientX <= heroRect.right &&
+    clientY >= heroRect.top && clientY <= heroRect.bottom;
+  const nextState = !insideHero ? "idle" : eyeContactDistance <= 1 ? "eye-contact" : "tracking";
   setInteractionState(nextState);
-  const normalizedX = clamp(dx / (wavyRect.width * 0.58), -1, 1);
+  // Scale each side to the whole Hero so the title and cards remain responsive.
+  const horizontalRange = dx < 0 ? faceCenterX - heroRect.left : heroRect.right - faceCenterX;
+  const normalizedX = clamp(dx / Math.max(horizontalRange, 1), -1, 1);
   const normalizedY = clamp(dy / (wavyRect.height * 0.42), -1, 1);
   videoRig.look(normalizedX, nextState);
   requestPose(
@@ -282,20 +278,22 @@ function returnToFront() {
     startHero();
   }, 650);
 }
-stage.addEventListener(
+hero.addEventListener(
   "pointermove",
   (event) => move(event.clientX, event.clientY),
   { passive: true },
 );
-stage.addEventListener(
+hero.addEventListener(
   "pointerdown",
   (event) => move(event.clientX, event.clientY),
   { passive: true },
 );
-stage.addEventListener("pointerup", returnToFront, { passive: true });
-stage.addEventListener("pointercancel", returnToFront, { passive: true });
-stage.addEventListener("pointerleave", returnToFront, { passive: true });
-stage.addEventListener(
+hero.addEventListener("pointerup", (event) => {
+  if (event.pointerType !== "mouse") returnToFront();
+}, { passive: true });
+hero.addEventListener("pointercancel", returnToFront, { passive: true });
+hero.addEventListener("pointerleave", returnToFront, { passive: true });
+hero.addEventListener(
   "touchmove",
   (event) => {
     if (event.touches[0])
