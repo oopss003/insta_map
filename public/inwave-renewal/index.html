@@ -10,8 +10,8 @@
     />
     <title>INWAVE — 광고를 본 순간, 데이터가 시작됩니다.</title>
     <link rel="icon" href="data:," />
-    <link rel="stylesheet" href="./style.css?v=eye-contact-1" />
-    <script type="module" src="./app.js?v=eye-contact-1"></script>
+    <link rel="stylesheet" href="./style.css?v=video-rig-1" />
+    <script type="module" src="./app.js?v=video-rig-1"></script>
   </head>
   <body>
     <a class="skip-link" href="#main" data-i18n="skip">본문으로 건너뛰기</a>
@@ -97,24 +97,27 @@
             <div class="wavy-rig hero-wavy" aria-hidden="true">
               <span class="wavy-shadow"></span
               ><img
-                class="wavy-body"
-                src="./assets/wavy-front-eyeless.webp"
+                class="wavy-pose wavy-pose-current is-visible"
+                src="./assets/wavy-front.webp"
                 width="768"
                 height="1152"
                 alt=""
                 fetchpriority="high"
-              /><span class="wavy-head-layer"
-                ><img
-                  class="wavy-head"
-                  src="./assets/wavy-front-eyeless.webp"
-                  width="768"
-                  height="1152"
-                  alt=""
-                  decoding="async" /><i class="wavy-eye-socket wavy-eye-left"
-                  ><b class="wavy-pupil"></b></i
-                ><i class="wavy-eye-socket wavy-eye-right"
-                  ><b class="wavy-pupil"></b></i
-              ></span>
+              /><img
+                class="wavy-pose wavy-pose-next"
+                width="768"
+                height="1152"
+                alt=""
+                decoding="async"
+              />
+              <video
+                class="wavy-video"
+                src="./assets/wavy-head-turn.mp4"
+                muted
+                playsinline
+                preload="auto"
+                aria-hidden="true"
+              ></video>
             </div>
 
             <p class="touch-hint" data-i18n="touchHint">

@@ -1896,16 +1896,7 @@ header nav {
   object-fit: contain;
   pointer-events: none;
   user-select: none;
-  transform-origin: 54% 32%;
-  will-change: transform;
-}
-.wavy-body {
-  clip-path: inset(32% 0 0);
-  transform-origin: 50% 90% !important;
-}
-.wavy-head {
-  clip-path: inset(0 0 67%);
-  z-index: 2;
+  will-change: opacity;
 }
 .wavy-shadow {
   position: absolute;
@@ -2446,56 +2437,18 @@ html[lang="en"] .metric.compact strong {
   }
 }
 
-/* Phase 1.2: front-facing Wavy rig and one cinematic installation video. */
+/* Phase 1.2: full-body Wavy pose rig and one cinematic installation video. */
 .hero-wavy.wavy-rig {
   aspect-ratio: 2 / 3;
   height: auto;
   max-height: none;
 }
-.wavy-body {
-  clip-path: inset(28% 0 0);
-  transform-origin: 50% 88% !important;
+.wavy-pose {
+  opacity: 0;
+  transition: opacity 160ms ease;
 }
-.wavy-head-layer {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  clip-path: inset(0 0 67%);
-  transform-origin: 52% 27%;
-  transform-style: preserve-3d;
-  will-change: transform;
-}
-.wavy-head {
-  clip-path: none;
-  transform: none !important;
-}
-.wavy-eye-socket {
-  position: absolute;
-  z-index: 3;
-  top: 17.1%;
-  width: 10.5%;
-  height: 7%;
-  overflow: hidden;
-  border-radius: 46%;
-}
-.wavy-pupil {
-  position: absolute;
-  left: 25%;
-  top: 28%;
-  width: 44%;
-  aspect-ratio: 1;
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 28%, #fff 0 7%, transparent 8%),
-    radial-gradient(circle at 50% 50%, #050505 0 62%, #26170b 64% 100%);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.28);
-  will-change: transform;
-}
-.wavy-eye-left {
-  left: 39.7%;
-}
-.wavy-eye-right {
-  left: 54.4%;
+.wavy-pose.is-visible {
+  opacity: 1;
 }
 .wavy-shadow {
   bottom: 4.7%;
@@ -2586,9 +2539,6 @@ html[lang="en"] .metric.compact strong {
     width: min(100%, 286px);
     aspect-ratio: 2 / 3;
   }
-  .wavy-pupil {
-    width: 46%;
-  }
   .single-space-stage {
     aspect-ratio: 4 / 5;
     border-radius: 10px;
@@ -2614,9 +2564,27 @@ html[lang="en"] .metric.compact strong {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .wavy-head-layer,
-  .wavy-pupil {
-    transform: none !important;
+  .wavy-pose {
+    transition: none;
     will-change: auto;
+  }
+}
+
+.wavy-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+.wavy-video.is-ready {
+  opacity: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .wavy-video {
+    display: none;
   }
 }

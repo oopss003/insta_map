@@ -7,11 +7,12 @@
 - Front-facing generation: `3fe7ff7b-5cfc-4c05-984d-f6358a6bea1d`.
 - Pupil-free rig generation: `9711ac37-e32e-411f-98b7-55d4c1a95551`.
 - `assets/wavy-front.webp`: static front-facing/contact image with natural connected tail.
-- `assets/wavy-front-eyeless.webp`: transparent base used by the Hero eye/head rig.
+- `assets/wavy-poses/center.webp`: approved full-body Hero master, copied from
+  `assets/wavy-front.webp` and used as the safe fallback for every pose until
+  reviewed directional assets are supplied.
 
-Both web assets are 768 × 1152 WebP files. The Hero uses a masked body, a slower
-head layer and two faster CSS pupils contained within eye-socket masks. This is a
-2D web rig, not a 3D model.
+The Hero now uses a paused full-body head-turn video (`assets/wavy-head-turn.mp4`), controlled by face-relative pointer position. The original natural-eyed `assets/wavy-front.webp` remains the loading/error fallback. See WAVY-VIDEO.md for source and timing. Legacy fallback pose changes are preloaded and
+crossfaded; no CSS pupils, clipped head layer, or raster 3D rotation is used.
 
 ## Single Real Space video
 

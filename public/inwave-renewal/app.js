@@ -1,3 +1,4 @@
+import { createWavyVideo } from "./wavy-video.js";
 import { platformScenarios } from "./scenarios.js";
 import { t, language, initLanguage } from "./i18n.js";
 import { initRealSpace } from "./real-space.js";
@@ -40,26 +41,44 @@ scrollHeader();
 // exclusively from the eye-contact demo (or an accessible keyboard equivalent).
 const stage = $("#hero-stage");
 const wavy = $(".hero-wavy");
-const wavyHead = $(".wavy-head-layer");
-const wavyBody = $(".wavy-body");
-const wavyEyes = $$(".wavy-pupil");
+const poseCurrent = $(".wavy-pose-current");
+const poseNext = $(".wavy-pose-next");
 const hero = $("#hero");
+const videoRig = createWavyVideo(
+  $(".wavy-video"),
+  { left: 1.5, center: 0.04, right: 6.2, rightCenter: 7.1 },
+  motion,
+);
 const DEBUG_WAVY_TRACKING = false;
-let eyeTargetX = 0,
-  eyeTargetY = 0,
-  headTargetX = 0,
-  headTargetY = 0,
-  eyeX = 0,
-  eyeY = 0,
-  headX = 0,
-  headY = 0,
-  engagement = 0;
+const POSE_HOLD_MS = 85;
+const POSE_FALLBACK = "./assets/wavy-front.webp";
+// Directional masters can replace individual values after review. Until then,
+// every state deliberately uses the approved center master with no 404 probes.
+const poseSources = {
+  center: POSE_FALLBACK,
+  left: POSE_FALLBACK,
+  right: POSE_FALLBACK,
+  up: POSE_FALLBACK,
+  down: POSE_FALLBACK,
+  "up-left": POSE_FALLBACK,
+  "up-right": POSE_FALLBACK,
+  "down-left": POSE_FALLBACK,
+  "down-right": POSE_FALLBACK,
+  "eye-contact": POSE_FALLBACK,
+};
+let engagement = 0;
 let interacted = false,
   heroVisible = true,
   frameId = 0,
   previousTime = 0,
-  returnTimer = 0;
+  returnTimer = 0,
+  poseTimer = 0,
+  poseToken = 0;
 let interactionState = "idle";
+let currentPose = "center";
+let candidatePose = "center";
+let visiblePose = poseCurrent;
+let hiddenPose = poseNext;
 // The single source of truth for every Hero and Your Data result.
 // Values come only from this eye-contact demo; no visitor analysis occurs.
 const demoMetrics = {
@@ -138,9 +157,64 @@ function firstInteraction() {
 }
 function setInteractionState(nextState) {
   interactionState = nextState;
+  if (nextState !== "tracking") videoRig.look(0, nextState);
   stage.dataset.interactionState = nextState;
   stage.classList.toggle("is-tracking", nextState === "tracking");
   stage.classList.toggle("is-eye-contact", nextState === "eye-contact");
+}
+function commitPose(pose) {
+  clearTimeout(poseTimer);
+  poseTimer = 0;
+  candidatePose = pose;
+  stage.dataset.pose = pose;
+  wavy.dataset.pose = pose;
+  const source = poseSources[pose] || POSE_FALLBACK;
+  if (pose === currentPose) return;
+  // Missing directional masters deliberately resolve to the approved center
+  // asset. Keep the logical pose without dissolving an identical image.
+  if (source === visiblePose.getAttribute("src")) {
+    currentPose = pose;
+    return;
+  }
+  const token = ++poseToken;
+  const reveal = () => {
+    if (token !== poseToken) return;
+    hiddenPose.classList.add("is-visible");
+    visiblePose.classList.remove("is-visible");
+    const previousPose = visiblePose;
+    visiblePose = hiddenPose;
+    hiddenPose = previousPose;
+    currentPose = pose;
+    hiddenPose.onload = null;
+    hiddenPose.onerror = null;
+  };
+  hiddenPose.onload = reveal;
+  hiddenPose.onerror = () => {
+    if (token !== poseToken) return;
+    hiddenPose.onerror = null;
+    hiddenPose.src = POSE_FALLBACK;
+  };
+  hiddenPose.src = source;
+  if (hiddenPose.complete && hiddenPose.naturalWidth) reveal();
+}
+function requestPose(pose) {
+  if (pose === currentPose) {
+    clearTimeout(poseTimer);
+    poseTimer = 0;
+    candidatePose = pose;
+    return;
+  }
+  if (pose === candidatePose && poseTimer) return;
+  clearTimeout(poseTimer);
+  candidatePose = pose;
+  poseTimer = setTimeout(() => commitPose(pose), POSE_HOLD_MS);
+}
+function directionPose(x, y) {
+  const horizontal = Math.abs(x) < 0.22 ? "" : x < 0 ? "left" : "right";
+  const vertical = Math.abs(y) < 0.22 ? "" : y < 0 ? "up" : "down";
+  return vertical && horizontal
+    ? vertical + "-" + horizontal
+    : vertical || horizontal || "center";
 }
 let stageRect = stage.getBoundingClientRect();
 let wavyRect = wavy.getBoundingClientRect();
@@ -180,18 +254,16 @@ function move(clientX, clientY) {
         ? "tracking"
         : "idle";
   setInteractionState(nextState);
-  if (nextState === "tracking") {
-    eyeTargetX = clamp(dx / (wavyRect.width * 0.58), -1, 1);
-    eyeTargetY = clamp(dy / (wavyRect.height * 0.42), -1, 1);
-    headTargetX = eyeTargetX;
-    headTargetY = eyeTargetY;
-  } else {
-    // Eye contact and idle share the same home pose: Wavy looks at the user.
-    eyeTargetX = 0;
-    eyeTargetY = 0;
-    headTargetX = 0;
-    headTargetY = 0;
-  }
+  const normalizedX = clamp(dx / (wavyRect.width * 0.58), -1, 1);
+  const normalizedY = clamp(dy / (wavyRect.height * 0.42), -1, 1);
+  videoRig.look(normalizedX, nextState);
+  requestPose(
+    nextState === "eye-contact"
+      ? "eye-contact"
+      : nextState === "tracking"
+        ? directionPose(normalizedX, normalizedY)
+        : "center",
+  );
   if (DEBUG_WAVY_TRACKING) {
     stage.style.setProperty("--debug-x", clientX - stageRect.left + "px");
     stage.style.setProperty("--debug-y", clientY - stageRect.top + "px");
@@ -206,10 +278,7 @@ function returnToFront() {
   clearTimeout(returnTimer);
   returnTimer = setTimeout(() => {
     setInteractionState("idle");
-    eyeTargetX = 0;
-    eyeTargetY = 0;
-    headTargetX = 0;
-    headTargetY = 0;
+    requestPose("center");
     startHero();
   }, 650);
 }
@@ -257,10 +326,7 @@ stage.addEventListener("keydown", (event) => {
             engagement +
               (["ArrowUp", "ArrowRight"].includes(event.key) ? 0.1 : -0.1),
           );
-  eyeTargetX = (1 - engagement) * 0.5;
-  eyeTargetY = 0;
-  headTargetX = eyeTargetX;
-  headTargetY = 0;
+  requestPose("center");
   renderMetrics(engagement);
   startHero();
 });
@@ -269,18 +335,6 @@ function heroFrame(now) {
   if (!heroVisible || document.hidden) return;
   const dt = previousTime ? Math.min(now - previousTime, 50) : 16;
   previousTime = now;
-  if (!interacted && !motion.matches) {
-    eyeTargetX = Math.sin(now / 2300) * 0.12;
-    eyeTargetY = Math.cos(now / 2800) * 0.06;
-    headTargetX = 0;
-    headTargetY = 0;
-  }
-  const eyeSmoothing = motion.matches ? 1 : 1 - Math.exp(-dt / 72);
-  const headSmoothing = motion.matches ? 1 : 1 - Math.exp(-dt / 155);
-  eyeX += (eyeTargetX - eyeX) * eyeSmoothing;
-  eyeY += (eyeTargetY - eyeY) * eyeSmoothing;
-  headX += (headTargetX - headX) * headSmoothing;
-  headY += (headTargetY - headY) * headSmoothing;
   const scoreRate =
     interactionState === "eye-contact"
       ? 0.3
@@ -288,42 +342,14 @@ function heroFrame(now) {
         ? 0.075
         : 0;
   engagement = clamp(engagement + scoreRate * (dt / 1000));
-  // Eyes respond first; the head follows more slowly while the body stays nearly fixed.
   const idleLift =
     !interacted && !motion.matches ? Math.sin(now / 1800) * 1.4 : 0;
   wavy.style.transform = motion.matches
     ? "none"
     : "translateY(" + idleLift + "px)";
-  wavyHead.style.transform = motion.matches
-    ? "none"
-    : "translate(" +
-      headX * 5 +
-      "px," +
-      headY * 3 +
-      "px) rotateX(" +
-      -headY * 7 +
-      "deg) rotateY(" +
-      headX * 12 +
-      "deg) rotateZ(" +
-      headX * 2.2 +
-      "deg)";
-  wavyEyes.forEach((eye) => {
-    eye.style.transform = motion.matches
-      ? "none"
-      : "translate(" + eyeX * 5 + "px," + eyeY * 3 + "px)";
-  });
-  wavyBody.style.transform = motion.matches
-    ? "none"
-    : "translateX(" + headX * 0.8 + "px) rotate(" + headX * 0.25 + "deg)";
   renderMetrics(engagement);
-  const moving =
-    Math.abs(eyeTargetX - eyeX) +
-      Math.abs(eyeTargetY - eyeY) +
-      Math.abs(headTargetX - headX) +
-      Math.abs(headTargetY - headY) >
-    0.001;
   const scoring = interactionState !== "idle" && engagement < 1;
-  if ((!interacted && !motion.matches) || moving || scoring)
+  if ((!interacted && !motion.matches) || scoring)
     frameId = requestAnimationFrame(heroFrame);
 }
 function startHero() {
@@ -337,10 +363,7 @@ new IntersectionObserver((entries) => {
   if (heroVisible) startHero();
   else {
     setInteractionState("idle");
-    eyeTargetX = 0;
-    eyeTargetY = 0;
-    headTargetX = 0;
-    headTargetY = 0;
+    requestPose("center");
     cancelAnimationFrame(frameId);
     frameId = 0;
   }
@@ -353,6 +376,7 @@ document.addEventListener("visibilitychange", () => {
 });
 motion.addEventListener("change", startHero);
 setInteractionState("idle");
+commitPose("center");
 
 // Reuses the existing homepage's requestAnimationFrame counter and one-shot
 // IntersectionObserver pattern. Content is visible when JavaScript is disabled.
