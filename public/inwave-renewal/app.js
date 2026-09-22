@@ -67,6 +67,8 @@ const poseSources = {
   "eye-contact": POSE_FALLBACK,
 };
 let engagement = 0;
+let qualifiedViewTime = 0;
+let viewingWeight = 0;
 let interacted = false,
   heroVisible = true,
   frameId = 0,
@@ -107,7 +109,7 @@ const metricNodes = Object.fromEntries(
 );
 let lastMetricsKey = "";
 function updateDemoMetrics(progress) {
-  demoMetrics.viewTime = Number((progress * 3.8).toFixed(1));
+  demoMetrics.viewTime = Number(qualifiedViewTime.toFixed(1));
   demoMetrics.frontalAttention = Math.round(42 + progress * 50);
   demoMetrics.femaleProbability = Math.round(51 + progress * 40);
   demoMetrics.maleProbability = 100 - demoMetrics.femaleProbability;
@@ -157,6 +159,7 @@ function firstInteraction() {
 }
 function setInteractionState(nextState) {
   interactionState = nextState;
+  if (nextState === "idle") viewingWeight = 0;
   if (nextState !== "tracking") videoRig.look(0, nextState);
   stage.dataset.interactionState = nextState;
   stage.classList.toggle("is-tracking", nextState === "tracking");
@@ -251,6 +254,10 @@ function move(clientX, clientY) {
     clientY >= heroRect.top && clientY <= heroRect.bottom;
   const nextState = !insideHero ? "idle" : eyeContactDistance <= 1 ? "eye-contact" : "tracking";
   setInteractionState(nextState);
+  // A face-centered falloff: looking away contributes nothing, eye contact
+  // contributes one second per real second, with a smooth transition between.
+  const proximity = clamp((5 - eyeContactDistance) / 4);
+  viewingWeight = insideHero ? proximity * proximity * (3 - 2 * proximity) : 0;
   // The Hero is the event surface; the face remains the origin and scale.
   const normalizedX = clamp(dx / Math.max(wavyRect.width * 0.58, 1), -1, 1);
   const normalizedY = clamp(dy / (wavyRect.height * 0.42), -1, 1);
@@ -274,6 +281,7 @@ function move(clientX, clientY) {
 }
 function returnToFront() {
   clearTimeout(returnTimer);
+  viewingWeight = 0;
   returnTimer = setTimeout(() => {
     setInteractionState("idle");
     requestPose("center");
@@ -327,6 +335,7 @@ stage.addEventListener("keydown", (event) => {
               (["ArrowUp", "ArrowRight"].includes(event.key) ? 0.1 : -0.1),
           );
   requestPose("center");
+  qualifiedViewTime = engagement * 3.8;
   renderMetrics(engagement);
   startHero();
 });
@@ -335,20 +344,16 @@ function heroFrame(now) {
   if (!heroVisible || document.hidden) return;
   const dt = previousTime ? Math.min(now - previousTime, 50) : 16;
   previousTime = now;
-  const scoreRate =
-    interactionState === "eye-contact"
-      ? 0.3
-      : interactionState === "tracking"
-        ? 0.075
-        : 0;
-  engagement = clamp(engagement + scoreRate * (dt / 1000));
+  const viewedSeconds = viewingWeight * (dt / 1000);
+  qualifiedViewTime += viewedSeconds;
+  engagement = clamp(engagement + viewedSeconds / 3.8);
   const idleLift =
     !interacted && !motion.matches ? Math.sin(now / 1800) * 1.4 : 0;
   wavy.style.transform = motion.matches
     ? "none"
     : "translateY(" + idleLift + "px)";
   renderMetrics(engagement);
-  const scoring = interactionState !== "idle" && engagement < 1;
+  const scoring = interactionState !== "idle" && viewingWeight > 0;
   if ((!interacted && !motion.matches) || scoring)
     frameId = requestAnimationFrame(heroFrame);
 }
