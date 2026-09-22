@@ -1,4 +1,4 @@
-import { createWavyVideo } from "./wavy-video.js";
+import { createWavyVideo } from "./wavy-video.js?v=face-origin-1";
 import { platformScenarios } from "./scenarios.js";
 import { t, language, initLanguage } from "./i18n.js";
 import { initRealSpace } from "./real-space.js";
@@ -233,12 +233,15 @@ new ResizeObserver(refreshStageRect).observe(stage);
 function move(clientX, clientY) {
   firstInteraction();
   clearTimeout(returnTimer);
-  const faceCenterX = wavyRect.left + wavyRect.width * 0.52;
-  const faceCenterY = wavyRect.top + wavyRect.height * 0.2;
+  // Use the currently rendered media bounds, including scroll and layout changes.
+  const media = $(".wavy-video");
+  wavyRect = media.getBoundingClientRect();
+  const faceCenterX = wavyRect.left + wavyRect.width * 0.505;
+  const faceCenterY = wavyRect.top + wavyRect.height * 0.215;
   const dx = clientX - faceCenterX;
   const dy = clientY - faceCenterY;
-  const faceWidth = wavyRect.width * 0.34;
-  const faceHeight = wavyRect.height * 0.2;
+  const faceWidth = wavyRect.width * 0.25;
+  const faceHeight = wavyRect.height * 0.13;
   const eyeContactDistance = Math.hypot(
     dx / (faceWidth * 0.5),
     dy / (faceHeight * 0.5),
@@ -248,9 +251,8 @@ function move(clientX, clientY) {
     clientY >= heroRect.top && clientY <= heroRect.bottom;
   const nextState = !insideHero ? "idle" : eyeContactDistance <= 1 ? "eye-contact" : "tracking";
   setInteractionState(nextState);
-  // Scale each side to the whole Hero so the title and cards remain responsive.
-  const horizontalRange = dx < 0 ? faceCenterX - heroRect.left : heroRect.right - faceCenterX;
-  const normalizedX = clamp(dx / Math.max(horizontalRange, 1), -1, 1);
+  // The Hero is the event surface; the face remains the origin and scale.
+  const normalizedX = clamp(dx / Math.max(wavyRect.width * 0.58, 1), -1, 1);
   const normalizedY = clamp(dy / (wavyRect.height * 0.42), -1, 1);
   videoRig.look(normalizedX, nextState);
   requestPose(

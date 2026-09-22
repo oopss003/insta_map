@@ -26,7 +26,7 @@ export function createWavyVideo(
     if (Math.abs(desired - current) < 0.005) current = desired;
     target =
       current < -0.005
-        ? center + (left - center) * -current
+        ? 0.5 + (left - 0.5) * -current
         : current > 0.005
           ? rightCenter + (right - rightCenter) * current
           : center;
@@ -84,6 +84,7 @@ export function createWavyVideo(
       const amount =
         state === "tracking" && !motion.matches ? clamp(x, -1, 1) : 0;
       desired = amount;
+      if (state === "eye-contact" || state === "idle") current = 0;
       video.dataset.targetTime = target.toFixed(3);
       schedule();
     },
