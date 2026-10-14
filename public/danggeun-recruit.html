@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#c80f4b">
+<title>광고 영업 알바 모집, 계약 1건당 8만 원 | 인웨이브</title>
+<meta name="description" content="부천 위브더스테이트 AI 광고 모니터의 광고주를 소개해 주세요. 계약이 성사되면 건당 8만 원 알바비를 3개월에 나눠 드려요.">
+<meta property="og:type" content="website">
+<meta property="og:title" content="광고 계약 1건에 알바비 8만 원">
+<meta property="og:description" content="부천 AI 광고 모니터 광고주를 소개하고 계약이 성사되면 건당 8만 원을 받아요.">
+<meta property="og:image" content="https://inwave.ai.kr/images/monitor_1.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&amp;display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<style>
+:root{
+  /* 디자인 방향: 광고주용은 파랑, 알바용은 마젠타. 카카오 노랑은 신청 버튼에만 쓴다. */
+  --ink:#0e1a33; --ink-2:#44506b; --paper:#f3f6fb; --white:#ffffff;
+  --blue:#2450e6; --blue-deep:#1a3bb3; --blue-soft:#dde6ff;
+  --magenta:#c80f4b; --magenta-soft:#fde3ec; --yellow:#ffd23f;
+  --kakao:#fee500; --kakao-ink:#191919; --line:#d8dfec;
+  --head:"Black Han Sans","Pretendard","Pretendard Variable","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",sans-serif;
+  --body:"Pretendard","Pretendard Variable","Apple SD Gothic Neo","Noto Sans KR","Noto Sans CJK KR",system-ui,sans-serif;
+  --col:480px; --gut:20px;
+  color-scheme:light;
+}
+body.trial{--accent:var(--blue); --accent-soft:var(--blue-soft);}
+body.recruit{--accent:var(--magenta); --accent-soft:var(--magenta-soft);}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 17px/1.65 var(--body);word-break:keep-all;overflow-wrap:break-word}
+img{max-width:100%;height:auto;display:block}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+
+.page{max-width:var(--col);margin:0 auto;background:var(--white);min-height:100vh;overflow-x:clip;padding-bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+@media (min-width:520px){.page{box-shadow:0 0 0 1px var(--line)}}
+
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 var(--gut);background:var(--white);border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:center;gap:8px;min-height:44px;font-weight:700;font-size:16px;text-decoration:none}
+.brand__mark{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;font:400 13px/1 var(--head)}
+.top__link{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--accent);font-weight:700;font-size:15px;text-decoration:none}
+
+.hero{background:var(--accent);color:#fff;padding:30px var(--gut) 34px}
+.eyebrow{display:inline-block;margin:0 0 14px;padding:4px 12px;border-radius:999px;background:rgba(255,255,255,.2);font-weight:700;font-size:14px}
+.hero__title{margin:0;font:400 clamp(28px,8vw,36px)/1.24 var(--head);letter-spacing:-.01em;text-wrap:balance}
+.hero__title .big{display:block;margin-top:8px;color:var(--yellow);font-size:clamp(40px,12.5vw,56px);line-height:1.1}
+.hero__lead{margin:16px 0 0;font-size:18px;line-height:1.6}
+.hero__media{margin-top:24px}
+.shot{position:relative;aspect-ratio:4/3;border-radius:16px;overflow:hidden;background:var(--blue-deep)}
+.shot__img{width:100%;height:100%;object-fit:cover}
+.stamp{position:absolute;top:12px;right:12px;display:grid;place-items:center;width:78px;height:78px;border-radius:50%;background:var(--yellow);color:var(--ink);font:400 19px/1.1 var(--head);text-align:center;transform:rotate(8deg);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.hero__note{margin:14px 0 0;font-weight:700;font-size:17px}
+.hero__small{display:block;margin-top:2px;font-weight:400;font-size:14px}
+
+.block{padding:36px var(--gut);border-top:1px solid var(--line)}
+.hero + .block{border-top:0}
+.h2{margin:0;font:400 24px/1.3 var(--head);text-wrap:balance}
+.sub{margin:8px 0 0;color:var(--ink-2);font-size:16px}
+.note{margin:14px 0 0;color:var(--ink-2);font-size:14px}
+
+.week{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin:20px 0 0;padding:0;list-style:none}
+.week__cell{display:grid;place-items:center;aspect-ratio:1;border-radius:10px;background:var(--accent-soft);color:var(--accent);font:700 17px/1 var(--body)}
+.week__cell:first-child{background:var(--accent);color:#fff}
+.week__cell--end{background:var(--yellow);color:var(--ink)}
+.legend{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:8px;font-size:15px}
+.legend__item{display:flex;align-items:center;gap:10px}
+.dot{flex:none;width:14px;height:14px;border-radius:50%;background:var(--accent)}
+.dot--soft{background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.dot--end{background:var(--yellow);box-shadow:inset 0 0 0 1px #c9a21a}
+
+.steps{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:12px;counter-reset:s}
+.step{position:relative;padding:14px 16px 14px 60px;border:1px solid var(--line);border-radius:14px;counter-increment:s}
+.step::before{content:counter(s);position:absolute;left:14px;top:14px;display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font:700 16px/1 var(--body)}
+.step__t{margin:0;font-weight:700;font-size:17px}
+.step__d{margin:2px 0 0;color:var(--ink-2);font-size:15px}
+
+.pay{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin:20px 0 0}
+.pay__cell{padding:12px 8px;border-radius:12px;background:var(--accent-soft);text-align:center}
+.pay__cell--last{background:var(--accent);color:#fff}
+.pay__m{margin:0;font-size:13px}
+.pay__v{margin:2px 0 0;font:400 22px/1.2 var(--head)}
+
+.terms{margin:20px 0 0;border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.terms>div{display:grid;grid-template-columns:84px minmax(0,1fr);gap:12px;padding:12px 16px;border-top:1px solid var(--line)}
+.terms>div:first-child{border-top:0}
+.terms dt{margin:0;color:var(--accent);font-weight:700;font-size:15px}
+.terms dd{margin:0;font-size:16px}
+
+.report{margin:20px 0 0;border:1px solid var(--line);border-radius:16px;background:var(--white);box-shadow:0 6px 18px rgba(14,26,51,.08);overflow:hidden}
+.report__head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 16px;background:var(--paper);border-bottom:1px solid var(--line)}
+.report__title{margin:0;font-weight:700;font-size:15px}
+.chip{padding:3px 10px;border-radius:999px;background:var(--magenta-soft);color:var(--magenta);font-weight:700;font-size:13px;white-space:nowrap}
+.report__body{display:grid;gap:22px;padding:16px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{padding:12px;border-radius:12px;background:var(--paper)}
+.tile__l{margin:0;color:var(--ink-2);font-size:13px}
+.tile__v{margin:2px 0 0;font:400 22px/1.2 var(--head)}
+.rep__h{margin:0 0 10px;font-weight:700;font-size:15px}
+.hours{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;align-items:end;height:136px}
+.hour{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px;height:100%;color:var(--ink-2);font-size:12px}
+.hour__n{font-weight:700;color:var(--ink)}
+.hour__bar{width:100%;border-radius:6px 6px 0 0;background:var(--accent-soft)}
+.hour--peak .hour__bar{background:var(--accent)}
+.bars{display:grid;gap:8px}
+.bar{display:grid;grid-template-columns:48px minmax(0,1fr) 40px;align-items:center;gap:8px;font-size:14px}
+.bar__track{height:12px;border-radius:6px;background:var(--paper);overflow:hidden}
+.bar__fill{display:block;height:100%;background:var(--accent)}
+.bar__v{text-align:right;color:var(--ink-2);font-variant-numeric:tabular-nums}
+.gender{display:flex;height:30px;margin-top:12px;border-radius:8px;overflow:hidden;font-size:13px;font-weight:700;color:#fff}
+.gender__f{display:flex;align-items:center;padding-left:10px;background:var(--magenta)}
+.gender__m{display:flex;align-items:center;justify-content:flex-end;padding-right:10px;background:var(--blue)}
+.report__note{margin:0;padding:12px 16px;border-top:1px solid var(--line);background:var(--paper);color:var(--ink-2);font-size:13px}
+
+.say{display:grid;gap:12px;margin:20px 0 0}
+.say__col{padding:14px 16px;border-radius:14px}
+.say__col--ok{background:var(--blue-soft)}
+.say__col--no{background:var(--magenta-soft)}
+.say__h{margin:0 0 6px;font-weight:700;font-size:16px}
+.say__col ul{margin:0;padding-left:20px;font-size:15px}
+.say__col li+li{margin-top:4px}
+
+.src{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:10px}
+.src li{padding:12px 14px;border-radius:12px;background:var(--paper);font-size:15px}
+.src small{display:block;margin-top:2px;color:var(--ink-2);font-size:13px}
+
+.faq{display:grid;gap:8px;margin:20px 0 0}
+.faq details{border:1px solid var(--line);border-radius:12px}
+.faq summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:10px 16px;font-weight:700;font-size:16px;cursor:pointer;list-style:none}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";flex:none;color:var(--accent);font-size:22px;line-height:1}
+.faq details[open] summary::after{content:"\2212"}
+.faq p{margin:0;padding:0 16px 14px;color:var(--ink-2);font-size:15px}
+
+.foot{padding:28px var(--gut) 12px;border-top:1px solid var(--line);color:var(--ink-2);font-size:13px;line-height:1.7}
+.foot p{margin:0 0 4px}
+
+.cta{position:fixed;left:0;right:0;bottom:0;z-index:20;padding:10px var(--gut) calc(10px + env(safe-area-inset-bottom,0px));background:rgba(255,255,255,.96);border-top:1px solid var(--line)}
+.cta__in{width:100%;max-width:calc(var(--col) - 2*var(--gut));margin:0 auto}
+.cta__btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:var(--kakao);color:var(--kakao-ink);font-weight:800;font-size:17px;text-decoration:none}
+.cta__btn:active{transform:translateY(1px)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body class="recruit">
+<div class="page">
+  <header class="top">
+      <a class="brand" href="/"><span class="brand__mark" aria-hidden="true">IW</span>인웨이브</a>
+      <a class="top__link" href="https://pf.kakao.com/_CVqxkn/chat" target="_blank" rel="noopener">지원하기</a>
+    </header>
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow">영업 알바 모집</p>
+      <h1 class="hero__title" id="hero-title">광고 계약 1건에<span class="big">알바비 8만 원</span></h1>
+      <p class="hero__lead">부천 위브더스테이트 AI 광고 모니터의 광고주를 소개해 주세요. 계약이 성사되면 건당 8만 원을 드려요.</p>
+    </section>
+
+    <section class="block" aria-labelledby="how-title">
+      <h2 class="h2" id="how-title">이렇게 진행돼요</h2>
+      <ol class="steps">
+        <li class="step"><p class="step__t">광고주를 소개해요</p><p class="step__d">광고가 필요한 가게 사장님께 인웨이브를 알려 주세요. 1주일 무료 체험으로 먼저 써볼 수 있어요.</p></li>
+        <li class="step"><p class="step__t">계약이 성사돼요</p><p class="step__d">사장님이 3개월 광고 계약을 하면 알바비가 확정돼요.</p></li>
+        <li class="step"><p class="step__t">알바비를 받아요</p><p class="step__d">8만 원을 3개월에 나눠 후불로 드려요.</p></li>
+      </ol>
+    </section>
+
+    <section class="block" aria-labelledby="pay-title">
+      <h2 class="h2" id="pay-title">알바비는 3번에 나눠 받아요</h2>
+      <p class="sub">광고가 시작된 날부터 30일씩 센 계약 월이 끝난 뒤에 지급해요.</p>
+      <div class="pay" role="group" aria-label="알바비 지급 일정">
+        <div class="pay__cell"><p class="pay__m">1개월차</p><p class="pay__v">2만 원</p></div>
+        <div class="pay__cell"><p class="pay__m">2개월차</p><p class="pay__v">2만 원</p></div>
+        <div class="pay__cell pay__cell--last"><p class="pay__m">3개월차</p><p class="pay__v">4만 원</p></div>
+      </div>
+      <p class="note">중간에 해지되면 해지된 달분까지 지급해요. 예를 들어 2개월차에 해지되면 4만 원을 받아요.</p>
+    </section>
+
+    <section class="block" aria-labelledby="ad-title">
+      <h2 class="h2" id="ad-title">광고주에게 소개할 내용</h2>
+      <div class="shot" style="margin-top:20px">
+        <img class="shot__img" src="images/monitor_1.jpg" width="640" height="480" alt="위브더스테이트 상가에 설치된 인웨이브 광고 모니터" loading="lazy">
+      </div>
+      <dl class="terms">
+        <div><dt>위치</dt><dd>부천 위브더스테이트 상가 모니터 10곳. 하루 평균 약 1,800명이 지나가는 자리예요(AI 인식 기준).</dd></div>
+        <div><dt>상품</dt><dd>3개월 45만 원 (월 15만 원, 하루 5,000원)</dd></div>
+        <div><dt>송출</dt><dd>하루 100회 이상, 모니터 10곳 합산</dd></div>
+        <div><dt>리포트</dt><dd>시청자 수, 평균 시청시간, 시간대별 반응, 연령·성별</dd></div>
+        <div><dt>체험</dt><dd>1주일 무료 체험으로 먼저 확인할 수 있어요.</dd></div>
+        <div><dt>해지</dt><dd>일 단위로 가능하고, 남은 금액은 일할로 돌려드려요.</dd></div>
+      </dl>
+      <p class="note">시청 수와 광고 효과는 보장하지 않아요. 시청 결과는 리포트로 확인해요.</p>
+    </section>
+
+    <section class="block" aria-labelledby="report-title">
+      <h2 class="h2" id="report-title">광고주가 받는 리포트</h2>
+      <p class="sub">광고가 끝나면 이런 화면으로 결과를 보여 드려요. 소개할 때 함께 보여 주세요.</p>
+      
+        <div class="report" role="group" aria-label="광고 리포트 예시 화면">
+          <div class="report__head"><p class="report__title">1주일 광고 리포트</p><span class="chip">예시 화면</span></div>
+          <div class="report__body">
+            <div class="tiles">
+              <div class="tile"><p class="tile__l">시청자 수</p><p class="tile__v">312명</p></div>
+              <div class="tile"><p class="tile__l">평균 시청시간</p><p class="tile__v">4.6초</p></div>
+              <div class="tile"><p class="tile__l">반응이 가장 좋은 시간</p><p class="tile__v">저녁 6~9시</p></div>
+              <div class="tile"><p class="tile__l">가장 많이 본 층</p><p class="tile__v">30대 여성</p></div>
+            </div>
+            <div>
+              <p class="rep__h">시간대별 시청자 수</p>
+              <div class="hours"><div class="hour"><span class="hour__n">18</span><span class="hour__bar" style="height:18px"></span><span>06–09</span></div><div class="hour"><span class="hour__n">46</span><span class="hour__bar" style="height:46px"></span><span>09–12</span></div><div class="hour"><span class="hour__n">38</span><span class="hour__bar" style="height:38px"></span><span>12–15</span></div><div class="hour"><span class="hour__n">62</span><span class="hour__bar" style="height:62px"></span><span>15–18</span></div><div class="hour hour--peak"><span class="hour__n">84</span><span class="hour__bar" style="height:84px"></span><span>18–21</span></div><div class="hour"><span class="hour__n">64</span><span class="hour__bar" style="height:64px"></span><span>21–24</span></div></div>
+            </div>
+            <div>
+              <p class="rep__h">연령·성별</p>
+              <div class="bars"><div class="bar"><span>20대</span><span class="bar__track"><span class="bar__fill" style="width:8%"></span></span><span class="bar__v">8%</span></div><div class="bar"><span>30대</span><span class="bar__track"><span class="bar__fill" style="width:41%"></span></span><span class="bar__v">41%</span></div><div class="bar"><span>40대</span><span class="bar__track"><span class="bar__fill" style="width:33%"></span></span><span class="bar__v">33%</span></div><div class="bar"><span>50대</span><span class="bar__track"><span class="bar__fill" style="width:13%"></span></span><span class="bar__v">13%</span></div><div class="bar"><span>60대+</span><span class="bar__track"><span class="bar__fill" style="width:5%"></span></span><span class="bar__v">5%</span></div></div>
+              <div class="gender" role="img" aria-label="여성 62%, 남성 38%"><span class="gender__f" style="width:62%">여성 62%</span><span class="gender__m" style="width:38%">남성 38%</span></div>
+            </div>
+          </div>
+          <p class="report__note">숫자는 리포트 모양을 보여 드리려고 만든 예시예요. 실제 결과가 아니에요.</p>
+        </div>
+    </section>
+
+    <section class="block" aria-labelledby="say-title">
+      <h2 class="h2" id="say-title">이렇게 말씀해 주세요</h2>
+      <div class="say">
+        <div class="say__col say__col--ok">
+          <p class="say__h">이렇게 말해요</p>
+          <ul>
+            <li>하루 5,000원으로 하루 100회 이상 광고가 나가요.</li>
+            <li>끝나면 시청자 수, 연령, 성별 리포트를 받아요.</li>
+            <li>1주일 무료 체험으로 먼저 확인할 수 있어요.</li>
+            <li>해지는 일 단위로 가능해요.</li>
+          </ul>
+        </div>
+        <div class="say__col say__col--no">
+          <p class="say__h">이 말은 피해 주세요</p>
+          <ul>
+            <li>"하루 100명이 반드시 봐요"</li>
+            <li>"광고하면 매출이 올라요"</li>
+            <li>"시청을 보장해요"</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="block" aria-labelledby="faq-title">
+      <h2 class="h2" id="faq-title">자주 묻는 질문</h2>
+      <div class="faq">
+        <details><summary>알바비는 언제 받나요?</summary><p>계약 월이 끝난 뒤에 지급해요. 구체적인 지급 일정은 지원하시면 카카오톡으로 안내해 드려요.</p></details>
+        <details><summary>소개한 계약은 어떻게 확인하나요?</summary><p>소개 방법과 계약 확인 절차는 지원하시면 카카오톡으로 안내해 드려요.</p></details>
+        <details><summary>중간에 해지되면 어떻게 되나요?</summary><p>해지된 달분까지 지급하고, 그 뒤 달분은 지급하지 않아요.</p></details>
+        <details><summary>지원은 어떻게 하나요?</summary><p>카카오톡에서 "인웨이브"를 검색하거나 아래 버튼을 눌러 지원 메시지를 보내 주세요.</p></details>
+      </div>
+    </section>
+  </main>
+  <footer class="foot">
+      <p>㈜인웨이브 · 부천시 원미구 삼보테크노타워</p>
+      <p>문의 <a href="mailto:ceo@inwave.ai.kr">ceo@inwave.ai.kr</a></p>
+      <p>시청 수와 광고 효과는 보장하지 않아요. 시청 결과는 리포트로 확인할 수 있어요.</p>
+      <p>하루 평균 인원은 AI가 인식한 사람 수 기준의 참고 값이에요.</p>
+    </footer>
+</div>
+<div class="cta"><div class="cta__in"><a class="cta__btn" href="https://pf.kakao.com/_CVqxkn/chat" target="_blank" rel="noopener">카카오톡으로 지원하기</a></div></div>
+</body>
+</html>
