@@ -2054,7 +2054,7 @@ const style=document.createElement('style');
 style.textContent='.wv-panel{background:white;border:1px solid #e2e8f0;border-radius:16px;padding:24px}.wv-controls{display:flex;gap:14px;flex-wrap:wrap;align-items:end}.wv-controls label{display:flex;flex-direction:column;gap:7px;font-size:13px}.wv-controls input,.wv-controls select{padding:9px;border:1px solid #cbd5e1;border-radius:7px}.wv-note{font-size:13px;color:#64748b;line-height:1.8}.wv-result{margin-top:20px;line-height:1.8;overflow-wrap:anywhere}.wv-score{font-size:30px;font-weight:800;color:#2563eb}.wv-targets{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}.wv-ad-row{display:grid;grid-template-columns:1fr 1.4fr 1fr 1.3fr 1.7fr .7fr 1fr;gap:12px;padding:18px;border-bottom:1px solid #e2e8f0;align-items:center;font-size:13px;overflow-wrap:anywhere}.wv-ad-scroll{overflow:auto;flex:1}.wv-ad-scroll>div{min-width:950px}#addAdModal .modal-box{max-height:90vh;overflow:auto}.wv-result details{margin-top:12px}';document.head.append(style);
 const nav=document.createElement('li');nav.className='nav-item';nav.textContent='◉ 웨이비';nav.onclick=()=>{showPage('wavy',nav);refreshOptions().catch(showError);};document.querySelector('.nav-menu').append(nav);
 const page=document.createElement('div');page.id='page-wavy';page.className='page-view';
-page.innerHTML=`<div class="page-header"><h1>웨이비</h1><p>과거 관측 데이터로 미래 날짜의 타깃과 광고 시간대를 추천합니다.</p></div><div class="wv-panel"><div class="wv-controls"><label>모니터<select id="wv-monitor"></select></label><label>미래 날짜<input id="wv-date" type="date" min="${shift(today(),1)}" value="${shift(today(),1)}"></label><label>광고<select id="wv-ad"><option value="">광고 미선택 · 타깃 분석</option></select></label><label>시작 시간<input id="wv-start" type="time" value="06:00"></label><label>종료 시간<select id="wv-end">${Array.from({length:49},(_,i)=>`<option value="${i*1800}" ${i===48?'selected':''}>${clock(i*1800)}</option>`).join('')}</select></label><label>추천 시간 단위<select id="wv-unit"><option value="1800">30분</option><option value="3600" selected>1시간</option><option value="7200">2시간</option></select></label><label>과거 분석 기간<select id="wv-history"><option value="28">최근 4주</option><option value="56" selected>최근 8주</option></select></label><button id="wv-run" class="btn btn-primary">분석하기</button></div><p class="wv-note">광고 미선택: 선택 시간 전체의 연령·성별 1개 추천 / 광고 선택: 선택 범위 안에서 최적 시간대 1개 추천.<br>최근 완료된 날짜 중 선택일과 같은 요일을 비교합니다. 관측 기록은 고유 방문자 수나 구매 성과가 아닙니다.</p><div id="wv-result" class="wv-result" role="status" aria-live="polite">조건을 선택하고 분석하기를 눌러주세요.</div></div>`;document.querySelector('.main-content').append(page);
+page.innerHTML=`<div class="page-header"><h1>웨이비</h1><p>과거 관측 데이터로 미래 날짜의 타깃과 광고 시간대를 추천합니다.</p></div><div class="wv-panel"><div class="wv-controls"><label>모니터<select id="wv-monitor"></select></label><label>미래 날짜<input id="wv-date" type="date" min="${shift(today(),1)}" value="${shift(today(),1)}"></label><label>광고<select id="wv-ad"><option value="">광고 미선택 · 타깃 분석</option></select></label><label>시작 시간<input id="wv-start" type="time" value="06:00"></label><label>종료 시간<select id="wv-end">${Array.from({length:49},(_,i)=>`<option value="${i*1800}" ${i===48?'selected':''}>${clock(i*1800)}</option>`).join('')}</select></label><label>추천 시간 단위<select id="wv-unit"><option value="1800">30분</option><option value="3600" selected>1시간</option><option value="7200">2시간</option></select></label><label>과거 분석 기간<select id="wv-history"><option value="28">최근 4주</option><option value="56" selected>최근 8주</option><option value="0">전체</option></select></label><button id="wv-run" class="btn btn-primary">분석하기</button></div><p class="wv-note">광고 미선택: 선택 시간 전체의 연령·성별 1개 추천 / 광고 선택: 선택 범위 안에서 최적 시간대 1개 추천.<br>선택한 분석 기간에서 오늘 이전의 완료된 날짜 중 선택일과 같은 요일을 비교합니다. 전체는 저장된 최초 날짜부터 어제까지 포함합니다. 관측 기록은 고유 방문자 수나 구매 성과가 아닙니다.</p><div id="wv-result" class="wv-result" role="status" aria-live="polite">조건을 선택하고 분석하기를 눌러주세요.</div></div>`;document.querySelector('.main-content').append(page);
 const fields=document.createElement('div');fields.innerHTML=`<label>목표 연령 (복수 선택 가능)</label><div class="wv-targets">${['ALL',0,10,20,30,40,50,60,70].map(a=>`<label><input type="checkbox" name="wv-age" value="${a}">${a==='ALL'?'전 연령':ageLabel(a)}</label>`).join('')}</div><label for="wv-gender">목표 성별</label><select id="wv-gender" class="form-input-full"><option value="ALL">전체</option><option value="M">남성</option><option value="F">여성</option></select><div id="wv-save-error" role="alert"></div>`;document.querySelector('#addAdModal .modal-actions').before(fields);
 fields.addEventListener('change',e=>{if(e.target.name!=='wv-age')return;const all=fields.querySelector('[value="ALL"]');if(e.target===all&&all.checked)fields.querySelectorAll('[name="wv-age"]').forEach(c=>{if(c!==all)c.checked=false;});else if(e.target.checked)all.checked=false;});
 const adTable=document.querySelector('#page-ads .table-container');adTable.innerHTML='<div class="wv-panel"><div class="wv-controls"><label>분석 모니터<select id="wv-ad-monitor"></select></label><button id="wv-ad-analyze" class="btn btn-white">최근 8주 분석</button></div><div id="wv-ad-status" class="wv-note" role="status">모니터 선택 후 분석하면 광고 송출 시 관측된 대표 연령·성별을 표시합니다.</div></div><div class="wv-ad-scroll"><div class="wv-ad-row"><b>광고 ID</b><b>광고명</b><b>광고주</b><b>등록 타깃</b><b>분석 연령·성별</b><b>상태</b><b>관리</b></div><div id="adList"></div></div>';
@@ -2066,7 +2066,7 @@ window.loadAdList=async()=>{analysisVersion++;try{await refreshOptions();renderA
 function openAd(ad){editing=ad?.docId||null;$('new_ad_id').value=ad?.ad_id||'';$('new_ad_id').disabled=!!ad;$('new_ad_name').value=ad?.name||'';$('new_ad_client').value=ad?.client||'';$('new_ad_status').value=ad?.status||'active';fields.querySelectorAll('[name="wv-age"]').forEach(c=>c.checked=(ad?.target_ages||['ALL']).map(String).includes(c.value));$('wv-gender').value=ad?.target_gender||'ALL';$('wv-save-error').textContent='';document.querySelector('#addAdModal .modal-title').textContent=ad?'광고 수정':'광고 등록';$('addAdModal').style.display='flex';}
 window.openAddAdModal=()=>openAd(null);
 window.saveNewAd=async()=>{const id=$('new_ad_id').value.trim(),name=$('new_ad_name').value.trim();const ages=Array.from(fields.querySelectorAll('[name="wv-age"]:checked'),c=>c.value==='ALL'?'ALL':Number(c.value));if(!id||id.includes('/')||!name||!ages.length){$('wv-save-error').textContent='올바른 ID, 광고명, 목표 연령을 입력하세요.';return;}const button=document.querySelector('#addAdModal .modal-actions button');button.disabled=true;const editId=editing;try{const ref=db.collection('ads').doc(editId||id);const data={ad_id:id,name,client:$('new_ad_client').value.trim(),status:$('new_ad_status').value,target_ages:ages,target_gender:$('wv-gender').value,updated_at:firebase.firestore.FieldValue.serverTimestamp()};await db.runTransaction(async tx=>{const old=await tx.get(ref);if(!editId&&old.exists)throw Error('이미 등록된 광고 ID입니다.');if(editId&&!old.exists)throw Error('삭제된 광고입니다. 목록을 새로고침하세요.');tx.set(ref,data,{merge:true});});closeAddAdModal();await window.loadAdList();loadSidebarAds();}catch(e){$('wv-save-error').textContent=e.message;}finally{button.disabled=false;}};
-async function wavyReadAll(query) {
+async function wavyReadAll(query, progress) {
   const pageSize = 1000;
   const documents = [];
   let cursor = null;
@@ -2075,6 +2075,7 @@ async function wavyReadAll(query) {
     if (cursor) pageQuery = pageQuery.startAfter(cursor);
     const page = await pageQuery.get();
     documents.push(...page.docs);
+    progress?.(documents.length);
     if (page.size < pageSize) return documents;
     const next = page.docs[page.docs.length - 1];
     if (cursor && next.id === cursor.id) throw Error('조회가 진행되지 않아 분석을 중단했습니다. 다시 시도하세요.');
@@ -2083,6 +2084,27 @@ async function wavyReadAll(query) {
 }
 async function history(monitor, days, progress) {
   if (!monitor) throw Error('모니터를 선택하세요.');
+  if (days === 0) {
+    const cutoff = today();
+    const totals = {face_analysis: 0, video_logs: 0};
+    const completed = row => typeof row.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(row.date) && row.date < cutoff && !Number.isNaN(Date.parse(row.date + 'T12:00:00Z')) && new Date(row.date + 'T12:00:00Z').toISOString().slice(0, 10) === row.date;
+    progress?.('전체 기간 자료 조회 중 · 0건');
+    const [faceDocs, logDocs] = await Promise.all(['face_analysis', 'video_logs'].map(collection =>
+      wavyReadAll(db.collection(collection).where('monitor_id', '==', monitor)
+        .orderBy(firebase.firestore.FieldPath.documentId()), count => {
+          totals[collection] = count;
+          progress?.('전체 기간 자료 조회 중 · ' + (totals.face_analysis + totals.video_logs).toLocaleString() + '건');
+        })
+    ));
+    const faces = faceDocs.map(doc => ({...doc.data(), _id: doc.id})).filter(completed);
+    const logs = logDocs.map(doc => doc.data()).filter(completed);
+    let from = cutoff;
+    for (const row of faces) if (row.date < from) from = row.date;
+    for (const row of logs) if (row.date < from) from = row.date;
+    if (from === cutoff) throw Error('선택한 모니터에 완료된 날짜의 과거 자료가 없습니다.');
+    const clean = faces.map(normalize).filter(Boolean);
+    return {faces: clean, logs, excluded: faces.length - clean.length, from, to: shift(cutoff, -1)};
+  }
   const dates = Array.from({length: days}, (_, i) => shift(today(), -i - 1));
   const faces = [], logs = [];
   for (let i = 0; i < dates.length; i += 4) {
