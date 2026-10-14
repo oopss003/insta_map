@@ -41,6 +41,7 @@ a{color:inherit}
 
 .top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 var(--gut);background:var(--white);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;min-height:44px;font-weight:700;font-size:16px;text-decoration:none}
+.terms a{display:inline-block;min-height:44px;line-height:44px;color:var(--accent);font-weight:700}
 .brand__mark{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;font:400 13px/1 var(--head)}
 .top__link{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--accent);font-weight:700;font-size:15px;text-decoration:none}
 
@@ -142,6 +143,56 @@ a{color:inherit}
 .cta__in{width:100%;max-width:calc(var(--col) - 2*var(--gut));margin:0 auto}
 .cta__btn{display:flex;align-items:center;justify-content:center;min-height:52px;border-radius:14px;background:var(--kakao);color:var(--kakao-ink);font-weight:800;font-size:17px;text-decoration:none}
 .cta__btn:active{transform:translateY(1px)}
+
+/* ---- v2 디자인: 구역마다 색과 리듬을 주고, 숫자를 크게 보여 준다 ---- */
+body{font-size:17px}
+.h2{font-size:28px;line-height:1.25;font-weight:800;letter-spacing:-.02em}
+.hero{padding:34px var(--gut) 40px;background:var(--accent) radial-gradient(120% 70% at 100% 0,rgba(255,255,255,.22),transparent 60%)}
+.hero__title{font-weight:900}
+.hero__lead{opacity:.95}
+.eyebrow{background:var(--yellow);color:var(--ink)}
+.hero__note{padding:14px 16px;border-radius:14px;background:rgba(255,255,255,.14)}
+.block{padding:48px var(--gut);border-top:0}
+.block--tint{background:var(--paper)}
+.block--dark{background:var(--ink);color:#fff}
+.block--dark .h2{color:#fff}
+.block--dark .sub,.block--dark .note{color:#c7d0e6}
+.block--co{background:var(--paper);padding:36px var(--gut)}
+.block--co .h2{font-size:18px}
+.block--co .terms{background:var(--white);font-size:14px}
+
+/* 단계: 카드 대신 굵은 숫자와 세로선 */
+.steps{gap:0;margin-top:24px}
+.step{padding:0 0 26px 62px;border:0;border-radius:0}
+.step:last-child{padding-bottom:0}
+.step::before{width:44px;height:44px;left:0;top:0;font:400 22px/1 var(--head);box-shadow:0 0 0 5px var(--accent-soft)}
+.step:not(:last-child)::after{content:"";position:absolute;left:21px;top:50px;bottom:6px;width:2px;background:var(--accent-soft)}
+.step__t{font-size:18px;font-weight:800;padding-top:8px}
+.step__d{font-size:15.5px}
+.block--dark .step::before{background:var(--yellow);color:var(--ink);box-shadow:0 0 0 5px rgba(255,210,63,.2)}
+.block--dark .step:not(:last-child)::after{background:rgba(255,255,255,.18)}
+.block--dark .step__d{color:#c7d0e6}
+
+/* 연구 근거: 큰 숫자 카드 */
+.stat{display:grid;gap:4px;margin:0;padding:18px;border-radius:18px;background:var(--white);box-shadow:0 1px 0 var(--line)}
+.stat__big{margin:0;color:var(--accent);font:400 38px/1.1 var(--head);letter-spacing:-.02em}
+.stat__big small{font:700 16px/1 var(--body);color:var(--ink-2);margin-left:6px}
+.stat__t{margin:2px 0 0;font-size:16px;font-weight:600}
+.stat__s{margin:0;color:var(--ink-2);font-size:13px}
+.stats{display:grid;gap:12px;margin:24px 0 0;padding:0;list-style:none}
+
+/* 리포트와 약관 표 */
+.terms{border:0;border-radius:16px;background:var(--paper)}
+.terms>div{border-top:1px solid #e4e9f3}
+.say__col{padding:18px}
+.faq details{border:0;background:var(--paper);border-radius:14px}
+.block--tint .faq details,.block--tint .terms{background:var(--white)}
+
+.week__cell{border-radius:12px;font-size:18px}
+.legend{margin-top:20px}
+.foot{background:var(--ink);color:#aab4cc;border-top:0;padding-top:28px}
+.cta{background:rgba(255,255,255,.97);box-shadow:0 -6px 18px rgba(14,26,51,.08);border-top:0}
+.cta__btn{min-height:54px;border-radius:16px;font-size:18px;font-weight:800}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 </head>
@@ -178,7 +229,7 @@ a{color:inherit}
       </ul>
     </section>
 
-    <section class="block" aria-labelledby="apply-title">
+    <section class="block block--tint" aria-labelledby="apply-title">
       <h2 class="h2" id="apply-title">신청은 이렇게 해요</h2>
       <ol class="steps">
         <li class="step"><p class="step__t">카카오톡으로 신청해요</p><p class="step__d">카카오톡에서 "인웨이브"를 검색하거나 아래 버튼을 눌러 주세요.</p></li>
@@ -215,6 +266,24 @@ a{color:inherit}
         </div>
     </section>
 
+    <section class="block block--tint" aria-labelledby="repeat-title">
+      <h2 class="h2" id="repeat-title">광고는 반복해서 볼수록 효과가 커져요</h2>
+      <p class="sub">같은 동네 사람이 매일 오가는 자리라서 같은 광고를 여러 번 보게 돼요. 해외 연구에서도 반복해서 볼수록 기억과 방문이 늘었어요.</p>
+      <ul class="stats"><li class="stat"><p class="stat__big">9%<small>→</small>56%</p><p class="stat__t">광고를 1번 본 사람과 5번 본 사람의 브랜드 자발적 기억률</p><p class="stat__s">Lumen Research, 2024</p></li><li class="stat"><p class="stat__big">볼 때마다<small>↑</small></p><p class="stat__t">같은 광고를 반복해서 볼수록 주목하는 정도가 커졌다는 실험 (영국 성인 900명)</p><p class="stat__s">그룹엠 · Lumen Research, 2024</p></li><li class="stat"><p class="stat__big">6.28%<small>→ 약 4배</small></p><p class="stat__t">옥외광고 1번 본 사람의 매장 방문률, 그리고 14번 이상 본 사람의 방문률 (3번 본 사람은 2배 이상)</p><p class="stat__s">Clear Channel Outdoor, 소매 브랜드 11건 · 15개월. 옥외광고 업체가 발표한 자료예요.</p></li></ul>
+      <p class="note">해외 연구와 업계 분석을 요약한 내용이에요. 같은 결과를 약속하는 것은 아니에요.</p>
+    </section>
+
+    <section class="block block--dark" aria-labelledby="adv-title">
+      <h2 class="h2" id="adv-title">노출이 쌓일수록 좋은 자리로 옮겨 가요</h2>
+      <p class="sub">인웨이브는 광고가 어떻게 보였는지 계속 측정하고, 그 데이터로 광고 효과가 좋은 위치와 시간대에 광고를 더 많이 배정해요.</p>
+      <ol class="steps">
+        <li class="step"><p class="step__t">노출되는 동안 시청을 측정해요</p><p class="step__d">모니터별, 시간대별로 시청자 수와 시청시간, 연령, 성별을 모아요.</p></li>
+        <li class="step"><p class="step__t">반응이 좋은 자리를 찾아요</p><p class="step__d">우리 광고를 가장 잘 보는 모니터와 시간대를 예측 알고리즘이 골라내요.</p></li>
+        <li class="step"><p class="step__t">그 자리에 더 많이 배정해요</p><p class="step__d">반복해서 노출될수록 효과가 좋은 위치로 광고가 옮겨 가요.</p></li>
+      </ol>
+      <p class="note">배정은 시청 데이터를 보고 인웨이브가 조정해요. 광고 효과를 보장하는 것은 아니에요.</p>
+    </section>
+
     <section class="block" aria-labelledby="terms-title">
       <h2 class="h2" id="terms-title">체험 조건</h2>
       <dl class="terms">
@@ -227,7 +296,7 @@ a{color:inherit}
       </dl>
     </section>
 
-    <section class="block" aria-labelledby="faq-title">
+    <section class="block block--tint" aria-labelledby="faq-title">
       <h2 class="h2" id="faq-title">자주 묻는 질문</h2>
       <div class="faq">
         <details><summary>광고 영상이 없어도 되나요?</summary><p>괜찮아요. 가게 이야기를 들려주시면 인웨이브와 협의해서 영상을 만들어 드려요.</p></details>
@@ -248,10 +317,22 @@ a{color:inherit}
       </ul>
       <p class="note">해외 연구를 요약한 내용이에요. 같은 결과를 약속하는 것은 아니에요.</p>
     </section>
+
+    <section class="block block--co" aria-labelledby="co-title">
+      <h2 class="h2" id="co-title">회사 정보</h2>
+      <dl class="terms">
+        <div><dt>상호</dt><dd>㈜인웨이브 (INWAVE)</dd></div>
+        <div><dt>대표이사</dt><dd>박재훈</dd></div>
+        <div><dt>설립</dt><dd>2025년 4월 29일</dd></div>
+        <div><dt>소재지</dt><dd>부천시 원미구 삼보테크노타워</dd></div>
+        <div><dt>사업</dt><dd>AI 시선분석 기반 광고 성과 측정, 디지털 옥외광고(DOOH) 모니터 운영</dd></div>
+        <div><dt>특허</dt><dd>등록 제10-2507746호 (복수 파장대역 감지 카메라)</dd></div>
+        <div><dt>문의</dt><dd><a href="mailto:ceo@inwave.ai.kr">ceo@inwave.ai.kr</a><br><a href="https://pf.kakao.com/_CVqxkn" target="_blank" rel="noopener">카카오톡 채널 "인웨이브"</a></dd></div>
+        <div><dt>홈페이지</dt><dd><a href="https://inwave.ai.kr" target="_blank" rel="noopener">inwave.ai.kr</a></dd></div>
+      </dl>
+    </section>
   </main>
   <footer class="foot">
-      <p>㈜인웨이브 · 부천시 원미구 삼보테크노타워</p>
-      <p>문의 <a href="mailto:ceo@inwave.ai.kr">ceo@inwave.ai.kr</a></p>
       <p>시청 수와 광고 효과는 보장하지 않아요. 시청 결과는 리포트로 확인할 수 있어요.</p>
       <p>하루 평균 인원은 AI가 인식한 사람 수 기준의 참고 값이에요.</p>
     </footer>
