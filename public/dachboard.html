@@ -2066,7 +2066,41 @@ window.loadAdList=async()=>{analysisVersion++;try{await refreshOptions();renderA
 function openAd(ad){editing=ad?.docId||null;$('new_ad_id').value=ad?.ad_id||'';$('new_ad_id').disabled=!!ad;$('new_ad_name').value=ad?.name||'';$('new_ad_client').value=ad?.client||'';$('new_ad_status').value=ad?.status||'active';fields.querySelectorAll('[name="wv-age"]').forEach(c=>c.checked=(ad?.target_ages||['ALL']).map(String).includes(c.value));$('wv-gender').value=ad?.target_gender||'ALL';$('wv-save-error').textContent='';document.querySelector('#addAdModal .modal-title').textContent=ad?'광고 수정':'광고 등록';$('addAdModal').style.display='flex';}
 window.openAddAdModal=()=>openAd(null);
 window.saveNewAd=async()=>{const id=$('new_ad_id').value.trim(),name=$('new_ad_name').value.trim();const ages=Array.from(fields.querySelectorAll('[name="wv-age"]:checked'),c=>c.value==='ALL'?'ALL':Number(c.value));if(!id||id.includes('/')||!name||!ages.length){$('wv-save-error').textContent='올바른 ID, 광고명, 목표 연령을 입력하세요.';return;}const button=document.querySelector('#addAdModal .modal-actions button');button.disabled=true;const editId=editing;try{const ref=db.collection('ads').doc(editId||id);const data={ad_id:id,name,client:$('new_ad_client').value.trim(),status:$('new_ad_status').value,target_ages:ages,target_gender:$('wv-gender').value,updated_at:firebase.firestore.FieldValue.serverTimestamp()};await db.runTransaction(async tx=>{const old=await tx.get(ref);if(!editId&&old.exists)throw Error('이미 등록된 광고 ID입니다.');if(editId&&!old.exists)throw Error('삭제된 광고입니다. 목록을 새로고침하세요.');tx.set(ref,data,{merge:true});});closeAddAdModal();await window.loadAdList();loadSidebarAds();}catch(e){$('wv-save-error').textContent=e.message;}finally{button.disabled=false;}};
-async function history(monitor,days,progress){if(!monitor)throw Error('모니터를 선택하세요.');const dates=Array.from({length:days},(_,i)=>shift(today(),-i-1));const faces=[],logs=[];for(let i=0;i<dates.length;i+=4){await Promise.all(dates.slice(i,i+4).map(async date=>{const [f,l]=await Promise.all(['face_analysis','video_logs'].map(c=>db.collection(c).where('date','==',date).limit(10001).get()));if(f.size>10000||l.size>10000)throw Error('일별 조회 한도를 초과했습니다. 서버 집계가 필요합니다. 불완전한 자료로 점수를 계산하지 않았습니다.');f.forEach(d=>{const r=d.data();if(r.monitor_id===monitor)faces.push({...r,_id:d.id});});l.forEach(d=>{const r=d.data();if(r.monitor_id===monitor)logs.push(r);});}));progress?.(`과거 자료 조회 중 ${Math.min(i+4,days)}/${days}일`);}const clean=faces.map(normalize).filter(Boolean);return {faces:clean,logs,excluded:faces.length-clean.length,from:dates[dates.length-1],to:dates[0]};}
+async function wavyReadAll(query) {
+  const pageSize = 1000;
+  const documents = [];
+  let cursor = null;
+  while (true) {
+    let pageQuery = query.limit(pageSize);
+    if (cursor) pageQuery = pageQuery.startAfter(cursor);
+    const page = await pageQuery.get();
+    documents.push(...page.docs);
+    if (page.size < pageSize) return documents;
+    const next = page.docs[page.docs.length - 1];
+    if (cursor && next.id === cursor.id) throw Error('조회가 진행되지 않아 분석을 중단했습니다. 다시 시도하세요.');
+    cursor = next;
+  }
+}
+async function history(monitor, days, progress) {
+  if (!monitor) throw Error('모니터를 선택하세요.');
+  const dates = Array.from({length: days}, (_, i) => shift(today(), -i - 1));
+  const faces = [], logs = [];
+  for (let i = 0; i < dates.length; i += 4) {
+    await Promise.all(dates.slice(i, i + 4).map(async date => {
+      const [f, l] = await Promise.all(['face_analysis', 'video_logs'].map(collection =>
+        wavyReadAll(db.collection(collection)
+          .where('monitor_id', '==', monitor)
+          .where('date', '==', date)
+          .orderBy(firebase.firestore.FieldPath.documentId()))
+      ));
+      f.forEach(doc => faces.push({...doc.data(), _id: doc.id}));
+      l.forEach(doc => logs.push(doc.data()));
+    }));
+    progress?.(`과거 자료 조회 중 ${Math.min(i + 4, days)}/${days}일 · ${faces.length + logs.length}건`);
+  }
+  const clean = faces.map(normalize).filter(Boolean);
+  return {faces: clean, logs, excluded: faces.length - clean.length, from: dates[dates.length - 1], to: dates[0]};
+}
 function evidence(rows,h){return `분석 기간 ${h.from} ~ ${h.to} · 유효 관측 ${rows.length}건 / ${new Set(rows.map(r=>r.date)).size}일 · 전체 제외 기록 ${h.excluded}건(연령·성별·시간·주목도 누락/오류) · 데이터 충분도: ${rows.length>=100&&new Set(rows.map(r=>r.date)).size>=6?'높음':'보통'}`;}
 function report(title,r,h,reason,formula){return `<h2>${esc(title)}</h2><div class="wv-score">${r.score.toFixed(1)}점</div><p>예상 주목도 지표 ${(r.att*100).toFixed(1)}/100 (과거 정면 점수 기반)</p><p>${esc(reason)}</p><p class="wv-note">${esc(evidence(r.rows,h))}</p><details><summary>점수 기준 보기</summary><p class="wv-note">${esc(formula)}<br>점수는 상대 비교용이며 성과 확률이 아닙니다. 각 후보는 최소 20건·3일의 유효 관측이 있어야 합니다. 공휴일·날씨·행사 효과는 반영하지 않습니다.</p></details>`;}
 page.querySelector('.wv-controls').addEventListener('change',()=>{wavyVersion++;$('wv-result').textContent='조건이 변경되었습니다. 분석하기를 눌러주세요.';});
