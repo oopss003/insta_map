@@ -35,7 +35,7 @@ const scrollHeader = () => header.classList.toggle("scrolled", scrollY > 20);
 addEventListener("scroll", scrollHeader, { passive: true });
 scrollHeader();
 
-import { initStory } from './story.js?v=frame-face-origin-1';
+import { initStory } from './story.js?v=frame-smooth-361-1';
 const story = initStory();
 
 // Reuses the existing homepage's requestAnimationFrame counter and one-shot

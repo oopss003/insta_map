@@ -2,3 +2,11 @@
 @media(max-width:650px){#hero .portrait{overflow:hidden}}
 
 @media(min-width:651px){#hero .frame-panel{padding:0 0 28px 25px}#hero .eyebrow{margin:0 0 12px;padding:0;border:0}#hero h1{margin:10px 0}#hero svg{width:150px;margin:16px 0}#frame-status{min-height:2.4em}#hero strong{font-size:48px}#hero .note{margin:8px 0}}
+#hero.frame-hero{background:#faf5e9}
+#hero .portrait{position:relative}
+#hero canvas{visibility:hidden}
+#hero .frame-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
+#hero canvas,#hero .frame-poster{mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(transparent,#000 5%,#000 100%);mask-composite:intersect}
+#hero.frame-ready canvas{visibility:visible}
+#hero.frame-ready .frame-poster{visibility:hidden}
+@media(max-width:650px){#hero .portrait .frame-poster{inset:auto;position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}}
