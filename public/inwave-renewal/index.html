@@ -11,8 +11,8 @@
     <title>INWAVE — 광고를 본 순간, 데이터가 시작됩니다.</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style.css?v=view-time-2" />
-    <script type="module" src="./app.js?v=gaze-fourway-1"></script>
-  <link rel="stylesheet" href="./story.css?v=gaze-fourway-1" />
+    <script type="module" src="./app.js?v=frame-face-origin-1"></script>
+  <link rel="stylesheet" href="./story.css?v=frame-face-origin-1" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-i18n="skip">본문으로 건너뛰기</a>
@@ -67,23 +67,7 @@
       </nav>
     </header>
     <main id="main">
-      <section id="hero" class="gaze-hero">
-        <div class="gaze-intro"><p>ATTENTION BECOMES DATA</p><h1>시선이 머무는 순간,<br>데이터가 시작됩니다.</h1><p class="gaze-description">광고를 송출한 횟수를 넘어,<br>실제로 바라본 시간을 확인하세요.</p></div>
-        <div class="gaze-person"><video id="head-video" muted playsinline preload="auto" aria-label="고개만 좌우 위아래로 움직이는 인웨이브 캐릭터" poster="https://d8j0ntlcm91z4.cloudfront.net/user_3ISPubvHg3UlBxNhCsFLrnFZFEA/hf_20261020_093513_6fc08c3c-f7d5-4cf1-ace5-e2bd575a0bb3.png" src="https://d8j0ntlcm91z4.cloudfront.net/user_3ISPubvHg3UlBxNhCsFLrnFZFEA/hf_20261020_093617_8b152c69-0915-46b3-ad55-b464b1f16f46.mp4"></video><span id="pose-label">시청 감지 예시</span></div>
-        <div class="gaze-panel">
-          <p id="direction-label">정면 주시 방향</p>
-          <svg class="direction-chart" viewBox="0 0 240 240" role="img" aria-label="캐릭터의 얼굴 방향. 점이 중앙에 들어오면 정면 주시입니다.">
-            <circle cx="120" cy="120" r="100" class="outer-ring"/><circle cx="120" cy="120" r="65" class="inner-ring"/>
-            <path d="M20 120H220M120 20V220" class="crosshair"/><circle cx="120" cy="120" r="20" class="focus-zone"/>
-            <circle id="direction-dot" cx="120" cy="120" r="8"/><text x="120" y="237" text-anchor="middle" id="chart-legend">중앙 영역 · 정면</text>
-          </svg>
-          <div class="direction-controls" role="group" aria-label="고개 방향 선택"><button data-look="left" disabled>← 왼쪽</button><button data-look="up" disabled>↑ 위</button><button data-look="front" disabled>정면</button><button data-look="down" disabled>↓ 아래</button><button data-look="right" disabled>오른쪽 →</button></div>
-          <h2 id="gaze-status" aria-live="polite">시선이 머무는 순간을 기다립니다.</h2>
-          <p class="gaze-time"><span id="time-label">누적 시청 시간</span><strong><b id="hero-time">0.0</b><small id="time-unit">초</small></strong></p>
-          <p id="gaze-note">캐릭터 동작에 맞춘 시청 감지 예시 · 실제 AI 분석이 아닙니다.</p>
-        </div>
-        <div class="gaze-controls"><button id="gaze-play" disabled>준비 중…</button><button id="gaze-reset">다시 보기 ↺</button><a id="gaze-more" href="#your-data">내 시청 데이터 보기 ↓</a></div>
-      </section>
+      <section class="frame-hero" id="hero"><div class="portrait"><canvas id="portrait" width="512" height="512" aria-label="마우스 방향을 바라보는 캐릭터"></canvas></div><aside class="frame-panel"><p class="eyebrow">ATTENTION BECOMES DATA</p><h1>시선이 머무는 순간,<br>데이터가 시작됩니다.</h1><p class="intro">마우스를 움직여 시선을 이끌어 보세요.</p><svg role="img" aria-label="캐릭터 시선 방향" viewBox="0 0 240 240"><circle cx="120" cy="120" r="96" fill="none" stroke="#d0c5dd"/><path d="M24 120h192M120 24v192" stroke="#e4dce9"/><circle id="zone" cx="120" cy="120" r="20" fill="#e4d9f3"/><circle id="dot" cx="120" cy="120" r="7" fill="#8451b5" stroke="white" stroke-width="2"/></svg><div id="frame-status">캐릭터를 준비하고 있습니다.</div><p>누적 시청 시간<br><strong id="frame-time">0.0</strong> 초</p><p class="note">캐릭터 영상의 방향을 활용한 시연 · 실제 시청자 분석이 아닙니다.</p></aside></section>
       <section class="your-data section wave-entry" id="your-data">
         <svg
           class="section-wave"
