@@ -90,7 +90,9 @@ export function initStory() {
   new IntersectionObserver(([entry])=>{if(!entry.isIntersecting&&running)pause(true);}).observe(hero);
   video.addEventListener('ended',()=>{if(automatic&&running){video.currentTime=.04;safePlay();}});
   video.addEventListener('seeked',()=>{updatePose();previous=0;render();});
-  video.addEventListener('loadeddata',()=>{ready=true;video.currentTime=.04;play.disabled=false;updatePose();render();},{once:true});
+  function onReady(){if(ready)return;ready=true;video.currentTime=.04;play.disabled=false;updatePose();render();}
+  video.addEventListener('loadeddata',onReady,{once:true});
+  if(video.readyState>=2)onReady();
   video.addEventListener('error',()=>{pause();document.querySelector('#gaze-status').textContent=text[language].error;});
   render();return {render};
 }
