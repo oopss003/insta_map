@@ -2,7 +2,8 @@ import { language } from './i18n.js';
 
 export function initStory() {
   const hero = document.querySelector('#hero');
-  const video = document.querySelector('#character-video');
+  const image = document.querySelector('#character-image');
+  let media = null, turnTimer = 0;
   const next = document.querySelector('#story-next');
   const result = document.querySelector('.story-result');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -65,19 +66,22 @@ export function initStory() {
       if (node && node.textContent !== value) node.textContent = value;
     }
   }
-  function seek(time) {
-    if (video.readyState) video.currentTime = Math.min(time, video.duration || time);
-  }
-  function play() {
-    if (visible && !document.hidden && !reduced.matches && step !== 3 && !(step === 2 && video.currentTime >= 9.8)) {
-      video.play().catch(() => {});
-    }
-  }
+  new ResizeObserver(([entry]) => hero.style.setProperty('--street-width', (entry.contentRect.height * 1.5) + 'px')).observe(hero);
+  function play() { playback(); }
   function playback() {
-    video.pause();
-    seek(reduced.matches ? (step < 2 ? 0 : 9.8) : [0, 2.1, 6, 9.8][step]);
-    play();
+    clearTimeout(turnTimer);
+    if (!media) return;
+    const key = step === 0 ? 'idle' : step === 1 ? 'walk' : step === 2 ? 'turn' : 'focus';
+    image.src = media[key];
+    if (step === 2) turnTimer = setTimeout(() => { if(step === 2) image.src = media.focus; }, 3834);
   }
+  fetch('./assets/story-media-v2.json').then(r => { if(!r.ok) throw Error('Media unavailable'); return r.json(); }).then(async data => {
+    media = data;
+    const ready = new Image(); ready.src = media.idle; await ready.decode();
+    hero.style.setProperty('--street-image', 'url("' + media.background + '")');
+    hero.classList.add('media-ready');
+    playback();
+  }).catch(() => { document.querySelector('#story-caption').textContent = language === 'ko' ? '이미지를 불러오지 못했습니다. 새로고침해 주세요.' : 'Please reload to load the scene.'; });
   function setStep(value) {
     step = value;
     hero.dataset.step = String(step);
@@ -125,17 +129,12 @@ export function initStory() {
     touchY = null;
   });
   hero.addEventListener('touchcancel', () => { touchY = null; });
-  video.addEventListener('loadeddata', playback);
+
   function tick(now) {
     frame = 0;
     if (!visible || document.hidden) return;
     const dt = previousTime ? Math.min((now - previousTime) / 1000, .05) : 0;
     previousTime = now;
-    if (!reduced.matches && video.readyState) {
-      if (step === 0 && video.currentTime >= 1.8) seek(.1);
-      if (step === 1 && video.currentTime >= 5.8) seek(2.1);
-      if (step >= 2 && video.currentTime >= 9.8) video.pause();
-    }
     if (step === 3) { seconds = Math.min(12, seconds + dt); render(); }
     if (step !== 3 || seconds < 12) frame = requestAnimationFrame(tick);
   }
@@ -145,11 +144,11 @@ export function initStory() {
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     previousTime = 0;
-    if (!visible) video.pause(); else { play(); start(); }
+    if (!visible) { clearTimeout(turnTimer); if(media) image.src = step >= 2 ? media.focus : media.idle; } else { play(); start(); }
   }).observe(hero);
   document.addEventListener('visibilitychange', () => {
     previousTime = 0;
-    if (document.hidden) video.pause(); else { play(); start(); }
+    if (document.hidden) { clearTimeout(turnTimer); if(media) image.src = step >= 2 ? media.focus : media.idle; } else { play(); start(); }
   });
   reduced.addEventListener('change', playback);
   setStep(0);
