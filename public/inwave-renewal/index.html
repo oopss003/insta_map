@@ -11,8 +11,8 @@
     <title>INWAVE — 광고를 본 순간, 데이터가 시작됩니다.</title>
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style.css?v=view-time-2" />
-    <script type="module" src="./app.js?v=character-story-4"></script>
-  <link rel="stylesheet" href="./story.css?v=character-story-4" />
+    <script type="module" src="./app.js?v=gaze-story-1"></script>
+  <link rel="stylesheet" href="./story.css?v=gaze-story-1" />
   </head>
   <body>
     <a class="skip-link" href="#main" data-i18n="skip">본문으로 건너뛰기</a>
@@ -67,41 +67,22 @@
       </nav>
     </header>
     <main id="main">
-      <section id="hero" class="story" data-step="0">
-        <div class="street" aria-hidden="true"><div class="street-scenery"></div></div>
-<div class="story-title">
-        <p>AI ADVERTISING INTELLIGENCE</p>
-        <h1>광고를 바라본 순간,<br>데이터가 시작됩니다.</h1>
-        <p id="story-caption" aria-live="polite">평범한 길 위에서, 시선이 머무는 순간까지.</p>
+      <section id="hero" class="gaze-hero">
+        <div class="gaze-intro"><p>ATTENTION BECOMES DATA</p><h1>시선이 머무는 순간,<br>데이터가 시작됩니다.</h1><p class="gaze-description">광고를 송출한 횟수를 넘어,<br>실제로 바라본 시간을 확인하세요.</p></div>
+        <div class="gaze-person"><canvas id="head-canvas" width="270" height="315" role="img" aria-label="고개를 돌려 광고를 바라보는 캐릭터"></canvas><span id="pose-label">시청 감지 예시</span></div>
+        <div class="gaze-panel">
+          <p id="direction-label">정면 주시 방향</p>
+          <svg class="direction-chart" viewBox="0 0 240 240" role="img" aria-label="캐릭터의 얼굴 방향. 점이 중앙에 들어오면 정면 주시입니다.">
+            <circle cx="120" cy="120" r="100" class="outer-ring"/><circle cx="120" cy="120" r="65" class="inner-ring"/>
+            <path d="M20 120H220M120 20V220" class="crosshair"/><circle cx="120" cy="120" r="20" class="focus-zone"/>
+            <circle id="direction-dot" cx="190" cy="120" r="8"/><text x="120" y="237" text-anchor="middle" id="chart-legend">중앙 영역 · 정면</text>
+          </svg>
+          <h2 id="gaze-status" aria-live="polite">시선이 머무는 순간을 기다립니다.</h2>
+          <p class="gaze-time"><span id="time-label">누적 시청 시간</span><strong><b id="hero-time">0.0</b><small id="time-unit">초</small></strong></p>
+          <p id="gaze-note">캐릭터 동작에 맞춘 시청 감지 예시 · 실제 AI 분석이 아닙니다.</p>
         </div>
-        <div class="character">
-        <img id="character-image" alt="광고를 바라보는 인웨이브 캐릭터" width="450" height="600" decoding="async" />
-        <span>● 광고 시청 감지</span>
-        </div>
-        <div class="story-result" inert>
-        <p>ATTENTION BECOMES DATA</p>
-        <h2>광고를 봤다는 것,<br>이제 알 수 있습니다.</h2>
-        <div class="story-metrics">
-        <div>시청 시간<strong>
-        <b id="hero-time">0.0</b>
-        <small>초</small>
-        </strong>
-        </div>
-        <div>정면 주시도<strong id="hero-attention">0%</strong>
-        </div>
-        </div>
-        <p class="message">인웨이브는 광고 시청을 감지하고,<br>시청 시간과 집중의 흐름을 데이터로 보여줍니다.</p>
-        <small>인터랙티브 예시 · 실제 AI 분석이 아닙니다.</small>
-        <a class="button dark" href="#your-data">데이터 더 알아보기 ↓</a>
-        </div>
-        <div class="story-controls">
-        <span id="story-step">01 / 04</span>
-        <button id="story-next">걷기 시작하기 ↗</button>
-        <button id="story-skip">건너뛰기</button>
-        <button id="story-reset">다시 보기 ↺</button>
-        <p>휠을 내리거나 화면을 탭해 보세요</p>
-        </div>
-        </section>
+        <div class="gaze-controls"><button id="gaze-play" disabled>준비 중…</button><button id="gaze-reset">다시 보기 ↺</button><a id="gaze-more" href="#your-data">내 시청 데이터 보기 ↓</a></div>
+      </section>
       <section class="your-data section wave-entry" id="your-data">
         <svg
           class="section-wave"
