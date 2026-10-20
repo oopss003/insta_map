@@ -14,7 +14,8 @@ export function initStory() {
     en: { title: 'When attention stays,<br>the data begins.', description: 'Beyond ads delivered.<br>See the time actually spent watching.', direction: 'FACE DIRECTION', legend: 'Center zone · facing forward', waiting: 'Waiting for a moment of attention.', watching: 'Your ad is being viewed now.', away: 'Looking away pauses the timer.', paused: 'Viewing measurement is paused.', done: 'See the time spent viewing the ad.', time: 'Total viewing time', unit: 'SEC', note: 'Character animation demo · Not actual AI analysis.', badge: 'Viewing detection demo', start: 'Try attention detection ↗', resume: 'Continue ↗', pause: 'Pause', reset: 'Replay ↺', more: 'See my viewing data ↓', loading: 'Loading…', error: 'Unable to load the character. Please reload.' }
   };
   // Each rendered pose has a matching illustrated yaw value, not a live gaze estimate.
-  const yaw = [70,67,62,57,50,44,37,30,24,18,13,9,6,3,1,0,0];
+  const keyYaw = [70,67,62,57,50,44,37,30,24,18,13,9,6,3,1,0,0];
+  const yaw = Array.from({length:33}, (_,i) => i%2 ? (keyYaw[(i-1)/2]+keyYaw[(i+1)/2])/2 : keyYaw[i/2]);
   function render() {
     const c = text[language];
     if (renderedLanguage !== language) {
@@ -52,9 +53,9 @@ export function initStory() {
   function poseAt(t) {
     const phase = t % 8.8;
     if (phase < 1.2) return 0;
-    if (phase < 2.8) return Math.min(16, Math.floor((phase - 1.2) * 10));
-    if (phase < 6.2) return 16;
-    if (phase < 7.8) return Math.max(0,16 - Math.floor((phase - 6.2) * 10));
+    if (phase < 2.8) return Math.min(32, Math.floor((phase - 1.2) * 20));
+    if (phase < 6.2) return 32;
+    if (phase < 7.8) return Math.max(0,32 - Math.floor((phase - 6.2) * 20));
     return 0;
   }
   function tick(now) {
@@ -90,7 +91,7 @@ export function initStory() {
   hero.addEventListener('wheel', event => { if(running && !event.ctrlKey && event.deltaY > 0) pause(true); }, {passive:true});
   document.addEventListener('visibilitychange', () => { if(document.hidden && running) pause(); });
   new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && running) pause(true); }).observe(hero);
-  Promise.all(Array.from({length: 2}, (_,i) => fetch(`./assets/head-poses/${i}.txt`).then(r => {if(!r.ok) throw Error('Media unavailable');return r.text();})))
+  Promise.all(Array.from({length: 4}, (_,i) => fetch(`./assets/head-poses/${i}.txt`).then(r => {if(!r.ok) throw Error('Media unavailable');return r.text();})))
     .then(parts => JSON.parse(parts.join('')))
     .then(async urls => { poses = await Promise.all(urls.map(async src => {const image=new Image();image.src=src;await image.decode();return image;}));draw(0);play.disabled=false;render(); })
     .catch(() => { document.querySelector('#gaze-status').textContent=text[language].error; });
