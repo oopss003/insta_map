@@ -10,6 +10,15 @@ export function initStory() {
   let step = 0, seconds = 0, previousTime = 0, lastInput = -1000;
   let wheelAt = -1000, touchY = null, ignoreClick = 0, visible = true;
   let frame = 0, renderedLanguage = '';
+  let measurementFinished = false, measurementScrollY = 0;
+  function finishMeasurement() {
+    if (step !== 3 || measurementFinished) return;
+    measurementFinished = true;
+    cancelAnimationFrame(frame);
+    frame = 0;
+    previousTime = 0;
+    render();
+  }
   const copy = {
     ko: {
       title: '광고를 바라본 순간,<br>데이터가 시작됩니다.',
@@ -87,7 +96,8 @@ export function initStory() {
     hero.dataset.step = String(step);
     document.querySelector('#story-step').textContent = `0${step + 1} / 04`;
     result.inert = step !== 3;
-    if (step === 0) seconds = 0;
+    if (step === 0) { seconds = 0; measurementFinished = false; }
+    if (step === 3) measurementScrollY = window.scrollY;
     previousTime = 0;
     renderCopy();
     render();
@@ -96,6 +106,7 @@ export function initStory() {
   }
   function advance() {
     if (step === 3) {
+      finishMeasurement();
       document.querySelector('#your-data').scrollIntoView({ behavior: reduced.matches ? 'instant' : 'smooth' });
       return;
     }
@@ -111,7 +122,8 @@ export function initStory() {
   document.querySelector('#story-reset').onclick = () => { lastInput = -1000; setStep(0); };
   // A continuous wheel/trackpad gesture advances only once, including inertia.
   hero.addEventListener('wheel', event => {
-    if (event.ctrlKey || event.deltaY <= 0 || step === 3 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    if (event.ctrlKey || event.deltaY <= 0 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
+    if (step === 3) { finishMeasurement(); return; }
     event.preventDefault();
     const now = performance.now(), fresh = now - wheelAt > 220;
     wheelAt = now;
@@ -130,16 +142,22 @@ export function initStory() {
   });
   hero.addEventListener('touchcancel', () => { touchY = null; });
 
+  // Freeze the completed result until Replay, including when returning to the hero.
+  hero.querySelectorAll('a').forEach(link => link.addEventListener('click', finishMeasurement));
+  window.addEventListener('scroll', () => {
+    if (step === 3 && window.scrollY > measurementScrollY + 8) finishMeasurement();
+  }, { passive: true });
+
   function tick(now) {
     frame = 0;
-    if (!visible || document.hidden) return;
+    if (!visible || document.hidden || measurementFinished) return;
     const dt = previousTime ? Math.min((now - previousTime) / 1000, .05) : 0;
     previousTime = now;
     if (step === 3) { seconds = Math.min(12, seconds + dt); render(); }
     if (step !== 3 || seconds < 12) frame = requestAnimationFrame(tick);
   }
   function start() {
-    if (!frame && visible && !document.hidden) frame = requestAnimationFrame(tick);
+    if (!frame && visible && !document.hidden && !measurementFinished) frame = requestAnimationFrame(tick);
   }
   new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
