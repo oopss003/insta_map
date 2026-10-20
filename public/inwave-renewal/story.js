@@ -2,173 +2,100 @@ import { language } from './i18n.js';
 
 export function initStory() {
   const hero = document.querySelector('#hero');
-  const image = document.querySelector('#character-image');
-  let media = null, turnTimer = 0;
-  const next = document.querySelector('#story-next');
-  const result = document.querySelector('.story-result');
-  const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let step = 0, seconds = 0, previousTime = 0, lastInput = -1000;
-  let wheelAt = -1000, touchY = null, ignoreClick = 0, visible = true;
-  let frame = 0, renderedLanguage = '';
-  let measurementFinished = false, measurementScrollY = 0;
-  function finishMeasurement() {
-    if (step !== 3 || measurementFinished) return;
-    measurementFinished = true;
-    cancelAnimationFrame(frame);
-    frame = 0;
-    previousTime = 0;
-    render();
-  }
-  const copy = {
-    ko: {
-      title: '광고를 바라본 순간,<br>데이터가 시작됩니다.',
-      result: '광고를 봤다는 것,<br>이제 알 수 있습니다.',
-      message: '인웨이브는 광고 시청을 감지하고,<br>시청 시간과 집중의 흐름을 데이터로 보여줍니다.',
-      captions: ['평범한 길 위에서, 시선이 머무는 순간까지.', '걸음을 따라, 거리가 뒤로 흐릅니다.', '시선이 멈추고, 광고에 집중합니다.', '광고를 송출하는 순간을 넘어, 바라본 순간을 알다.'],
-      buttons: ['걷기 시작하기 ↗', '광고 바라보기 ↗', '시청 데이터 보기 ↗', '다음 내용 보기 ↓'],
-      skip: '건너뛰기', reset: '다시 보기 ↺', hint: '휠을 내리거나 화면을 탭해 보세요',
-      detected: '● 광고 시청 감지', time: '시청 시간', attention: '정면 주시도', unit: '초',
-      note: '인터랙티브 예시 · 실제 AI 분석이 아닙니다.', explore: '데이터 더 알아보기 ↓',
-    },
-    en: {
-      title: 'The moment an ad is seen,<br>the data begins.',
-      result: 'Know when your ad<br>is actually seen.',
-      message: 'INWAVE detects ad viewing and turns<br>viewing time and attention into data.',
-      captions: ['An ordinary street. A moment of attention.', 'Walking in place as the street moves behind.', 'A pause. A turn. Attention on the ad.', 'Beyond delivery. Understand the moment of attention.'],
-      buttons: ['Start walking ↗', 'Look at the ad ↗', 'See viewing data ↗', 'Explore more ↓'],
-      skip: 'Skip', reset: 'Replay ↺', hint: 'Scroll down or tap to continue',
-      detected: '● VIEW DETECTED', time: 'Viewing time', attention: 'Frontal attention', unit: 'SEC',
-      note: 'Interactive example · Not actual AI analysis.', explore: 'Explore the data ↓',
-    },
+  const canvas = document.querySelector('#head-canvas');
+  const context = canvas.getContext('2d');
+  const dot = document.querySelector('#direction-dot');
+  const play = document.querySelector('#gaze-play');
+  let poses = [], running = false, finished = false, started = false;
+  let elapsed = 0, seconds = 0, previous = 0, raf = 0, frameIndex = 0, scrollStart = 0;
+  let viewing = false, renderedLanguage = '', stateKey = '';
+  const text = {
+    ko: { title: '시선이 머무는 순간,<br>데이터가 시작됩니다.', description: '광고를 송출한 횟수를 넘어,<br>실제로 바라본 시간을 확인하세요.', direction: '정면 주시 방향', legend: '중앙 영역 · 정면', waiting: '시선이 머무는 순간을 기다립니다.', watching: '지금, 광고를 시청하고 있습니다.', away: '시선이 벗어나면, 시간도 멈춥니다.', paused: '시청 시간 측정을 잠시 멈췄습니다.', done: '광고를 바라본 시간을 확인하세요.', time: '누적 시청 시간', unit: '초', note: '캐릭터 동작에 맞춘 시청 감지 예시 · 실제 AI 분석이 아닙니다.', badge: '시청 감지 예시', start: '시선 감지 체험하기 ↗', resume: '계속 보기 ↗', pause: '일시정지', reset: '다시 보기 ↺', more: '내 시청 데이터 보기 ↓', loading: '준비 중…', error: '이미지를 불러오지 못했습니다. 새로고침해 주세요.' },
+    en: { title: 'When attention stays,<br>the data begins.', description: 'Beyond ads delivered.<br>See the time actually spent watching.', direction: 'FACE DIRECTION', legend: 'Center zone · facing forward', waiting: 'Waiting for a moment of attention.', watching: 'Your ad is being viewed now.', away: 'Looking away pauses the timer.', paused: 'Viewing measurement is paused.', done: 'See the time spent viewing the ad.', time: 'Total viewing time', unit: 'SEC', note: 'Character animation demo · Not actual AI analysis.', badge: 'Viewing detection demo', start: 'Try attention detection ↗', resume: 'Continue ↗', pause: 'Pause', reset: 'Replay ↺', more: 'See my viewing data ↓', loading: 'Loading…', error: 'Unable to load the character. Please reload.' }
   };
-  function renderCopy() {
-    const c = copy[language];
-    hero.querySelector('h1').innerHTML = c.title;
-    result.querySelector('h2').innerHTML = c.result;
-    result.querySelector('.message').innerHTML = c.message;
-    result.querySelector(':scope > small').textContent = c.note;
-    result.querySelector('a').textContent = c.explore;
-    hero.querySelector('.character > span').textContent = c.detected;
-    hero.querySelector('.story-controls p').textContent = c.hint;
-    document.querySelector('#story-skip').textContent = c.skip;
-    document.querySelector('#story-reset').textContent = c.reset;
-    const metrics = hero.querySelectorAll('.story-metrics > div');
-    metrics[0].firstChild.textContent = c.time;
-    metrics[1].firstChild.textContent = c.attention;
-    metrics[0].querySelector('small').textContent = c.unit;
-    document.querySelector('#story-caption').textContent = c.captions[step];
-    next.textContent = c.buttons[step];
-    renderedLanguage = language;
-  }
+  // Each rendered pose has a matching illustrated yaw value, not a live gaze estimate.
+  const keyYaw = [70,67,62,57,50,44,37,30,24,18,13,9,6,3,1,0,0];
+  const yaw = Array.from({length:33}, (_,i) => i%2 ? (keyYaw[(i-1)/2]+keyYaw[(i+1)/2])/2 : keyYaw[i/2]);
   function render() {
-    if (renderedLanguage !== language) renderCopy();
-    const attention = Math.round(Math.min(seconds / 3.8, 1) * 92) + '%';
-    const values = {
-      'hero-time': seconds.toFixed(1), 'hero-attention': attention,
-      'your-time': seconds.toFixed(1) + (language === 'ko' ? '초' : ' SEC'),
-      'your-seconds': seconds.toFixed(1), 'your-attention': attention,
-      'your-age': language === 'ko' ? '예시 · 30대' : 'Example · 30s',
-      'your-gender': language === 'ko' ? '예시 · 여성' : 'Example · female',
-    };
-    for (const [id, value] of Object.entries(values)) {
-      const node = document.getElementById(id);
-      if (node && node.textContent !== value) node.textContent = value;
+    const c = text[language];
+    if (renderedLanguage !== language) {
+      hero.querySelector('h1').innerHTML = c.title;
+      hero.querySelector('.gaze-description').innerHTML = c.description;
+      document.querySelector('#direction-label').textContent = c.direction;
+      document.querySelector('#chart-legend').textContent = c.legend;
+      document.querySelector('#time-label').textContent = c.time;
+      document.querySelector('#time-unit').textContent = c.unit;
+      document.querySelector('#gaze-note').textContent = c.note;
+      document.querySelector('#pose-label').textContent = c.badge;
+      document.querySelector('#gaze-reset').textContent = c.reset;
+      document.querySelector('#gaze-more').textContent = c.more;
+      renderedLanguage = language; stateKey = '';
     }
+    play.textContent = !poses.length ? c.loading : running ? c.pause : started && !finished ? c.resume : c.start;
+    const state = finished ? 'done' : !started ? 'waiting' : !running ? 'paused' : viewing ? 'watching' : 'away';
+    if (state !== stateKey) { document.querySelector('#gaze-status').textContent = c[state]; stateKey = state; }
+    hero.classList.toggle('is-viewing', running && viewing);
+    const attention = Math.round(100 * Math.max(0, 1 - yaw[frameIndex] / 70)) + '%';
+    const values = { 'hero-time': seconds.toFixed(1), 'your-time': seconds.toFixed(1) + (language === 'ko' ? '초' : ' SEC'), 'your-seconds': seconds.toFixed(1), 'your-attention': attention, 'your-age': language === 'ko' ? '예시 · 30대' : 'Example · 30s', 'your-gender': language === 'ko' ? '예시 · 여성' : 'Example · female' };
+    for (const [id,value] of Object.entries(values)) { const el = document.getElementById(id); if(el && el.textContent !== value) el.textContent = value; }
   }
-  new ResizeObserver(([entry]) => hero.style.setProperty('--street-width', (entry.contentRect.height * 1.5) + 'px')).observe(hero);
-  function play() { playback(); }
-  function playback() {
-    clearTimeout(turnTimer);
-    if (!media) return;
-    const key = step === 0 ? 'idle' : step === 1 ? 'walk' : step === 2 ? 'turn' : 'focus';
-    image.src = media[key];
-    if (step === 2) turnTimer = setTimeout(() => { if(step === 2) image.src = media.focus; }, 3834);
+  function draw(index) {
+    frameIndex = index;
+    context.clearRect(0,0,270,315);
+    context.drawImage(poses[index],0,0,270,315);
+    dot.setAttribute('cx', String(120 + yaw[index]));
+    dot.setAttribute('cy', '120');
+    viewing = yaw[index] <= 13;
+    hero.dataset.pose = String(index);
   }
-  Promise.all(Array.from({length: 10}, (_, i) => fetch(`./assets/story-media-v2/${i}.txt`).then(r => { if(!r.ok) throw Error('Media unavailable'); return r.text(); }))).then(parts => JSON.parse(parts.join(''))).then(async data => {
-    media = data;
-    const ready = new Image(); ready.src = media.idle; await ready.decode();
-    hero.style.setProperty('--street-image', 'url("' + media.background + '")');
-    hero.classList.add('media-ready');
-    playback();
-  }).catch(() => { document.querySelector('#story-caption').textContent = language === 'ko' ? '이미지를 불러오지 못했습니다. 새로고침해 주세요.' : 'Please reload to load the scene.'; });
-  function setStep(value) {
-    step = value;
-    hero.dataset.step = String(step);
-    document.querySelector('#story-step').textContent = `0${step + 1} / 04`;
-    result.inert = step !== 3;
-    if (step === 0) { seconds = 0; measurementFinished = false; }
-    if (step === 3) measurementScrollY = window.scrollY;
-    previousTime = 0;
-    renderCopy();
-    render();
-    playback();
-    start();
+  // Hold sideways, turn to the ad, hold forward, then retrace the same poses.
+  // No frame blending, independent video clock or discontinuous loop reset.
+  function poseAt(t) {
+    const phase = t % 8.8;
+    if (phase < 1.2) return 0;
+    if (phase < 2.8) return Math.min(32, Math.floor((phase - 1.2) * 20));
+    if (phase < 6.2) return 32;
+    if (phase < 7.8) return Math.max(0,32 - Math.floor((phase - 6.2) * 20));
+    return 0;
   }
-  function advance() {
-    if (step === 3) {
-      finishMeasurement();
-      document.querySelector('#your-data').scrollIntoView({ behavior: reduced.matches ? 'instant' : 'smooth' });
-      return;
-    }
-    if (performance.now() - lastInput < 900) return;
-    lastInput = performance.now();
-    setStep(step + 1);
-  }
-  next.addEventListener('click', advance);
-  hero.addEventListener('click', event => {
-    if (performance.now() >= ignoreClick && !event.target.closest('button,a')) advance();
-  });
-  document.querySelector('#story-skip').onclick = () => setStep(3);
-  document.querySelector('#story-reset').onclick = () => { lastInput = -1000; setStep(0); };
-  // A continuous wheel/trackpad gesture advances only once, including inertia.
-  hero.addEventListener('wheel', event => {
-    if (event.ctrlKey || event.deltaY <= 0 || Math.abs(event.deltaX) > Math.abs(event.deltaY)) return;
-    if (step === 3) { finishMeasurement(); return; }
-    event.preventDefault();
-    const now = performance.now(), fresh = now - wheelAt > 220;
-    wheelAt = now;
-    if (fresh && event.deltaY > 12) advance();
-  }, { passive: false });
-  hero.addEventListener('touchstart', event => { touchY = event.touches.length === 1 ? event.touches[0].clientY : null; }, { passive: true });
-  hero.addEventListener('touchmove', event => {
-    if (step < 3 && touchY !== null && touchY - event.touches[0].clientY > 10) event.preventDefault();
-  }, { passive: false });
-  hero.addEventListener('touchend', event => {
-    if (touchY !== null && touchY - event.changedTouches[0].clientY > 40) {
-      ignoreClick = performance.now() + 500;
-      advance();
-    }
-    touchY = null;
-  });
-  hero.addEventListener('touchcancel', () => { touchY = null; });
-
-  // Freeze the completed result until Replay, including when returning to the hero.
-  hero.querySelectorAll('a').forEach(link => link.addEventListener('click', finishMeasurement));
-  window.addEventListener('scroll', () => {
-    if (step === 3 && window.scrollY > measurementScrollY + 8) finishMeasurement();
-  }, { passive: true });
-
   function tick(now) {
-    frame = 0;
-    if (!visible || document.hidden || measurementFinished) return;
-    const dt = previousTime ? Math.min((now - previousTime) / 1000, .05) : 0;
-    previousTime = now;
-    if (step === 3) { seconds = Math.min(12, seconds + dt); render(); }
-    if (step !== 3 || seconds < 12) frame = requestAnimationFrame(tick);
+    raf = 0;
+    if (!running || document.hidden) return;
+    const dt = previous ? Math.min((now - previous)/1000,.1) : 0;
+    previous = now;
+    if (viewing) seconds += dt;
+    elapsed += dt;
+    const index = poseAt(elapsed);
+    if (index !== frameIndex) draw(index);
+    render();
+    raf = requestAnimationFrame(tick);
   }
-  function start() {
-    if (!frame && visible && !document.hidden && !measurementFinished) frame = requestAnimationFrame(tick);
+  function pause(finalize = false) {
+    running = false; finished ||= finalize;
+    cancelAnimationFrame(raf); raf = 0; previous = 0; render();
   }
-  new IntersectionObserver(([entry]) => {
-    visible = entry.isIntersecting;
-    previousTime = 0;
-    if (!visible) { clearTimeout(turnTimer); if(media) image.src = step >= 2 ? media.focus : media.idle; } else { play(); start(); }
-  }).observe(hero);
-  document.addEventListener('visibilitychange', () => {
-    previousTime = 0;
-    if (document.hidden) { clearTimeout(turnTimer); if(media) image.src = step >= 2 ? media.focus : media.idle; } else { play(); start(); }
-  });
-  reduced.addEventListener('change', playback);
-  setStep(0);
-  return { render };
+  function begin() {
+    if (!poses.length) return;
+    if (finished) reset();
+    started = true; running = true; scrollStart = window.scrollY; previous = 0;
+    render(); if (!raf) raf = requestAnimationFrame(tick);
+  }
+  function reset() {
+    pause(); elapsed = 0; seconds = 0; started = false; finished = false;
+    if (poses.length) draw(0); render();
+  }
+  play.addEventListener('click', () => running ? pause() : begin());
+  document.querySelector('#gaze-reset').addEventListener('click', reset);
+  document.querySelector('#gaze-more').addEventListener('click', () => pause(true));
+  window.addEventListener('scroll', () => { if(running && window.scrollY > scrollStart + 8) pause(true); }, {passive:true});
+  hero.addEventListener('wheel', event => { if(running && !event.ctrlKey && event.deltaY > 0) pause(true); }, {passive:true});
+  document.addEventListener('visibilitychange', () => { if(document.hidden && running) pause(); });
+  new IntersectionObserver(([entry]) => { if (!entry.isIntersecting && running) pause(true); }).observe(hero);
+  Promise.all(Array.from({length: 4}, (_,i) => fetch(`./assets/head-poses/${i}.txt`).then(r => {if(!r.ok) throw Error('Media unavailable');return r.text();})))
+    .then(parts => JSON.parse(parts.join('')))
+    .then(async urls => { poses = await Promise.all(urls.map(async src => {const image=new Image();image.src=src;await image.decode();return image;}));draw(0);play.disabled=false;render(); })
+    .catch(() => { document.querySelector('#gaze-status').textContent=text[language].error; });
+  render();
+  return {render};
 }
+
