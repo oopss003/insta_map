@@ -75,7 +75,7 @@ export function initStory() {
     image.src = media[key];
     if (step === 2) turnTimer = setTimeout(() => { if(step === 2) image.src = media.focus; }, 3834);
   }
-  fetch('./assets/story-media-v2.json').then(r => { if(!r.ok) throw Error('Media unavailable'); return r.json(); }).then(async data => {
+  Promise.all(Array.from({length: 10}, (_, i) => fetch(`./assets/story-media-v2/${i}.txt`).then(r => { if(!r.ok) throw Error('Media unavailable'); return r.text(); }))).then(parts => JSON.parse(parts.join(''))).then(async data => {
     media = data;
     const ready = new Image(); ready.src = media.idle; await ready.decode();
     hero.style.setProperty('--street-image', 'url("' + media.background + '")');
