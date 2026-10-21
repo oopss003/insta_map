@@ -10,3 +10,10 @@
 #hero.frame-ready canvas{visibility:visible}
 #hero.frame-ready .frame-poster{visibility:hidden}
 @media(max-width:650px){#hero .portrait .frame-poster{inset:auto;position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}}
+
+/* Original Wavy video: native 600 x 900, with the previous single-seek controller. */
+#hero.frame-hero{background:#f8e739}
+#hero .wavy-restored-video{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;visibility:hidden;pointer-events:none}
+#hero .wavy-restored-video.is-ready{visibility:visible}
+#hero .frame-poster{mask-image:none}
+@media(max-width:650px){#hero .portrait .wavy-restored-video,#hero .portrait .frame-poster{inset:auto;position:absolute;width:270px;height:405px;max-width:none;left:50%;top:48%;transform:translate(-50%,-50%)}}
