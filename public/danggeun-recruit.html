@@ -38,6 +38,7 @@ a{color:inherit}
 
 .top{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;height:52px;padding:0 var(--gut);background:var(--white);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;min-height:44px;font-weight:700;font-size:16px;text-decoration:none}
+.step__d a{display:inline-block;min-height:44px;line-height:44px;color:var(--accent);font-weight:700}
 .terms a{display:inline-block;min-height:44px;line-height:44px;color:var(--accent);font-weight:700}
 .brand__mark{display:grid;place-items:center;width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;font:800 13px/1 var(--head)}
 .top__link{display:inline-flex;align-items:center;min-height:44px;padding:0 4px;color:var(--accent);font-weight:700;font-size:15px;text-decoration:none}
@@ -76,7 +77,7 @@ a{color:inherit}
 .step__t{margin:0;font-weight:700;font-size:17px}
 .step__d{margin:2px 0 0;color:var(--ink-2);font-size:15px}
 
-.pay{display:grid;grid-template-columns:1fr 1fr 2fr;gap:8px;margin:20px 0 0}
+.pay{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:20px 0 0}
 .pay__cell{padding:12px 8px;border-radius:12px;background:var(--accent-soft);text-align:center}
 .pay__cell--last{background:var(--accent);color:#fff}
 .pay__m{margin:0;font-size:13px}
@@ -219,11 +220,22 @@ body{font-size:17px}
       <h2 class="h2" id="pay-title">알바비는 3번에 나눠 받아요</h2>
       <p class="sub">광고가 시작된 날부터 30일씩 센 계약 월이 끝난 뒤에 지급해요.</p>
       <div class="pay" role="group" aria-label="알바비 지급 일정">
-        <div class="pay__cell"><p class="pay__m">1개월차</p><p class="pay__v">2만 원</p></div>
-        <div class="pay__cell"><p class="pay__m">2개월차</p><p class="pay__v">2만 원</p></div>
-        <div class="pay__cell pay__cell--last"><p class="pay__m">3개월차</p><p class="pay__v">4만 원</p></div>
+        <div class="pay__cell"><p class="pay__m">1개월차</p><p class="pay__v">3만 원</p></div>
+        <div class="pay__cell"><p class="pay__m">2개월차</p><p class="pay__v">3만 원</p></div>
+        <div class="pay__cell"><p class="pay__m">3개월차</p><p class="pay__v">2만 원</p></div>
       </div>
-      <p class="note">중간에 해지되면 해지된 달분까지 지급해요. 예를 들어 2개월차에 해지되면 4만 원을 받아요.</p>
+      <p class="note">중간에 해지되면 해지된 달분까지 지급해요. 예를 들어 2개월차에 해지되면 3만 + 3만 = 6만 원을 받아요.</p>
+    </section>
+
+    <section class="block" aria-labelledby="help-title">
+      <h2 class="h2" id="help-title">영업은 인웨이브가 함께 도와요</h2>
+      <p class="sub">직접 가게를 찾아다니지 않아도 시작할 수 있게 돕고 있어요.</p>
+      <ol class="steps">
+        <li class="step"><p class="step__t">영업할 가게 리스트를 드려요</p><p class="step__d">인웨이브가 영업하기 좋은 가게를 계속 조사해서 전달해요.</p></li>
+        <li class="step"><p class="step__t">들어온 문의를 넘겨 드려요</p><p class="step__d">인스타그램 광고나 다른 경로로 광고 문의가 오면, 인웨이브가 직접 움직이지 않고 영업 가능한 분께 전달해서 소개할 수 있게 도와요.</p></li>
+        <li class="step"><p class="step__t">영업 자료와 말하는 법을 드려요</p><p class="step__d">소개 페이지, 리포트 예시, 대화 예시가 담긴 <a href="/partner.html">영업 파트너 가이드</a>를 볼 수 있어요.</p></li>
+      </ol>
+      <p class="note">잘 맞는 가게: 병원, 학원, 미용실, 카페, 식당처럼 이름을 오래 기억시키고 싶은 동네 가게예요. 병원은 의료광고 규정을 지켜야 해서 영상 문구를 인웨이브와 먼저 확인해요. 문의 전달 방식은 지원하시면 카카오톡으로 안내해 드려요.</p>
     </section>
 
     <section class="block" aria-labelledby="ad-title">
@@ -272,7 +284,7 @@ body{font-size:17px}
 
     <section class="block block--tint" aria-labelledby="repeat-title">
       <h2 class="h2" id="repeat-title">광고는 반복해서 볼수록 효과가 커져요</h2>
-      <p class="sub">같은 동네 사람이 매일 오가는 자리라서 같은 광고를 여러 번 보게 돼요. 해외 연구에서도 반복해서 볼수록 기억과 방문이 늘었어요.</p>
+      <p class="sub">검색해서 찾아오는 광고가 아니라, 오가며 자주 보다 보면 이름이 기억에 남는 광고예요. 병원이나 학원처럼 이름이 알려지는 데 시간이 걸리는 곳일수록 같은 광고를 반복해서 보여 주는 방식이 잘 맞아요. 해외 연구에서도 반복해서 볼수록 기억과 방문이 늘었어요.</p>
       <ul class="stats"><li class="stat"><p class="stat__big">9%<small>→</small>56%</p><p class="stat__t">광고를 1번 본 사람과 5번 본 사람의 브랜드 자발적 기억률</p><p class="stat__s">Lumen Research, 2024</p></li><li class="stat"><p class="stat__big">볼 때마다<small>↑</small></p><p class="stat__t">같은 광고를 반복해서 볼수록 주목하는 정도가 커졌다는 실험 (영국 성인 900명)</p><p class="stat__s">그룹엠 · Lumen Research, 2024</p></li><li class="stat"><p class="stat__big">6.28%<small>→ 약 4배</small></p><p class="stat__t">옥외광고 1번 본 사람의 매장 방문률, 그리고 14번 이상 본 사람의 방문률 (3번 본 사람은 2배 이상)</p><p class="stat__s">Clear Channel Outdoor, 소매 브랜드 11건 · 15개월. 옥외광고 업체가 발표한 자료예요.</p></li></ul>
       <p class="note">해외 연구와 업계 분석을 요약한 내용이에요. 같은 결과를 약속하는 것은 아니에요.</p>
     </section>
