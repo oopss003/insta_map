@@ -1,19 +1,29 @@
-#hero.frame-hero{background:#faf7f1;color:#211d29;isolation:isolate}#hero.frame-hero:before,#hero.frame-hero:after{display:none}#hero.frame-hero{min-height:620px;height:calc(100svh - 82px);display:grid;grid-template-columns:56% 44%;align-items:center;position:relative;padding:30px 5vw;overflow:hidden}#hero .portrait{height:100%;min-height:420px;display:flex;align-items:end;justify-content:center}#hero canvas{width:100%;height:100%;object-fit:contain;mask-image:linear-gradient(90deg,transparent,#000 4%,#000 96%,transparent)}#hero .frame-panel{align-self:center;padding:15px 0 35px 25px}#hero h1{font-size:clamp(28px,3.2vw,48px);letter-spacing:-.06em;line-height:1.25;margin:16px 0}#hero p{font-size:14px;line-height:1.7;color:#7c737e}#hero .eyebrow{font-size:10px;letter-spacing:.2em}#hero svg{width:190px;display:block;margin:28px 0}#frame-status{font-size:19px;color:#42354e;min-height:3em}#hero strong{font-size:56px;letter-spacing:-.04em}#hero .note{font-size:10px}.below{min-height:65vh;padding:80px 8vw;border-top:1px solid #eae5dd;background:#fffdf9}.below h2{font-size:32px}.ready .loading{display:none}@media(max-width:650px){#hero.frame-hero{grid-template-columns:54% 46%;min-height:680px;padding:10px 3vw}#hero .portrait{height:65%;align-self:end;margin-bottom:30px;position:relative}#hero .portrait canvas{position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}#hero .frame-panel{padding:0 5px;align-self:end;margin-bottom:60px}#hero h1{position:absolute;top:30px;left:6%;font-size:32px}#hero .eyebrow{position:absolute;top:10px;left:6%}#hero .intro{position:absolute;top:125px;left:6%}#hero svg{width:135px;max-width:100%;margin:16px 0}#frame-status{font-size:15px}#hero strong{font-size:40px}#hero .note{font-size:9px}}
-@media(max-width:650px){#hero .portrait{overflow:hidden}}
-
-@media(min-width:651px){#hero .frame-panel{padding:0 0 28px 25px}#hero .eyebrow{margin:0 0 12px;padding:0;border:0}#hero h1{margin:10px 0}#hero svg{width:150px;margin:16px 0}#frame-status{min-height:2.4em}#hero strong{font-size:48px}#hero .note{margin:8px 0}}
-#hero.frame-hero{background:#faf5e9}
-#hero .portrait{position:relative}
-#hero canvas{visibility:hidden}
-#hero .frame-poster{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none}
-#hero canvas,#hero .frame-poster{mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent),linear-gradient(transparent,#000 5%,#000 100%);mask-composite:intersect}
-#hero.frame-ready canvas{visibility:visible}
-#hero.frame-ready .frame-poster{visibility:hidden}
-@media(max-width:650px){#hero .portrait .frame-poster{inset:auto;position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}}
-
-/* Original Wavy video: native 600 x 900, with the previous single-seek controller. */
-#hero.frame-hero{background:#f8e739}
-#hero .wavy-restored-video{position:relative;z-index:1;width:100%;height:100%;object-fit:contain;visibility:hidden;pointer-events:none}
-#hero .wavy-restored-video.is-ready{visibility:visible}
-#hero .frame-poster{mask-image:none}
-@media(max-width:650px){#hero .portrait .wavy-restored-video,#hero .portrait .frame-poster{inset:auto;position:absolute;width:270px;height:405px;max-width:none;left:50%;top:48%;transform:translate(-50%,-50%)}}
+#hero.frame-hero{background:#f8f2e9;color:#211d29;isolation:isolate;min-height:620px;height:calc(100svh - 82px);display:grid;grid-template-columns:56% 44%;align-items:center;position:relative;padding:30px 5vw;overflow:hidden}
+#hero.frame-hero:before,#hero.frame-hero:after{display:none}
+#hero .portrait{position:relative;height:100%;min-height:420px;display:flex;align-items:end;justify-content:center}
+#hero .head-video,#hero .frame-poster{width:100%;height:100%;object-fit:contain;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(transparent,#000 4%,#000 96%,transparent);mask-composite:intersect}
+#hero .head-video{position:relative;z-index:1;visibility:hidden}
+#hero .head-video.is-ready{visibility:visible}
+#hero .frame-poster{position:absolute;inset:0}
+#hero .portrait:has(.head-video.is-ready) .frame-poster{visibility:hidden}
+#hero .frame-panel{align-self:center;padding:0 0 28px 25px}
+#hero h1{font-size:clamp(28px,3.2vw,48px);letter-spacing:-.06em;line-height:1.25;margin:10px 0}
+#hero p{font-size:14px;line-height:1.7;color:#7c737e}
+#hero .eyebrow{font-size:10px;letter-spacing:.2em;margin:0 0 12px;padding:0;border:0}
+#hero svg{width:150px;display:block;margin:16px 0}
+#frame-status{font-size:19px;color:#42354e;min-height:2.4em}
+#hero strong{font-size:48px;letter-spacing:-.04em}
+#hero .note{font-size:10px;margin:8px 0}
+@media(max-width:650px){
+ #hero.frame-hero{grid-template-columns:54% 46%;min-height:680px;padding:10px 3vw}
+ #hero .portrait{height:65%;align-self:end;margin-bottom:30px;overflow:hidden}
+ #hero .portrait .head-video,#hero .portrait .frame-poster{inset:auto;position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}
+ #hero .frame-panel{padding:0 5px;align-self:end;margin-bottom:60px}
+ #hero h1{position:absolute;top:30px;left:6%;font-size:32px}
+ #hero .eyebrow{position:absolute;top:10px;left:6%}
+ #hero .intro{position:absolute;top:125px;left:6%}
+ #hero svg{width:135px;max-width:100%;margin:16px 0}
+ #frame-status{font-size:15px}
+ #hero strong{font-size:40px}
+ #hero .note{font-size:9px}
+}
