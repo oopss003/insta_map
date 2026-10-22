@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#c80f4b">
+<meta name="theme-color" content="#f2ede6">
 <title>광고 영업 알바 모집, 계약 1건당 8만 원 | 인웨이브</title>
 <meta name="description" content="부천 위브더스테이트 AI 광고 모니터의 광고주를 소개해 주세요. 계약이 성사되면 건당 8만 원 알바비를 3개월에 나눠 드려요.">
 <meta property="og:type" content="website">
@@ -192,6 +192,90 @@ body{font-size:17px}
 .cta{background:rgba(255,255,255,.97);box-shadow:0 -6px 18px rgba(14,26,51,.08);border-top:0}
 .cta__btn{min-height:54px;border-radius:16px;font-size:18px;font-weight:800}
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+/* ---- v3 디자인: 앱 화면처럼 둥근 카드, 부드러운 파스텔, 한 화면에 한 가지 메시지 ---- */
+:root{--cream:#f2ede6;--p1:#d3f0e8;--p2:#d6e9f7;--p3:#ffe9a8;--p4:#e7e1f9;--p5:#fde2d1;--card:#ffffff;--shadow:0 10px 28px rgba(60,40,20,.07);--r:28px}
+body.trial{--accent:#0f7f6e;--accent-soft:#d3f0e8;--blue:#0f7f6e;--blue-soft:#d3f0e8;--blue-deep:#0b5f52;--hero-bg:#cdeee4;--hero-bg2:#d9ecf8;--big:#0b6b5c}
+body.recruit{--accent:#c2470a;--accent-soft:#fde2d1;--blue:#c2470a;--blue-soft:#fde2d1;--blue-deep:#9a360a;--hero-bg:#fde0cc;--hero-bg2:#ffedb8;--big:#b23f06}
+body{background:var(--cream)}
+.page{background:transparent;box-shadow:none;padding-bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+@media (min-width:520px){.page{box-shadow:none}}
+
+.top{background:rgba(242,237,230,.92);backdrop-filter:blur(8px);border-bottom:0;padding:0 18px;height:58px}
+.brand__mark{width:34px;height:34px;border-radius:50%;font-size:13px}
+.top__link{padding:0 16px;border-radius:999px;background:var(--card);box-shadow:0 2px 8px rgba(60,40,20,.08);min-height:44px}
+
+.hero{margin:4px 12px 14px;padding:26px 20px 22px;border-radius:32px;color:var(--ink);background:linear-gradient(160deg,var(--hero-bg) 0%,var(--hero-bg2) 100%)}
+.eyebrow{background:var(--card);color:var(--ink);padding:6px 14px;box-shadow:0 2px 8px rgba(60,40,20,.08)}
+.hero__title{font-size:clamp(27px,7.6vw,34px);line-height:1.25}
+.hero__title .big{color:var(--big);font-size:clamp(42px,13vw,58px);margin-top:6px}
+.hero__lead{color:var(--ink-2);font-size:17px}
+.hero__media{margin-top:20px}
+.shot{border-radius:26px;background:var(--card);box-shadow:var(--shadow);border:6px solid var(--card)}
+.shot__img{border-radius:20px}
+.stamp{top:14px;right:14px;width:72px;height:72px;font-size:17px;background:var(--p3);box-shadow:0 4px 12px rgba(60,40,20,.15)}
+.hero__note{margin-top:14px;background:var(--card);color:var(--ink);box-shadow:var(--shadow);border-radius:22px}
+
+.block{margin:0 12px 14px;padding:30px 20px;border-radius:var(--r);background:var(--card);box-shadow:var(--shadow)}
+.block--tint{background:var(--accent-soft)}
+.block--dark{background:#1d2433;color:#fff}
+.block--co{background:var(--card);padding:26px 20px}
+.h2{font-size:25px}
+.sub{color:var(--ink-2)}
+
+.week{gap:8px}
+.week__cell{border-radius:50%;background:var(--p1);color:var(--ink);font-size:17px}
+.week__cell:first-child{background:var(--accent);color:#fff}
+.week__cell--end{background:var(--p3);color:var(--ink)}
+.dot--end{background:var(--p3);box-shadow:inset 0 0 0 1px #d9b13a}
+
+.steps{gap:10px;margin-top:20px}
+.step{padding:16px 16px 16px 70px;border-radius:22px;background:var(--p1);min-height:72px}
+.step:nth-child(4n+2){background:var(--p2)}
+.step:nth-child(4n+3){background:var(--p3)}
+.step:nth-child(4n+4){background:var(--p4)}
+.block--tint .step{background:var(--card)}
+.step::before{left:14px;top:14px;width:42px;height:42px;font-size:20px;box-shadow:none;background:var(--card);color:var(--accent)}
+.step::after,.step:not(:last-child)::after{display:none}
+.step__t{padding-top:0}
+.block--dark .step{background:rgba(255,255,255,.08)}
+.block--dark .step::before{background:var(--p3);color:#1d2433;box-shadow:none}
+
+.stat{border-radius:24px;background:var(--p2);box-shadow:none}
+.stat:nth-child(2){background:var(--p3)}
+.stat:nth-child(3){background:var(--p4)}
+.stat__big{color:#1d2433}
+.block--tint .stat{box-shadow:none}
+
+.terms{border-radius:22px;background:#f6f2ec}
+.terms>div{border-top:1px solid #e8e1d8}
+.block--co .terms,.block--tint .terms{background:#f6f2ec}
+.report{border-radius:26px;border:0;box-shadow:var(--shadow);background:var(--card)}
+.report__head{background:var(--p1);border-bottom:0}
+.tile{border-radius:18px;background:var(--p2)}
+.tile:nth-child(2){background:var(--p3)}
+.tile:nth-child(3){background:var(--p4)}
+.tile:nth-child(4){background:var(--p5)}
+.hour__bar{border-radius:10px 10px 4px 4px}
+.bar__track,.bar__fill{border-radius:999px}
+.gender{border-radius:999px}
+.report__note{background:#f6f2ec;border-top:0}
+
+.say__col{border-radius:22px}
+.say__col--ok{background:var(--p1)}
+.say__col--no{background:var(--p5)}
+.src li{border-radius:18px;background:#f6f2ec}
+.faq details{border-radius:20px;background:#f6f2ec}
+.block--tint .faq details{background:var(--card)}
+.pay{gap:10px}
+.pay__cell{border-radius:20px;background:var(--p3);padding:16px 8px}
+.pay__cell:nth-child(2){background:var(--p1)}
+.pay__cell:nth-child(3){background:var(--p4)}
+.pay__v{font-size:24px}
+
+.foot{background:transparent;color:var(--ink-2);padding:20px 24px 8px}
+.cta{background:linear-gradient(to top,var(--cream) 62%,rgba(242,237,230,0));box-shadow:none;border-top:0;padding-top:20px}
+.cta__btn{border-radius:999px;min-height:56px;box-shadow:0 8px 20px rgba(60,40,20,.18)}
 </style>
 </head>
 <body class="recruit">
