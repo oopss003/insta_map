@@ -1,0 +1,29 @@
+{
+  "sourceJob": "43fd0e30-ec7b-41f5-8421-05a96b39bffc",
+  "resolution": [
+    1440,
+    1440
+  ],
+  "fps": 24,
+  "frames": 220,
+  "neutralFrame": 0,
+  "sourceOrbitFrames": [
+    42,
+    252
+  ],
+  "closingMotionCompensatedFrames": 7,
+  "loopStartFrame": 1,
+  "loopEndFrame": 219,
+  "directions": {
+    "up": 1,
+    "upperLeft": 37,
+    "left": 67,
+    "lowerLeft": 91,
+    "down": 115,
+    "lowerRight": 145,
+    "right": 163,
+    "upperRight": 187
+  },
+  "mapping": "Pointer angle around the face; face-center dead zone selects neutral. Orbit amplitude is fixed by the source video.",
+  "encoding": "H.264 all-I, CRF 18; one native video, serialized seeks, no alpha layer crossfade."
+}

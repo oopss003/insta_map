@@ -1,7 +1,7 @@
-#hero.frame-hero{background:#f8f2e9;color:#211d29;isolation:isolate;min-height:620px;height:calc(100svh - 82px);display:grid;grid-template-columns:56% 44%;align-items:center;position:relative;padding:30px 5vw;overflow:hidden}
+#hero.frame-hero{background:#f2e5d5;color:#211d29;isolation:isolate;min-height:620px;height:calc(100svh - 82px);display:grid;grid-template-columns:56% 44%;align-items:center;position:relative;padding:30px 5vw;overflow:hidden}
 #hero.frame-hero:before,#hero.frame-hero:after{display:none}
-#hero .portrait{position:relative;height:100%;min-height:420px;display:flex;align-items:end;justify-content:center}
-#hero .head-video,#hero .frame-poster{width:100%;height:100%;object-fit:contain;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(transparent,#000 4%,#000 96%,transparent);mask-composite:intersect}
+#hero .portrait{position:relative;margin-top:-30px;height:calc(100% + 60px);min-height:420px;display:flex;align-items:end;justify-content:center}
+#hero .head-video,#hero .frame-poster{width:100%;height:100%;object-fit:contain;pointer-events:none;mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(#000 94%,transparent);mask-composite:intersect}
 #hero .head-video{position:relative;z-index:1;visibility:hidden}
 #hero .head-video.is-ready{visibility:visible}
 #hero .frame-poster{position:absolute;inset:0}
@@ -16,7 +16,7 @@
 #hero .note{font-size:10px;margin:8px 0}
 @media(max-width:650px){
  #hero.frame-hero{grid-template-columns:54% 46%;min-height:680px;padding:10px 3vw}
- #hero .portrait{height:65%;align-self:end;margin-bottom:30px;overflow:hidden}
+ #hero .portrait{height:65%;margin-top:0;align-self:end;margin-bottom:30px;overflow:hidden}
  #hero .portrait .head-video,#hero .portrait .frame-poster{inset:auto;position:absolute;width:330px;height:330px;max-width:none;left:50%;top:38%;transform:translate(-50%,-50%)}
  #hero .frame-panel{padding:0 5px;align-self:end;margin-bottom:60px}
  #hero h1{position:absolute;top:30px;left:6%;font-size:32px}
