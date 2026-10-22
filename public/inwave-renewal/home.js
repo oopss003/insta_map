@@ -1,4 +1,6 @@
-import { initSiteUI } from "./site-ui.js?v=local-ad-20261022";
+import { initSiteUI } from "./site-ui.js?v=renewal-r2-20261022";
+import { prepareHomeContent } from "./content-settings.js?v=renewal-r2-20261022";
+await prepareHomeContent();
 const ui = initSiteUI();
 function legacyRoute() {
   if (
@@ -14,7 +16,7 @@ const video = document.querySelector("#site-tour"),
   control = document.querySelector("#tour-control");
 const motion = matchMedia("(prefers-reduced-motion: reduce)");
 let userPaused = false,
-  inView = true,
+  inView = false,
   started = false,
   failed = false,
   pageLoaded = document.readyState === "complete";

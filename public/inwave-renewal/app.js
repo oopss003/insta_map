@@ -185,7 +185,7 @@ let currentScenario = 0,
 const descriptions = {
   overview: "오늘 광고의 핵심 반응을 한눈에 확인합니다.",
   audience: "연령과 성별에 따른 시청자 구성을 확인합니다.",
-  attention: "시청시간과 정면 주시도를 함께 분석합니다.",
+  attention: "시청시간과 시청 반응을 함께 분석합니다.",
   time: "반응이 높은 시간대를 찾아냅니다.",
 };
 function renderScenario(index) {

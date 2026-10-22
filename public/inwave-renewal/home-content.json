@@ -1,0 +1,14 @@
+{
+  "heroVariant": "steady",
+  "showOffer": false,
+  "heroTitles": {
+    "steady": {
+      "ko": "<span class=\"hero-preline\">매일 오가는 이 자리에서,</span>우리\n              가게를<br><em>꾸준히 알리세요.</em>",
+      "en": "<span class=\"hero-preline\">Along familiar everyday routes,</span>keep your business<br><em>in the picture.</em>"
+    },
+    "recall": {
+      "ko": "검색하기 전에,<br><em>먼저 기억되는 가게.</em>",
+      "en": null
+    }
+  }
+}

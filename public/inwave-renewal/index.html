@@ -11,18 +11,20 @@
     />
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&amp;display=optional"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
     <link
       rel="stylesheet"
-      href="/inwave-renewal/home.css?v=local-ad-20261022"
+      href="/inwave-renewal/home.css?v=renewal-r2-20261022"
     />
     <script
       type="module"
-      src="/inwave-renewal/home.js?v=local-ad-20261022"
+      src="/inwave-renewal/home.js?v=renewal-r2-20261022"
     ></script>
   </head>
   <body>
@@ -45,6 +47,13 @@
           <a data-en="Locations" href="#locations" class="">설치 공간</a
           ><a data-en="Repeat exposure" href="#repeat" class="">반복 노출</a
           ><a data-en="Reports" href="#reports" class="">리포트</a
+          ><a
+            href="#offer"
+            hidden=""
+            data-offer-nav=""
+            data-en-pending="offer.navigation"
+            lang="ko"
+            >가격·조건</a
           ><a data-en="Get started" href="#start" class="">시작 방법</a
           ><a data-en="Privacy" href="#privacy" class="">개인정보 보호</a
           ><a data-en="Gaze demo ↗" href="/inwave-renewal/experience/" class=""
@@ -78,15 +87,13 @@
             <p data-en="LOCAL ADVERTISING · BUCHEON" class="location-chip">
               부천 위브더스테이트 상가 광고
             </p>
-            <h1
-              data-en='&lt;span class="hero-preline"&gt;Along familiar everyday routes,&lt;/span&gt;keep your business&lt;br&gt;&lt;em&gt;in the picture.&lt;/em&gt;'
-              id="hero-title"
-            >
+            <!-- Hero copy is authored in home-content.json; this heading is its static fallback. -->
+            <h1 id="hero-title" data-hero-title="">
               <span class="hero-preline">매일 오가는 이 자리에서,</span>우리
               가게를<br /><em>꾸준히 알리세요.</em>
             </h1>
             <p
-              data-en="Reach everyday journeys through 10 screens at We’ve The State.&lt;br&gt;Run your local ad repeatedly and explore viewing responses in a report."
+              data-en="Reach everyday journeys through 10 screens at We’ve The State.<br>Run your local ad repeatedly and explore viewing responses in a report."
               class="hero-description"
             >
               위브더스테이트 상가 모니터 10곳에서<br />우리 가게 광고를 반복
@@ -138,6 +145,14 @@
                 >
                 <p data-en="Silent video ads">소리 없는 영상</p>
               </div>
+              <div>
+                <strong data-en-pending="hero.cancel.value" lang="ko"
+                  >일 단위</strong
+                >
+                <p data-en-pending="hero.cancel.label" lang="ko">
+                  해지·일할 환급
+                </p>
+              </div>
             </div>
             <p
               data-en="Play counts apply to paid contracts."
@@ -160,8 +175,8 @@
                 width="720"
                 height="1280"
                 poster="/inwave-renewal/assets/installation-20261022/monitor.jpg"
-                muted
-                playsinline
+                muted=""
+                playsinline=""
                 preload="none"
                 data-src="/inwave-renewal/assets/installation-20261022/installation-tour.mp4"
                 aria-label="상가 이동 동선과 광고 모니터의 실제 설치 영상"
@@ -176,28 +191,32 @@
               </button>
             </div>
             <div class="tour-rail">
-              <span class="rail-label">IN THE NEIGHBOURHOOD</span>
+              <span class="rail-label" aria-hidden="true"
+                >IN THE NEIGHBOURHOOD</span
+              >
               <ol>
                 <li class="is-active" data-scene="0">
                   <span>01</span>
-                  <p data-en="Along&lt;br&gt;everyday routes">
+                  <p data-en="Along<br>everyday routes">
                     상가를<br />오가는 길에
                   </p>
                 </li>
                 <li data-scene="1">
                   <span>02</span>
-                  <p data-en="Screens close&lt;br&gt;to daily life">
+                  <p data-en="Screens close<br>to daily life">
                     일상 가까이<br />자리한 모니터
                   </p>
                 </li>
                 <li data-scene="2">
                   <span>03</span>
-                  <p data-en="Your business.&lt;br&gt;Right here.">
+                  <p data-en="Your business.<br>Right here.">
                     이곳에<br />우리 가게 광고
                   </p>
                 </li>
               </ol>
-              <span class="rail-bottom">WE’VE THE STATE<br />BUCHEON</span>
+              <span class="rail-bottom" aria-hidden="true"
+                >WE’VE THE STATE<br />BUCHEON</span
+              >
             </div>
             <figcaption
               data-en="Actual installation at We’ve The State, Bucheon"
@@ -211,11 +230,11 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">01 / REAL LOCATIONS</p>
-            <h2 data-en="Real places.&lt;br&gt;Real advertising screens.">
+            <h2 data-en="Real places.<br>Real advertising screens.">
               실제 상가,<br />실제 모니터에서 송출합니다.
             </h2>
             <p
-              data-en="Screens along the shopping arcade’s walkways.&lt;br&gt;See the actual setting for your advertisement."
+              data-en="Screens along the shopping arcade’s walkways.<br>See the actual setting for your advertisement."
               class="lead"
             >
               상가 통로와 이동 동선에 설치된 모니터.<br />광고가 나오는 장소와
@@ -285,12 +304,12 @@
           <div class="section-heading">
             <p class="eyebrow">02 / EVERYDAY, AGAIN</p>
             <h2
-              data-en="Today. Tomorrow.&lt;br&gt;A familiar route, another encounter."
+              data-en="Today. Tomorrow.<br>A familiar route, another encounter."
             >
               오늘도, 내일도.<br />익숙한 길에서 우리 가게를 알립니다.
             </h2>
             <p
-              data-en="People return to familiar places and walkways.&lt;br&gt;Consistent advertising creates more opportunities to encounter your business name."
+              data-en="People return to familiar places and walkways.<br>Consistent advertising creates more opportunities to encounter your business name."
               class="lead"
             >
               같은 상가를 다시 방문하고, 익숙한 통로를 오가는 일상.<br />그
@@ -369,48 +388,95 @@
             반복 송출을 설명하기 위한 예시입니다. 개인별 시청 횟수를 나타내지
             않습니다.
           </p>
-          <details class="research-note">
-            <summary>
-              <span data-en="What does research say about repeated exposure?"
-                >반복 노출, 연구에서는 어떻게 설명할까요?</span
+          <div class="research-cards">
+            <article>
+              <h3>Lumen Research (2024)</h3>
+              <p lang="ko" data-en-pending="research.1.summary">
+                1회 시청 9% → 5회 시청 56% 자발적 기억
+              </p>
+              <a
+                class="text-link"
+                href="https://lumen-research.com/blog/research-with-kinetic-ooh-frequency-drives-attention/"
+                target="_blank"
+                rel="noopener noreferrer"
+                lang="ko"
+                data-en-pending="research.1.link"
+                >연구 소개 원문 보기 ↗</a
               >
-            </summary>
-            <p
-              data-en="Lumen’s summary of its 2024 research with Kinetic reports spontaneous recall of 9% after one exposure and 56% after five. This overseas research does not promise the same results for your campaign."
-            >
-              Lumen·Kinetic의 2024년 연구 소개에서는 광고 1회 노출 시 자발적
-              회상률 9%, 5회 노출 시 56%를 보고했습니다. 해외 연구 결과이며,
-              같은 결과를 약속하는 것은 아닙니다.
-            </p>
-            <a
-              data-en="Read the research summary ↗"
-              href="https://lumen-research.com/blog/research-with-kinetic-ooh-frequency-drives-attention/"
-              class="text-link"
-              target="_blank"
-              rel="noopener noreferrer"
-              >연구 소개 원문 보기 ↗</a
-            >
-          </details>
+            </article>
+            <article>
+              <h3 lang="ko" data-en-pending="research.2.title">그룹엠·Lumen (2024)</h3>
+              <p lang="ko" data-en-pending="research.2.summary">
+                영국 성인 900명 대상, 볼 때마다 주목도 증가
+              </p>
+              <a
+                class="text-link"
+                href="https://www.backlitemedia.com/news-insights/data-just-3-seconds-of-ooh-attention-can-improve-results-by-26"
+                target="_blank"
+                rel="noopener noreferrer"
+                lang="ko"
+                data-en-pending="research.2.link"
+                >연구 소개 기사 보기 ↗</a
+              >
+            </article>
+            <article>
+              <h3>Clear Channel Outdoor</h3>
+              <p lang="ko" data-en-pending="research.3.summary">
+                매장 방문률 1회 6.28%, 14회 이상 약 4배 (옥외광고 업체 자료)
+              </p>
+              <a
+                class="text-link"
+                href="https://oaaa.org/blog-posts/frequency-of-exposure-out-of-homes-superpower/"
+                target="_blank"
+                rel="noopener noreferrer"
+                lang="ko"
+                data-en-pending="research.3.link"
+                >업체 기고 원문 보기 ↗</a
+              >
+            </article>
+          </div>
+          <p
+            class="research-disclaimer"
+            data-en-pending="research.disclaimer"
+            lang="ko"
+          >
+            해외 연구 결과이며, 같은 결과를 약속하는 것은 아닙니다.
+          </p>
         </div>
       </section>
       <section id="reports" class="content-section">
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">03 / ATTENTION, REPORTED</p>
-            <h2 data-en="Explore how people&lt;br&gt;respond to your ad.">
+            <h2 data-en="Explore how people<br>respond to your ad.">
               광고를 바라본 반응까지<br />확인하세요.
             </h2>
             <p
-              data-en="Alongside ad playback information,&lt;br&gt;receive a report of viewing responses to the screen."
+              data-en="Alongside ad playback information,<br>receive a report of viewing responses to the screen."
               class="lead"
             >
               광고가 얼마나 송출됐는지와 함께,<br />화면을 바라본 시청 반응을
               리포트로 제공합니다.
             </p>
           </div>
+          <div class="viewing-rule">
+            <p lang="ko" data-en-pending="reports.countingRule">
+              시청은 AI가 3초 이상 바라본 경우만 집계해요. 스쳐 지나가는 사람은
+              세지 않아요.
+            </p>
+            <ol
+              class="viewing-flow"
+              lang="ko"
+              data-en-pending="reports.countingFlow"
+            >
+              <li>지나간 사람</li>
+              <li>바라본 사람</li>
+              <li>3초 이상 바라본 사람</li>
+            </ol>
+          </div>
           <div class="report-grid">
             <article class="report-card">
-              <h3 data-en="Viewing count">시청 집계</h3>
+              <h3 data-en-pending="reports.viewers" lang="ko">시청자 수</h3>
               <div class="sample-value">
                 <strong data-en="1,477 views">1,477건</strong
                 ><span class="example-badge"
@@ -444,7 +510,9 @@
               </p>
             </article>
             <article class="report-card">
-              <h3 data-en="Estimated demographics">추정 성별·연령대</h3>
+              <h3 data-en-pending="reports.demographics" lang="ko">
+                성별·연령 분포
+              </h3>
               <div class="sample-value">
                 <strong data-en="30s">30대</strong
                 ><span class="example-badge"
@@ -480,12 +548,46 @@
           </div>
         </div>
       </section>
+      <template id="offer-template"
+        ><section id="offer" class="content-section offer-section">
+          <div class="container" lang="ko" data-en-pending="offer.all">
+            <div class="section-heading">
+              <h2>하루 5,000원 기준,<br />3개월 45만 원.</h2>
+              <p class="lead">
+                3개월 45만 원, 선결제 (월 15만 원, 하루 5,000원 기준)
+              </p>
+            </div>
+            <ul>
+              <li>위브더스테이트 상가 모니터 10곳, 15초 영상, 소리 없음</li>
+              <li>
+                하루 100회 이상 송출 보장 (10곳 합산, 월 3,000회 이상). 장비
+                고장, 정전, 통신 장애로 못 미친 날은 다음 날 보충하고, 종료
+                시점에 부족분이 남으면 그만큼 기간을 연장합니다.
+              </li>
+              <li>
+                해지는 일 단위. 환급액은 선결제 금액에서 5,000원 × 송출한 일수를
+                뺀 금액입니다. 예시: 40일 송출 후 해지하면 소진 20만 원, 환급
+                25만 원.
+              </li>
+              <li>
+                모니터가 늘어나면 카카오톡으로 안내하고 광고주가 선택합니다.
+                동의 없이 추가 금액을 청구하지 않습니다.
+              </li>
+            </ul>
+            <!-- TODO: VAT wording must be confirmed before enabling showOffer. -->
+            <p class="disclaimer">
+              시청 수와 광고 효과는 보장하지 않습니다. 시청 결과는 리포트로
+              제공합니다.
+            </p>
+          </div>
+        </section></template
+      >
       <section id="start" class="content-section start-section">
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">04 / SIMPLE START</p>
             <h2
-              data-en="From enquiry to playback,&lt;br&gt;start with a conversation."
+              data-en="From enquiry to playback,<br>start with a conversation."
             >
               신청부터 송출까지,<br />카카오톡으로 끝나요.
             </h2>
@@ -543,32 +645,35 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">05 / PRIVACY</p>
-            <h2
-              data-en="Understand ad response.&lt;br&gt;Respect personal privacy."
-            >
+            <h2 data-en="Understand ad response.<br>Respect personal privacy.">
               광고의 반응을 살피고,<br />개인정보를 보호합니다.
             </h2>
             <p
-              data-en="Analysis is not intended to identify individuals.&lt;br&gt;We focus on statistical information about advertising response."
+              data-en="Analysis is not intended to identify individuals.<br>We focus on statistical information about advertising response."
               class="lead"
             >
               개인 식별을 목적으로 분석하지 않습니다.<br />광고 반응을 이해하기
               위한 통계 데이터 중심으로 활용합니다.
             </p>
           </div>
+          <p
+            class="privacy-promise"
+            data-en-pending="privacy.storage"
+            lang="ko"
+          >
+            영상은 저장하지 않고, 비식별 통계 데이터만 남깁니다.
+          </p>
           <div class="privacy-grid">
             <article>
               <h3 data-en="Identifying a person">누구인지 알아내기</h3>
-              <p
-                data-en="Name ×&lt;br&gt;Contact details ×&lt;br&gt;Personal identity ×"
-              >
+              <p data-en="Name ×<br>Contact details ×<br>Personal identity ×">
                 이름 ×<br />연락처 ×<br />개인 신원 ×
               </p>
             </article>
             <article>
               <h3 data-en="Understanding viewing">어떻게 보였는지 이해하기</h3>
               <p
-                data-en="Viewing count ✓&lt;br&gt;Viewing time ✓&lt;br&gt;Estimated demographic distribution ✓"
+                data-en="Viewing count ✓<br>Viewing time ✓<br>Estimated demographic distribution ✓"
               >
                 시청 집계 ✓<br />시청시간 ✓<br />추정 성별·연령대 분포 ✓
               </p>
@@ -614,7 +719,7 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">06 / FAQ</p>
-            <h2 data-en="A few things&lt;br&gt;you may be wondering.">
+            <h2 data-en="A few things<br>you may be wondering.">
               궁금한 점을<br />먼저 확인하세요.
             </h2>
           </div>
@@ -637,22 +742,17 @@
                   >영상은 어떻게 준비하나요?</span
                 >
               </summary>
-              <p
-                data-en="Ads are silent 15-second videos. Preparation and costs are discussed during consultation."
-              >
-                소리 없는 15초 영상입니다. 준비 방법과 비용은 상담할 때
-                안내해드립니다.
+              <p data-en-pending="faq.video" lang="ko">
+                15초 영상이에요. 소리는 나오지 않아요. 준비 방법은 상담할 때
+                안내해 드려요.
               </p>
             </details>
             <details>
               <summary>
                 <span data-en="Can I cancel?">중간에 해지할 수 있나요?</span>
               </summary>
-              <p
-                data-en="Cancellation is available on a daily basis, with a pro-rated refund for the unused amount. Full terms are explained before contracting."
-              >
-                일 단위로 해지할 수 있으며, 남은 금액은 일할로 환급합니다.
-                구체적인 조건은 계약 전에 안내해드립니다.
+              <p data-en-pending="faq.cancellation" lang="ko">
+                일 단위로 해지할 수 있고, 남은 금액은 일할로 돌려드려요.
               </p>
             </details>
             <details>
@@ -668,45 +768,26 @@
                 금액을 청구하지 않습니다.
               </p>
             </details>
+
             <details>
               <summary>
-                <span data-en="What is in the report?"
-                  >어떤 데이터를 제공하나요?</span
+                <span data-en-pending="faq.privacy.question" lang="ko"
+                  >개인정보는 괜찮나요?</span
                 >
               </summary>
-              <p
-                data-en="Viewing counts, average viewing time, time-of-day response and estimated demographic distributions. Detailed counting rules and delivery are explained during consultation."
-              >
-                시청 집계, 평균 시청시간, 시간대별 반응, 추정 성별·연령대 분포를
-                안내합니다. 상세한 집계 기준과 제공 방식은 상담 시
-                설명해드립니다.
+              <p data-en-pending="faq.privacy.answer" lang="ko">
+                영상은 저장하지 않고 비식별 통계만 남겨요.
               </p>
             </details>
             <details>
               <summary>
-                <span data-en="How is privacy handled?"
-                  >개인정보는 어떻게 보호하나요?</span
+                <span data-en-pending="faq.industries.question" lang="ko"
+                  >병원·학원·금융·주류 같은 업종도 되나요?</span
                 >
               </summary>
-              <p
-                data-en="Analysis is not intended to identify individuals and focuses on statistical data. See the privacy policy for the operating principles."
-              >
-                개인 식별을 목적으로 분석하지 않고 통계 데이터 중심으로
-                활용합니다. 자세한 운영 원칙은 개인정보 보호 정책에서 확인하실
-                수 있습니다.
-              </p>
-            </details>
-            <details>
-              <summary>
-                <span data-en="Can clinics and academies advertise?"
-                  >병원·학원 등도 광고할 수 있나요?</span
-                >
-              </summary>
-              <p
-                data-en="Depending on the business category, advertising copy may require review. We’ll discuss this during consultation."
-              >
-                업종에 따라 광고 문구 확인이 필요할 수 있습니다. 상담할 때 먼저
-                안내해드립니다.
+              <p data-en-pending="faq.industries.answer" lang="ko">
+                업종에 따라 광고 문구 확인이 필요해요. 상담할 때 먼저 안내해
+                드려요.
               </p>
             </details>
           </div>
@@ -716,11 +797,11 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">YOUR BUSINESS, HERE</p>
-            <h2 data-en="Your business.&lt;br&gt;Let’s put it here.">
+            <h2 data-en="Your business.<br>Let’s put it here.">
               우리 가게 광고,<br />이곳에서 시작해보세요.
             </h2>
             <p
-              data-en="Tell us about your business and your plans.&lt;br&gt;We’ll explain locations, video preparation and campaign terms on KakaoTalk."
+              data-en="Tell us about your business and your plans.<br>We’ll explain locations, video preparation and campaign terms on KakaoTalk."
               class="lead"
             >
               광고할 가게와 원하는 내용을 알려주세요.<br />설치 장소, 영상 준비,
@@ -791,6 +872,13 @@
       </p>
       <!-- TODO: confirmed business registration number, full street address and telephone. -->
       <p class="footer-small">© 2026 INWAVE. All rights reserved.</p>
+      <p
+        class="footer-disclaimer"
+        data-en-pending="footer.disclaimer"
+        lang="ko"
+      >
+        시청 수와 광고 효과는 보장하지 않습니다. 화면의 수치는 분석 예시입니다.
+      </p>
     </footer>
     <div class="mobile-cta">
       <a

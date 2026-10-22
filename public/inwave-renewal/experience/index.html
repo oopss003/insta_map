@@ -11,26 +11,28 @@
     />
     <link rel="icon" href="data:," />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&amp;display=optional"
       rel="stylesheet"
+      media="print"
+      onload="this.media = 'all'"
     />
     <link
       rel="stylesheet"
-      href="/inwave-renewal/home.css?v=local-ad-20261022"
+      href="/inwave-renewal/home.css?v=renewal-r2-20261022"
     />
     <link
       rel="stylesheet"
-      href="/inwave-renewal/story.css?v=local-ad-20261022"
+      href="/inwave-renewal/story.css?v=renewal-r2-20261022"
     />
     <link
       rel="stylesheet"
-      href="/inwave-renewal/experience.css?v=local-ad-20261022"
+      href="/inwave-renewal/experience.css?v=renewal-r2-20261022"
     />
     <script
       type="module"
-      src="/inwave-renewal/experience.js?v=local-ad-20261022"
+      src="/inwave-renewal/experience.js?v=renewal-r2-20261022"
     ></script>
   </head>
   <body>
@@ -97,8 +99,8 @@
             class="head-video"
             src="/inwave-renewal/assets/head-orbit-v1/head-orbit.mp4"
             poster="/inwave-renewal/assets/head-orbit-v1/poster.jpg"
-            muted
-            playsinline
+            muted=""
+            playsinline=""
             preload="auto"
             aria-label="마우스의 상하·좌우·대각선 방향을 바라보는 캐릭터"
           ></video>
@@ -108,9 +110,15 @@
           <h1>시선이 머무는 순간,<br />데이터가 시작됩니다.</h1>
           <p class="intro">마우스를 움직여 시선을 이끌어 보세요.</p>
           <svg role="img" aria-label="캐릭터 시선 방향" viewBox="0 0 240 240">
-            <circle cx="120" cy="120" r="96" fill="none" stroke="#d0c5dd" />
-            <path d="M24 120h192M120 24v192" stroke="#e4dce9" />
-            <circle id="zone" cx="120" cy="120" r="20" fill="#e4d9f3" />
+            <circle
+              cx="120"
+              cy="120"
+              r="96"
+              fill="none"
+              stroke="#d0c5dd"
+            ></circle>
+            <path d="M24 120h192M120 24v192" stroke="#e4dce9"></path>
+            <circle id="zone" cx="120" cy="120" r="20" fill="#e4d9f3"></circle>
             <circle
               id="dot"
               cx="120"
@@ -119,7 +127,7 @@
               fill="#8451b5"
               stroke="white"
               stroke-width="2"
-            />
+            ></circle>
           </svg>
           <div id="frame-status">캐릭터를 준비하고 있습니다.</div>
           <p>누적 시청 시간<br /><strong id="frame-time">0.0</strong> 초</p>
@@ -132,7 +140,7 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">01 / YOUR EXPERIENCE</p>
-            <h2 data-en="Your viewing-time&lt;br&gt;experience.">
+            <h2 data-en="Your viewing-time<br>experience.">
               방금 체험한 시간을<br />확인해보세요.
             </h2>
           </div>
@@ -141,7 +149,9 @@
               <p data-en="Time facing forward in this demo">
                 이 체험에서 정면을 바라본 시간
               </p>
-              <strong id="your-time">0.0초</strong>
+              <span class="example-badge"
+                ><span data-en="Example">예시</span></span
+              ><strong id="your-time">0.0초</strong>
               <p
                 data-en="Calculated in this demo, not actual advertising data"
                 class="fine-print"
@@ -173,7 +183,7 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">02 / REPORT DEMO</p>
-            <h2 data-en="Explore viewing&lt;br&gt;responses at a glance.">
+            <h2 data-en="Explore viewing<br>responses at a glance.">
               시청 반응을<br />한눈에 살펴봅니다.
             </h2>
           </div>
@@ -237,7 +247,7 @@
             id="panel-audience"
             role="tabpanel"
             aria-labelledby="tab-audience"
-            hidden
+            hidden=""
           >
             <div id="demo-age" class="chart-bars"></div>
           </div>
@@ -246,7 +256,7 @@
             id="panel-time"
             role="tabpanel"
             aria-labelledby="tab-time"
-            hidden
+            hidden=""
           >
             <div id="demo-hours" class="chart-bars"></div>
           </div>
@@ -262,15 +272,11 @@
         <div class="container">
           <div class="section-heading">
             <p class="eyebrow">03 / HOW IT WORKS</p>
-            <h2 data-en="From viewing response&lt;br&gt;to a report.">
+            <h2 data-en="From viewing response<br>to a report.">
               광고의 반응이<br />리포트가 되기까지.
             </h2>
-            <p
-              data-en="An overview of organizing viewing responses into statistics without identifying individuals."
-              class="lead"
-            >
-              개인을 식별하지 않고 시청 반응을 통계로 정리하는 과정을
-              설명합니다.
+            <p class="lead" data-en-pending="experience.technology" lang="ko">
+              개인을 식별하지 않고, 현장에서 분석해 통계로만 남깁니다.
             </p>
           </div>
           <ol class="tech-steps">
