@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#FFE033" />
+    <title>INWAVE — 시선 체험</title>
+    <meta
+      name="description"
+      content="부천 위브더스테이트 상가 모니터에서 우리 가게 광고를 반복 송출하고 시청 반응을 리포트로 확인하세요."
+    />
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="/inwave-renewal/home.css?v=local-ad-20261022"
+    />
+    <link
+      rel="stylesheet"
+      href="/inwave-renewal/story.css?v=local-ad-20261022"
+    />
+    <link
+      rel="stylesheet"
+      href="/inwave-renewal/experience.css?v=local-ad-20261022"
+    />
+    <script
+      type="module"
+      src="/inwave-renewal/experience.js?v=local-ad-20261022"
+    ></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">본문으로 건너뛰기</a>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="wordmark" href="/inwave-renewal/" aria-label="INWAVE 홈"
+          >INWAVE<sup>®</sup></a
+        >
+        <button
+          class="menu-toggle"
+          type="button"
+          aria-expanded="false"
+          aria-controls="navigation"
+          aria-label="메뉴 열기"
+        >
+          <span></span><span></span>
+        </button>
+        <nav id="navigation" aria-label="주 메뉴">
+          <a data-en="Home" href="/inwave-renewal/" class="">홈으로</a>
+        </nav>
+        <div class="header-actions">
+          <div class="language-switch" aria-label="Language">
+            <button type="button" data-language="ko" aria-pressed="true">
+              KR</button
+            ><span>/</span
+            ><button type="button" data-language="en" aria-pressed="false">
+              EN
+            </button>
+          </div>
+          <a
+            data-en="Contact ↗"
+            href="http://pf.kakao.com/_CVqxkn/chat"
+            class="button button-dark compact"
+            target="_blank"
+            rel="noopener noreferrer"
+            >광고 문의 ↗</a
+          >
+        </div>
+      </div>
+    </header>
+    <main id="main" class="experience-main">
+      <p
+        data-en="GAZE EXPERIENCE · A simulation, not actual audience analysis."
+        class="demo-banner"
+      >
+        시선 체험 · 시연입니다. 실제 시청자 분석이 아닙니다.
+      </p>
+      <section class="frame-hero" id="hero">
+        <div
+          class="portrait"
+          tabindex="0"
+          role="group"
+          aria-label="캐릭터 시선 조작: 방향키, 정면은 Home 키"
+        >
+          <img
+            class="frame-poster"
+            src="/inwave-renewal/assets/head-orbit-v1/poster.jpg"
+            alt=""
+            fetchpriority="high"
+            aria-hidden="true"
+          /><video
+            id="portrait"
+            class="head-video"
+            src="/inwave-renewal/assets/head-orbit-v1/head-orbit.mp4"
+            poster="/inwave-renewal/assets/head-orbit-v1/poster.jpg"
+            muted
+            playsinline
+            preload="auto"
+            aria-label="마우스의 상하·좌우·대각선 방향을 바라보는 캐릭터"
+          ></video>
+        </div>
+        <aside class="frame-panel">
+          <p class="eyebrow">ATTENTION BECOMES DATA</p>
+          <h1>시선이 머무는 순간,<br />데이터가 시작됩니다.</h1>
+          <p class="intro">마우스를 움직여 시선을 이끌어 보세요.</p>
+          <svg role="img" aria-label="캐릭터 시선 방향" viewBox="0 0 240 240">
+            <circle cx="120" cy="120" r="96" fill="none" stroke="#d0c5dd" />
+            <path d="M24 120h192M120 24v192" stroke="#e4dce9" />
+            <circle id="zone" cx="120" cy="120" r="20" fill="#e4d9f3" />
+            <circle
+              id="dot"
+              cx="120"
+              cy="120"
+              r="7"
+              fill="#8451b5"
+              stroke="white"
+              stroke-width="2"
+            />
+          </svg>
+          <div id="frame-status">캐릭터를 준비하고 있습니다.</div>
+          <p>누적 시청 시간<br /><strong id="frame-time">0.0</strong> 초</p>
+          <p class="note">
+            캐릭터 영상의 방향을 활용한 시연 · 실제 시청자 분석이 아닙니다.
+          </p>
+        </aside>
+      </section>
+      <section id="your-data" class="content-section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">01 / YOUR EXPERIENCE</p>
+            <h2 data-en="Your viewing-time&lt;br&gt;experience.">
+              방금 체험한 시간을<br />확인해보세요.
+            </h2>
+          </div>
+          <div class="experience-receipt">
+            <div>
+              <p data-en="Time facing forward in this demo">
+                이 체험에서 정면을 바라본 시간
+              </p>
+              <strong id="your-time">0.0초</strong>
+              <p
+                data-en="Calculated in this demo, not actual advertising data"
+                class="fine-print"
+              >
+                체험에서 계산된 값 · 실제 광고 시청 데이터 아님
+              </p>
+            </div>
+            <div>
+              <p data-en="Example demographic labels">
+                추정 연령·성별 표시 예시
+              </p>
+              <span class="example-badge"
+                ><span data-en="Example">예시</span></span
+              ><strong
+                ><span id="your-age">예시 · 30대</span> /
+                <span id="your-gender">예시 · 여성</span></strong
+              >
+              <p
+                data-en="This page does not analyze your age or gender."
+                class="fine-print"
+              >
+                이 화면은 사용자의 나이와 성별을 분석하지 않습니다.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section id="dashboard" class="content-section repeat-section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">02 / REPORT DEMO</p>
+            <h2 data-en="Explore viewing&lt;br&gt;responses at a glance.">
+              시청 반응을<br />한눈에 살펴봅니다.
+            </h2>
+          </div>
+          <p
+            data-en="Illustrative scenarios, not actual advertising results."
+            class="demo-notice"
+          >
+            시나리오 예시 · 실제 광고 결과가 아닙니다.
+          </p>
+          <label class="scenario-label" for="scenario"
+            ><span data-en="Example scenario">예시 시나리오</span
+            ><select id="scenario">
+              <option value="0">출근 시간대</option>
+              <option value="1">점심 시간대</option>
+              <option value="2">퇴근 시간대</option>
+            </select></label
+          >
+          <div id="demo-kpis" class="report-grid"></div>
+          <div class="demo-tabs" role="tablist" aria-label="리포트 예시">
+            <button
+              type="button"
+              role="tab"
+              id="tab-overview"
+              aria-controls="panel-overview"
+              aria-selected="true"
+              data-tab="overview"
+            >
+              <span data-en="Viewing time">시청시간</span></button
+            ><button
+              type="button"
+              role="tab"
+              id="tab-audience"
+              aria-controls="panel-audience"
+              aria-selected="false"
+              tabindex="-1"
+              data-tab="audience"
+            >
+              <span data-en="Estimated age">추정 연령대</span></button
+            ><button
+              type="button"
+              role="tab"
+              id="tab-time"
+              aria-controls="panel-time"
+              aria-selected="false"
+              tabindex="-1"
+              data-tab="time"
+            >
+              <span data-en="Response by time">시간대별 반응</span>
+            </button>
+          </div>
+          <div
+            class="demo-chart"
+            id="panel-overview"
+            role="tabpanel"
+            aria-labelledby="tab-overview"
+          >
+            <div id="demo-dwell" class="chart-bars"></div>
+          </div>
+          <div
+            class="demo-chart"
+            id="panel-audience"
+            role="tabpanel"
+            aria-labelledby="tab-audience"
+            hidden
+          >
+            <div id="demo-age" class="chart-bars"></div>
+          </div>
+          <div
+            class="demo-chart"
+            id="panel-time"
+            role="tabpanel"
+            aria-labelledby="tab-time"
+            hidden
+          >
+            <div id="demo-hours" class="chart-bars"></div>
+          </div>
+          <p
+            data-en="All values are illustrative scenario data, not actual results."
+            class="fine-print"
+          >
+            각 수치는 설명용 시나리오입니다. 분석 예시이며 실제 결과가 아닙니다.
+          </p>
+        </div>
+      </section>
+      <section id="technology" class="content-section">
+        <div class="container">
+          <div class="section-heading">
+            <p class="eyebrow">03 / HOW IT WORKS</p>
+            <h2 data-en="From viewing response&lt;br&gt;to a report.">
+              광고의 반응이<br />리포트가 되기까지.
+            </h2>
+            <p
+              data-en="An overview of organizing viewing responses into statistics without identifying individuals."
+              class="lead"
+            >
+              개인을 식별하지 않고 시청 반응을 통계로 정리하는 과정을
+              설명합니다.
+            </p>
+          </div>
+          <ol class="tech-steps">
+            <li>
+              <span>01</span><small>DETECT</small>
+              <h3 data-en="Detect viewing signals">시청 반응 감지</h3>
+            </li>
+            <li>
+              <span>02</span><small>TRACK</small>
+              <h3 data-en="Track viewing duration">
+                시청 흐름과 지속시간 확인
+              </h3>
+            </li>
+            <li>
+              <span>03</span><small>ESTIMATE</small>
+              <h3 data-en="Estimate audience distributions">
+                연령대·성별 분포 추정
+              </h3>
+            </li>
+            <li>
+              <span>04</span><small>ANALYZE</small>
+              <h3 data-en="Aggregate viewing statistics">반응을 통계로 집계</h3>
+            </li>
+            <li>
+              <span>05</span><small>INSIGHT</small>
+              <h3 data-en="Present the report">리포트로 정리</h3>
+            </li>
+          </ol>
+        </div>
+      </section>
+      <section class="experience-bottom">
+        <div class="container">
+          <h2 data-en="Let’s talk about your business.">
+            우리 가게 광고에 대해 상담해보세요.
+          </h2>
+          <div class="button-row">
+            <a
+              data-en="Chat on KakaoTalk ↗"
+              href="http://pf.kakao.com/_CVqxkn/chat"
+              class="button button-dark"
+              target="_blank"
+              rel="noopener noreferrer"
+              >카카오톡으로 상담하기 ↗</a
+            ><a
+              data-en="Back to home"
+              href="/inwave-renewal/"
+              class="button button-outline"
+              >홈으로 돌아가기</a
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-top">
+        <a class="wordmark" href="/inwave-renewal/">INWAVE<sup>®</sup></a>
+        <div>
+          <a data-en="Home" href="/inwave-renewal/" class="">홈으로</a
+          ><a data-en="FAQ" href="/inwave-renewal/#faq" class="">FAQ</a
+          ><a data-en="Privacy policy" href="/adv_privacy_policy.html" class=""
+            >개인정보 보호 정책</a
+          ><a
+            data-en="KakaoTalk ↗"
+            href="http://pf.kakao.com/_CVqxkn/chat"
+            class=""
+            target="_blank"
+            rel="noopener noreferrer"
+            >카카오톡 채널 ↗</a
+          >
+        </div>
+      </div>
+      <p data-en="INWAVE Co., Ltd. · CEO Jaehun Park">
+        ㈜인웨이브(INWAVE) · 대표이사 박재훈
+      </p>
+      <p data-en="Sambo Techno Tower, Wonmi-gu, Bucheon">
+        부천시 원미구 삼보테크노타워
+      </p>
+      <p><a href="mailto:ceo@inwave.ai.kr">ceo@inwave.ai.kr</a></p>
+      <p
+        data-en="Established April 29, 2025 · AI viewing analytics and DOOH screen operations"
+        class="footer-small"
+      >
+        설립 2025년 4월 29일 · AI 시선분석 기반 광고 성과 측정 · DOOH 모니터
+        운영
+      </p>
+      <!-- TODO: confirmed business registration number, full street address and telephone. -->
+      <p class="footer-small">© 2026 INWAVE. All rights reserved.</p>
+    </footer>
+  </body>
+</html>
