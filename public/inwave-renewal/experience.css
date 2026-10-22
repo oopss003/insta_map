@@ -114,6 +114,18 @@
   font-size: 12px;
   font-weight: 700;
 }
+.chart-row {
+  grid-template-columns: 110px minmax(0, 1fr) 112px;
+}
+.bar-value {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.bar-value strong {
+  font-size: 12px;
+}
 .tech-steps {
   list-style: none;
   padding: 0;
@@ -264,7 +276,7 @@
     padding: 22px 16px;
   }
   .chart-row {
-    grid-template-columns: 62px minmax(0, 1fr) 46px;
+    grid-template-columns: 62px minmax(0, 1fr) 90px;
     gap: 10px;
     font-size: 10px;
   }

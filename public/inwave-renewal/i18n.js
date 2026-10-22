@@ -15,11 +15,11 @@ export const translations = {
     kicker: "AI ADVERTISING INTELLIGENCE",
     heroHeadline: "광고를 본 순간,<br>데이터가<br>시작됩니다.",
     heroDescription:
-      'INWAVE는 오프라인 광고 앞에서 발생하는<br class="desktop-break">시청 시간, 정면 주시도, 추정 연령과 성별을<br class="desktop-break">데이터로 바꿉니다.',
+      'INWAVE는 오프라인 광고 앞에서 발생하는<br class="desktop-break">시청 시간, 시청 반응, 추정 연령과 성별을<br class="desktop-break">데이터로 바꿉니다.',
     explore: "데이터 체험하기 <span>↓</span>",
     advertise: "광고 문의하기 ↗",
     viewTime: "시청 시간",
-    attention: "정면 주시도",
+    attention: "시청 반응",
     gender: "추정 성별",
     age: "추정 연령",
     seconds: "초",
@@ -31,7 +31,7 @@ export const translations = {
       "단순히 사람이 지나갔다는 사실보다<br>얼마나 오래, 얼마나 집중해서<br>바라봤는지가 중요합니다.",
     yourReceipt: "당신의 순간을 데이터로",
     receiptTime: "시청 시간",
-    receiptAttention: "정면 주시도",
+    receiptAttention: "시청 반응",
     receiptAge: "추정 연령",
     receiptGender: "추정 성별",
     receiptNote: "광고 반응 체험 예시",
@@ -67,24 +67,24 @@ export const translations = {
     attentionHeadline: "사람이 지나간 것과,<br>광고를 본 것은 다릅니다.",
     attentionDescription:
       "INWAVE는 시청시간뿐 아니라<br>광고 화면을 얼마나 정면으로 바라봤는지도 함께 분석합니다.",
-    axisY: "정면 주시도",
+    axisY: "시청 반응",
     axisX: "시청 시간 →",
     lowAttention: "낮은 관심",
     highAttention: "높은 관심 ↗",
-    attentionConcept: "시청시간과 정면 주시도의 관계를 설명하는 개념도",
+    attentionConcept: "시청시간과 시청 반응의 관계를 설명하는 개념도",
     attentionQuestion: "오래 보고,<br>정면으로 봤다면?",
     attentionAnswer: "그것이 우리가 찾는<br>실제 광고 반응입니다.",
-    avgFrontal: "평균 정면 주시 점수",
+    avgFrontal: "시청 반응 예시",
     highFrontal: "정면 주시 점수 0.7 이상",
     dashboardHeadline: "데이터를 모으는 데서<br>끝나지 않습니다.",
     dashboardDescription:
-      "시청자, 시간대, 시청시간, 정면 주시도를 한곳에서 비교하고<br>광고 운영에 필요한 판단으로 연결합니다.",
+      "시청자, 시간대, 시청시간, 시청 반응을 한곳에서 비교하고<br>광고 운영에 필요한 판단으로 연결합니다.",
     scenarioNote: "시나리오 예시 · 실시간 데이터 아님",
     flowHeadline: "광고 반응의 흐름",
     audiencePanel: "시청자 구성",
-    attentionPanel: "시청시간 × 정면 주시도",
+    attentionPanel: "시청시간 × 시청 반응",
     scatterNote:
-      "개별 점은 시청시간과 정면 주시도의 관계를 보여주는 개념도입니다.",
+      "개별 점은 시청시간과 시청 반응의 관계를 보여주는 개념도입니다.",
     timePanel: "반응이 모이는 시간",
     heatmapTitle: "시간대별 반응 강도",
     timeAge: "시간대 × 추정 연령",
@@ -101,7 +101,7 @@ export const translations = {
     identity: "개인 신원 <span>×</span>",
     how: "광고가 어떻게 보였나요?",
     privacyTime: "시청 시간 <span>✓</span>",
-    privacyAttention: "정면 주시도 <span>✓</span>",
+    privacyAttention: "시청 반응 <span>✓</span>",
     privacyAge: "추정 연령 <span>✓</span>",
     privacyGender: "추정 성별 <span>✓</span>",
     privacyStatement:
@@ -114,10 +114,10 @@ export const translations = {
     technologyHeadline:
       "보이지 않는 곳에서,<br>데이터는 이렇게<br>만들어집니다.",
     technologyDescription:
-      "카메라 앞의 움직임이 광고 인사이트가 되기까지,<br>INWAVE AI Vision이 실시간으로 분석합니다.",
+      "카메라 앞의 움직임이 광고 인사이트가 되기까지,<br>INWAVE AI Vision이 현장에서 분석해 통계로만 남깁니다.",
     detect: "광고 화면 앞의 얼굴을 감지합니다.",
     track: "감지된 대상의 시청 흐름과 지속시간을 추적합니다.",
-    estimate: "추정 연령, 추정 성별과 정면 주시도를 분석합니다.",
+    estimate: "추정 연령, 추정 성별과 시청 반응을 분석합니다.",
     analyze: "시청시간과 시청 패턴을 데이터로 집계합니다.",
     insight:
       "수집된 데이터를 광고 운영에 활용할 수 있는 인사이트로 전환합니다.",
@@ -140,7 +140,7 @@ export const translations = {
     spaceDescription:
       "INWAVE는 실제 유동 인구가 오가는 공간에서<br>광고 송출과 시청 반응을 함께 분석합니다.",
     spaceUnavailable: "현장 영상 준비 중",
-    spaceSourceRequired: "실제 설치영상 원본 연결 대기 중",
+    spaceSourceRequired: "설치 현장 자료를 확인하세요.",
     spacePoint1: "실제 유동 인구 동선",
     spacePoint2: "실제 광고 운영 환경",
     spacePoint3: "실제 시청 반응 데이터",
@@ -167,10 +167,10 @@ export const translations = {
     visitors: "방문",
     viewers: "시청",
     duration: "시청시간",
-    frontal: "정면 주시도",
+    frontal: "시청 반응",
     overview: "오늘 광고의 핵심 반응을 한눈에 확인합니다.",
     audience: "연령과 성별에 따른 시청자 구성을 확인합니다.",
-    attentionTab: "시청시간과 정면 주시도를 함께 분석합니다.",
+    attentionTab: "시청시간과 시청 반응을 함께 분석합니다.",
     time: "반응이 높은 시간대를 찾아냅니다.",
     genderNote: "기존 플랫폼 시나리오의 연령별 지표와 성별 비율",
     low: "낮음",
@@ -377,7 +377,7 @@ translations.en.navigation = "Main navigation";
 translations.ko.footer = "하단 메뉴";
 translations.en.footer = "Footer navigation";
 translations.ko.attentionChart =
-  "개념도: 시청시간과 정면 주시도가 높을수록 광고에 대한 관심이 높아집니다.";
+  "개념도: 시청시간과 시청 반응이 높을수록 광고에 대한 관심이 높아집니다.";
 translations.en.attentionChart =
   "Conceptual chart: longer viewing and more frontal attention indicate greater engagement.";
 translations.ko.dashboardTabs = "대시보드 분석 항목";

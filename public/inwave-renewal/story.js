@@ -1,4 +1,4 @@
-import { language } from "./i18n.js";
+import { language } from "./i18n.js?v=renewal-r2-20261022";
 import {
   createHeadOrbit,
   pointerFromFace,

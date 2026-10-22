@@ -1,6 +1,6 @@
-import { initSiteUI } from "./site-ui.js?v=local-ad-20261022";
-import { applyLanguage } from "./i18n.js";
-import { initStory } from "./story.js?v=local-ad-20261022";
+import { initSiteUI } from "./site-ui.js?v=renewal-r2-20261022";
+import { applyLanguage } from "./i18n.js?v=renewal-r2-20261022";
+import { initStory } from "./story.js?v=renewal-r2-20261022";
 import { platformScenarios } from "./scenarios.js";
 const ui = initSiteUI();
 applyLanguage(ui.getLanguage());
@@ -25,7 +25,13 @@ function bars(id, rows) {
       track.append(fill);
       const value = document.createElement("strong");
       value.textContent = String(row.value);
-      node.append(label, track, value);
+      const valueGroup = document.createElement("span");
+      valueGroup.className = "bar-value";
+      const badge = document.createElement("span");
+      badge.className = "example-badge";
+      badge.textContent = choose("예시", "Example");
+      valueGroup.append(value, badge);
+      node.append(label, track, valueGroup);
       return node;
     }),
   );
